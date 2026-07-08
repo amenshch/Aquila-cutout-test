@@ -136,7 +136,8 @@ class RecoverableCorrector:
          fields getsf under-measures flux; folding that loss into the grid means
          the observed (already flux-reduced) M_SED maps back to M_BE correctly.
 
-      2. A concentration axis breaks the recoverable-mass fold: at fixed column
+      2. A concentration axis and the source FWHM together break the
+         recoverable-mass fold: at fixed column
          the coldest cores lose so much flux that a higher-mass cold core
          recovers less mass than a lower-mass warm one, so (mass, Sigma) alone
          is degenerate.  The footprint-to-FWHM ratio distinguishes a genuine
@@ -154,32 +155,48 @@ class RecoverableCorrector:
     """
 
     def __init__(self, cat, mass_key='M_SED3bs_rec', conc_key='conc_footfwhm',
-                 frac_floor=1e-4):
+                 fwhm_key='FWHM250bs', use_fwhm=True, frac_floor=1e-4):
         if mass_key not in cat or conc_key not in cat:
             raise KeyError(
                 "catalog lacks recoverable columns; load a catalog written by "
                 "add_recoverable_mass.py (mass_key=%r, conc_key=%r)"
                 % (mass_key, conc_key))
         self.mass_key, self.conc_key = mass_key, conc_key
+        self.use_fwhm = use_fwhm and (fwhm_key in cat)
+        self.fwhm_key = fwhm_key
         mrec = cat[mass_key]
         conc = cat[conc_key]
-        keep = (mrec > frac_floor) & np.isfinite(conc) & (conc > 0)
-        X = np.column_stack([np.log10(mrec[keep]),
-                             np.log10(cat['SD_emb'][keep]),
-                             np.log10(conc[keep])])
+        keep = (mrec > frac_floor) & np.isfinite(conc) & (conc > 0) & (cat['SD_emb'] > 0)
+        if self.use_fwhm:
+            fw = cat[fwhm_key]
+            keep = keep & np.isfinite(fw) & (fw > 0)
+        cols = [np.log10(mrec[keep]), np.log10(cat['SD_emb'][keep]),
+                np.log10(conc[keep])]
+        if self.use_fwhm:
+            cols.append(np.log10(cat[fwhm_key][keep]))
+        X = np.column_stack(cols)
         self._f = LinearNDInterpolator(X, np.log10(cat['M_BE'][keep]))
 
-    def correct(self, m_sed_obs, sigma_obs, conc_obs):
+    def correct(self, m_sed_obs, sigma_obs, conc_obs, fwhm_obs=None):
         """Return the corrected (true) mass.
 
         m_sed_obs : observed interp-bg SED mass (getsf).
-        sigma_obs : local cloud surface density (cm^-2).
+        sigma_obs : local cloud surface density (cm^-2); for a filament source
+                    this legitimately includes the filament background.
         conc_obs  : observed concentration = FOOA/AFWHM at the 161 um band.
+        fwhm_obs  : observed FWHM (arcsec) at the 161 um band (AFWHM).  Required
+                    when the corrector was built with use_fwhm=True; it pins the
+                    physical size so the recoverable-mass fold (a compact core
+                    vs the surviving centre of a diffuse giant) is broken.
         """
         if not (m_sed_obs > 0 and sigma_obs > 0 and conc_obs > 0):
             return np.nan
-        v = self._f([[np.log10(m_sed_obs), np.log10(sigma_obs),
-                      np.log10(conc_obs)]])[0]
+        q = [np.log10(m_sed_obs), np.log10(sigma_obs), np.log10(conc_obs)]
+        if self.use_fwhm:
+            if not (fwhm_obs and fwhm_obs > 0):
+                return np.nan
+            q.append(np.log10(fwhm_obs))
+        v = self._f([q])[0]
         return np.nan if not np.isfinite(v) else 10 ** v
 
 

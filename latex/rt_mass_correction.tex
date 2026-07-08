@@ -13,6 +13,7 @@
 
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
+\usepackage{graphicx}
 \usepackage{geometry}
 \geometry{margin=2.4cm}
 \usepackage[expansion=false]{microtype}
@@ -71,7 +72,7 @@ over-estimates the temperature and under-estimates the mass; and
 (ii)~interpolated background subtraction over-subtracts flux for low-mass
 cores, because the true cloud column under the core (the ``crater'')
 is lower than the column interpolated from the surrounding edge.
-We present a per-core radiative-transfer (RT) forward-modelling method
+We present a per-core radiative-transfer (RT) forward-modeling method
 that reproduces the full observational chain
 (RT imaging of the embedded core~$\rightarrow$~background
 determination~$\rightarrow$~background subtraction) and recovers accurate
@@ -98,7 +99,7 @@ background subtraction---introduce systematic errors that propagate into
 the derived masses and hence into the CMF.
 
 The isothermal assumption fails because real cores are not isothermal:
-externally heated, centrally concentrated cores are colder in the centre
+externally heated, centrally concentrated cores are colder in the center
 than at the surface. The SED of such a core is dominated by the warmer
 outer layers, so the temperature recovered by an isothermal MBB fit
 exceeds the mass-weighted temperature. Since the inferred mass scales as
@@ -144,7 +145,7 @@ a common angular grid, and background-subtracted exactly as in the
 observational reduction. The free parameters are the core mass $M$ and the
 BE temperature $\Tbe$ (equivalently $\rhoc$ and $\Rbe$), with the local
 cloud column $\Scloud$ supplied per core from the observed background. The
-fit minimises the residual between modelled and observed band-dependent
+fit minimizes the residual between modeled and observed band-dependent
 center intensities and FWHMs. Completeness is treated separately (via source extraction with getsf,
 \citealp{Menshchikov2021method}) and is not part of the mass-accuracy chain.
 
@@ -169,7 +170,7 @@ $r=\xi\,\rzero$, where the scale length is
   \label{eq:r0}
 \end{equation}
 The critical sphere is truncated at $\ximax = 6.451$, where the
-centre-to-edge density contrast is $\rhoc/\rho(\ximax) = 14.0$.
+center-to-edge density contrast is $\rhoc/\rho(\ximax) = 14.0$.
 
 The critical BE profile is a unique self-similar shape in $\log$--$\log$:
 $\Tbe$ is purely a scaling parameter that sets the physical $(M,\Rbe)$
@@ -185,8 +186,8 @@ justified in Sect.~\ref{sec:geometry}.
 \label{sec:inversion}
 
 A critical point of method construction is that the central density must be
-derived from BE physics, \emph{not} imposed by renormalising the profile to
-a target mass. Renormalisation produces incorrect central densities and
+derived from BE physics, \emph{not} imposed by renormalizing the profile to
+a target mass. Renormalization produces incorrect central densities and
 breaks code-to-code comparability. The enclosed dimensionless mass follows
 from the first integral of Eq.~(\ref{eq:lane-emden}),
 \begin{equation}
@@ -216,7 +217,7 @@ $\Tbe$ is then
   \label{eq:inversion}
 \end{equation}
 We code the coefficient as $m_{1}/\sqrt{4\pi}$ from the same table used to
-build the profile, so the inversion and the discretised profile remain
+build the profile, so the inversion and the discretized profile remain
 mutually consistent. \note{This single self-consistency point was the
 source of an early factor-$\sim$2 mass error; keep inversion and builder
 tied to one $m_1$.}
@@ -241,12 +242,12 @@ Using $\mu=2.8$ in the sound speed (as in some earlier code) under-estimates
 $\cs$ and therefore $\Rbe$ and the mass at fixed $\rhoc$; the correct value
 for the structure is $\mu_{\mathrm p}=2.33$.
 
-\subsection{Mass-conserving discretisation}
+\subsection{Mass-conserving discretization}
 \label{sec:massconserv}
 
 RADMC-3D treats each cell as uniform and computes its mass as
 $\rho_{\mathrm{cell}}\times V_{\mathrm{cell}}$ with the exact spherical
-shell volume. Point-sampling the BE profile at cell centres does not
+shell volume. Point-sampling the BE profile at cell centers does not
 conserve mass on a coarse grid (we measured a $\sim$9\% deficit). We instead
 assign each cell its mass-conserving shell-average density, obtained
 directly from $C(\xi)$:
@@ -270,7 +271,7 @@ $C(\xi_{\mathrm{in}})$ of the next, and the summed mass telescopes,
 which is independent of the number of zones. The mass is therefore exact
 (to the accuracy of the single tabulated integral $C$) at any resolution,
 so we may use $\sim$100 radial zones---chosen for photon statistics rather
-than to over-resolve the flat BE centre---without losing mass. With a
+than to over-resolve the flat BE center---without losing mass. With a
 finely spaced table the trapezoidal evaluation of $C$ and the linear
 interpolation of $C$ onto the cell walls are both negligible sources of
 error.
@@ -312,13 +313,13 @@ diffuse re-emission, not a convergence error, so we adopt RADMC-3D
 throughout (the cross-validation is given in Sect.~\ref{sec:crossval}).
 
 The heating field is the standard interstellar radiation field (ISRF),
-tabulated as the Black field plus a scaled hot blackbody, normalised to
+tabulated as the Black field plus a scaled hot blackbody, normalized to
 $G_{0}\approx 10$. The far-ultraviolet integral, taken with the
 $4\pi$ solid angle, gives
 $G_{0}=4\pi\times 1.22\times10^{-3}/1.6\times10^{-3}\approx 10$. The RT
 computes the cloud temperature self-consistently for each model; $G_{0}$ is
 held fixed (Sect.~\ref{sec:g0}). We omit the polycyclic aromatic
-hydrocarbon (PAH) emission bands: adding them changes core-centre
+hydrocarbon (PAH) emission bands: adding them changes core-center
 temperatures by only $\sim$1--2\% in the correct RT (diffuse re-emission
 dominates the interior heating), and the apparent PAH dependence in
 \textsc{modust} was compensating for its interior under-heating.
@@ -395,7 +396,7 @@ We use ``crater'' as the running term because it describes the background
 \emph{shape} compactly and visually (a central depression with a raised
 rim); it is the same feature termed ``limb-brightened'' in earlier work,
 which names the corresponding intensity signature (the projected rim of the
-cavity is brighter than its centre). The interpolated background, blind to
+cavity is brighter than its center). The interpolated background, blind to
 the crater, over-estimates the cloud contribution under the core, so its
 subtraction removes part of the core's own flux. The contrast between the
 two schemes is the direct measure of the over-subtraction flux loss
@@ -411,16 +412,16 @@ FWHM, at the surface-density map (\texttt{SD}) and at each of the five
 observables per core. Two choices matter:
 \begin{itemize}
   \item the band-dependent FWHM is the temperature-gradient diagnostic
-        (a colder centre is more centrally concentrated at the longer
+        (a colder center is more centrally concentrated at the longer
         wavelengths);
   \item the \emph{signed} center intensity (not the peak) handles
         donut/absorption morphology: the 70\,$\mu$m center intensity is
         physically negative for cold cores seen in absorption, and this
-        sign carries information.}
+        sign carries information.
 \end{itemize}
 \note{\texttt{SD} (surface density) is a different kind of observable from
 the band intensities---different units and noise model---so its
-$\sigma$-normalisation in the fit must be set accordingly and it must not be
+$\sigma$-normalization in the fit must be set accordingly and it must not be
 weighted as a flux.}
 
 \subsection{The recovered-concentration observable}
@@ -462,7 +463,7 @@ flag rows with NaN (not zero) observables.}
 
 The mass range spans $\sim$0.01--40\,$\msun$. The low end is set by the
 \emph{data} resolution: below the $3''$ map grid and the beam a core carries
-no recoverable size information, independent of how finely it is modelled
+no recoverable size information, independent of how finely it is modeled
 (Sect.~\ref{sec:images}). The high end is capped above the observed Aquila
 maximum ($\sim$20\,$\msun$) with a fitting margin, rather than at the
 mathematical limit of the BE family (Sect.~\ref{sec:floorcap}).
@@ -517,10 +518,10 @@ arbitrarily fine, so clean templates can be built for cores well below the
 catalogue's recoverable limit. The \emph{recoverable} mass floor, however, is
 set by the data: a core whose $\Rbe$ falls below the $3''$ map resolution
 (and the beam) carries no recoverable size information regardless of how
-finely it is modelled. The model floor and the data floor therefore diverge,
+finely it is modeled. The model floor and the data floor therefore diverge,
 and the data floor---$\sim$0.01\,$\msun$ at the Aquila distance---is the one
 that bounds the science (Sect.~\ref{sec:floorcap}). This distinction is
-stated explicitly so that ``modelled down to mass $X$'' is not read as
+stated explicitly so that ``modeled down to mass $X$'' is not read as
 ``recovered down to mass $X$.''
 
 \subsection{Fitting pipeline}
@@ -528,12 +529,12 @@ stated explicitly so that ``modelled down to mass $X$'' is not read as
 
 Observed cores are fit by Levenberg--Marquardt least squares
 (\texttt{scipy.optimize.least\_squares}) against the pre-computed,
-interpolated grid. The residual vector is the difference between modelled
-and observed observables (Sect.~\ref{sec:observables}), normalised by a
+interpolated grid. The residual vector is the difference between modeled
+and observed observables (Sect.~\ref{sec:observables}), normalized by a
 per-observable $\sigma$ (calibration plus per-core/per-band background
 systematic). The fit is initialised from the MBB-derived values, runs in
 the $(\Scloud,\Tbe,M)$ coordinates of the grid, and is bounded by the
-continuity locus so the minimiser cannot enter the unpopulated corner.
+continuity locus so the minimizer cannot enter the unpopulated corner.
 Interpolation is verified by hold-out (Sect.~\ref{sec:interp}); the
 best-fit model is confirmed by a dedicated RT run.
 
@@ -549,7 +550,7 @@ intensity passes through zero; at $\Scloud\approx2.4\times10^{22}\,
 near-zero 160\,$\mu$m point collapses to $\Tsed\approx5$\,K and inflates the
 mass by up to a factor of nine. The three-band fit is unaffected
 ($M_{\mathrm{SED3}}/M_{\mathrm{BE}}\approx0.91$, in line with the
-neighbouring columns). The failure is not a radiative-transfer or arithmetic
+neighboring columns). The failure is not a radiative-transfer or arithmetic
 error -- the true intensities and temperatures vary smoothly across the whole
 grid -- but a band-selection artefact.
 
@@ -591,7 +592,7 @@ $\approx$ RADMC-3D, while \textsc{modust} without PAH is $\sim$3~K colder in
 the interior. The $\sim$3~K interior offset is a converged limitation of the
 ray-tracing diffuse re-emission (classical and approximate lambda iteration
 give the same result), not a convergence error. We therefore trust
-RADMC-3D and omit PAH. \note{An early alarming 6-vs-12~K core-centre
+RADMC-3D and omit PAH. \note{An early alarming 6-vs-12~K core-center
 discrepancy was traced to a stray number from a different, more massive
 model and is withdrawn.}
 
@@ -604,7 +605,7 @@ quantity from an MBB SED temperature. Cores live in filamentary
 environments with $T_{\mathrm d}\sim 10$--$15$~K (mean $\sim$13~K) and
 $\Sigma\sim 7\times10^{21}$--$7\times10^{22}\,\mathrm{cm^{-2}}$
 (mean $\sim 2\times10^{22}$). At $G_{0}=10$, $\Sigma=2\times10^{22}$, the
-modelled cloud surface is 16.3~K, the centre next to the core is 8.9~K, and
+modeled cloud surface is 16.3~K, the center next to the core is 8.9~K, and
 the high-resolution SED-fit cloud temperature is 13.5~K, matching the
 observed $\sim$13~K. This confirms $G_{0}\approx 10$; earlier pushes toward
 $G_{0}=30$--$60$ came from comparing model central $T$ to observed SED $T$
@@ -615,7 +616,7 @@ surface is $G_{0}$-sensitive.
 
 \subsection{Mass conservation}
 
-With the discretisation of Sect.~\ref{sec:massconserv} and a wall snapped to
+With the discretization of Sect.~\ref{sec:massconserv} and a wall snapped to
 $\Rbe$, the integrated grid mass telescopes to the analytic value at all
 resolutions. For the reference core the analytic mass is recovered to
 $<0.1\%$ at 100 zones (and to parts in $10^{4}$ at $10^{4}$ zones),
@@ -650,7 +651,7 @@ the full multi-band fit, not the single 350\,$\mu$m peak).
 
 \note{SUPERSEDED, do not reuse: earlier $0.05\,\msun$ numbers
 (interpolated 0.0178, crater 0.0507, mass factor $\sim$2.8, peak factor
-$\sim$5) were contaminated by a modelling artefact---that core's outer-radius
+$\sim$5) were contaminated by a modeling artefact---that core's outer-radius
 density dipped below the cloud density, creating a spurious depression. The
 clean effect at this mass/column is factor $\sim$2 in peak, $\sim$1.5 in
 mass; it may grow at higher columns and lower masses, to be mapped rather
@@ -676,7 +677,7 @@ isolated and the temperature smoothing is faithful (the smoothed map equals
 the per-pixel fit inside the footprints), the bias originates upstream, in
 the per-band source/background separation, which leaves a warm cloud residual
 under the cores. With a perfect (true-field) separation the
-background-subtracted colour temperature is $11.97$\,K and the recovered mass
+background-subtracted color temperature is $11.97$\,K and the recovered mass
 is $0.92\,M_{\mathrm{BE}}$; the residual gap is set by the separation
 quality, which is therefore the dominant error in the current chain---larger
 than the $\sim$10\% the RT grid is designed to absorb. This identifies
@@ -708,7 +709,7 @@ with $\kappa_\nu=10\,(300\,\mu\mathrm{m}/\lambda)^{2}$\,cm$^{2}$\,g$^{-1}$
 $T_{\mathrm{back}}$ the interior cloud temperature. The cirrus noise of
 Eq.~(\ref{eq:cirrus}) is the same quantity that sets the
 HGBS completeness model \citep[][Appendix~B.2]{Konyves+2015}, which makes the
-grid's behaviour at high column directly checkable against published results.
+grid's behavior at high column directly checkable against published results.
 In that model a core's apparent column-density significance is
 \begin{equation}
   \tilde S = 1.5\,
@@ -748,7 +749,7 @@ denser environments a second, larger effect appears: \emph{getsf} recovers
 only a fraction of a core's true flux, falling to $\sim$0.4--0.6 of the model
 prediction at $\Scloud=1.2\times10^{22}\,\mathrm{cm^{-2}}$. This is not a
 temperature-bias effect and is not absorbed by the RT grid as originally
-constructed; left unmodelled, it drives the corrected-to-true mass ratio down
+constructed; left unmodeled, it drives the corrected-to-true mass ratio down
 to $\sim$0.5 in the densest test. It is, however, the direct consequence of
 the same cirrus confusion that sets the completeness limit
 (Eq.~\ref{eq:cirrus}), and it can be folded into the grid.
@@ -765,7 +766,7 @@ which the azimuthally averaged profile falls to $5\,N_{\mathrm{rms}}$. Second,
 the residual background pedestal at that rim is subtracted over the footprint.
 The recovered-to-true flux ratio defines an environment-dependent recoverable
 mass, $M_{\mathrm{SED}}^{\mathrm{rec}}=f_{\mathrm{rec}}\,M_{\mathrm{SED}}$,
-which replaces the idealised model mass as the interpolation coordinate. In
+which replaces the idealized model mass as the interpolation coordinate. In
 low-column environments $f_{\mathrm{rec}}\to 1$ (little confusion, most flux
 recovered); at high column it falls steeply, reproducing the measured deficit.
 Validated against the injection extractions, the recoverable-mass model
@@ -792,7 +793,7 @@ model reproduces the full chain
 RT imaging of the embedded core~$\rightarrow$~background
 determination~$\rightarrow$~background subtraction.
 The temperature-gradient warm bias is corrected by RT temperature-structure
-modelling (the band-dependent FWHMs constrain the gradient); the
+modeling (the band-dependent FWHMs constrain the gradient); the
 over-subtraction flux loss is corrected by the crater background. Their
 physical origins differ, but a single forward model that gets the geometry
 and the subtraction right captures both. We emphasise that the cold-biased
@@ -800,7 +801,7 @@ SED temperature from interpolated background subtraction does \emph{not}
 over-estimate the mass: flux loss dominates, so the net effect remains
 under-estimation. This framing distinction matters for the paper.
 
-\subsection{The uniform-cloud idealisation}
+\subsection{The uniform-cloud idealization}
 \label{sec:uniformcloud}
 
 The most consequential assumption is the uniform-density embedding cloud.
@@ -842,18 +843,18 @@ This is not ``model versus perfect truth'' but ``RT$+$BE model versus
 isothermal-MBB SED fit.'' The standard method also makes assumptions, but
 implicit and uncontrolled ones (an isothermal core; an effectively flat
 background)---precisely the two effects we correct. Replacing implicit
-assumptions with explicit, testable ones (a BE profile, a forward-modelled
+assumptions with explicit, testable ones (a BE profile, a forward-modeled
 background, a parameterised cloud) is methodologically preferable even when
-the explicit model is itself idealised. The honest claim is ``less biased
+the explicit model is itself idealized. The honest claim is ``less biased
 than the standard, with a stated and quantified residual,'' and that claim
-is robust to the cloud idealisation.
+is robust to the cloud idealization.
 
 \paragraph{Recommended sensitivity test.}
 The worry can be converted into a number. For a few representative cores we
 will build the core in a \emph{non-uniform} cloud (a density gradient, or
 $\rho_{\mathrm{local}}$ decoupled from $\Scloud$ at fixed column), run it
 through RT and the reduction, and fit it against the \emph{uniform}-cloud
-grid. If the recovered mass shifts within the error budget, the idealisation
+grid. If the recovered mass shifts within the error budget, the idealization
 is justified and its cost is measured; if it shifts more at some corner, a
 systematic is identified and reported. This is the systematic-uncertainty-
 budget posture of the programme.
@@ -863,11 +864,11 @@ budget posture of the programme.
 
 Per $\Scloud$ node, Eq.~(\ref{eq:contconstraint}) defines a minimum
 recoverable core mass. We carry this locus explicitly: it bounds the fit
-(the minimiser is clipped at the locus) and it is a result in its own
-right---the method cannot characterise cores below it at a given column.
+(the minimizer is clipped at the locus) and it is a result in its own
+right---the method cannot characterize cores below it at a given column.
 Because the \texttt{SD} (surface-density) observable is the quantity most
 directly tied to the continuity edge (it is where $\rho_{\mathrm{BE}}$ meets
-$\rhocloud$), the interpolator's behaviour near the edge and the continuity
+$\rhocloud$), the interpolator's behavior near the edge and the continuity
 bound are the same physical locus seen two ways; keeping the bound explicit
 makes the fit and the observable respect it consistently. Below the edge the
 uniform-cloud model is silent, which is not a claim of absence.
@@ -895,9 +896,25 @@ and quote it as the reliable mass range; the degeneracy onset is gradual, so a
 conservative applied limit of a few times $M_{\mathrm{lim}}$ removes the
 residual low-mass over-correction seen in the sparsest test field.
 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\linewidth]{fig_fit_validation.pdf}
+  \caption{Mass recovery tested on the 36 withheld subdivision (cell-center)
+  models, using a correction built from the production grid only.
+  \emph{Left:} the correction maps (recovered versus true $M_{\mathrm{BE}}$)
+  -- the crater map (green, $0.95\%$ rms, the model-only ideal) and the
+  operational map keyed on observable interpolated-background quantities
+  $(M_{\mathrm{SED3bs}},\Scloud,\mathrm{FWHM})$ (orange, $3.2\%$) -- both lying
+  on the 1:1 relation (dashed). \emph{Right:} the Levenberg--Marquardt forward
+  fit of the raw center intensities and FWHMs scatters at $\sim$20\%,
+  underestimating systematically, because the raw observables interpolate far
+  less smoothly than the bias ratios.}
+  \label{fig:fitval}
+\end{figure}
+
 \begin{figure}
   \centering
-  \includegraphics[width=\hsize]{completeness_limit.pdf}
+  \includegraphics[width=\linewidth]{completeness_limit.pdf}
   \caption{Mass-completeness (degeneracy) limit of the correction as a
   function of cloud column. Points mark the grid mass at which the
   recoverable-mass$\,\rightarrow M_{\mathrm{BE}}$ mapping ceases to be
@@ -938,6 +955,31 @@ its inclusion would add unconstrained parameters. The resolution argument is
 the defensible justification; no dedicated geometric-sensitivity test is
 required, though one can be quoted.
 
+A direct comparison of model size against the published Aquila catalogue,
+however, shows that the critical-sphere assumption breaks down for the more
+massive cores. Convolving the model surface-density peak to the catalogue
+resolution ($18.2''$, adding the difference beam in quadrature to our
+$13.5''$ maps) and comparing the convolved FWHM at fixed mass, the
+critical spheres match the observed core sizes below $\sim$1\,$\msun$ (ratio
+$0.8$--$0.9$, real cores if anything marginally more extended), but become
+progressively too large above it: the median model-to-observed size ratio is
+$\approx1.3$ over 1--10\,$\msun$, and the most massive critical spheres in the
+grid reach $\sim$600$''$ where no observed core exceeds $\sim$110$''$.
+About a fifth of the grid (the high-mass, large-radius corner) thus occupies a
+size regime absent from the data. This is expected physically: a
+high-mass \emph{critical} BE sphere is necessarily large and diffuse, whereas
+real massive cores are centrally condensed, consistent with external-pressure
+truncation. The correction machinery developed here---recoverable mass,
+concentration, source FWHM, and the completeness limit---is independent of
+this and remains valid; only the underlying size template is affected. The
+natural remedy, deferred to future work, is to replace the critical sphere
+with a pressure-truncated (non-critical) BE family, adding the truncation
+radius $\ximax<6.451$ as a grid axis so that the models populate the compact,
+observed size range at each mass. We note also that the reference extraction
+imposed a minimum measured size of $\sim$1.5 beams, so the observed sizes near
+that floor are upper limits and the required truncation is, if anything,
+somewhat stronger than the direct ratios imply.
+
 \subsection{Fixed $G_{0}$}
 \label{sec:g0}
 
@@ -960,6 +1002,21 @@ interpolation by a hold-out test---comparing the interpolated observable
 vector at a withheld node to a dedicated RT run---specifically at the nodes
 bracketing those transitions, and refine locally if any observable exceeds a
 few percent.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\linewidth]{fig_gridconv.pdf}
+  \caption{Grid-spacing convergence of the crater $\Phi_3$ mass bias.
+  \emph{(a)} Directly computed bias $M_{\mathrm{SED3bsl}}/M_{\mathrm{BE}}$ at
+  the 18 fully bracketed subdivision (cell-center) nodes versus the
+  eight-corner linear interpolant; the dashed line is the 1:1 relation.
+  \emph{(b)} The corresponding residual (direct minus interpolated, per cent)
+  as a function of model mass; the shaded band is $\pm1\%$, the dotted lines
+  mark the $\pm2\%$ photon-noise floor, and the red line is the mean.
+  Points are colored by $\Tbe$. All residuals lie within $0.6\%$, confirming
+  that the factor-2 production grid is adequate.}
+  \label{fig:gridconv}
+\end{figure}
 
 \subsection{Dust-to-gas round-trip consistency}
 
@@ -997,12 +1054,12 @@ be carried forward---the withdrawn factor-5 numbers
 \section{Summary and next steps}
 % ======================================================================
 
-We have defined a per-core RT forward-modelling method that corrects the two
+We have defined a per-core RT forward-modeling method that corrects the two
 compounding biases in \emph{Herschel} SED-derived prestellar core masses---
 the temperature-gradient warm bias and the interpolated-background
 over-subtraction flux loss---and delivers a quantitative bias-vs-(mass,
 column) surface. The model family is the critical BE sphere, built with
-analytically derived central densities, mass-conserving discretisation, a
+analytically derived central densities, mass-conserving discretization, a
 wall snapped to $\Rbe$, and a continuity-constrained low-mass edge; the
 embedding cloud is sized to the convolved core scale with the cloud surface
 density $\Scloud$ as the physical third axis. Calibration places the field
@@ -1021,7 +1078,7 @@ confusion-completeness model and its first-order mass and temperature bias
 (Sect.~\ref{sec:completeness}), an external validation against published
 results. A known-truth injection test (Sect.~\ref{sec:injtest}) localises
 the remaining error to source/background separation quality rather than the
-temperature modelling.
+temperature modeling.
 
 Remaining steps:
 (1)~complete the production $(\Scloud,\Tbe,\rhoc)$ grid with the corrected
@@ -1038,7 +1095,7 @@ $M_{\mathrm{SED3}}$ or $M_{\mathrm{SED4}}$ via Eq.~(\ref{eq:sedselect});
 (lower-envelope/\texttt{getimages}-style background; per-source deblended
 images), the dominant remaining error (Sect.~\ref{sec:injtest});
 (6)~run the non-uniform-cloud sensitivity test (Sect.~\ref{sec:uniformcloud})
-to budget the idealisation;
+to budget the idealization;
 (7)~apply to Aquila and, in a companion paper, to additional clouds.
 
 % ----------------------------------------------------------------------
@@ -1085,7 +1142,7 @@ trio template:
         bias mechanisms, crater-vs-interpolated, the forward-model-and-fit
         framework, and all validity points; demonstrated on a single
         illustrative core or a minimal grid, with no Aquila CMF claims.
-        Heavy numerics ($m_{1}$, mass conservation, discretisation) in an
+        Heavy numerics ($m_{1}$, mass conservation, discretization) in an
         appendix.
   \item \textbf{Paper~II (Aquila application).} The calibrated method
         applied to the full Aquila catalogue: the bias-vs-(mass, column)
