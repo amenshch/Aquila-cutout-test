@@ -1,0 +1,41 @@
+Session handoff — RT BES grid: convergence, kmax cap, subdivision decision
+Project
+RADMC-3D grid of critical Bonnor-Ebert spheres → bias-correction surface for SED-derived prestellar core masses (Aquila, d=260 pc). Catalog dir 260616_RT_BES_radmc3d, 38-col format (n/i/j/k + physical params + SED fits 4bs/4bsl/3bs/3bsl each as T,M,χ² + IC intensities + FWHM). Adopted primary = Φ3 (250–500 μm), crater background (bsl), per Menshchikov 2016; 70/100 μm excluded.
+Verified axis definitions (deterministic)
+ 
+Σ_emb(i) = 3.0e21·2^(i−1) cm⁻², i=1..6
+T_BE(j) = 0.875·2^(j−1) K, j=1..7
+ρ_BE(k) = 5.075e-18·2^−(k−1) g/cm³
+M_BE = 4.4313·c_s³/(G^{3/2}√ρ_c), c_s²=k_B T/(μ_p m_H), μ_p=2.33; ∝1/√ρ_c, invariant in i
+R_BE = ξ_max·c_s/√(4πGρ_c), ξ_max=6.451, edge/center contrast 14
+Continuity: ρ_edge=ρ_c/14 ≥ ρ_cloud; ρ_cloud from Σ with μ_H2=2.8, R_cloud=f_r√((θ500·d)²+R_BE²), f_r=30, θ500=36.3″
+Φ3-crater bias M_SED3bsl/M_BE crosses 1.0 at Σ≈2.8e22 (56 K)–3.7e22 (0.88 K), i.e. between i04 (2.4e22) and i05 (4.8e22)
+ 
+Photon convergence 10⁹ vs 10¹⁰ — COMPLETE (10 nodes), adopted M3bsl
+7/10 nodes <0.15%. Cold dense interiors (the feared case) converge tightly: i06j07k01 (5.1 M⊙) +0.14%, i06j07k06 (29 M⊙) −0.03%. Only two >2%, both k01 (smallest cores): i06j01k01 unresolved cold +6.3%, i01j07k01 thick warm −3.7%; i01j07k07 massive warm +1.7%.
+ 
+Verdict: 10⁹ adequate for building/running the correction; 10¹⁰ = publication polish, no surprises.
+The +6.3% node is ~isothermal (Td_core ≈ cloud Td) → signal at the noise floor, so it's noise-limited not transfer-limited. Down-weight/flag unresolved k01 nodes on resolution grounds regardless of photon count.
+ 
+kmax extension — physical mass cap adopted
+k_lim (continuity-allowed max k) rises with T_BE; hot planes inherited cold-plane kmax and were truncated, but filling to continuity gives unphysical multi-pc / hundreds-of-M⊙ "cores."
+ 
+Cap = M_BE ≤ 41 M⊙ (= i01j07k07 = 40.98).
+Surviving sensible extensions: i2j5 +4(~29), i2j4 +3(~7), i2j3 +2(~2), i3j5 +3(~14), i3j4 +2(~4), i3j3 +1(~1), i4j5 +2(~7), i1j5 +1(~40.5). Hot low-Σ j6/j7 planes already at cap — leave them.
+ 
+Subdivision — likely NOT needed for production
+For the smooth, mild Φ3 surface, the ×2 (log) grid's linear-interp error near the crossing is ~1–2% (at the grid's own noise floor), and the crossing Σ is recoverable by interpolation without a node on it. So subdivision is characterization, not necessity.
+ 
+Decisive test (grid-spacing convergence, parallel to photon test): linearly interpolate bias to midpoint Σ=3.39e22 from i04/i05; compare to the directly-computed midpoint model. Agree within ~1–2% → don't subdivide production grid.
+Recommended: a separate small "crossing strip" catalog (inserted Σ column spanning the j planes ± one neighbor) for the test + a Σ_cross(T_BE) result figure; keep production interpolation on the uniform grid. Sidesteps all the insert-numbering complexity.
+Caveat: holds for Φ3; the Φ4/160 μm artifact region is more curved → its own targeted strip if quantifying the literature bias.
+ 
+If subdivision IS folded in (reference)
+ 
+√2 inserts: Σ half-i = 4.24e21, 8.49e21, 1.70e22, 3.39e22, 6.79e22; T half-j = 1.237, 2.475, 4.95, 9.899, 19.8, 39.6 K; ρ half-k = ρ_k/√2. Per-model rules unchanged (continuity trim, 41 M⊙ cap, R_BE wall, single-grid invariant). Refine all 3 axes together in the box; scale axes before Delaunay; uses physical columns, so non-uniform spacing is fine.
+Numbering: dyadic k-extensions → kmax+1, kmax+2 (correct, simplest, formula-consistent). Interior √2 midpoints → half-integer floats (e.g. 04.5), formula-consistent and collision-free, but read i/j/k as float not int. Reject "+4" (parses to 4 → collision; overflows 2-char ≥10).
+ 
+Data hygiene
+Current 274-model catalog has verbatim placeholder rows for still-running models (01 05 13; 02 03 09–10; 02 04 09–11; 02 05 09–12; 03 03 08) — identical M_BE/fluxes, only ρ_BE relabeled. Exclude from interpolation until real values land (several exceed the 41 M⊙ cap anyway). Grid ~4 models from complete.
+Next steps
+Finish the last grid models; run the midpoint grid-spacing test to confirm no production subdivision needed; if confirmed, build the Python fitting pipeline (loader → scaled-axis Delaunay interpolator → residual → LM) on the clean uniform grid, with unresolved k01 nodes flagged.

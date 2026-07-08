@@ -1,0 +1,182 @@
+Summary for continuation — chat 5
+Continuation handoff for Alexander Men'shchikov's RT-based correction of Herschel
+SED-derived prestellar core masses (Aquila, d=260 pc). This chat focused on three
+things: a known-truth injection test, a full verification of the model-grid catalog
+(diagnosing the 2.4e22 anomaly), and the per-band noise / band-selection model that
+ties everything to the Könyves (2015) cirrus and completeness model. All results were
+folded into the paper draft.
+
+1. Known-truth injection test (18 injected cores)
+One critical BE model (M_BE=0.080 Msun, mass-averaged T_avg=11.98 K) injected at 18
+positions in the real Aquila field, recovered through the full chain.
+
+Measurement is unbiased when the column is right: the injected MODEL column,
+footprint-integrated with local bg subtraction, returns 0.98 M_BE (median; 16–84%
+0.92–1.04).
+Recovered TEMPERATURES are warm-biased: per-pixel SED fit on bg-subtracted bands
+gives median 13.8 K vs truth 11.98 K → +1.8 K, roughly uniform across the 18,
+only weakly correlated with local cloud column (which spans a narrow 2.5–4.4e21).
+Implied mass underestimate ~0.5–0.6 M_BE from temperature alone.
+Cause = separation residual, not the temperature machinery. Cores are isolated
+and the smoothing is faithful (smoothed map == per-pixel fit inside footprints), so
+the bias is in the per-band getsf source/background separation leaving warm cloud
+residual under the cores. Clean (true-field) separation → bg-sub colour T = 11.97 K,
+mass 0.92 M_BE. So separation quality is the dominant remaining error, larger
+than the ~10% the RT grid is meant to absorb. Next lever = background under the
+source (lower-envelope / getimages-style bg; per-source deblended images).
+
+Drafted as §Validation "Known-truth injection test" (sec:injtest).
+
+2. Catalog verification — the 2.4e22 block diagnosed (NOT a bug)
+Two files in /mnt/project: bes_model_params_catalog (2.4e22 recomputed) and
+bes_model_params_catalog_cSD_04-bad (old). Loader: fit_mass.load_catalog + COLS.
+
+Diff: the two files are identical except the 2.4e22 block; the recompute changed
+those 45 models by only ~1% (photon-noise level) → reproduced the same values, did
+NOT fix them. Deterministic ⇒ not a transient glitch.
+Cause = 160 µm zero-crossing in the 4-BAND SED fit only. IC160bs block medians
+cross zero with column: +23.8, +9.8, +2.76, +0.40 @2.4e22, −0.94, −1.64. The
+with-160/without-160 fit disagreement |T4bs−T3bs| spikes to 0.81 K at 2.4e22 (~0
+elsewhere). The 42 broken models have IC160 near zero (−2.9..+0.8): a small residual
+160 incompatible with the cold SED collapses the fit to T_SED≈5 K, mass up to ×9. The
+3 survivors have strongly-negative IC160 (−3.5..−7.8) → dropped as non-detections,
+exactly as 4.8e22/9.6e22 (clean) already do.
+3-band fit (250/350/500) is clean in ALL blocks: Chi2≈0, 0 flagged; smooth
+monotonic M_SED3bs/M_BE = 0.85, 0.87, 0.90, 0.91, 0.96, 1.03. The ~15 4-band-flagged
+models in other blocks are all clean in 3-band (same 160 effect).
+Td_avg/Td_emb, IC intensities, and analytic BE columns (M_BE, R_BE, rho_BE, T_BE) are
+smooth/finite/monotonic across all blocks.
+Verdict: do NOT recompute any other block. Only 2.4e22 is affected, and the fix is
+band selection, not recomputation.
+
+Drafted as §Method "SED band selection and cirrus confusion noise" (sec:bandselect).
+
+3. Why the gate failed, and the noise model that fixes it
+
+Root cause of the gate failure: the model catalog is noiseless, so a placeholder
+per-band error FXT_ERR = 1e-10 was used "to allow fitting." That makes S/N ≈
+flux/1e-10 huge for every band, so the existing S/N > 1 band-inclusion gate never
+fires and the near-zero 160 stays in the fit. Adding a calibration term (c·F)²
+does NOT fix it (with σ_noise=1e-10 it makes S/N = 1/c ≈ 10 for every band; still
+never drops 160). Calibration belongs in the fit weighting (interpretable Chi²),
+not in the gate.
+Fix = realistic per-band noise. Herschel is confusion-limited, not
+instrument-limited, so the gate noise is the cirrus fluctuation (Könyves 2015):
+
+σ_N = 3.9e20 · (N_back/7e21)^1.6 ;  f ≡ σ_N/N_back  (N_back = SD_emb).
+f per block: 3.4, 5.1, 7.7, 11.7, 17.7, 26.8 %.
+I_λ,back from the interior-plateau cloud temperature T_back (exclude the warm
+ISRF rim) via O&H β=2 (κ=83.364·(100/λ)² cm²/g dust), μ=2.8, dust-to-gas=0.01, MJy/sr.
+σ_λ = sqrt(σ_instr,λ² + (f·I_λ,back)²) ; gate: I_λ,bs / σ_λ > 1.
+
+
+Result: keeps 160 at low columns (S/N 10→2.1), drops it from 2.4e22 up (S/N 0.4)
+→ all 45 @2.4e22 fall onto the clean 3-band masses (0.91). Robust: the crossing flux
+is small and S/N is far from 1 on both sides, so I_back normalization uncertainty
+(~1.5×) moves nothing across the threshold.
+
+Settled parameters (user-confirmed): gate threshold k=1 (tried 3, 2, settled 1);
+smoothing kernel = plain Gaussian tied to getsf maxsize=80″; S/N gate uses the
+minimized 3-band S/N min_λ(S_λ/F_flat_λ) over 250/350/500.
+Interior T_back per block (K), provided by user for SD_emb = 3e21, 6e21, 1.2e22,
+2.4e22, 4.8e22, 9.6e22: 13.9, 11.6, 9.74, 8.47, 7.67, 7.02. Catalog intensities are
+in MJy/sr.
+Rim subtlety (resolved): single-interior-T analytic I_back underestimates (e.g. 77
+vs the user's measured 119 at 250 µm) because every sightline to the interior also
+integrates the warm rim — a 2-layer LOS (~20% of the column at a 20 K rim) lifts I250
+from 77→118 and lifts I160 far more (rim dominates at 160). For the GATE the simple
+T_back estimate is adequate (decision is binary, wide margin); use the measured
+per-band cloud intensities only if the high-column completeness boundary needs to be
+precise. (A 146 vs 119 discrepancy the user raised turned out to be a 160-vs-250 mixup,
+not a resampling bug — resampling is fine, surface brightness conserved.)
+
+4. Könyves (2015) Appendix B.2 completeness — the grid reproduces it (validation)
+PDF of the relevant pages is in /mnt/project: 2015_Konyves_etal_aa2586115_p3033.pdf.
+Their apparent column-density significance:
+S̃ = 1.5 · [1/(1+(θ/R_BE)²)] · [B350(T_core)/B350(T_back)] · 18·(N_back/7e21)^−0.6
+(intrinsic BE contrast 1.5; beam dilution, θ = column-density-map HPBW = 18.2″;
+temperature dilution at a 350 µm fiducial; cirrus factor = 1/f). ≥90% complete at S̃>5.
+Evaluated on our catalog (T_core = Td_avg, T_back = interior values):
+
+Completeness mass: ~0.02 Msun @3e21 → ~6 Msun @4.8e22 → ~18 Msun @9.6e22.
+Survivor sets MATCH our independent per-band gate: 14/31 @4.8e22 (gate) == 14/31
+(S̃>5); 3/24 vs 2/24 @9.6e22. Two unrelated constructions, same boundary.
+The temperature-dilution term is the SAME LOS-temperature physics as our mass bias, so
+the grid also reproduces Könyves B.2a/b: derived/true mass ~0.8, SED T high ~0.8–1 K,
+against our 3-band M_SED/M_BE = 0.83–0.91.
+
+⇒ The grid reproduces both the published completeness curve and the published bias —
+external validation as the baseline for the RT correction. Drafted as §Validation
+"Completeness and the HGBS confusion model" (sec:completeness, eq:signif).
+Two thresholds, one cirrus law: per-band S/N>1 = SED band inclusion (the 160 fix);
+S̃>5 = source detection / completeness.
+
+5. Paper draft updates (rt_mass_correction.tex)
+Living draft now at /mnt/user-data/outputs/rt_mass_correction.tex (compiles clean;
+PDF alongside). Added:
+
+§Method sec:bandselect "SED band selection and cirrus confusion noise" — the 160
+zero-crossing, Eq. cirrus (B.1), Eq. bandnoise (σ_λ), the gate, the rim exclusion,
+and a \note on per-pixel-vs-source-scale noise.
+§Validation sec:injtest "Known-truth injection test".
+§Validation sec:completeness "Completeness and the HGBS confusion model",
+Eq. signif (S̃).
+§Summary: two-paragraph results addition + revised 7-step plan (added cirrus-noise
+gate to the pipeline step and a separation-improvement step).
+
+Style: US English, spaced en-dashes (--), prose, \note{} for internal asides,
+\citep{Konyves+2015}. No inputenc; use \"o for ö.
+Running technical notes (all findings, more detail than this summary):
+/mnt/user-data/outputs/recovery_notes.md.
+
+6. Pending / on the horizon
+
+4-extraction T_smooth verification (NOT yet done — user to upload). Only the
+cfg.02 set (raw-bg / injected-hiresSD) is on GitHub. Need fitted-T + chi² + the three
+source images + three F_flat images (or the precomputed min_λ S_λ/F_flat_λ map) PLUS
+the user's own T_smoothed, for all four extractions: {raw-bg, interpolated-bg} ×
+{modelSD, hiresSD}. Claude to independently reproduce T_smooth (identical k=1, 3-band
+min S/N gate, weight, 80″ Gaussian kernel) and report a 4-way table of in-footprint
+temperatures/masses, calling out the raw-vs-interpolated contrast (tests whether
+the +1.8 K is a raw-background residual inside footprints) and the
+modelSD-vs-hiresSD contrast (tests reconstruction). modelSD should return ~11.98 K.
+This is the open question from the injection test (§1): is the +1.8 K a raw-bg
+residual or a genuine separation residual?
+Deploy the cirrus-noise band gate in fitfluxes — replace 1e-10 with realistic
+per-band σ (interior T_back / measured cloud maps), keep S/N>1. Verify it drops the
+2.4e22 160 onto the 3-band masses and leaves detected 160 untouched at low column.
+Decision pending: let the gate define the usable grid region vs keep noiseless
+fits for grid-building and apply completeness as a separate layer.
+Improve source/background separation under the core (dominant error per §1).
+Build the Python fitting pipeline (grid loader, scattered/Delaunay interpolator,
+residual, bounded LM) with the band gate applied identically to grid and catalog.
+Complete the production (Σ_cloud, T_BE, ρ_c) grid; map the bias-vs-(mass, column)
+surface — the paper's core.
+Optional polish: digitize Könyves F[S̃] (Figs B.5/B.6) to compare completeness curves
+directly; refine the high-column completeness boundary with the source-scale
+(filtered) cirrus noise + instrumental floor + measured per-band I_back.
+Integrate the hires-T algorithm into §2 (from earlier chats; hires_T_algorithm.md).
+
+
+7. Access notes
+
+Catalog: sys.path.insert(0,'/mnt/project'); from fit_mass import load_catalog, COLS.
+GitHub (FITS): tarball https://codeload.github.com/amenshch/Aquila-cutout-test/tar.gz/refs/heads/main
+(raw.githubusercontent / api.github are rate-limited; use the tarball). Filenames
+contain +, .~., % — match exactly from tar tzf.
+Key GitHub files: thin.+hires.r500.cfg.02.tempers{,.smoothed}.fits,
+...cfg.02.chisqnu.fits, ...cfg.02.tempers.x.*.fits,
+sm.Aquila.s.161.obs.foots_injected_hiresSD.fits, inj_surfdens.fits,
+Aquila.s.161.obs.{bs,cb}.fits, the four Aquila.s.sources.ok.injected.* catalogs.
+Image geometry: 975×975, 3″/pix, d=260 pc; CONV = 3.5623e-26 × 9 Msun per (H2/cm²)
+per pixel.
+
+8. Working principles (carry forward)
+
+Evidence-first; user actively corrects premature conclusions (e.g. caught the
+raw-bg-vs-separation ambiguity, the rim re-inclusion, the wrong calibration-term
+idea). Don't jump to conclusions; investigate all cases.
+Distinguish characterization vs production, and detection (completeness) vs band
+inclusion (SED fit).
+Append findings to recovery_notes.md; write handoff summaries to
+/mnt/user-data/outputs/Summary_from_previous_chat_N.md and add to project knowledge.

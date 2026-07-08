@@ -1,0 +1,155 @@
+Working summary — research projects with Claude
+Compiled from conversation, late April 2026
+ 
+1. Current papers and their status
+ 
+Nature Astronomy paper (Zhang, Men'shchikov & Li, "A Salpeter-like filament linear density function across nearby
+molecular clouds"). Submitted, currently "under consideration" (pre-review or early review stage). One arithmetic
+error identified in the Discussion paragraph relating the FLDF slope to ALMA-IMF: the original text claimed that
+α ≈ 1.30 with η ≈ 0.5 yields ψ ≈ 0.97 via Eq. (1); the correct value is ψ = 1.20, and ψ < 1 is mathematically
+impossible from α > 1 under any η > −1. Correction letter to the editor at natureastro@nature.com drafted, with a
+revised paragraph that converts the quantitative match into a falsifiable prediction (the framework cannot
+reconcile the ALMA-IMF CMF, which itself is the more interesting statement). Letter ready to send by reply to
+existing thread; corrected paragraph splits into two paragraphs at "The shallow ALMA-IMF..." for better flow.
+Files to attach: clean revised PDF, marked-up PDF (using \chg{} redefinition to magenta).
+ 
+Methods paper (Men'shchikov & Zhang, "Deriving volume density profiles of filaments from observed surface
+densities"). A&A submission aa59066-26. Round-two referee report in editor's hands, awaited. Round-one report and
+response analysed. Referee profile: technically rigorous, dislikes black-box analytical formulas in principle,
+holds a hierarchical-cloud philosophical position against the finite-filament framework, but willing to be
+persuaded by quantitative additions. Most likely round-two pressure points: (a) the finite-filament philosophy
+(G.4); (b) χ² evaluation versus covariance-only uncertainties (S.14); (c) the resolvedness definition (S.11).
+Strategic position prepared: lean into methodological-honesty framing — the method is internally consistent with
+universal practice (background subtraction implies finite filaments), Plummer is not. Where philosophy is
+contested, fall back on transparency-of-methodology: any fitting procedure imposes an effective boundary, making
+it explicit and quantifiable is methodologically preferable to leaving it implicit.
+ 
+Application paper (Zhang, Men'shchikov & Li, "Scale-dependent surface and volume density properties of
+filaments"). A&A, essentially accepted. One outstanding referee comment on the dust-to-gas mass ratio, where
+referee correctly notes that 0.01 is the dust-to-hydrogen ratio (Draine 2011), giving dust-to-total-gas ≈ 1/141.
+Reply strategy: acknowledge the arithmetic, but note that the dust-to-gas ratio is not a fundamental constant
+(varies with metallicity, evolutionary state), the value 0.01 is a representative figure rather than a precise
+calibration, the dominant uncertainty is in κ_ν itself (factor ~2), and none of the conclusions depend on the
+absolute calibration. Retain the value 0.01 as written, with the understanding clarified.
+ 
+M16 paper (Pervaiz et al., "Dense cores and filaments in M16"). MNRAS, transferred to publisher — Stage A
+(pre-copy-editing). Four corrections to incorporate: (i) NGC 6611 O-star count from 9 to ≥13 (Stoop et al. 2023),
+affecting wind luminosity and dynamical age; (ii) bubble-mass extrapolation framing — note that azimuthal
+asymmetry means the Method 2 ρ₀ should be read as a lower bound; (iii) numerical inconsistencies between Table 1,
+Sect. 3.5, and Conclusions (e.g., 7 vs 6.8 M⊙ for prestellar median mass; 1.47 vs 1.5 vs Table value 1.54 for
+core enhancement; 75% vs 81% bound fraction); (iv) qualifying or removing the prestellar mass-radius power-law
+fit (R² = 0.07 makes the fit not meaningful). Inquiry letter to A&A editor drafted (slight wording adjustment:
+directly asking for source-file replacement rather than just inquiring about possibility). Files to attach:
+revised tex, .bib if changed, clean PDF, marked-up PDF.
+ 
+2. CMF methodology project — planned scope
+ 
+Motivation. Extension of the 2016 Men'shchikov SED-fitting paper from per-source mass uncertainties to CMF shape
+recovery. Standard completeness simulations have hidden methodological flaws: (a) random-position injection
+over-samples easy backgrounds; (b) extracted-source-position injection uses artificially flattened backgrounds.
+Direct evidence from preliminary work: Aquila (Konyves et al. 2015) simulations had model cores brighter in the
+derived surface density map by up to a factor of ~5 compared to real cores. Discrepancy was visible in the
+comparison with observation-derived surface density but apparently not noticed at the time of publication.
+ 
+Methodological framework (working concept). Simulations of CMF recovery must satisfy multiple independent
+constraints simultaneously: (1) input realism (true model T-M close to recovered T-M after SED fitting bias is
+accounted for); (2) range coverage (recovered cores span the full observed T-M range); (3) distributional match
+to observations (after recovery, simulated cores reproduce observed properties not just in bounding region but in
+internal structure). The constraint-satisfaction problem is genuinely difficult — analogous to getsf development
+in requiring extensive parameter exploration. Quantitative testing required: 2D binning of T-M scatter plots,
+density contours at fractional enclosure levels, ratio maps to reveal where simulated and observed populations
+agree or disagree.
+ 
+Current state of the work. Tested old BE-sphere Aquila simulation: produces apparent visual green-grey match but
+on closer examination this may be an illusion driven by bias-spread of magenta input points across observation
+space. Tested new model family (different density profiles): produces correct trend direction (T increasing with
+M for low M, matching observations) but does not yet span full observed T-M range. Constraint satisfaction not
+yet complete.
+ 
+Diagnostic visualisation. Colour-stacked CMF: bars subdivided by mass-recovery error factor (0.7–1.4 grey/best,
+1.4–2.8 green, 2.8–5.7 blue, 5.7–11 red, 11–∞ magenta), with input CMF overplotted as black curve. Visualisation
+shows directly which parts of the recovered CMF are well-measured versus contaminated by mass-recovery errors.
+For real observational CMFs (no ground truth), bounds plot showing systematic uncertainty envelope from
+simulation-derived error distributions.
+ 
+Publication strategy. Two-paper structure following filament template: methodology paper using Aquila as
+illustration, followed by application paper extending to seven clouds. Methodology paper currently realistic
+publication target; full constraint-satisfied simulation may or may not be achievable in finite time. If not,
+framework paper still publishable, presenting diagnostic tools and demonstrating that no published Aquila
+simulation satisfies the constraints when properly tested. Strategic framing: methodological intervention rather
+than direct critique of specific published results — provides procedure future authors can adopt, lets
+implications for prior work emerge from comparison.
+ 
+Timeline and collaborator dynamics. Project to begin after current papers close out. Guoyin Zhang capable of
+strong technical execution but planning and conceptual decisions remain Men'shchikov's responsibility. Recently
+joined ALMA AVALANCHE consortium (Motte-led IMF study) which may slow CMF project pace; this is acceptable and
+possibly beneficial — slower pace allows reflective methodological work that daily-communication mode has not.
+Men'shchikov as external expert on AVALANCHE provides useful access without consortium obligations. CMF paper
+conversation with André Men'shchikov to be deferred ~1 year, until tested approach and results are concrete;
+brief professional notification rather than draft sharing or consultation.
+ 
+3. Diagnostic visualisation framework
+ 
+Colour-stacked CMF (for simulations with known ground truth). Each CMF bin is a stacked bar with colours
+indicating per-source mass recovery accuracy. Error factor bands: 0.7–1.4 (best), 1.4–2.8, 2.8–5.7, 5.7–11, 11–∞.
+Stacking from bottom (best accuracy) to top. Input model CMF overplotted as separate curve. Pairs CMF-from-SD and
+CMF-from-SED plots reveal differential performance of mass derivation methods. Old Aquila: substantial high-error
+contamination across mass range, recovered CMF span much wider than input. New simulation: narrower recovered
+CMF, dominated by green/blue bands.
+ 
+Bounded CMF (for real observational data). Standard CMF with systematic uncertainty band derived from per-source
+error distributions calibrated by simulation. Per-source error distributions conditional on local background
+properties. Monte Carlo sampling preserving correlations between systematic and stochastic components. Bounds
+typically asymmetric (mass underestimation more common than overestimation) and wider at low mass. Bounds
+expected to be substantially wider than published statistical error bars, demonstrating that systematic
+uncertainty dominates.
+ 
+T-M comparison (three populations). Grey: real observed core values from SED fitting. Green: SED values from
+running fitting on simulated extraction. Magenta: true input model values. Three pairwise comparisons: green-grey
+shows whether simulation reproduces observations after recovery; green-magenta shows SED-fitting bias (decoupled
+from extraction issues); grey-magenta would show what observers see versus underlying truth. The full bias chain
+is magenta → green → grey.
+ 
+Quantitative tests. 2D binning in log-space; histogram2d with bins chosen for ~10 points per occupied bin;
+contours at fractional enclosure levels (25%, 50%, 75%) for cross-population comparison; ratio maps (population A
+/ population B, normalised) showing where distributions agree and disagree. Three-panel figure: scatter,
+contours, ratio map. Python code prepared (uses numpy.histogram2d, matplotlib.contour, pcolormesh; saves PDF and
+PNG).
+ 
+4. Strategic considerations
+ 
+Working arrangement. Men'shchikov's institutional independence at IPAG/CEA permits sustained methodological work
+that group-based researchers cannot undertake. Six solo papers 2013–2023 established the line. Collaboration with
+Zhang since 2024 doubles technical capacity while preserving conceptual independence; tandem mode (Men'shchikov
+directs, Zhang executes) suits both partners. Research programme self-defined and not subject to consortium
+negotiations.
+ 
+Long-term programme. Coherent multi-paper line: 2016 SED-fitting paper, hires algorithm papers, getsf method
+papers, 2023 resolvedness paper, current filament fitting trio (methods + application + Nature), prospective CMF
+methodology and application papers. Pattern: methodological scrutiny of how observational pipelines extract
+physical quantities from Herschel data. By the time CMF papers appear, the programme will have an established
+intellectual identity that helps individual papers land effectively. Methodologically-grounded scepticism is an
+underprovisioned position in the field.
+ 
+Framing. Methodology papers more likely to be adopted than critical papers. Constructive framing ("here is the
+systematic uncertainty budget") attracts citation; confrontational framing ("your results are wrong") triggers
+defensive reaction. The 2016 paper's relatively low citation rate suggests confrontational framing was
+suboptimal. CMF paper to be framed as quantitative bias budget that can be applied to any future measurement,
+with implications for past work emerging from honest application rather than direct charge.
+ 
+Field dynamics. ALMA-IMF tension currently active, providing context for CMF methodology work. Time window
+favourable for methodological intervention. Zhang's AVALANCHE involvement creates internal-pipeline access for
+the methodology results. Direct revisit of Konyves et al. 2015 unavoidable given the contrast factor of 5;
+framing as application of new framework rather than critique of original work; Men'shchikov was co-author of 2015
+paper but did not control analysis decisions, providing legitimate standing for revisit.
+ 
+Pacing. Two-year pressure-free window after current papers close out. Methodological work benefits from slower
+pace; Zhang's reduced availability via AVALANCHE supports rather than threatens this. CMF project may take 18
+months to several years; this is acceptable. Men'shchikov age 66, multiple years of productive work expected;
+project sized to that horizon rather than to immediate output pressure.
+ 
+This is approximately 1,500 words and captures the substantive state of where things stand without the
+conversational evolution. You can save it as a text file or PDF and use it to re-establish context in a future
+conversation by uploading it at the start. If anything needs adjustment — points I have summarised inaccurately,
+things I should add, sections that need different emphasis — let me know and I can revise. Otherwise this should
+serve as the working document you wanted.

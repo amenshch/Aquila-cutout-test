@@ -1,0 +1,30 @@
+Session summary
+
+Corrector development (validated). The correction now folds in the Könyves environment-dependent flux loss via a
+recoverable-mass grid (footprint = min(η·H_n, r_noise), pedestal subtracted), plus two shape axes measured
+identically in grid and getsf: the footprint/FWHM concentration and the source FWHM, both from the 161 µm
+surfdens band. The 4D corrector (recoverable mass, Σ, concentration, FWHM) recovers the injected masses
+accurately where the grid covers the sources: cSD_01 = 0.99, cSD_02 = 1.02, with the FWHM axis breaking the
+recoverable-mass fold that caused earlier low-mass overshoot.
+
+Confirmed unmeasurability. cSD_04 (2.4×10²²) and cSD_05 (4.8×10²²) are genuinely undetectable — 0/78 and 0/57
+injection matches, median peak surfdens S/N of 3.6 and 2.0, both below 5σ. This is the completeness limit M_lim ∝
+Σ² manifesting, not a bug.
+
+The central finding — geometry mismatch. Comparing model surfdens FWHM (convolved to the catalogue's 18.2″)
+against 685 real Aquila cores: critical BES matches observed sizes below ~1 M☉ but grows too large above it, and
+22% of the grid (high-mass corner, up to 600″) occupies a size regime with no observed counterpart (real cores
+cap at ~110″). Critical BE spheres are the wrong template for massive cores; pressure-truncated (non-critical)
+BES with ξ_max < 6.451 as a new grid axis is the remedy. The 1.5×beam size floor in the reference extraction
+means the required truncation is, if anything, stronger than the direct ratios show.
+
+Paper updated. US spelling restored, two lost figures (gridconv, fit_validation) recovered from the 260612
+version, and three new pieces added this session: the recoverable-mass subsection, the concentration observable,
+the completeness-limit figure/equation, and now the geometry subsection documenting the size mismatch and the
+pressure-truncation path forward.
+
+Files for the project baseline: rt_mass_correction.tex, fit_mass.py (4D RecoverableCorrector),
+add_recoverable_mass.py, bes_model_params_catalog_rec, and the plots.
+
+The clean next-chat starting point is deciding how to recompute the grid with pressure-truncated BES models — I
+can compute the per-mass ξ_max that maps critical sizes onto the observed envelope when you're ready.

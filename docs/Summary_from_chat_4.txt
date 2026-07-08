@@ -1,0 +1,273 @@
+Summary from previous chat (session 4) — injection-recovery test build
+Continuation of the RT mass-correction methods paper (Men'shchikov, Aquila/HGBS,
+d=260 pc). Prior context in Summary_from_previous_chat(_2,_3). This session built
+and validated the synthetic injection-recovery infrastructure on a real Aquila
+cut-out, corrected the injection formula, and characterized the two bias
+mechanisms separately.
+DATA TRANSFER (GitHub) — working route
+
+Repo: amenshch/Aquila-cutout-test (public). API rate-limited on shared IP;
+use raw.githubusercontent.com or the whole-repo tarball (NOT API):
+https://codeload.github.com/amenshch/Aquila-cutout-test/tar.gz/refs/heads/main
+Web upload limit is 25 MB PER COMMIT (not per file): upload in small batches,
+must click green "Commit changes" (drag-drop alone does not save). Direct URL
+https://github.com/amenshch/Aquila-cutout-test/upload/main.
+raw CDN caches a few min after commit; re-fetch tarball to get fresh files.
+Same-named files overwrite on re-commit (model files are named by band/res,
+not by model indices — see below).
+
+FIELD FILES (the cut-out) — all 975x975, 3.0"/px, aligned, pixel coords only
+
+bands aquilaM2-<bbb>.image.resamp.zoom2[+suffix].fits + .omask.fits
+suffixes: 070 (none), 160 +159p9, 250 +169p7, 350 +93p0, 500 +37p0
+(the +NNNpN differs per band; 070 has none). MJy/sr. 100% covered here.
+medians: 070=14, 160=258, 250=230, 350=139, 500=61 MJy/sr.
+Sigma map hi.surface.density.r13p5.fits (+ .omask), H2/cm^2, 13.5" res,
+median 6.5e21, max 5.2e23, 96% covered. THIS IS THE HIRES Sigma (13.5").
+
+MODEL FILES (per band+resolution; names are band/res-keyed, NOT model-keyed)
+
+nc.<bbb>um.bs.<rRES>x0.rs3p0as.fits  = I = interpolated-bg image -> INJECT THIS
+nc.<bbb>um.bsl.<rRES>x0.rs3p0as.fits = C = crater-bg image (NOT needed for injection)
+nc.surfdens.bs.<rRES>x0.rs3p0as.fits = model column density (interp-bg)
+nc.surfdens.bsl.<rRES>x0.rs3p0as.fits= model column density (crater-bg)
+nc.surfdens.bsl.<rRES>x0.rs3p0as.mask.fits = per-band core mask (0/1)
+band->resolution token: 070->r8p4 160->r13p5 250->r18p2 350->r24p9 500->r36p3
+(also 100->r9p4, 850->r36p3 exist; unused). model band images 77x77;
+surfdens images 73x73 (different array sizes — handle per-file).
+bs=interpolated(constant)-bg subtracted; bsl=crater-bg (special RADMC-3D run).
+C >= I everywhere; crater depression = C - I >= 0.
+
+CRITICAL CORRECTION — injection formula
+EARLIER 2C - I WAS WRONG (sign error). Correct injection:
+map_injected = map_observed + I_bs      (masked to footprint)
+Derivation: at a site whose observed bg matches the model cloud level (matched
+within sqrt2), additive = (sky with core) - (sky without core) = raw - const = I.
+The crater is included automatically (obs+I ~ raw = core + cratered cloud).
+Equivalent "dig crater (C-I) + add core C" reduces to +I. ONLY bs is needed; C
+cancels. getsf then subtracts its own rim background -> recovers ~bs flux =
+M_SED3bs (biased) -> correction -> M_BE. So getsf's own bg step produces the
+over-subtraction, exactly as on real data. (Fixed in draft 3.8, inject.py,
+injection_test_notes.md.)
+PLACEMENT (inject.py) — validated on real cut-out
+valid = coverage ∩ Sigma-omask ∩ edge ∩ (R_BE/support disk fits, via erosion)
+∩ |log10(Sigma_local/Sigma_cloud)| < 0.5*log10(2)  (within sqrt2)
+∩ not in forbidden (source footprints; optional)
+
+choose_positions = greedy min-separation.
+Sigma-match availability (% covered sky): 3e21->21%, 6e21->46%, 1.2e22->26%,
+2.4e22->6.4%, 4.8e22->1.0%, 9.6e22->0.2%. Low/mid-Sigma abundant.
+At LOW Sigma the valid sites are diffuse regions, naturally free of real
+sources -> no getsf footprints needed there (user confirmed model areas have
+no sources). forbidden= proxy = dilated bright-pixel mask is enough.
+
+FLATTENING (controlled background) — decision and method
+
+PRIMARY accuracy test: inject onto a flattened background (remove sub-source
+cloud fluctuations) so the test measures the SYSTEMATIC over-subtraction, not
+random cloud-fluctuation scatter. LEGITIMATE because the crater/over-subtraction
+bias survives flattening; only random scatter is removed.
+SECONDARY realism test: inject onto RAW cloud (flatten=False) to characterize
+the cloud-fluctuation scatter (real-world error budget; correction passes it
+~1:1, can't remove it).
+METHOD: biharmonic inpainting of the footprint from the just-outside rim
+(getsf-style core/bg separation). NOT a plane (plane over-flattens bright
+structured regions -> artifact disk). skimage.restoration.inpaint_biharmonic.
+
+CONTRAST / DETECTABILITY — gate for which models to inject
+
+Completeness criterion (user): peak SURFACE-DENSITY excess >= 0.5 * background
+= total contrast (bg+excess)/bg >= 1.5.
+REAL Aquila detection limit is lower: smallest detected SD contrast ~1.1
+(excess/bg ~0.1); per-band INTENSITY contrasts run near or below 1 for some
+cores (over-subtraction signature). Most real SD contrasts < 1.5, few > 3.
+Use gate contrast >= 1.1 (excess/bg >= 0.1) to mirror real detections: admits
+270/293 production + 31/36 subdivision models; faint cores carry the LARGEST
+bias (up to 1.6-1.9), exactly the science target.
+Intensity contrast (0.6% for i4j2k5 at 3.39e22) was misleading; SURFACE-DENSITY
+contrast is the right currency (detection is on the Sigma image — see below).
+
+KEY PHYSICS POINT — detection is on the Sigma image
+User's benchmarking: detection on the hires Sigma image alone gives ~best
+completeness (cores clearer there than in any single band). So the Sigma image
+is the PRIMARY detection channel; bands feed the SED/flux measurement.
+DISTRIBUTION MATCHING — design boundary (DECISION)
+
+Matching the injected population's (T_SED, SD-contrast, M) distribution to the
+real Aquila detected population is needed ONLY for completeness estimation /
+assessing CMF parameter quality on REAL extractions (Paper II).
+For validating the METHOD itself (this paper), NO matching needed: just span
+the parameter space with detectable models (contrast >= 1.1, low-contrast
+included) and check recovery. Deferred matching diagnostic to when the real
+Aquila extraction arrives.
+The three-population comparison (magenta input -> green recovered -> grey
+observed) extends to contrast as well as T-M; SD contrast is T-independent
+(stable axis to match); per-band intensity contrasts follow from the SED.
+
+FIRST-TEST MODEL: i1 j2 k4 (production row 13)
+Sigma_cloud=3.0e21, M_BE=0.080, M_SED3bs=0.072 (bias M_BE/M_SED3bs=1.12),
+R_BE=18", FWHM250bs=26.9" (resolved), SD contrast 2.44 (excess/bg=1.44),
+T_BE per catalog. Detectable with margin, resolved -> clean mechanics run.
+(Earlier first model was i4 j2 k5 at high Sigma=3.39e22, too low contrast;
+replaced. Bulk-representative alt: i1 j1 k8, contrast 1.39, bias 1.28.)
+INJECTION RUN DONE (outputs/injected_i1j2k4/)
+18 copies of i1 j2 k4 injected (flattened biharmonic) at low-Sigma diffuse
+sites into all 5 bands + the 13.5" Sigma map. Deliverables:
+
+inj_070/160/250/350/500.fits (cores in emission; ABSORPTION at 70um = correct
+physical signature for cold cores), inj_surfdens.fits (13.5" column).
+truth.csv and truth.txt (aligned cols): id, y_pix, x_pix, M_BE, T_BE, Sigma,
+R_BE_as, M_SED3bs, FWHM250bs. Positions reproducible: rng seed 3, supp from
+r36p3 mask, forbidden=dilated 97th-pct bright mask, min-sep 2*supp+6.
+inj_surfdens_36p3.fits was made then DROPPED (not needed; see below).
+
+FITS HEADER REQUIREMENT
+User's code needs BZERO=0.0 and BSCALE=1.0 cards. For FLOAT images astropy
+strips them on writeto -> must add in a SECOND pass:
+with fits.open(f,mode='update',do_not_scale_image_data=True,scale_back=False)
+as h: h[0].header.set('BZERO',0.0,'zero point in scaling equation');
+h[0].header.set('BSCALE',1.0,'linear factor in scaling equation'); h.flush()
+DO THIS FOR EVERY FITS CREATED.
+TEMPERATURE bias on bg-subtracted hires column — CONSISTENT, but IDEALIZED
+NOTE: this bg-subtracted-BEFORE-fit case is NOT the observational one. In real
+data the SED/hires fit is done on the FULL intensity (core+cloud, warm dust
+present); bg subtraction is a LATER step on the column map. Removing the warm
+cloud before the fit is why the full-res case went cold-biased/over-estimate
+(artifact). The REALISTIC version (full-structure hires vs full model column) is
+PENDING user upload -- see next section. Keep the below as the idealized
+(cloud-removed) reference only.
+All reldiffs use convention (model - hires)/hires; bg-sub model (bsl) vs bg-sub
+hires; convolved and unconvolved done the SAME way (user confirmed consistent).
+Convert to preferred (hires-model)/model = -d/(1+d). For i1j2k4, in
+(hires-model)/model (+ over, - under estimate):
+case        peak%   integrated(mass)%
+36.3"      -11.2     -10.8     <- ~unresolved; matches catalog SED bias -10.6%
+24.9"      -12.4     -10.4
+18.2"      -14.8      -9.5
+13.5"      -21.7      -3.6     <- most resolved/enhanced
+full res    +8.6     +26.0     <- no beam (unobservable limit): OVER-estimate
+Files: nc.surfdens.bsl.<rRES>x0.rs3p0as.~.hi.surface.density.<rRES>.fits (73x73);
+full res: nc.surfdens.bsl.rs3p0as.~.hi.surface.density.r0p0006.fits; true bg-sub
+model nc.surfdens.bsl.rs3p0as.fits (peak 7.75e21).
+INTERPRETATION (coherent): the BEAM creates the warm/under-estimate bias.
+
+Beam-convolved (observable): each pixel's SED mixes cold core + warmer
+surroundings -> warm-biased -> UNDER-estimate. 36.3"=-11% = single-T total-flux
+bias (matches catalog). Resolution enhancement: integrated bias shrinks
+(-11%->-3.6%) = the 2016 per-pixel/intensity advantage for resolved cores;
+PEAK deepens (-11%->-22%), column redistributed center->wings.
+Full resolution (no beam, NOT observable): sharp bg-sub sightline dominated by
+cold core -> COLD-biased fit -> OVER-estimate (+26% integ). Removing the beam
+flips the bias cold. So warm bias is beam-induced, not intrinsic to per-pixel
+fitting.
+=> surfdens-integration mass UNDER-estimates ~11% (unresolved) improving to ~4%
+(resolved) -- better than SED total-flux mass, consistent with Men'shchikov
+2016. Compare head-to-head vs SED mass in the getsf recovery test.
+Figure: outputs/injected_i1j2k4/temp_bias_bgsub.png.
+
+TEMPERATURE bias — REALISTIC (full-structure) version, RESULTS + OPEN QUESTION
+Files (convention now (hires-model)/model, user preferred; FULL core+cloud):
+hi.surface.density.<rRES>.~.nc.surfdens.rs3p0as.fits  (rRES: r0p0006 full res,
+r13p5, r18p2, r24p9, r36p3). True full model = nc.surfdens.rs3p0as.fits
+(peak 1.07e22, cloud/edge 2.985e21).
+FINDINGS:
+
+The hires column is ~13-14% BELOW the model EVERYWHERE, incl the cloud baseline
+(flat outer reldiff ~-14% at all resolutions; extreme corners ~-72% edge
+artifacts). RESOLVED: this is a TEMPERATURE bias, NOT a normalization artifact.
+Ruled OUT by checks: opacity (O&H col4 is an EXACT beta=2 power-law,
+kappa=83.364*(100/lambda)^2, identical to the fit power-law at 160/250/350/500
+when both =10 at 300; normalization x1.0796); mu (2.8 in both fitfluxes and
+radmc3d); dust-to-gas (0.01 both, consistent); optical depth (tau_300~0.0035 in
+radmc3d -> optically thin, tau_160~0.012, <1% effect). By elimination -> TEMP:
+the cloud is NOT isothermal. Uniform-density medium externally heated by ISRF;
+at N=3e21 the LOS carries A_V~3 mag -> self-shielding -> warm illuminated
+surface, cooler shielded interior -> LOS T gradient. Single-T MBB fit (160-500)
+returns luminosity-weighted (warm-biased) T -> N ∝ 1/B(T) comes out ~14% low,
+uniform because the cloud is uniform. Core stacks its steeper gradient on top.
+=> the -14% is the genuine temperature systematic the method corrects (shows up
+in cloud too), NOT an artifact to divide out; injection->getsf->correction
+carries it end to end. PENDING confirmation: radmc3d cloud dust-T structure
+(expect gradient) + T_fit vs mass-weighted T (expect fit ~1-2 K warmer); then
+can predict -14% exactly by running single-T fit on the cloud LOS SED.
+CONFIRMED: user reports cloud T = 20 K outer edge -> ~13 K a factor-2 in radius
+deeper -> isothermal 13 K -> drops further inside core. Single-T fit (160-500,
+optically thin) on this profile reproduces -14% (Sigma_fit/Sigma_true=0.857,
+T_fit~16 K) for full-gradient sightlines. Uniform across the map because the
+73x73 box sits INSIDE the cloud (every sightline carries the full gradient; no
+spherical edge in frame). Mechanism: warm outer dust dominates emission (B
+steep with T, esp 160um), fit assigns that warm T, cold interior (most mass,
+little emission) under-counted -> underestimate. Fully accounted for; physics
+not calibration; carried end-to-end by injection->getsf->correction.
+On top of the offset, extra underestimate concentrated at the core = the T
+bias. Core mass bias after getsf-style rim subtraction (CRUDE preview; precise
+value needs the real getsf extraction):
+36.3"=-17%, 24.9"=-25%, 18.2"=-32%, 13.5"=-38%, full res=-30%.
+Larger than the idealized bg-sub case (~-11%) and catalog (-10.6%), as expected
+(warm cloud present during fit, as in real obs). Trend sensitive to the rim/
+footprint choice -> not final; the injection+getsf test measures it properly.
+NOTE the idealized bg-subtracted section above (removing cloud BEFORE fit) is the
+non-observational reference; THIS full-structure case is the observational one.
+
+OVER-SUBTRACTION (crater) bias + full chain
+The field INJECTION + getsf tests this (needs getsf's own rim-bg estimate on
+realistic cloud). The RT correction targets both mechanisms together.
+TWO getsf MASS TYPES — to compare (user's 2016 paper)
+
+SED total-flux mass (single-T fit of source's integrated fluxes): the
+M_SED-type bias; factors 2-5 for extreme temperature-excess cores.
+Surfdens-integration mass (integrate hires per-pixel column in footprint):
+more accurate for RESOLVED objects (Men'shchikov 2016: intensity fitting beats
+flux fitting for resolved objects; best with 2-3 longest wavelengths; bg
+subtraction a likely source of large systematic errors; unresolved masses
+uncertain factor 2-3). PLAN: pull BOTH from getsf in the recovery test, compare
+to truth, likely prefer surfdens for resolved / SED for unresolved; build/
+validate the RT correction on whichever (or both). Measure empirically (with
+reconstructed hires resolution the per-pixel gain mixes with spillover).
+
+TWO Sigma-detection MODES for the first recovery pass
+
+Detect on hires Sigma RECOMPUTED from the injected bands (realistic pipeline);
+direct model Sigma = truth for comparison; tests the SED-fitting step too.
+Detect on the DIRECTLY injected inj_surfdens.fits (controlled; isolates
+detection+measurement from SED fitting). DECISION: use mode 2 for the FIRST
+pass (cleaner debugging); mode 1 afterward; difference isolates SED-fitting step.
+
+PIPELINE STATE (unchanged from session 3, still valid)
+
+fit_mass.py: correction = interpolation of smooth f=M_BE/M_SED over OBSERVABLE
+coords (M_SED3bs, Sigma, FWHM250bs). Hold-out: crater 0.9% / observable-direct
+3.1% / two-step 2.4% / forward-fit 20%. MUST use Phi3 (250-500); Phi4 (160um)
+unusable (catastrophic outliers). FWHM is essential 3rd axis. Random flux noise
+passes ~1:1 (not amplified). cat4.txt (293 models, 53 cols), sub4.txt (36, all
+at Sigma=3.39e22).
+Draft rt_mass_correction.tex: 17 pp, compiles clean (pdflatex x2-3 + bibtex,
+0 unresolved). en-dashes spaced for clauses; US spelling. 3.8 injection
+paragraph corrected.
+
+FILES / LOCATIONS
+
+Working: /home/claude/ (inject.py, fit_mass.py, field/, repo/, injected_i1j2k4/)
+Deliverables: /mnt/user-data/outputs/ (rt_mass_correction.tex, inject.py,
+fit_mass.py, injection_test_notes.md, injected_i1j2k4/*)
+Project read-only: /mnt/project/ (cat4=bes_model_params_catalog,
+sub4=bes_model_params_subdivision_catalog, tex, bib, aa.cls, aa.bst, summaries)
+
+NEXT STEPS (awaiting user)
+
+User runs getsf on the 5 inj_*.fits + detection on inj_surfdens.fits
+(~1 day). Sends detected-source table.
+Then: write getsf-output reader -> match detections to truth.txt by position
+-> pull BOTH mass types (SED + surfdens) + Sigma + FWHM -> apply correction
+-> first recovered-vs-true mass (corrected). Same reader reused for real Aquila.
+Extend to spanning set across contrast and Sigma; add raw-cloud (flatten=False)
+run for the fluctuation budget.
+Optionally fold the temperature-bias-vs-resolution result + the two-mass-type
+comparison into the draft.
+
+WORKING STYLE
+User rigorous: root-cause isolation, analytic+numeric cross-checks, evidence
+before draft claims; actively corrects Claude's hypotheses (caught the 2C-I sign
+error, the cloud-fluctuation issue, the resolution-enhancement confound in the
+temperature bias). US English, concise conversation, longer/simpler draft prose,
+en-dashes. Always recompile/verify; present via present_files.
