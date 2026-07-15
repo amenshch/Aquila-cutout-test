@@ -4,7 +4,7 @@
 #
 # Models: /Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260713_RT_BES_radmc3d
 #
-# CATALOG OF RT MODELS OF CRITICAL BONNOR-EBERT SPHERES COMPUTED WITH RADMC-3D
+# CATALOG OF RT MODELS OF BONNOR-EBERT SPHERES COMPUTED WITH RADMC-3D
 #
 # NOTE1: the model 01 j05 k13 is missing because its images (2.5GB in size) resampling was impossible (insufficient memory)
 #
