@@ -6,8 +6,6 @@
 #
 # CATALOG OF RT MODELS OF BONNOR-EBERT SPHERES COMPUTED WITH RADMC-3D
 #
-# NOTE1: the model 01 j05 k13 is missing because its images (2.5GB in size) resampling was impossible (insufficient memory)
-#
 # NOTE2: M_SED4/M_SED3 has a clean gap between 1.29 and 1.39 because the grid is noiseless and the 160 µm zero-crossing is sharp;
 #        to avoid using contaminated masses in mass corrections, use M_SED3 when M_SED4/M_SED3 > 1.3
 #__________________________________________________________________________________________________________________________________
