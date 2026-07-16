@@ -77,7 +77,8 @@ that reproduces the full observational chain
 (RT imaging of the embedded core~$\rightarrow$~background
 determination~$\rightarrow$~background subtraction) and recovers accurate
 masses and temperatures by fitting
-critical Bonnor--Ebert (BE) sphere models to the observed
+Bonnor--Ebert (BE) sphere models, parameterized by the observed mass and
+size at a self-consistent temperature, to the observed
 wavelength-dependent contrasts and sizes. The central deliverable is a
 quantitative map of the mass bias as a function of core mass and cloud
 column density. This document defines the method, records the
@@ -138,15 +139,18 @@ on the Aquila star-forming region, for which a published core catalogue exists \
 
 \subsection{Overview}
 
-For each core we forward-model the observable signal: a critical BE sphere
+For each core we forward-model the observable signal: a Bonnor--Ebert sphere
 embedded in a uniform cloud, processed through Monte-Carlo dust RT
 (RADMC-3D), projected, convolved to the \emph{Herschel} beams, resampled to
 a common angular grid, and background-subtracted exactly as in the
-observational reduction. The free parameters are the core mass $M$ and the
-BE temperature $\Tbe$ (equivalently $\rhoc$ and $\Rbe$), with the local
-cloud column $\Scloud$ supplied per core from the observed background. The
-fit minimizes the residual between modeled and observed band-dependent
-center intensities and FWHMs. Completeness is treated separately (via source extraction with getsf,
+observational reduction. Each model is specified by the core mass $M$ and its
+size (intrinsic FWHM), which fix the truncation $\ximax$ and central density
+through the inversion of Sect.~\ref{sec:inversion}; the construction
+temperature $\Tbe$ is not free but is set self-consistently from the total
+central shielding column (Sect.~\ref{sec:tbe}), and the local cloud column
+$\Scloud$ is supplied per core from the observed background. The fit minimizes
+the residual between modeled and observed band-dependent center intensities and
+FWHMs. Completeness is treated separately (via source extraction with getsf,
 \citealp{Menshchikov2021method}) and is not part of the mass-accuracy chain.
 
 \subsection{The Bonnor--Ebert sphere model family}
@@ -169,18 +173,48 @@ $r=\xi\,\rzero$, where the scale length is
   \cs^{2} = \frac{k_{\mathrm B}\,\Tbe}{\mu_{\mathrm p}\,\mH}.
   \label{eq:r0}
 \end{equation}
-The critical sphere is truncated at $\ximax = 6.451$, where the
-center-to-edge density contrast is $\rhoc/\rho(\ximax) = 14.0$.
+A single model is specified by three numbers: the isothermal temperature
+$\Tbe$ (through $\cs$), the central density $\rhoc$, and the dimensionless
+truncation radius $\ximax$ at which the sphere is cut and joined to the
+surrounding cloud. Earlier versions of this work fixed $\ximax = 6.451$, the
+critical value at which the center-to-edge contrast is
+$\rhoc/\rho(\ximax) = 14.0$ and the sphere is marginally stable. We no longer
+fix it. Instead $\ximax$ is a genuine construction variable that runs from
+weakly concentrated, nearly uniform spheres ($\ximax \lesssim 1$), through the
+critical value, to strongly concentrated super-critical profiles
+($\ximax > 6.451$). The failure of the fixed-critical choice, and the physical
+meaning of the sub-critical, critical, and super-critical regimes, are set out
+in Sect.~\ref{sec:geometry}. The essential point for the method is that
+$\ximax$ carries \emph{all} of the profile-shape information, while $\Tbe$ and
+$\rhoc$ set only the physical scale; the family therefore has one shape
+parameter ($\ximax$) and two scale parameters ($\Tbe$, $\rhoc$).
 
-The critical BE profile is a unique self-similar shape in $\log$--$\log$:
-$\Tbe$ is purely a scaling parameter that sets the physical $(M,\Rbe)$
-through $\rzero$ but does not change the profile shape. This makes the
-family parsimonious---there are effectively two free parameters
-($M$ and $\Rbe$, bijective with $\Tbe$ and $\rhoc$ for the critical
-sphere)---and is the reason a wide $\Tbe$ grid spans the observed $M$--$\Rbe$
-range without introducing extra shape degrees of freedom. The use of a
-single-parameter-shape template, rather than a richer geometric family, is
-justified in Sect.~\ref{sec:geometry}.
+Three dimensionless shape functions, each a function of $\ximax$ alone,
+summarize the family and are tabulated once from the solution of
+Eq.~(\ref{eq:lane-emden}). The first is the enclosed-mass function $C(\ximax)$
+defined in Eq.~(\ref{eq:Cxi}) below. The second is the center-to-edge density
+contrast
+\begin{equation}
+  \mathcal{C}_{\rho}(\ximax) \equiv e^{\psi(\ximax)}
+  = \frac{\rhoc}{\rho(\Rbe)} ,
+  \label{eq:contrast}
+\end{equation}
+which grows from unity (uniform sphere) through $14.0$ at the critical radius
+and continues to rise for super-critical truncations. The third is the
+projected half-maximum width $\phi(\ximax)$, defined as the FWHM of the
+line-of-sight column-density profile (the Abel projection of $e^{-\psi}$)
+expressed in units of the scale length $\rzero$, so that the intrinsic
+projected FWHM of a model is
+\begin{equation}
+  \mathrm{FWHM}_{\mathrm{intr}} = \phi(\ximax)\,\rzero .
+  \label{eq:phidef}
+\end{equation}
+A useful and, at first, surprising property of $\phi$ is that it \emph{saturates}
+at large $\ximax$ (it approaches $\phi \simeq 6.6$ as $\ximax \to \infty$): the
+projected FWHM is fixed by the inner, nearly flat core and is almost
+independent of how far the outer envelope is truncated. This saturation
+controls the behavior of the compact, massive end of the grid
+(Sect.~\ref{sec:grid}) and the resolution limit discussed there.
 
 \subsection{Analytic central density and mass}
 \label{sec:inversion}
@@ -204,23 +238,53 @@ so the total mass of the truncated sphere is
   m_{1}\equiv C(\ximax).
   \label{eq:mass}
 \end{equation}
-We evaluate $C(\xi)$ on our tabulated BE solution by the trapezoidal rule;
-for our table $m_{1}=C(6.451)=15.7086$, giving the mass coefficient
+We evaluate $C(\xi)$ on our tabulated BE solution by the trapezoidal rule.
+When the truncation was fixed at the critical radius, $C$ was a single number,
+$C(6.451)=15.7086$, and Eq.~(\ref{eq:mass}) inverted directly to
+$\rhoc=(4.4313\,\cs^{3}/G^{3/2}M)^{2}$ for a target mass at fixed $\Tbe$. With
+$\ximax$ now free, $C$ varies from model to model and the inversion is a
+two-step procedure driven by the two observables that define a core, its mass
+$M$ and its size.
+
+We specify each model by a target mass $M$ and a target intrinsic projected
+width $\mathrm{FWHM}_{\mathrm{intr}}$ at a given $\Tbe$. Eliminating $\rhoc$ and
+$\rzero$ between the mass relation, Eq.~(\ref{eq:mass}), and the width
+definition, Eq.~(\ref{eq:phidef}), gives a single equation for the truncation
+radius,
 \begin{equation}
-  \frac{m_{1}}{\sqrt{4\pi}} = \frac{15.7086}{3.544908} = 4.4313 .
-  \label{eq:coeff}
+  \frac{\phi(\ximax)}{C(\ximax)}
+  = \frac{\mathrm{FWHM}_{\mathrm{intr}}\,\cs^{2}}{M\,G} .
+  \label{eq:xiinvert}
 \end{equation}
-The inversion used to set the central density for a target mass at fixed
-$\Tbe$ is then
+The ratio $\phi/C$ is strictly monotone decreasing in $\ximax$, so
+Eq.~(\ref{eq:xiinvert}) has a unique root: a core's mass and size together fix
+its concentration, and hence $\ximax$. In physical terms $\ximax$ is tied to
+the mass-to-size ratio and is not a free choice. Having solved for $\ximax$,
+the scale length and central density follow in closed form,
 \begin{equation}
-  \rhoc = \left(\frac{4.4313\,\cs^{3}}{G^{3/2}\,M}\right)^{2}.
-  \label{eq:inversion}
+  \rzero = \frac{M\,G}{\cs^{2}\,C(\ximax)},
+  \qquad
+  \rhoc = \frac{\cs^{2}}{4\pi G\,\rzero^{2}},
+  \label{eq:rho_from_MFW}
 \end{equation}
-We code the coefficient as $m_{1}/\sqrt{4\pi}$ from the same table used to
-build the profile, so the inversion and the discretized profile remain
-mutually consistent. \note{This single self-consistency point was the
-source of an early factor-$\sim$2 mass error; keep inversion and builder
-tied to one $m_1$.}
+and the outer (truncation) radius is $\Rbe=\ximax\,\rzero$. We tabulate
+$C(\xi)$ and $\phi(\xi)$ from the same BE solution used to build the profile,
+so the inversion and the discretized profile remain mutually consistent.
+\note{The single self-consistency point below was the source of an early
+factor-$\sim$2 mass error: keep the inversion, the width function, and the
+profile builder tied to one tabulated $\psi(\xi)$.}
+
+Two properties of Eq.~(\ref{eq:xiinvert}) matter downstream. First, because
+$\phi$ saturates at large $\ximax$ while $C \propto 2\ximax$ grows without
+bound, the right-hand side can be made arbitrarily small only by driving
+$\ximax$ very large; a massive core at a near-beam size therefore maps to a
+very high concentration, and a genuinely unresolved core
+($\mathrm{FWHM}_{\mathrm{intr}} \to 0$) would need $\ximax \to \infty$. This
+sets a natural upper bound on the useful grid (Sect.~\ref{sec:grid}). Second,
+raising $\Tbe$ at fixed $(M,\mathrm{FWHM})$ raises the right-hand side and so
+lowers $\ximax$; the temperature used to build a model changes the shape
+assigned to a given observed core, which is why the temperature must itself be
+fixed on physical grounds (Sect.~\ref{sec:tbe}).
 
 \subsection{Molecular-weight conventions}
 \label{sec:mu}
@@ -288,18 +352,33 @@ assignment loops cannot disagree about a shared cell, and
 Eq.~(\ref{eq:telescope}) holds exactly.
 
 We further impose a physical/numerical self-consistency requirement on the
-embedding: the core must join the cloud as an overdensity,
+embedding: the core joins the cloud as an overdensity,
 \begin{equation}
   \rho_{\mathrm{BE}}(\Rbe)\;\ge\;\rhocloud .
   \label{eq:contconstraint}
 \end{equation}
-When the BE edge density falls below the cloud density, the embedded model
-is a depression (a hole), not a core, and produces a spurious negative
-feature. Equation~(\ref{eq:contconstraint}) defines a minimum core mass at
-each cloud column and is enforced as the low-mass edge of the grid per
-column. The status of this constraint---construction self-consistency
-versus physics---is discussed at length in
-Sect.~\ref{sec:uniformcloud}--\ref{sec:edge}.
+In an earlier pipeline this was enforced as a hard constraint, because that
+pipeline convolved the full core-plus-cloud image to the beam \emph{before}
+subtracting the background: when the BE edge density fell below the cloud
+density, the beam smeared the higher surrounding cloud inward and the
+subsequent subtraction left a spurious negative feature---a depression rather
+than a core. We have since changed the operation order: the constant cloud
+pedestal is subtracted from the \emph{original} (unconvolved) model image, at
+the local floor $\rho_{\mathrm{BE}}(\Rbe)$ rather than at the denser cloud
+value, and only then is the isolated core excess convolved. Subtraction on the
+original image is exact and linear, so no depression can form, and we have
+verified on models spanning edge-to-cloud density ratios from $1.13$ down to
+$0.08$ that the recovered mass is unbiased in every case
+(Sect.~\ref{sec:cratervsinterp}). Equation~(\ref{eq:contconstraint}) is
+therefore \emph{no longer imposed}: the models it once excluded---compact,
+massive cores whose rarefied edge sits below the surrounding cloud---are
+retained. Such an inner rarefaction relative to the ambient cloud is, in fact,
+schematically what an inside-out collapsing core develops as material drains
+inward behind the infall front, so these configurations plausibly represent
+real evolved cores rather than an artefact to be excluded. The Monte-Carlo
+radiative transfer handles the density inversion without difficulty: within
+the depression photons propagate with fewer interactions, so the equilibrium
+temperature neither spikes nor drops but varies smoothly across the boundary.
 
 \subsection{Radiative transfer and the interstellar radiation field}
 \label{sec:rt}
@@ -366,11 +445,11 @@ crater; Sect.~\ref{sec:bgdetermination}),
 \end{equation}
 holding $\Scloud$ at fixed grid values and deriving $\rhocloud$ per model.
 This recovers identical cloud RT at a given $\Scloud$ node across all masses,
-matches the axis to the observed local background, and relaxes
-Eq.~(\ref{eq:contconstraint}) at high mass (where larger $\Rcloud$ implies
-lower $\rhocloud$). The grid records $\Scloud$ (the axis) together with the
-derived $\rhocloud$ and $\Rcloud$ (needed for reproducibility and for the
-continuity trim, which is applied on $\rhocloud$, not $\Scloud$).
+matches the axis to the observed local background, and---together with the
+revised background subtraction---removes the earlier need to trim on
+Eq.~(\ref{eq:contconstraint}). The grid records $\Scloud$ (the axis) together
+with the derived $\rhocloud$ and $\Rcloud$ (needed for reproducibility and for
+the RT construction, both defined on $\rhocloud$).
 
 \subsection{Background determination: crater versus interpolated}
 \label{sec:bgdetermination}
@@ -444,29 +523,174 @@ catalogue), which is measured identically in the grid and in the extraction
 and so enters the interpolation without a unit or definition mismatch. The
 correction interpolant is thus three-dimensional: recovered mass, cloud
 column $\Scloud$, and this concentration ratio.
+\note{The validated \texttt{RecoverableCorrector} uses a fourth axis, the
+source FWHM on the $161\,\mu$m band, alongside the concentration ratio.
+Promote this paragraph to a four-dimensional interpolant to match the code;
+Sect.~\ref{sec:geometry} already invokes the four-observable set (recovered
+mass, $\Scloud$, source FWHM, concentration) and explains why neither the
+recovered mass nor the concentration is redundant.}
+
+\subsection{Construction temperature and self-consistency}
+\label{sec:tbe}
+
+The temperature $\Tbe$ that enters the inversion, Eq.~(\ref{eq:xiinvert}), is the
+isothermal temperature at which the hydrostatic profile is built. It must be kept
+distinct from the dust temperature structure $T_{\mathrm{dust}}(r)$ that RADMC-3D
+computes for that profile: the latter is not isothermal, and it carries the
+warm-envelope, cold-center gradient that drives the mass bias this paper corrects.
+The construction temperature sets the profile scale, but through
+Eq.~(\ref{eq:xiinvert}) it also fixes the shape ($\ximax$) assigned to a given
+observed $(M,\mathrm{FWHM})$, so it cannot be chosen arbitrarily. We take $\Tbe$
+to be the mass-weighted mean dust temperature within $\Rbe$, so that each model is
+built at the temperature it would itself have.
+
+The controlling quantity is the shielding that attenuates the external field on
+its way to the core. This is the \emph{total radial} column from the outside to
+the center,
+\begin{equation}
+  N_{\mathrm{tot}} = \Scloud + N_{\mathrm{core}},
+  \qquad
+  N_{\mathrm{core}} = \frac{\rhoc\,\rzero}{\mu_{\mathrm{H_2}}\,\mH}
+                      \int_{0}^{\ximax} e^{-\psi(\xi)}\,\mathrm{d}\xi ,
+  \label{eq:Ntot}
+\end{equation}
+the cloud column plus the core's own self-shielding. The one-sided radial integral
+is the appropriate measure, rather than the projected sight line through the
+sphere, because the incident field is isotropic and a central grain is shielded
+along the radius; empirically it also fits the temperatures markedly better. Core
+self-shielding is not a small correction: $N_{\mathrm{core}}$ is a median
+$\sim$0.6 of $\Scloud$ across the grid and reaches
+$\sim$$10^{23}\,\mathrm{cm^{-2}}$, so a scheme that ties $\Tbe$ to $\Scloud$ alone
+is inadequate.
+
+We calibrate $\Tbe(N_{\mathrm{tot}})$ on a set of RT models spanning the full
+range of $N_{\mathrm{tot}}$, built and run through RADMC-3D exactly as the grid
+models are, and iterated until the built and computed temperatures agree. A
+quadratic in $x \equiv \log_{10}(N_{\mathrm{tot}}/\mathrm{cm^{-2}})$ describes them
+well,
+\begin{equation}
+  \Tbe = a_{0} + a_{1}\,x + a_{2}\,x^{2},
+  \label{eq:TofN}
+\end{equation}
+with $(a_{0},a_{1},a_{2}) = (1021.4,\,-86.47,\,1.842)$, clamped to the calibrated
+range $x = 21.5$--$23.4$. The relation runs from $\Tbe \simeq 13.9$\,K at the
+lowest columns to $\simeq 6.5$\,K at the highest, and reproduces the models with an
+RMS of $0.22$\,K.
+\note{Calibration set: eight models spanning
+$N_{\mathrm{tot}}\simeq3\times10^{21}$--$2.3\times10^{23}\,\mathrm{cm^{-2}}$, plus
+four controlled blocks (twenty models) at fixed $N_{\mathrm{tot}}$ with $\ximax$
+varied over $0.8$--$8$. Photon-count converged: $10^{9}\to10^{10}$ moves $\Tbe$ by
+$\le$0.14\,K, and only for the most deeply shielded model. The cloud radius was
+reduced from a beam-matched box to $30\,\Rbe$ with no effect on $\Tbe$
+($\le$0.07\,K), which greatly improves photon statistics in the core.}
+
+The residual scatter is not measurement noise, and its origin is worth stating,
+since it bounds what any such calibration can achieve. Because $\Tbe$ is a
+\emph{mass-weighted} average over a temperature gradient, it is not a strict
+function of the central shielding column alone. The controlled blocks make this
+explicit: at fixed $N_{\mathrm{tot}}$, both endpoints of the profile are
+essentially independent of concentration -- the central temperature varies by
+$<$0.01\,K and the temperature at $\Rbe$ by $<$0.13\,K as $\ximax$ runs from
+$0.8$ to $8$ -- and yet the mass-weighted mean rises by $\sim$0.1--0.4\,K, simply
+because a more concentrated core places a larger fraction of its mass in the
+warmer outer layers. Adding $\log\ximax$ as a second variable captures part of
+this and reduces the RMS to $0.19$\,K, a marginal gain that does not warrant the
+extra parameter; we retain the single-variable form.
+\note{Deeper structure, useful if ever challenged: the local dust temperature is a
+universal function of the \emph{local} shielding column, $T(r) =
+\mathcal{T}(N(r))$ with $N(r) = \Scloud + \int_{r}^{\Rbe}\rho\,\mathrm{d}r'/(\mu
+\mH)$. Cells from models of very different size, density, and concentration
+collapse onto one $\mathcal{T}(N)$ curve with no model-dependent offset, so the
+physics is one-dimensional; only the mass-weighted averaging is not. $\Tbe$ could
+therefore be obtained by integrating $\mathcal{T}(N(r))$ over the profile instead
+of fitting, at the cost of replacing a formula with a procedure. Not pursued here.}
+
+Because $N_{\mathrm{tot}}$ depends on the built profile, which depends on $\Tbe$,
+the assignment is iterated: build at a first guess, evaluate $N_{\mathrm{tot}}$,
+update $\Tbe$ from Eq.~(\ref{eq:TofN}), and repeat. The dependence is weak
+($\rzero \propto \sqrt{\Tbe}$) and converges in one or two passes. A $0.2$\,K
+uncertainty in $\Tbe$ is in any case second order for the correction: $\Tbe$ sets
+the model profile, whereas the mass correction itself is calibrated
+end-to-end against the known input masses of the injected models
+(Sect.~\ref{sec:recoverable}).
+
+This scheme also fixes the grid dimensionality. Because $\Tbe$ is determined by the
+model's own structure rather than sampled independently, it is not a free axis. The
+grid reduces to the environment column $\Scloud$ and the two core observables
+$(M,\mathrm{FWHM})$, with $\Tbe$, $\ximax$, and $\rhoc$ all derived per node.
 
 \subsection{Model grid}
 \label{sec:grid}
 
-The production grid is geometric (factor-2) in three axes:
-$\Scloud$ (5 values), $\Tbe$ (7 values), and $\rhoc$ (8 values), with fewer
-models at some nodes where Eq.~(\ref{eq:contconstraint}) excludes them.
-Factor-2 spacing in $\rhoc$ at fixed $\Tbe$ corresponds to factor
-$\sqrt{2}$ in $\Rbe$ and in mass ($M\propto\rhoc^{-1/2}$), i.e.\ mass nodes
-$\sim$1.4 apart. We interpolate in $\log$ space on all three axes. Because
-the continuity trim makes the populated node set ragged at the
-low-$\rhoc$/high-$\Scloud$ corner, we use a scattered (Delaunay) interpolator
-on the real node coordinates rather than a regular-grid interpolator, and we
-record the continuity locus explicitly to bound the fit. \note{Omit the
-trimmed models from the catalogue; if a self-describing table is wanted,
-flag rows with NaN (not zero) observables.}
+The grid is generated in physical, distance-independent variables so that a
+single grid serves all clouds; the conversion to angular size and the beam
+convolution are applied per cloud at the injection stage
+(Sect.~\ref{sec:images}), scaling the native RADMC-3D pixel by the cloud
+distance. The three sampling axes are the embedding column $\Scloud$, the core
+mass $M$, and the intrinsic projected width $\mathrm{FWHM}_{\mathrm{intr}}$
+(equivalently a physical size). For each node the construction temperature
+$\Tbe$ follows from Eq.~(\ref{eq:TofN}), the truncation $\ximax$ from
+Eq.~(\ref{eq:xiinvert}), and the scale $(\rzero,\rhoc,\Rbe)$ from
+Eq.~(\ref{eq:rho_from_MFW}); $\Tbe$, $\ximax$, and $\rhoc$ are therefore derived
+rather than sampled, so freeing the truncation has not enlarged the axis count.
+We sample $\Scloud$ on the same geometric (factor-2) ladder as before, and $M$
+and $\mathrm{FWHM}_{\mathrm{intr}}$ logarithmically over the physical ranges
+below.
+\note{Working ranges: $\Scloud=3\times10^{21}$--$9.6\times10^{22}\,
+\mathrm{cm^{-2}}$ (6 values); $M=8\times10^{-3}$--$100\,\msun$; intrinsic FWHM
+$0.003$--$0.25$\,pc. Final node count to be confirmed after the higher-photon
+$\Tbe$ recalibration; the current self-consistent grid (six $\Scloud$, with
+$\Tbe$, $\ximax$, and $\rhoc$ derived per node) has $277$ models, versus
+$\sim$1300 for the independent-$\Tbe$ trial. It encloses $\sim$96\% of the
+Aquila cores.}
 
-The mass range spans $\sim$0.01--40\,$\msun$. The low end is set by the
-\emph{data} resolution: below the $3''$ map grid and the beam a core carries
-no recoverable size information, independent of how finely it is modeled
-(Sect.~\ref{sec:images}). The high end is capped above the observed Aquila
-maximum ($\sim$20\,$\msun$) with a fitting margin, rather than at the
-mathematical limit of the BE family (Sect.~\ref{sec:floorcap}).
+Nodes are retained wherever the model is physical and the resulting core is
+detectable. The continuity constraint of
+Eq.~(\ref{eq:contconstraint})---which in an earlier pipeline excluded cores
+whose edge density fell below the cloud density---is no longer imposed, since
+subtracting the background at the local floor rather than at the denser cloud
+removes the depression artefact that motivated it (Sect.~\ref{sec:continuity},
+\ref{sec:cratervsinterp}); the compact, massive cores it once removed are now
+retained. The truncation is covered over $0.5\le\ximax\le60$. The lower bound
+is the nearly uniform, weakly bound sphere; $\ximax\le6.451$ is the stable
+sub-critical regime; and $6.451<\ximax\le60$ is super-critical, i.e.\
+collapsing. Beyond $\ximax\approx60$ the profile is concentrated enough that its
+projected size falls below the beam -- the width function $\phi$ has saturated
+(Sect.~\ref{sec:inversion}) -- so the model is effectively an unresolved point
+source and no finite truncation is observationally distinguishable. Such cores,
+a few per cent of the observed sample and always the most compact and massive,
+are not templated; they are flagged as resolution-limited and receive no mass
+correction rather than being fitted with a spurious deep profile.
+
+Each retained node carries two diagnostic flags. The first is a stability flag
+(sub-critical, critical, super-critical) read directly from $\ximax$. The second
+is a boundedness proxy $\alpha_{\mathrm{BE}}=M_{\mathrm{BE,crit}}/M$, with the
+core counted as bound (prestellar) for $\alpha_{\mathrm{BE}}\lesssim2$ following
+\citet{Konyves+2015}. The two flags correlate as physically expected: the
+super-critical nodes are all bound, and the unbound nodes are the least
+concentrated, lowest-mass spheres. The grid therefore spans the full sequence
+from unbound starless, through bound prestellar, to collapsing cores.
+Sub-critical is not synonymous with unbound; it is a stable equilibrium that may
+be bound or unbound depending on concentration. The flags are recorded for
+downstream selection and are not used to trim the grid, because the extraction
+detects, and the method must correct, both bound and unbound starless cores.
+
+Interpolation is carried out in $\log$ space. Because the retained node set is
+ragged at the detectability and high-concentration edges, we use a scattered
+(Delaunay) interpolator on the real node coordinates rather than a regular-grid
+interpolator, and we record the excluded loci explicitly to bound the fit.
+\note{Omit trimmed models from the catalogue; if a self-describing table is
+wanted, flag rows with NaN (not zero) observables.}
+
+The mass range, $\sim$0.01--100\,$\msun$, is deliberately wider than any single
+cloud so that the grid is a reusable, region-independent tool rather than one
+tuned to Aquila; the empty corners around the Aquila locus are kept on purpose.
+The low-mass/large-size and high-mass/small-size corners are bounded by the
+physics of Eq.~(\ref{eq:xiinvert}) -- too diffuse to form a bound sphere, or too
+compact to be resolved -- not by an imposed cut. Projected to the Aquila
+distance and convolved to the catalogue resolution, this grid encloses
+$\sim$97\% of the published cores, the residual being the unresolved
+compact-massive tail noted above (Sect.~\ref{sec:floorcap}).
 
 \subsection{Synthetic images}
 \label{sec:images}
@@ -627,35 +851,46 @@ the same cell walls and volumes as RADMC-3D.}
 \subsection{Crater versus interpolated demonstration}
 \label{sec:cratervsinterp}
 
-For a continuous $0.1\,\msun$ core in a $2\times10^{22}\,\mathrm{cm^{-2}}$
-cloud at $G_{0}=10$:
+The two background schemes are compared directly on a controlled sequence of
+five embedded cores at $\Scloud=4.8\times10^{22}\,\mathrm{cm^{-2}}$, spanning
+increasing concentration and hole depth (edge-to-cloud density ratio from
+$1.13$ down to $0.08$). Here the ``crater'' scheme subtracts the known cloud
+pedestal at the local floor $\rho_{\mathrm{BE}}(\Rbe)$---the reference the
+forward model uses to define truth---while the interpolated scheme mimics what
+real extractions do, estimating the background across the source footprint;
+its mass is integrated over positive-surface-density pixels only, as an
+observer would, since negative surface densities are not physically trusted.
+Masses are obtained by direct integration of the surface density (no
+extraction), isolating the background-subtraction bias:
 \begin{center}
-\begin{tabular}{lcc}
+\begin{tabular}{cccccc}
 \hline
-Background scheme & $\Tsed$ (K) & $M$ ($\msun$)\\
+Model & $\ximax$ & edge/emb & $M_{\mathrm{true}}$ & Crater & Interpolated\\
+      &          &          & ($\msun$)           & ($\msun$) & ($\msun$)\\
 \hline
-Crater (core removed)    & 8.52 & 0.1015 \\
-Interpolated             & 8.26 & 0.0676 \\
+1 &  3.81 & 1.13 & 1.0 & 0.999 & 0.555 \\
+2 &  7.04 & 0.63 & 2.0 & 2.000 & 0.914 \\
+3 & 16.52 & 0.39 & 2.0 & 1.998 & 0.941 \\
+4 & 16.21 & 0.20 & 4.0 & 4.000 & 1.097 \\
+5 & 36.40 & 0.08 & 7.6 & 7.598 & 1.147 \\
 \hline
 \end{tabular}
 \end{center}
-The crater scheme recovers the true mass and temperature; the interpolated
-scheme is cold-biased and under-estimates the mass by $\sim$1.5. The
-350\,$\mu$m peak is a factor $\sim$2 lower for the interpolated case,
-because it subtracts the edge cloud value across the footprint while the
-actual cloud under the core (the crater) is lower. The arithmetic closes:
-with $M\propto F/B_\nu(T)$, a flux ratio $\sim$0.5 and
-$B_\nu(8.52)/B_\nu(8.26)\approx 1.16$ at 350\,$\mu$m give $\sim$0.58, versus
-the observed $0.0676/0.1015=0.67$ (approximate, since the mass comes from
-the full multi-band fit, not the single 350\,$\mu$m peak).
-
-\note{SUPERSEDED, do not reuse: earlier $0.05\,\msun$ numbers
-(interpolated 0.0178, crater 0.0507, mass factor $\sim$2.8, peak factor
-$\sim$5) were contaminated by a modeling artefact---that core's outer-radius
-density dipped below the cloud density, creating a spurious depression. The
-clean effect at this mass/column is factor $\sim$2 in peak, $\sim$1.5 in
-mass; it may grow at higher columns and lower masses, to be mapped rather
-than asserted.}
+Two results stand out. First, the crater scheme recovers the true mass to
+better than $0.1\%$ at every hole depth, including the deepest inversion
+(edge/emb $=0.08$): the density hole causes no bias, confirming that the
+continuity constraint (Eq.~\ref{eq:contconstraint}) is unnecessary and these
+compact, massive cores are fully recoverable. Second, the interpolated scheme
+under-estimates the mass increasingly with concentration and hole depth, from
+$56\%$ of truth at $\ximax=3.8$ down to $15\%$ at $\ximax=36.4$, because it
+subtracts the denser surrounding cloud across the core footprint while the
+actual background under the core is the far lower local floor. The deficit
+tracks hole depth---model 4 (edge/emb $=0.20$) recovers less than model 3
+(edge/emb $=0.39$) despite similar concentration, because its inversion runs
+deeper below the cloud. This is the over-subtraction bias the crater
+background corrects, shown here in the concentrated, high-column regime where
+it is largest and where the standard interpolated method loses most of the
+mass.
 
 \subsection{Known-truth injection test}
 \label{sec:injtest}
@@ -759,11 +994,16 @@ surface-density stamp and compute the fraction of flux \emph{getsf} would
 recover against the fluctuating background at that model's own $\Scloud$. Two
 mechanisms act together. First, the measurement footprint---set in
 \emph{getsf} at $\eta$ times the half-maximum radius \citep{Menshchikov2021}
----cannot expand past the radius where the source profile sinks into the
-cirrus fluctuations, so the effective footprint is
+---cannot expand past the radius where the source profile sinks below the
+detection floor, so the effective footprint is
 $\min(\eta\,H_n,\,r_{\mathrm{noise}})$, with $r_{\mathrm{noise}}$ the radius at
-which the azimuthally averaged profile falls to $5\,N_{\mathrm{rms}}$. Second,
-the residual background pedestal at that rim is subtracted over the footprint.
+which the azimuthally averaged profile falls to the empirical detection floor.
+That floor is calibrated on the reliable matched-SED sources of the reference
+catalogue---the faintest detected source peak column as a function of local
+background column---rather than on a single-scale combination significance,
+which is a per-decomposed-scale quantity and not the fluctuation level of the
+original combined image. Second, the residual background pedestal at that rim
+is subtracted over the footprint.
 The recovered-to-true flux ratio defines an environment-dependent recoverable
 mass, $M_{\mathrm{SED}}^{\mathrm{rec}}=f_{\mathrm{rec}}\,M_{\mathrm{SED}}$,
 which replaces the idealized model mass as the interpolation coordinate. In
@@ -781,6 +1021,63 @@ $6\times10^{21}$, and $1.2\times10^{22}\,\mathrm{cm^{-2}}$, against uncorrected
 ratios of $0.77$, $0.81$, and $0.64$. The environment dependence of the flux
 loss is thereby removed, which is what makes the correction transportable to
 real fields of differing column.
+
+\subsection{Detectability and the contrast floor}
+\label{sec:detectability}
+
+The recoverable-mass fraction quantifies flux loss for a \emph{detected} core.
+A prior question is whether a given node corresponds to a detectable core at
+all: an undetected source never enters the extraction catalogue and so is never
+mass-corrected. Detectability is not a property of the region but of the local
+background column---a core of a given peak contrast is equally (un)detectable
+wherever that background occurs---so it is a function of $\Scloud$ alone and
+leaves the grid region-independent.
+
+We express it through the contrast measured by the extraction,
+\begin{equation}
+  \mathcal{C} \equiv \frac{\mathrm{PEAK^{SBF}}}{\mathrm{PEAK^{BGF}}}
+             = 1 + \frac{\mathrm{PEAK^{SRC}}}{\mathrm{PEAK^{BGF}}},
+  \label{eq:contrastdef}
+\end{equation}
+the ratio of the source-plus-background to the background peak column under the
+source. Calibrated on the reliable matched-SED (``ok'') sources of the
+reference Aquila catalogue, the empirical detection floor is
+$\mathcal{C}\simeq1.16$ (first percentile $1.163$): no real core is extracted
+below a peak excess of $\sim$16\% of the local background. For the universal
+grid we adopt a slightly lower floor, $\mathcal{C}_{\min}=1.1$, so that regions
+detecting marginally deeper than Aquila are included; a study with a different
+limit changes only this number.
+
+The node contrast follows from the predicted background-subtracted peak column.
+Because the model background is a clean constant-$\Scloud$ pedestal rather than
+an interpolated estimate, that peak is computable analytically: we project the
+truncated BE profile, convolve it with the beam as a two-dimensional (Hankel)
+transform,
+\begin{equation}
+  C(\rho) = \frac{1}{\sigma^{2}}\!\int_{0}^{\infty}\!\Sigma(r)\,
+  \exp\!\left(-\frac{r^{2}+\rho^{2}}{2\sigma^{2}}\right)
+  I_{0}\!\left(\frac{r\rho}{\sigma^{2}}\right) r\,\mathrm{d}r,
+  \label{eq:hankel}
+\end{equation}
+using the BE scale radius $\rzero$ for the angular conversion, and average $C$
+over the central map pixel, matching the observing chain of
+Sect.~\ref{sec:images}. Validated against a directly imaged model, the
+predicted convolved, resampled peak reproduces the measured value to $0.2\%$,
+so no normalisation factor is required.
+
+The flag has a direct consequence for coverage. Because the peak excess is set
+by compactness rather than mass---a massive core at fixed FWHM is spread by
+beam dilution---the detectable region shrinks and shifts to smaller FWHM
+(higher $\ximax$) as $\Scloud$ rises: the maximum detectable FWHM falls from
+$\sim$190$''$ at $3\times10^{21}\,\mathrm{cm^{-2}}$ to $\sim$18$''$ at
+$9.6\times10^{22}\,\mathrm{cm^{-2}}$, and the minimum detectable $\ximax$ rises
+from $\sim$0.5 to $\sim$7. This is physically consistent with the observed
+tendency of cores in the densest filaments to be smaller and more centrally
+concentrated---infalling, gravitationally unstable configurations---so
+detectability selection and the astrophysics of dense-gas cores point the same
+way. Nodes below the floor are flagged and skipped in the radiative transfer,
+retaining the regular $(i,j,k)$ lattice while concentrating the computed grid
+where observable cores lie.
 
 % ======================================================================
 \section{Discussion: scope, validity, and limitations}
@@ -807,25 +1104,21 @@ under-estimation. This framing distinction matters for the paper.
 The most consequential assumption is the uniform-density embedding cloud.
 We are explicit about what it does and does not compromise.
 
-\paragraph{Construction self-consistency, not a physical law.}
-The continuity requirement $\rho_{\mathrm{BE}}(\Rbe)\ge\rhocloud$
-(Eq.~\ref{eq:contconstraint}) is a property of the uniform-cloud geometry:
-the local volume density at the core boundary \emph{is} $\rhocloud$ in the
-model, so the requirement that the core be an overdensity is a
-self-consistency condition for this particular embedding, not a statement
-about which cores can exist. Physically, a core's local volume density and
-its observed surface density are decoupled---the column integrates the
-\emph{entire} cloud along the sightline, while the local density is set by
-where the core sits in the cloud's three-dimensional structure---so real
-cores can certainly exist at masses the uniform-cloud grid excludes.
-
-\paragraph{The edge is an applicability boundary, not a mass bias.}
-Crucially, the arbitrariness lives entirely at the boundary. Inside the
-populated region the construction is self-consistent and mass recovery
-stands on its own; the continuity edge does not propagate inward as a mass
-error. It marks where the uniform-cloud model applies, not where cores
-exist---a distinction we state explicitly so the edge is not misread as a
-formation limit (Sect.~\ref{sec:edge}).
+\paragraph{The continuity requirement was a construction condition, now
+retired.} The requirement $\rho_{\mathrm{BE}}(\Rbe)\ge\rhocloud$
+(Eq.~\ref{eq:contconstraint}) was a property of the uniform-cloud geometry
+combined with a particular subtraction order, not a statement about which
+cores can exist: the local volume density at the core boundary \emph{is}
+$\rhocloud$ in the model, and a core's local density and its observed surface
+density are in any case decoupled---the column integrates the entire cloud
+along the sightline, while the local density is set by where the core sits in
+the cloud's three-dimensional structure. With the background now subtracted at
+the local floor before convolution (Sect.~\ref{sec:continuity}), the artefact
+the requirement guarded against no longer arises, and it has been retired
+(Sect.~\ref{sec:cratervsinterp}). The residual low-mass boundary that remains
+is set by detectability, not by this condition (Sect.~\ref{sec:edge}), and it
+is an applicability limit---where the method can characterize a core---not a
+statement about where cores form.
 
 \paragraph{The cloud enters the mass only at second order.}
 The first-order mass is encoded in the core's own emission (the multi-band
@@ -849,6 +1142,28 @@ the explicit model is itself idealized. The honest claim is ``less biased
 than the standard, with a stated and quantified residual,'' and that claim
 is robust to the cloud idealization.
 
+\paragraph{The high-mass boundary and the density hole.}
+The high-mass, high-column corner of parameter space deserves explicit
+comment, because it was the original motivation for the continuity constraint.
+Massive, centrally concentrated cores ($\ximax\sim7$--$40$) at the highest
+columns have a BE edge density below the cloud density,
+$\rho_{\mathrm{BE}}(\Rbe)<\rhocloud$---a density inversion, or hole, relative
+to the surrounding cloud. Cores of these masses are observed at these columns,
+so excluding them would under-cover the real population precisely where dense
+filaments form their most massive cores. Two findings remove the exclusion.
+First, subtracting the background at the local floor $\rho_{\mathrm{BE}}(\Rbe)$
+on the original image, before convolution, eliminates the depression artefact
+entirely, and direct integration recovers the true mass to better than
+$0.1\%$ across edge-to-cloud ratios from $1.13$ to $0.08$
+(Sect.~\ref{sec:cratervsinterp}); the radiative transfer likewise handles the
+inversion cleanly, photons crossing the rarefied region with few interactions
+so the temperature varies smoothly. Second, the inversion is not obviously
+unphysical: an inner rarefaction relative to the ambient cloud is
+schematically what an inside-out collapsing core develops as material drains
+inward behind the infall front, so these configurations plausibly represent
+evolved, collapsing cores rather than a modelling artefact. We therefore
+retain them, and the continuity constraint is dropped.
+
 \paragraph{Recommended sensitivity test.}
 The worry can be converted into a number. For a few representative cores we
 will build the core in a \emph{non-uniform} cloud (a density gradient, or
@@ -862,16 +1177,19 @@ budget posture of the programme.
 \subsection{The low-mass applicability edge}
 \label{sec:edge}
 
-Per $\Scloud$ node, Eq.~(\ref{eq:contconstraint}) defines a minimum
-recoverable core mass. We carry this locus explicitly: it bounds the fit
-(the minimizer is clipped at the locus) and it is a result in its own
-right---the method cannot characterize cores below it at a given column.
-Because the \texttt{SD} (surface-density) observable is the quantity most
-directly tied to the continuity edge (it is where $\rho_{\mathrm{BE}}$ meets
-$\rhocloud$), the interpolator's behavior near the edge and the continuity
+Per $\Scloud$ node there remains a minimum \emph{recoverable} core mass, but it
+is now set by detectability rather than by the (dropped) continuity constraint.
+A core is characterizable only if its convolved peak clears the contrast floor
+of Sect.~\ref{sec:detectability}; because peak contrast falls with mass at fixed
+column (a low-mass core is faint against the background), this defines a
+column-dependent low-mass edge. We carry this locus explicitly: it bounds the
+fit (the minimizer is clipped at the locus) and it is a result in its own
+right---the method cannot characterize cores below it at a given column. The
+\texttt{SD} (surface-density) observable is the quantity most directly tied to
+this edge, so the interpolator's behavior near the edge and the detectability
 bound are the same physical locus seen two ways; keeping the bound explicit
 makes the fit and the observable respect it consistently. Below the edge the
-uniform-cloud model is silent, which is not a claim of absence.
+method is silent, which is not a claim of absence.
 
 Once the grid is expressed in recoverable mass (Sect.~\ref{sec:recoverable}),
 this edge acquires a sharper, quantitative form. The recoverable-mass
@@ -945,40 +1263,67 @@ an extrapolation we do not rely on.
 \subsection{Geometry: a parsimonious template}
 \label{sec:geometry}
 
-We adopt critical BE spheres rather than a richer geometric family
-(non-spherical, multiple shape parameters) for two reasons. First,
-parsimony: the critical BE profile is a single self-similar shape, so the
-family has effectively two parameters. Second, resolution: convolution to
-the \emph{Herschel} beams washes out shape differences at the
-$\sim$5\% level, below the noise, so geometric detail is not recoverable and
-its inclusion would add unconstrained parameters. The resolution argument is
-the defensible justification; no dedicated geometric-sensitivity test is
-required, though one can be quoted.
+We use spherical BE profiles rather than a richer non-spherical or
+multi-parameter geometric family for a resolution reason: convolution to the
+\emph{Herschel} beams washes out shape differences at the $\sim$5\% level, below
+the noise, so geometric detail beyond a single concentration parameter is not
+recoverable and would add unconstrained degrees of freedom. What the template
+\emph{does} need is the freedom to reproduce the observed range of core sizes at
+each mass, and this is where the earlier fixed-critical choice failed.
 
-A direct comparison of model size against the published Aquila catalogue,
-however, shows that the critical-sphere assumption breaks down for the more
-massive cores. Convolving the model surface-density peak to the catalogue
-resolution ($18.2''$, adding the difference beam in quadrature to our
-$13.5''$ maps) and comparing the convolved FWHM at fixed mass, the
-critical spheres match the observed core sizes below $\sim$1\,$\msun$ (ratio
-$0.8$--$0.9$, real cores if anything marginally more extended), but become
-progressively too large above it: the median model-to-observed size ratio is
-$\approx1.3$ over 1--10\,$\msun$, and the most massive critical spheres in the
-grid reach $\sim$600$''$ where no observed core exceeds $\sim$110$''$.
-About a fifth of the grid (the high-mass, large-radius corner) thus occupies a
-size regime absent from the data. This is expected physically: a
-high-mass \emph{critical} BE sphere is necessarily large and diffuse, whereas
-real massive cores are centrally condensed, consistent with external-pressure
-truncation. The correction machinery developed here---recoverable mass,
-concentration, source FWHM, and the completeness limit---is independent of
-this and remains valid; only the underlying size template is affected. The
-natural remedy, deferred to future work, is to replace the critical sphere
-with a pressure-truncated (non-critical) BE family, adding the truncation
-radius $\ximax<6.451$ as a grid axis so that the models populate the compact,
-observed size range at each mass. We note also that the reference extraction
-imposed a minimum measured size of $\sim$1.5 beams, so the observed sizes near
-that floor are upper limits and the required truncation is, if anything,
-somewhat stronger than the direct ratios imply.
+A direct comparison of model size against the published Aquila catalogue makes
+the failure explicit. For a critical sphere at fixed temperature the mass and
+radius scale together: from Eqs.~(\ref{eq:mass}) and (\ref{eq:r0}),
+$M\propto\rhoc^{-1/2}$ and $\Rbe\propto\rhoc^{-1/2}$, so $M\propto\Rbe$. A more
+massive critical sphere is therefore necessarily larger and more diffuse,
+because its central density must fall to raise the mass, and the most massive
+critical spheres in the grid reach $\sim$600$''$ where no observed core exceeds
+$\sim$110$''$. Convolved to the catalogue resolution ($18.2''$, adding the
+difference beam in quadrature to our $13.5''$ maps), the critical spheres match
+observed sizes below $\sim$1\,$\msun$ but grow to a median model-to-observed
+size ratio $\approx1.3$ over 1--10\,$\msun$, and about a fifth of the grid
+occupied a size regime absent from the data. Real massive cores are compact and
+centrally condensed, not large and diffuse; the fixed-critical family cannot
+represent them.
+
+The remedy, implemented here and described in
+Sects.~\ref{sec:inversion}--\ref{sec:grid}, is to free the truncation $\ximax$
+and parameterize each model by its observed mass and size. The stretch is a
+property of holding $\ximax$ fixed, not of BE spheres as such. At fixed
+temperature the critical family lies on $M\propto\Rbe$
+($\mathrm{d}\log\Rbe/\mathrm{d}\log M = 1$), whereas the observed cores are
+nearly flat ($\mathrm{d}\log\Rbe/\mathrm{d}\log M \approx 0.1$), that is, far
+more centrally condensed than a critical sphere. Solving
+Eq.~(\ref{eq:xiinvert}) for $\ximax$ at each observed $(M,\mathrm{FWHM})$ places
+the model on the compact observed locus by construction: higher mass is then
+reached by higher concentration (larger $\ximax$) rather than by inflation. The
+reference extraction imposed a minimum measured size of $\sim$1.5 beams, so the
+observed sizes near that floor are upper limits and the true concentration is,
+if anything, slightly higher than the direct ratios imply.
+
+The sub-critical, critical, and super-critical truncations are all physically
+meaningful as core templates. The profile $\rho=\rhoc e^{-\psi}$ is a smooth,
+monotone density distribution for any $\ximax$, and does not need to be a stable
+equilibrium for the temperature bias and flux recovery to be representative;
+real collapsing cores are not equilibria either. Physically the $\ximax$
+sequence traces the prestellar sequence itself: weakly concentrated, pressure
+confined, and often unbound at low $\ximax$; stable and increasingly self
+gravitating up to the critical value; and collapsing above it, where the most
+unambiguously prestellar (compact, massive) cores lie. The correction therefore
+spans, and flags, this full sequence rather than assuming a single dynamical
+state (Sect.~\ref{sec:grid}).
+
+This parameterization is also what makes the four-observable correction well
+posed. At fixed size the true mass varies by more than an order of magnitude as
+$\ximax$ runs across its range, so size alone does not determine mass. The
+degeneracy is broken by the recovered mass $M_{\mathrm{SED}}$, which scales
+directly with $M_{\mathrm{BE}}$, and confirmed by the concentration, a monotone
+function of $\ximax$ (Sect.~\ref{sec:concentration}). The mapping from the
+measured tuple ($M_{\mathrm{SED}}$, $\Scloud$, source FWHM, concentration) to
+true mass is thus single-valued, and none of the four observables is redundant:
+dropping either the recovered mass or the concentration reopens the size--mass
+degeneracy. This is the quantitative justification for the observable set of
+Sect.~\ref{sec:observables}.
 
 \subsection{Fixed $G_{0}$}
 \label{sec:g0}
@@ -1060,7 +1405,7 @@ the temperature-gradient warm bias and the interpolated-background
 over-subtraction flux loss---and delivers a quantitative bias-vs-(mass,
 column) surface. The model family is the critical BE sphere, built with
 analytically derived central densities, mass-conserving discretization, a
-wall snapped to $\Rbe$, and a continuity-constrained low-mass edge; the
+wall snapped to $\Rbe$, and a detectability-limited low-mass edge; the
 embedding cloud is sized to the convolved core scale with the cloud surface
 density $\Scloud$ as the physical third axis. Calibration places the field
 at $G_{0}\approx 10$, matched SED-to-SED to the observed Aquila temperatures.
