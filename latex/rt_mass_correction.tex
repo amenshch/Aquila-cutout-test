@@ -640,9 +640,14 @@ below.
 \mathrm{cm^{-2}}$ (6 values); $M=8\times10^{-3}$--$100\,\msun$; intrinsic FWHM
 $0.003$--$0.25$\,pc. Final node count to be confirmed after the higher-photon
 $\Tbe$ recalibration; the current self-consistent grid (six $\Scloud$, with
-$\Tbe$, $\ximax$, and $\rhoc$ derived per node) has $277$ models, versus
-$\sim$1300 for the independent-$\Tbe$ trial. It encloses $\sim$96\% of the
-Aquila cores.}
+$\Tbe$, $\ximax$, and $\rhoc$ derived per node) has $377$ physical models---the
+$277$ with $\rho_{\mathrm{BE}}(\Rbe)\ge\rhocloud$ plus the $100$ formerly
+excluded by the continuity constraint, now retained
+(Sect.~\ref{sec:continuity})---of which $\sim$260 clear the detectability floor.
+The newly retained models populate the compact, massive corner at high column
+that the constraint had removed. It encloses $\sim$96\% of the Aquila cores;
+the $\sim$4\% outside lie beyond the BE family and are discussed in
+Sect.~\ref{sec:floorcap}.}
 
 Nodes are retained wherever the model is physical and the resulting core is
 detectable. The continuity constraint of
@@ -1248,17 +1253,34 @@ residual low-mass over-correction seen in the sparsest test field.
 The low-mass floor ($\sim$0.01\,$\msun$ at the Aquila distance) is set by
 the angular resolution: below the pixel, contrast and FWHM both saturate to
 point-source-on-background and carry no recoverable size information, so the
-grid cannot constrain such cores and does not attempt to. \note{Check per
-column whether the resolution floor or the continuity edge
-(Sect.~\ref{sec:edge}) is the more restrictive low edge---whichever binds
-first is the true boundary at that column.} The high-mass cap is set from
-the observed Aquila CMF with a fitting margin ($\sim$1.5--2$\times$ the
-observed maximum), rather than from the mathematical limit of the BE family.
-Carrying grid nodes far above the observed range widens the interpolation
-domain without exercising it by data, and there the critical-BE template is
-least physically defensible (such objects are not quasi-static isothermal
-spheres). We state explicitly that above the observed range the template is
-an extrapolation we do not rely on.
+grid cannot constrain such cores and does not attempt to. Per column, the
+binding low-mass edge is whichever of this resolution floor or the
+detectability limit (Sect.~\ref{sec:edge}) is the more restrictive.
+
+The high-mass boundary is not a chosen cap but the intrinsic limit of the
+pressure-truncated BE family. At each column the most massive constructible
+core is the one whose truncation reaches the deep-concentration end of the
+sequence; beyond it, no isothermal pressure-truncated sphere exists at that
+mass and size. This boundary is therefore physically meaningful in a way a CMF
+margin would not be: it is the largest mass a genuine single, cleanly measured
+BE core can have at a given size, and it doubles as a diagnostic. A handful of
+observed sources---$\sim$25 of the 685 Aquila cores, $\sim$4\%---lie above the
+boundary, in the compact ($\mathrm{FWHM}\lesssim30''$), massive
+($M\gtrsim1\,\msun$) corner. Reproducing them as BE spheres would require
+$\ximax\sim70$--$150$, i.e.\ central-to-edge density contrasts far outside the
+quasi-static isothermal regime and, indeed, outside any physically sensible
+single-core structure. The natural interpretation is that these are not single
+BE cores at all: at $260\,$pc a $\mathrm{FWHM}\lesssim30''$ aperture blends
+multiple sources, and an interpolated background across such a source readily
+sweeps in surrounding filament mass, inflating the apparent mass without a
+commensurate increase in size and displacing the point up and to the left, out
+of the BE locus. The grid boundary thus flags exactly the sources one would
+want to treat separately---blended or background-contaminated---rather than
+correct with a single-core template. We do not extend the grid to cover them:
+doing so would mean fitting an unphysical BE profile to objects the model does
+not describe. The method applies to the $\sim$96\% of cores consistent with
+the BE family, and the boundary is stated as a domain of validity, not a
+tuning choice.
 
 \subsection{Geometry: a parsimonious template}
 \label{sec:geometry}
