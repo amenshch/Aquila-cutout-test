@@ -4,17 +4,20 @@ add_recoverable_mass.py -- add environment-dependent recoverable-mass columns
 to the BE model grid catalog.
 
 For each grid model, the recoverable (getsf-detectable) mass fraction is
-estimated from the model's own convolved surface-density stamp using the
-Konyves (2015, Appendix B) cirrus-fluctuation law:
+estimated from the model's own convolved surface-density stamp using an
+empirical getsf detection floor calibrated on the real Aquila ok-SED catalog:
 
-    N_rms(N_back) = 3.9e20 * (N_back / 7e21)^1.6   [cm^-2]      (Eq. B.1)
+    N_src_min(N_back) = 1.97e21 * (N_back / 1e22)^1.34   [cm^-2]
+
+(the faintest detected source peak column PEAK^SRC03 vs the local background
+column PEAK^BGF03, lower-envelope fit over 136 reliable sources).
 
 Two flux-loss mechanisms are applied to the (background-subtracted) surfdens
 stamp of each model, embedded at its own SD_emb:
 
   1. Outskirt truncation: the detectable footprint is limited to the radius
-     where the core column contrast drops to 5 * N_rms (getsf's 5-sigma
-     detection level over local background fluctuations).
+     where the source column drops to the empirical detection floor
+     N_src_min(N_back) for the local background column.
 
   2. Background pedestal subtraction: getsf interpolates and subtracts a
      background pinned at the footprint rim; we subtract that pedestal
@@ -27,7 +30,7 @@ Output columns:  M_SED3bs_rec  = M_SED3bs  * frac
                  frac_rec      = the fraction itself (diagnostic)
 
 Stamp location (matches the RADMC-3D output tree):
-    <stamp_root>/cSD_{i:02d}/tBE_{j:02d}/{k:02d}/nc.surfdens.bs.r13p5x0.rs3p0as.fits
+    <stamp_root>/cSD_{i:02d}/M_{j:02d}/{k:02d}/nc.surfdens.bs.r13p5x0.rs3p0as.fits
 
 Usage:
     python add_recoverable_mass.py \
@@ -44,29 +47,41 @@ import os
 import numpy as np
 from astropy.io import fits
 
-PIX_ARCSEC = 3.0
-KON_NORM   = 3.9e20        # cm^-2
-KON_REF    = 7.0e21        # cm^-2
-KON_INDEX  = 1.6
-DET_SIGMA  = 5.0           # getsf detection level over background fluctuations
+PIX_ARCSEC = 3.0        # all stamps resampled to a common 3" grid before getsf
+
+# --- Empirical getsf detection floor, calibrated on the real Aquila "ok" (matched
+#     reliable-SED) source catalog: the faintest detected source peak column
+#     (PEAK^SRC03) as a function of the local background column (PEAK^BGF03).
+#     Lower-envelope (5th-percentile) fit over 136 sources:
+#         N_src_min(N_back) = FLOOR_NORM * (N_back / FLOOR_REF)^FLOOR_INDEX
+#     i.e. a contrast floor of ~0.20 at 1e22, ~0.13 at low column, ~0.43 at high column.
+#     This REPLACES the old 5*N_rms Konyves-cirrus cut, which used getsf's
+#     single-scale combination sigma (a per-decomposed-scale quantity), not the
+#     detection floor in the original combined image, and was far too harsh --
+#     it drove frac_rec to zero above N_back ~ 1.2e22, where real cores are in
+#     fact routinely detected.
+FLOOR_NORM  = 1.971e21     # cm^-2  (source-peak floor at N_back = FLOOR_REF)
+FLOOR_REF   = 1.0e22       # cm^-2
+FLOOR_INDEX = 1.342
 
 STAMP_NAME = 'nc.surfdens.bs.r13p5x0.rs3p0as.fits'
 
 
 def stamp_path(stamp_root, i, j, k):
-    """Path in the RADMC-3D tree: cSD_{i:02d}/tBE_{j:02d}/{k:02d}/<STAMP_NAME>."""
+    """Path in the RADMC-3D tree: cSD_{i:02d}/M_{j:02d}/{k:02d}/<STAMP_NAME>."""
     return os.path.join(stamp_root,
-                        f'cSD_{i:02d}', f'tBE_{j:02d}', f'{k:02d}',
+                        f'cSD_{i:02d}', f'M_{j:02d}', f'{k:02d}',
                         STAMP_NAME)
 
 
-def N_rms(N_back):
-    """Konyves B.1 cirrus fluctuation rms (cm^-2) at background column N_back."""
-    return KON_NORM * (N_back / KON_REF) ** KON_INDEX
+def N_detect_floor(N_back):
+    """Empirical getsf source-peak detection floor (cm^-2) at background column
+    N_back, from the real Aquila ok-SED catalog (see constants above)."""
+    return FLOOR_NORM * (N_back / FLOOR_REF) ** FLOOR_INDEX
 
 
 def recoverable_fraction(stamp, sd_emb, pix_arcsec=PIX_ARCSEC,
-                         eta=3.0, k_noise=DET_SIGMA):
+                         eta=3.0):
     """Fraction of the model's stamp flux that getsf recovers against a
     fluctuating background at column sd_emb.
 
@@ -74,13 +89,13 @@ def recoverable_fraction(stamp, sd_emb, pix_arcsec=PIX_ARCSEC,
       * the measurement footprint is set at eta * H_n, where H_n is the
         half-maximum radius of the (convolved) source -- NOT a 5-sigma cut;
       * getsf expands the footprint for resolved power-law sources to reduce
-        the residual background pedestal, but the expansion is noise-limited:
-        it cannot extend past the radius where the source profile sinks into
-        the background fluctuations (~k_noise * N_rms).
+        the residual background pedestal, but the expansion is detection-
+        limited: it cannot extend past the radius where the source profile
+        sinks to the empirical detection floor N_detect_floor(N_back).
       * whatever pedestal remains at the footprint rim is subtracted.
 
     Effective footprint radius = min(eta * H_n, r_noise), where r_noise is
-    where the azimuthal profile drops to k_noise * N_rms(sd_emb). In low-noise
+    where the azimuthal profile drops to N_detect_floor(sd_emb). In low-noise
     (low column) environments the footprint reaches eta*H_n and recovers most
     of the flux; in high-noise (high column) environments it is truncated
     earlier and more flux is lost -- giving the environment dependence.
@@ -116,8 +131,10 @@ def recoverable_fraction(stamp, sd_emb, pix_arcsec=PIX_ARCSEC,
     # getsf target footprint: eta * H_n
     r_eta = eta * H_n
 
-    # noise-limited radius: where profile sinks to k_noise * N_rms
-    thr = k_noise * N_rms(sd_emb)
+    # detection-limited radius: where the (bg-subtracted) source profile sinks
+    # to the empirical detection floor for this background column.  The footprint
+    # cannot be expanded past where the source is no longer detectable.
+    thr = N_detect_floor(sd_emb)
     below_thr = np.where(prof < thr)[0]
     r_noise = r_centers[below_thr[0]] if below_thr.size else r_centers[-1]
 
@@ -199,7 +216,7 @@ def main():
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--grid', required=True, help='input grid catalog')
     ap.add_argument('--stamp-root', required=True,
-                    help='root of RADMC-3D tree (contains cSD_NN/tBE_NN/KK/)')
+                    help='root of RADMC-3D tree (contains cSD_NN/M_NN/KK/)')
     ap.add_argument('--out', required=True, help='output catalog with new columns')
     # column indices (0-based) in the data rows; defaults match the standard
     # bes_model_params_catalog layout:
@@ -231,6 +248,9 @@ def main():
         fname = os.path.relpath(fpath, args.stamp_root)
         if os.path.exists(fpath):
             stamp = fits.getdata(fpath).astype(float)
+            # all stamps are resampled to a common PIX_ARCSEC (3") grid before getsf,
+            # so the fixed pixel scale is correct here (the variable RT pixel matters
+            # only upstream, at the imaging stage).
             frac, r_foot, ped, fwhm_rec, cff, cpm, cslp = recoverable_fraction(stamp, sd)
             n_done += 1
         else:
