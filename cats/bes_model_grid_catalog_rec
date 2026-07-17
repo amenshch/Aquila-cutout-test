@@ -69,7 +69,7 @@
 # Added by add_recoverable_mass.py:
 #   M_SED3bs_rec  = M_SED3bs  * frac_rec   (Msun)
 #   M_SED3bsl_rec = M_SED3bsl * frac_rec   (Msun)
-#   frac_rec      = recoverable flux fraction (Konyves noise-limited footprint + rim-pedestal subtraction)
+#   frac_rec      = recoverable flux fraction (empirical relation 1.971e21·(N_back/1e22)^1.342 from Aquila tests)
 #   FWHM_rec      = recovered half-max size (arcsec)
 #   conc_footfwhm = footprint diameter / FWHM_rec
 #   conc_peakmean = peak / mean intensity in footprint
