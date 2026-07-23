@@ -94,15 +94,35 @@ class ObservableCorrector:
     background as the observation; build the map from the model's interp-bg FWHM
     (FWHM_int), not the crater FWHM.
 
+    Note on axis scaling: all three coordinates enter as log10, matching
+    RecoverableCorrector.  An earlier version used a linear FWHM axis; a
+    leave-one-out test on the model grid favors log10 on every metric (median
+    error 2.5% vs 3.4%, worst case 276% vs 529%, and marginally wider hull
+    coverage), which is expected since the grid samples size geometrically.
+    Any external hull test must use the same log space.
+
+    The FWHM key must match the resolution the grid was built at.  The default
+    FWHMSDbs is the 161 um surface-density band (13.5 arcsec), which is the band
+    the extraction and the model grid share; passing a single-band FWHM such as
+    FWHM250bs silently mixes in that band's coarser beam (18.2 arcsec) and
+    biases the size coordinate.
+
     mode='direct'  : f(M_SED3bs, Sigma, FWHM) -> M_BE                  (~3% rms)
     mode='twostep' : (M_SED3bs, Sigma, FWHM) -> M_SED3bsl, then the crater
                      map M_BE/M_SED3bsl                                 (~2.5% rms)
     """
 
-    def __init__(self, cat, fwhm_key='FWHM250bs', mode='direct'):
+    def __init__(self, cat, fwhm_key='FWHMSDbs', mode='direct'):
         self.mode, self.fwhm_key = mode, fwhm_key
+        fw = np.asarray(cat[fwhm_key], float)
+        ok = (np.isfinite(fw) & (fw > 0)
+              & np.isfinite(cat['M_SED3bs']) & (cat['M_SED3bs'] > 0)
+              & np.isfinite(cat['SD_emb']) & (cat['SD_emb'] > 0))
+        if not ok.all():
+            cat = {k: np.asarray(v)[ok] for k, v in cat.items()}
+            fw = fw[ok]
         X = np.column_stack([np.log10(cat['M_SED3bs']),
-                             np.log10(cat['SD_emb']), cat[fwhm_key]])
+                             np.log10(cat['SD_emb']), np.log10(fw)])
         if mode == 'direct':
             self._f = LinearNDInterpolator(X, np.log10(cat['M_BE']))
         elif mode == 'twostep':
@@ -112,7 +132,9 @@ class ObservableCorrector:
             raise ValueError("mode must be 'direct' or 'twostep'")
 
     def correct(self, m_sed_obs, sigma_obs, fwhm_obs):
-        p = [[np.log10(m_sed_obs), np.log10(sigma_obs), fwhm_obs]]
+        if not (m_sed_obs > 0 and sigma_obs > 0 and fwhm_obs > 0):
+            return np.nan
+        p = [[np.log10(m_sed_obs), np.log10(sigma_obs), np.log10(fwhm_obs)]]
         if self.mode == 'direct':
             v = self._f(p)[0]
             return np.nan if not np.isfinite(v) else 10 ** v
@@ -155,7 +177,7 @@ class RecoverableCorrector:
     """
 
     def __init__(self, cat, mass_key='M_SED3bs_rec', conc_key='conc_footfwhm',
-                 fwhm_key='FWHM250bs', use_fwhm=True, frac_floor=1e-4):
+                 fwhm_key='FWHMSDbs', use_fwhm=True, frac_floor=1e-4):
         if mass_key not in cat or conc_key not in cat:
             raise KeyError(
                 "catalog lacks recoverable columns; load a catalog written by "
@@ -245,7 +267,118 @@ class ForwardFitter:
         return m, 10 ** s.x[0]
 
 
-def validate(grid_cat, holdout_cat, sed_mass='M_SED3bsl', fwhm_key='FWHM250bs'):
+class InvariantCorrector:
+    """(M_SED_rec, Sigma, conc_peakmean) -> M_BE, fully distance-invariant.
+
+    The size axis of the other correctors is an angular FWHM, which requires a
+    distance and a Gaussian size deconvolution to interpret.  Men'shchikov
+    (2023) shows that deconvolution errs by factors up to ~20 for unresolved
+    structures and up to ~6 for power-law profiles, i.e. exactly the
+    marginally-resolved and non-Gaussian regime that distant clouds occupy.
+
+    This corrector replaces the size axis with the peak-to-mean surface
+    brightness over the source footprint (conc_peakmean).  Being a ratio of two
+    intensities measured in the same map, it is distance-invariant by
+    construction: no distance, no deconvolution.  The same operation applies
+    unchanged to any cloud at any distance.
+
+    Leave-one-out on the 517-node refined grid, recoverable path:
+
+        FWHM (angular)      median |err| 10.2%   within 2x  92%   313 scored
+        conc_peakmean       median |err| 14.0%   within 2x  82%   348 scored
+
+    The invariant axis is nominally ~4 points less accurate in LOO, but that
+    baseline uses the grid's own exactly-measured FWHM; on real data the FWHM
+    path additionally carries the deconvolution error above, which is absent
+    here.  It also reaches more sources (348 vs 313), since it does not lose
+    marginally resolved cores.
+    """
+
+    def __init__(self, cat, conc_key='conc_peakmean',
+                 mass_key='M_SED3bs_rec', frac_floor=1e-4):
+        self.conc_key, self.mass_key = conc_key, mass_key
+        m = np.asarray(cat[mass_key], float)
+        sd = np.asarray(cat['SD_emb'], float)
+        c = np.asarray(cat[conc_key], float)
+        fr = np.asarray(cat.get('frac_rec', np.ones_like(m)), float)
+        ok = (np.isfinite(m) & (m > frac_floor) & np.isfinite(sd) & (sd > 0)
+              & np.isfinite(c) & (c > 0) & (fr > frac_floor))
+        X = np.column_stack([np.log10(m[ok]), np.log10(sd[ok]), np.log10(c[ok])])
+        self.f = LinearNDInterpolator(X, np.log10(np.asarray(cat['M_BE'], float)[ok]))
+
+    def correct(self, m_rec_obs, sigma_obs, conc_obs):
+        """Return corrected M_BE, or nan if outside the hull. No distance needed."""
+        if not (m_rec_obs > 0 and sigma_obs > 0 and conc_obs > 0):
+            return np.nan
+        v = self.f([[np.log10(m_rec_obs), np.log10(sigma_obs), np.log10(conc_obs)]])[0]
+        return 10 ** v if np.isfinite(v) else np.nan
+
+
+class HybridRecoverableCorrector:
+    """(M_rec, Sigma, FWHM [, concentration]) -> M_BE, with a 4D->3D fallback.
+
+    Adding a concentration axis sharpens the interpolation but shrinks the
+    convex hull, so a pure 4D map leaves a third of the queries unreachable.
+    This class builds both and uses the 4D value where the query lies inside
+    the 4D hull, falling back to 3D elsewhere.  Leave-one-out on the 517-node
+    refined grid (313 scored):
+
+        uncorrected M_rec   median |err| 52.7%   within 2x of truth  45%
+        3D                  median |err| 10.2%   within 2x           92%
+        4D (conc_peakmean)  median |err|  9.2%   within 2x           99%  (only 209 reachable)
+        hybrid              median |err|  8.4%   within 2x           96%  (all 313)
+
+    The hybrid keeps the coverage of the 3D map while recovering most of the
+    tail improvement of the 4D one: the 90th-percentile error falls from 55%
+    to 46%, and the fraction of nodes made WORSE than the uncorrected mass
+    falls from 8% to 6%.  conc_peakmean works; conc_footfwhm does not
+    (median 10.4%, no better than 3D).
+    """
+
+    def __init__(self, cat, fwhm_key='FWHMSDbs', conc_key='conc_peakmean',
+                 mass_key='M_SED3bs_rec', frac_floor=1e-4):
+        self.fwhm_key, self.conc_key, self.mass_key = fwhm_key, conc_key, mass_key
+        m = np.asarray(cat[mass_key], float)
+        fw = np.asarray(cat[fwhm_key], float)
+        sd = np.asarray(cat['SD_emb'], float)
+        fr = np.asarray(cat.get('frac_rec', np.ones_like(m)), float)
+        ok = (np.isfinite(m) & (m > frac_floor) & np.isfinite(fw) & (fw > 0)
+              & np.isfinite(sd) & (sd > 0) & (fr > frac_floor))
+        base = [np.log10(m[ok]), np.log10(sd[ok]), np.log10(fw[ok])]
+        y = np.log10(np.asarray(cat['M_BE'], float)[ok])
+        self.f3 = LinearNDInterpolator(np.column_stack(base), y)
+
+        self.f4 = None
+        if conc_key in cat:
+            c = np.asarray(cat[conc_key], float)[ok]
+            good = np.isfinite(c) & (c > 0)
+            if good.sum() > 20:
+                cols = [b[good] for b in base] + [np.log10(c[good])]
+                self.f4 = LinearNDInterpolator(np.column_stack(cols), y[good])
+
+    def correct(self, m_rec_obs, sigma_obs, fwhm_obs, conc_obs=None):
+        """Return the corrected M_BE, or nan if outside both hulls."""
+        if not (m_rec_obs > 0 and sigma_obs > 0 and fwhm_obs > 0):
+            return np.nan
+        q = [np.log10(m_rec_obs), np.log10(sigma_obs), np.log10(fwhm_obs)]
+        if self.f4 is not None and conc_obs is not None and conc_obs > 0:
+            v = self.f4([q + [np.log10(conc_obs)]])[0]
+            if np.isfinite(v):
+                return 10 ** v
+        v = self.f3([q])[0]
+        return 10 ** v if np.isfinite(v) else np.nan
+
+    def used_4d(self, m_rec_obs, sigma_obs, fwhm_obs, conc_obs=None):
+        """True if the 4D map supplied the answer (useful for diagnostics)."""
+        if self.f4 is None or conc_obs is None or conc_obs <= 0:
+            return False
+        if not (m_rec_obs > 0 and sigma_obs > 0 and fwhm_obs > 0):
+            return False
+        return bool(np.isfinite(self.f4([[np.log10(m_rec_obs), np.log10(sigma_obs),
+                                          np.log10(fwhm_obs), np.log10(conc_obs)]])[0]))
+
+
+def validate(grid_cat, holdout_cat, sed_mass='M_SED3bsl', fwhm_key='FWHMSDbs'):
     """Hold-out test on the subdivision models. Returns a dict of error arrays (%)."""
     crater = MassCorrector(grid_cat, sed_mass)
     obs_d = ObservableCorrector(grid_cat, fwhm_key, 'direct')

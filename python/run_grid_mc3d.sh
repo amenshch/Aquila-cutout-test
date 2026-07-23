@@ -42,6 +42,7 @@ CODE_CMD="mc3d all"
 LOCK_SUFFIX=".lock"
 
 TOPDIR="$(pwd)"
+FAILED_LIST="${FAILED_LIST:-${TOPDIR}/failed_nodes.txt}"
 leaf_dir=""
 trap 'echo; echo "Interrupted."; [[ -n "${leaf_dir:-}" ]] && release_lock "$leaf_dir"; exit 130' INT TERM
 
@@ -121,9 +122,14 @@ echo "       Template: ${TEMPLATE_DIR}"
 echo "        Threads: ${THREADS}"
 [[ -n "$NPHOT"     ]] && echo "          NPHOT: ${NPHOT} (override)"
 [[ "$FORCE" == "1" ]] && echo "          FORCE: recompute existing models"
+[[ "${VERBOSE_SKIP:-0}" == "1" ]] && echo "   VERBOSE_SKIP: listing every skipped node"
 echo
 
 n_run=0; n_skip=0; n_fail=0
+n_done=0; n_undet=0; announced=0
+
+echo " Looking for nodes to compute (set VERBOSE_SKIP=1 to list skipped nodes) ..."
+
 
 # Read the catalog: skip the header line (starts with ID or #)
 while read -r ID i j k SD_emb T_BE M_BE FWHM_pc xi_max contr peak_exc contrast detect hole rho_c rho_edge rho_emb r0 R_out R_cloud N_tot a_BE stab; do
@@ -134,7 +140,9 @@ while read -r ID i j k SD_emb T_BE M_BE FWHM_pc xi_max contr peak_exc contrast d
     #   Undetectable models never enter a real extraction catalogue, so by default
     #   we do not spend RT time on them; set ALL_NODES=1 to compute the full grid.
     if [[ "${ALL_NODES:-0}" == "0" && "$detect" == "0" ]]; then
-        n_skip=$((n_skip+1))
+        [[ "${VERBOSE_SKIP:-0}" == "1" ]] && \
+            printf '  [skip ] cSD_%02d/M_%02d/%02d - undetectable (detect=0)\n' "$i" "$j" "$k"
+        n_skip=$((n_skip+1)); n_undet=$((n_undet+1))
         continue
     fi
 
@@ -154,21 +162,65 @@ while read -r ID i j k SD_emb T_BE M_BE FWHM_pc xi_max contr peak_exc contrast d
         echo "  [mkdir] ${csd}/${md}/${kd}"
     fi
 
-    # ---- always (re)write the parameters: they come from the catalog, not
-    #      from a neighbouring model, so this is cheap and idempotent ----
-    write_config "$leaf_dir" "$rho_c" "$T_BE" "$xi_max" "$SD_emb"
-
-    # ---- skip if already done ----
+    # ---- skip if already done AND the stored parameters match the catalog ----
+    #   The leaf directory is addressed by (i,j,k) only.  If the catalog is
+    #   renumbered or re-gridded, a leaf can already hold a COMPLETED model that
+    #   was computed with different physics.  write_config above has just
+    #   overwritten the config with the new values, so the config would silently
+    #   disagree with the images.  Guard against that: stash the parameters that
+    #   produced the output and recompute whenever they differ.
+    stamp="${leaf_dir}/.mc3d_params"
+    want=$(printf '%.6e %.6f %.4f %.6e' "$rho_c" "$T_BE" "$xi_max" "$SD_emb")
     if [[ "$FORCE" == "0" ]]; then
         if [[ -f "${leaf_dir}/${OUTPUT_FILE}" ]] && \
            grep -q "MC3D: DONE" "${leaf_dir}/${LOG_FILE}" 2>/dev/null; then
-            n_skip=$((n_skip+1))
-            continue
+            have=$(cat "$stamp" 2>/dev/null || echo "")
+            if [[ "$have" == "$want" ]]; then
+                [[ "${VERBOSE_SKIP:-0}" == "1" ]] && \
+                    echo "  [skip ] ${csd}/${md}/${kd} - already done"
+                n_skip=$((n_skip+1)); n_done=$((n_done+1))
+                continue
+            fi
+            if [[ -z "$have" ]]; then
+                # Legacy leaf from before the guard existed: adopt it, but say so.
+                echo "  [adopt] ${csd}/${md}/${kd} - no parameter stamp; assuming it matches"
+                printf '%s' "$want" > "$stamp"
+                n_skip=$((n_skip+1))
+                continue
+            fi
+            echo "  [STALE] ${csd}/${md}/${kd} - parameters changed, recomputing" >&2
+            echo "          had:  $have" >&2
+            echo "          want: $want" >&2
         fi
+    fi
+
+    # ---- previously failed? skip unless explicitly retrying ----
+    if [[ -f "${leaf_dir}/.mc3d_failed" && "${RETRY_FAILED:-0}" == "0" && "$FORCE" == "0" ]]; then
+        echo "  [skip] ${csd}/${md}/${kd} — previously FAILED (set RETRY_FAILED=1 to retry)"
+        n_skip=$((n_skip+1))
+        continue
     fi
 
     # ---- lock (allows several copies of this script to run in parallel) ----
     try_lock "$leaf_dir" || { echo "  [skip] ${csd}/${md}/${kd} — locked"; continue; }
+
+    if [[ $announced -eq 0 ]]; then
+        printf ' Skipped %d node(s): %d already done, %d undetectable.\n' \
+               "$n_skip" "$n_done" "$n_undet"
+        echo " Computing:"
+        announced=1
+    fi
+
+    rm -f "${leaf_dir}/.mc3d_failed"
+
+    # ---- write the parameters, now that we know we are actually running ----
+    #   This used to run before the skip tests, which meant six awk/grep/mv
+    #   passes over the config of every already-completed node -- ~18 forks per
+    #   node, silently, before the loop reached anything that needed computing.
+    #   With the refined 742-node catalog that preamble became a noticeable
+    #   delay.  A node that is skipped keeps the config written when it ran,
+    #   which by the stamp test already matches the catalog.
+    write_config "$leaf_dir" "$rho_c" "$T_BE" "$xi_max" "$SD_emb"
 
     echo "  [run ] ${csd}/${md}/${kd}   T_BE=${T_BE}  xi=${xi_max}  M=${M_BE}"
     pushd "$leaf_dir" > /dev/null
@@ -179,11 +231,24 @@ while read -r ID i j k SD_emb T_BE M_BE FWHM_pc xi_max contr peak_exc contrast d
 
     if grep -q "MC3D: DONE" "${leaf_dir}/${LOG_FILE}" 2>/dev/null; then
         echo "  [done] ${csd}/${md}/${kd}"
+        printf '%s' "$want" > "${leaf_dir}/.mc3d_params"
         n_run=$((n_run+1))
     else
         echo "  [FAIL] ${csd}/${md}/${kd} — mc3d did not complete" >&2
         n_fail=$((n_fail+1))
-        [[ $created -eq 1 ]] && { echo "  [remove] ${csd}/${md}/${kd}"; rm -rf "$leaf_dir"; }
+        # Do NOT delete the leaf: the log is the only record of why it failed,
+        # and deleting it also hides the failure from a later re-run, which
+        # would simply recreate the directory and fail again in the same way.
+        # Mark it instead, and preserve the log under a distinct name.
+        {
+            echo "failed: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "params: $want"
+            echo "node:   i=${i} j=${j} k=${k}  M_BE=${M_BE}  xi_max=${xi_max}"
+        } > "${leaf_dir}/.mc3d_failed"
+        [[ -f "${leaf_dir}/${LOG_FILE}" ]] && \
+            cp -f "${leaf_dir}/${LOG_FILE}" "${leaf_dir}/mc3d.failed.log" 2>/dev/null || true
+        # record for the optional retry pass
+        echo "${i} ${j} ${k}" >> "${FAILED_LIST}"
     fi
 
     release_lock "$leaf_dir"
