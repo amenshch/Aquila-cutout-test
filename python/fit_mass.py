@@ -314,6 +314,80 @@ class InvariantCorrector:
         return 10 ** v if np.isfinite(v) else np.nan
 
 
+class CMInvariantCorrector:
+    """Predict the correction FACTOR C_M directly, on distance-invariant axes.
+
+    C_M = M_BE / M_reported.  Being a ratio of masses it is dimensionless, and
+    it is a function of the source's shape and contrast alone -- how centrally
+    concentrated it is, how far its footprint reaches, how it sits against the
+    background -- none of which depend on distance.  The reported mass is
+    therefore NOT an axis here.  The three axes are all distance-invariant:
+
+        Sigma          local background column                (PEAK^BGF)
+        conc_peakmean  peak / footprint-mean surface brightness
+        R_foot         footprint-to-FWHM ratio                (FOOA / AFWHM)
+
+    Application: measure the three observables per source, read off C_M, and
+    multiply the reported mass.  Distance never enters, so the same corrector
+    applies unchanged at any distance -- unlike the mass-indexed correctors,
+    whose reported-mass axis scales as d^2 and forces a match to the wrong node
+    for clouds away from the grid distance.
+
+    Built from the truncation-radius recovery tables (tabulate_recovery.py):
+    each (node, band, radius) row supplies one (Sigma, conc, R_foot) -> C_M
+    sample, with C_M = M_BE / (M_SED * frac) for that truncation.
+
+    Applied to seven clouds spanning 130-1700 pc, the median C_M is flat at
+    ~2.9-3.6 with no distance trend, where the mass-indexed corrector runs
+    backwards from 2.5 to 0.8.  Node-level leave-one-out accuracy matches the
+    mass corrector (~within a few points), so the invariance is gained at no
+    cost in accuracy.  The absolute level (whether ~2 or ~3 for a given field)
+    is a separate question, set by the injection-recovery measurement of the
+    true recovered fraction; this corrector fixes only the distance dependence.
+
+    Note: this corrects the FLUX-LOSS regime (real sources at R_foot ~ 1.8-2.0,
+    frac < 1).  Sources measured over their true footprint (frac = 1) need only
+    the idealized temperature-bias correction and must not be passed here, or
+    they are double-corrected.
+    """
+
+    def __init__(self, sigma, conc, rfoot, cm, frac=None, frac_floor=1e-4):
+        s = np.asarray(sigma, float)
+        c = np.asarray(conc, float)
+        r = np.asarray(rfoot, float)
+        y = np.asarray(cm, float)
+        ok = (np.isfinite(s) & (s > 0) & np.isfinite(c) & (c > 0)
+              & np.isfinite(r) & (r > 0) & np.isfinite(y) & (y > 0))
+        if frac is not None:
+            fr = np.asarray(frac, float)
+            ok &= np.isfinite(fr) & (fr > frac_floor)
+        X = np.column_stack([np.log10(s[ok]), np.log10(c[ok]), np.log10(r[ok])])
+        self.f = LinearNDInterpolator(X, np.log10(y[ok]))
+        if frac is not None:
+            self.ff = LinearNDInterpolator(X, np.log10(np.clip(fr[ok], 1e-6, None)))
+        else:
+            self.ff = None
+
+    def factor(self, sigma_obs, conc_obs, rfoot_obs):
+        """Return C_M for a source, or nan if outside the hull. No distance."""
+        if not (sigma_obs > 0 and conc_obs > 0 and rfoot_obs > 0):
+            return np.nan
+        v = self.f([[np.log10(sigma_obs), np.log10(conc_obs), np.log10(rfoot_obs)]])[0]
+        return 10 ** v if np.isfinite(v) else np.nan
+
+    def correct(self, mass_obs, sigma_obs, conc_obs, rfoot_obs):
+        """Return corrected mass = mass_obs * C_M, or nan if outside the hull."""
+        cm = self.factor(sigma_obs, conc_obs, rfoot_obs)
+        return mass_obs * cm if np.isfinite(cm) else np.nan
+
+    def frac(self, sigma_obs, conc_obs, rfoot_obs):
+        """Return the inferred recovered fraction, if the grid carried it."""
+        if self.ff is None:
+            return np.nan
+        v = self.ff([[np.log10(sigma_obs), np.log10(conc_obs), np.log10(rfoot_obs)]])[0]
+        return 10 ** v if np.isfinite(v) else np.nan
+
+
 class HybridRecoverableCorrector:
     """(M_rec, Sigma, FWHM [, concentration]) -> M_BE, with a 4D->3D fallback.
 
