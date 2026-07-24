@@ -1256,6 +1256,159 @@ should therefore be read as the uncertainty contributed by the correction
 itself, to be combined with the measurement error of the catalogue to which it
 is applied.
 
+\subsubsection*{Reliability depends strongly on the recovered fraction}
+\label{sec:reliability}
+
+A single median accuracy conceals a strong systematic dependence, and quoting
+one number for the method would be misleading. Binning the leave-one-out
+errors of the distance-invariant corrector by the recovered flux fraction
+$f_{\mathrm{rec}}$ of the model gives
+
+\begin{center}
+\begin{tabular}{lrr}
+\hline
+$f_{\mathrm{rec}}$ & nodes & median $|\Delta M|/M$ \\
+\hline
+$<0.05$        &  26 & $64\%$ \\
+$0.05$--$0.10$ &  16 & $43\%$ \\
+$0.10$--$0.20$ &  33 & $38\%$ \\
+$0.20$--$0.40$ &  65 & $30\%$ \\
+$>0.40$        & 208 & $\phantom{0}8\%$ \\
+\hline
+\end{tabular}
+\end{center}
+
+The correction is accurate to better than ten per cent wherever the extraction
+recovers more than about forty per cent of the flux, and degrades steadily
+below that, reaching a factor of order unity when less than five per cent is
+recovered. The reason is simply the conditioning of the inversion: recovering
+$f_{\mathrm{rec}}$ of the flux means the corrector must supply a factor
+$1/f_{\mathrm{rec}}$, so at $f_{\mathrm{rec}}=0.05$ a small error in the
+observables is amplified twentyfold. Any application of the method should
+therefore carry $f_{\mathrm{rec}}$ with the corrected mass and treat
+$f_{\mathrm{rec}}\lesssim0.2$ as indicative only.
+
+This runs against the grain of the environmental trend and the tension deserves
+stating plainly: dense environments both require the largest corrections and
+yield the smallest recovered fractions, so the regime in which the correction
+matters most is the one in which it is least reliable.
+
+\subsubsection{The footprint-to-size ratio fixes the recovered fraction}
+\label{sec:footprint}
+
+The recovered flux fraction $f_{\mathrm{rec}}$ --- the fraction of a source's
+total flux that survives inside the detection-limited footprint after
+background subtraction --- is not, on its own, an observable: the total flux is
+precisely the unknown the correction supplies. Left unconstrained, the
+correction is therefore degenerate. A measured source of a given mass, column,
+and concentration is reproduced equally well by a well-recovered model
+($f_{\mathrm{rec}}\!\to\!1$) and by a poorly-recovered one truncated close to
+its peak, and these imply mass correction factors differing by up to an order
+of magnitude. The observables do not, by themselves, break the tie.
+
+The resolution is a property of the extraction rather than of the sources. A
+source cannot be assigned a footprint that approaches the beam: background
+fluctuations broaden any measured intensity distribution, and truncating a
+profile too close to its centre would return a footprint-to-FWHM ratio
+$R_{\mathrm{foot}}=\mathrm{FOOA}/\mathrm{FWHM}$ far below what any real
+extraction produces. For a Gaussian source $R_{\mathrm{foot}}=1.82$ corresponds
+to enclosing $90\%$ of the flux and $2.6$ to $99\%$; a footprint much below
+this cannot occur. Measured across the seven fields, $R_{\mathrm{foot}}$ is
+remarkably constant --- median $1.8$--$2.0$, interquartile range
+$\sim1.6$--$2.4$ --- over a $13\times$ range in distance, confirming that it is
+set by the extraction and not by the intrinsic source. Imposing this measured
+ratio removes the unphysically compact truncations and lifts the degeneracy:
+the mass correction, previously unstable between roughly $2$ and $13$ depending
+on parametrisation, settles to a single value.
+
+Applied to Aquila at the grid's own distance, three independent choices of
+matching variable then agree: keying on
+$(M^{\mathrm{rec}}_{\mathrm{SED}}, \Scloud, C_{\mathrm{pm}})$ gives a median correction factor of
+$2.19$, on $(M^{\mathrm{rec}}_{\mathrm{SED}}, \Scloud, R_{\mathrm{foot}})$ gives $2.03$, and on all four
+gives $1.87$, each with a recovered fraction $f_{\mathrm{rec}}\approx0.48$ ---
+consistent with the model relation $R_{\mathrm{foot}}\!\approx\!1.8\Rightarrow
+f_{\mathrm{rec}}\!\approx\!0.5$ read directly from the recovery tables.
+Bonnor--Ebert profiles are markedly less centrally concentrated than Gaussians,
+so at the same $R_{\mathrm{foot}}$ they retain far less flux --- roughly half,
+against $90\%$ for a Gaussian --- and it is this extended low-surface-brightness
+envelope, lost to the extraction, that the correction recovers. The
+corresponding decomposition for Aquila is a temperature-gradient contribution
+of $\approx\!1.16$ (Sect.~\ref{sec:accuracy}) and a flux-recovery contribution
+of $\approx\!1/0.48\approx\!2.1$, giving a total near $2$.
+
+\begin{table}
+\caption{Mass correction across the seven fields, from the
+\emph{distance-invariant} formulation. The corrector predicts the correction
+factor $C_M = M_{\rm BE}/M_{\rm reported}$ directly, as a function of three
+observables that are all ratios or surface brightnesses and therefore carry no
+distance: the background column $\Scloud$, the peak-to-mean concentration, and
+the footprint-to-size ratio $R_{\mathrm{foot}}=\mathrm{FOOA}/\mathrm{FWHM}$. The
+reported mass is not an axis, so nothing in the matching scales with distance.
+Columns: distance; number of sources corrected; measured $R_{\mathrm{foot}}$;
+median $C_M$; and $C_M$ restricted to measured mass $0.1$--$2\,\msun$. For
+comparison, the final column gives the median $C_M$ from the earlier
+mass-indexed corrector, whose reported-mass axis scales as $d^2$.}
+\label{tab:sevencloud}
+\centering
+\begin{tabular}{lrrrrrr}
+\hline
+field & $d$ & $N_{\rm corr}$ & $R_{\mathrm{foot}}$ &
+$C_M$ & $C_M^{0.1\text{--}2}$ & $C_M^{\rm mass}$ \\
+ & (pc) & & & & & \\
+\hline
+Scorpius   &  130 &   42 & 2.02 & 3.10 & 3.08 & 2.45 \\
+Ophiuchus  &  144 &  432 & 1.81 & 3.57 & 2.82 & 2.60 \\
+Aquila     &  260 & 1035 & 1.82 & 3.41 & 3.69 & 1.87 \\
+Orion\,A   &  432 &  979 & 1.82 & 3.03 & 3.17 & 1.74 \\
+California &  470 &  387 & 1.93 & 3.55 & 3.38 & 1.85 \\
+Cygnus\,X  & 1150 & 2136 & 1.98 & 2.93 & 2.85 & 1.26 \\
+W3/W4/W5   & 1700 &  772 & 1.91 & 3.04 & 2.67 & 0.81 \\
+\hline
+\end{tabular}
+\end{table}
+
+The seven fields are collected in Table~\ref{tab:sevencloud}. In the
+distance-invariant formulation the median $C_M$ is flat at $\sim\!2.9$--$3.6$
+across the full $13\times$ range in distance, with no trend --- the direct
+demonstration that the correction is a property of the sources and the
+extraction, not of how far away they are. The contrast with the last column is
+the point: the mass-indexed corrector, matching on the reported mass, runs
+backwards from $2.5$ to $0.8$, because a source at $1700$\,pc with the structure
+of a nearby one carries a mass tens of times larger and is matched to the wrong
+model. Removing the mass axis removes that failure entirely, at no cost in
+accuracy: node-level leave-one-out on the recovery tables gives the same median
+error for the two formulations to within a few per cent.
+\note{The absolute level of $C_M$ (whether $\sim\!2$ or $\sim\!3$ for a given
+field) is set by how far the corrector reaches into the low-recovery tail when
+it averages over sources sharing the three observables, and remains to be fixed
+by the injection--recovery measurement of Sect.~\ref{sec:accuracy}. What
+Table~\ref{tab:sevencloud} establishes is the distance-independence of the
+correction, which the injection normalisation will not change.}
+
+\subsubsection*{Coverage gap at high column}
+\label{sec:highsigma}
+
+\note{TO DO --- to be addressed in the regridding.} The same effect leaves a
+gap in the grid itself. Because the recovered fraction falls steeply with
+background column, the models in the densest blocks reach only small
+\emph{recoverable} masses even though their true masses span the full ladder:
+the $\Scloud=2.4\times10^{22}\,\mathrm{cm^{-2}}$ block reaches
+$M^{\mathrm{rec}}_{\mathrm{SED}}\le0.28\,\msun$ and the
+$4.8\times10^{22}$ block only $0.08\,\msun$, against $6.6\,\msun$ at
+$3\times10^{21}$; at $9.6\times10^{22}$ no model is recovered at all. Real
+sources at those columns are far brighter --- the $44$ Aquila sources with
+backgrounds between $2.4$ and $4.8\times10^{22}\,\mathrm{cm^{-2}}$ have a
+median recovered mass of $2.0\,\msun$, and $82\%$ of them lie beyond the
+grid's reach there. The corrector consequently declines to correct most
+sources in dense gas, which is the correct behaviour --- interpolation is
+impossible where there are no nodes --- but it means the present coverage is
+poorest precisely where the correction is largest. Closing the gap requires
+model nodes at high $\Scloud$ whose recoverable masses span the
+$0.3$--$5\,\msun$ range that real dense-gas cores occupy; the planned
+scaled-field injection runs for the upper $\Scloud$ blocks are the natural
+route, since the recovery there was evaluated against a field that does not
+itself contain such backgrounds.
+
 \note{TO DO --- irreducible environmental scatter in the recoverable fraction.
 The recovered fraction $f_{\mathrm{rec}}$ is not a deterministic function of
 $(\Sigma_{\mathrm{emb}}, M, \mathrm{FWHM})$: the extraction interpolates the
