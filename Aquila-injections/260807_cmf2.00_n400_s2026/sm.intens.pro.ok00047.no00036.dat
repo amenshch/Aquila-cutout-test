@@ -1,0 +1,205 @@
+!____________________________________________________________________________________________________________________________________________________________________
+!
+! GETSF • Multi-Scale Multi-Wavelength Source & Filament Extraction • Version 260721 • Alexander Men’shchikov, DAp IRFU CEA Saclay
+!____________________________________________________________________________________________________________________________________________________________________
+!
+! Date: 08/08/2026 Time: 02:36:39  Created by FINALCAT compiled on Jul 22 2026 15:09
+! Alexander Men'shchikov, DAp IRFU CEA Saclay, France (alexander.menshchikov@cea.fr)
+! Used CFITSIO library version  3.470 by William D Pence (william.d.pence@nasa.gov)
+! and the utility XY2SKY from WCSTOOLS by Jessica Mink (jmink@cfa.harvard.edu)
+!
+! INTENSITY PROFILES OF INDIVIDUAL SOURCES
+!
+! detected in 'Aquila*.an.m.fits' (pixel: 3.00000 arcsec, size: 975 x 975 pixels)
+! combined of 'Aquila.161.det.*.an.m.fits' (comboexp: 7, combowei: 1.0000000)
+! measured in 'Aquila.070.obs.fits' (units: MJy/sr) (crpix1:-1.34500E+02, crpix2:-4.34500E+02, crval1: 2.7746281E+02, crval2:-2.7227142E+00)
+!      and in 'Aquila.160.obs.fits' (units: MJy/sr) (crpix1:-1.34500E+02, crpix2:-4.34500E+02, crval1: 2.7746281E+02, crval2:-2.7227142E+00)
+!      and in 'Aquila.161.obs.fits' (units: H2/cm^2) (crpix1:-1.34500E+02, crpix2:-4.34500E+02, crval1: 2.7746281E+02, crval2:-2.7227142E+00)
+!      and in 'Aquila.250.obs.fits' (units: MJy/sr) (crpix1:-1.34500E+02, crpix2:-4.34500E+02, crval1: 2.7746281E+02, crval2:-2.7227142E+00)
+!      and in 'Aquila.350.obs.fits' (units: MJy/sr) (crpix1:-1.34500E+02, crpix2:-4.34500E+02, crval1: 2.7746281E+02, crval2:-2.7227142E+00)
+!      and in 'Aquila.500.obs.fits' (units: MJy/sr) (crpix1:-1.34500E+02, crpix2:-4.34500E+02, crval1: 2.7746281E+02, crval2:-2.7227142E+00)
+!____________________________________________________________________________________________________________________________________________________________________
+!
+! CONFIGURATION PARAMETERS USED BY GETSF:
+!
+! Aquila 260          | prefix distance ................. ! prefix for naming files (never use ~=.?), distance (pc) to objects
+! 6                   | nwmax ............{ nwmax < 100 } ! maximum number of wavelengths specified in this configuration file
+! 6 1 2 3 4 5 6       | nwaves nw[i] .................... ! number of waveblengths and their indices to process
+! 070  8.4 -13 -13 y ora | .............................. ! [-]wave, beam, [+]maxsize("FWHM), skmax, weight, apcorr, [+]aprad(")
+! /feynman/work/dap/lfemi/amenshch/herschel_extractions/+AQUILA/+Images/270807_injections/cmf2.00_n400_s2026 ../070 | ... ! paths to prepared images and to single-wavelength extractions
+! inj_cmf2.00_n400_s2026.070um | ................................. ! name of the observed image  (only used for measurements)
+! 160 13.5 -80 -80 y ora | .............................. ! [-]wave, beam, [+]maxsize("FWHM), skmax, weight, apcorr, [+]aprad(")
+! /feynman/work/dap/lfemi/amenshch/herschel_extractions/+AQUILA/+Images/270807_injections/cmf2.00_n400_s2026 ../160 | ... ! paths to prepared images and to single-wavelength extractions
+! inj_cmf2.00_n400_s2026.160um | ................................. ! name of the observed image  (only used for measurements)
+! 161 13.5 80 -80 n ora | ............................... ! [-]wave, beam, [+]maxsize("FWHM), skmax, weight, apcorr, [+]aprad(")
+! /feynman/work/dap/lfemi/amenshch/herschel_extractions/+AQUILA/+Images/270807_injections/cmf2.00_n400_s2026 ../161 | ... ! paths to prepared images and to single-wavelength extractions
+! inj_cmf2.00_n400_s2026.000um | ................................. ! name of the observed image  (only used for measurements)
+! 250 18.2 -80 -80 y ora | .............................. ! [-]wave, beam, [+]maxsize("FWHM), skmax, weight, apcorr, [+]aprad(")
+! /feynman/work/dap/lfemi/amenshch/herschel_extractions/+AQUILA/+Images/270807_injections/cmf2.00_n400_s2026 ../250 | ... ! paths to prepared images and to single-wavelength extractions
+! inj_cmf2.00_n400_s2026.250um | ................................. ! name of the observed image  (only used for measurements)
+! 350 24.9 -80 -80 y ora | .............................. ! [-]wave, beam, [+]maxsize("FWHM), skmax, weight, apcorr, [+]aprad(")
+! /feynman/work/dap/lfemi/amenshch/herschel_extractions/+AQUILA/+Images/270807_injections/cmf2.00_n400_s2026 ../350 | ... ! paths to prepared images and to single-wavelength extractions
+! inj_cmf2.00_n400_s2026.350um | ................................. ! name of the observed image  (only used for measurements)
+! 500 36.3 -80 -80 y ora | .............................. ! [-]wave, beam, [+]maxsize("FWHM), skmax, weight, apcorr, [+]aprad(")
+! /feynman/work/dap/lfemi/amenshch/herschel_extractions/+AQUILA/+Images/270807_injections/cmf2.00_n400_s2026 ../500 | ... ! paths to prepared images and to single-wavelength extractions
+! inj_cmf2.00_n400_s2026.500um | ................................. ! name of the observed image  (only used for measurements)
+! y n        | sources filaments ............. ! extract sources and/or filaments {y|n}
+! n 1 1 50   | separate its1 itf1 niter ...... ! separate components and backgrounds; restart iterations, niter
+! n 1 1      | flatten itsd1 itfd1 ........... ! flatten background-subtracted components; restart iterations
+! n          | complete ...................... ! complete separation and flattening
+! y          | combine ....................... ! combine decomposed structures over wavelengths
+! y 2        | detect skelsig ................ ! detect structures; minimum detection significance for skeletons
+! y 1 1 50 y | measure goodmin itn itx sproima ! measure structures; minimum goodness; iterations numbers; profile sources
+! y          | visualize ..................... ! visualize sources
+! 5          | nsigmacombos (!expert) ........ ! number of sigmas for combining sources in single scales
+! 2          | nsigmacombof (!expert) ........ ! number of sigmas for combining filaments in single scales
+! 1          | nwavesdetect .................. ! required minimum number of wavelengths for source detection
+! 2 y        | savespace delete .............. ! space saving level {0|1|2}: clean up more files; auto delete {?|n|y}
+! 0          | verbosity ..................... ! verbosity level {0|1|2} for the screen and log file output
+!___________________________________________________________________________________________________________________________________
+!
+! TABULATED QUANTITIES, TOTAL OF 423 SOURCES
+!
+!   NO ............ Source running number ....................................
+!   S1 ............ Number of the smallest scale where source first appears ..
+!   S2 ............ Number of the largest scale where source still exists ....
+!   SX ............ Number of the footprinting scale for current source ......
+!   XCO_P ......... X-coordinate relative to the lower-left pixel (1,1) ...... (pixels)
+!   YCO_P ......... Y-coordinate relative to the lower-left pixel (1,1) ...... (pixels)
+!   WCS_ACOOR ..... WCS (J2000) alpha-coordinate of current source ........... (degrees)
+!   WCS_DCOOR ..... WCS (J2000) delta-coordinate of current source ........... (degrees)
+!   FG ............ Flag describing global properties over all wavelengths ... see definitions below
+!   SIGN .......... Global detection significance over all wavelengths ....... SIGN = sqrt ( sum ( SIGNM^2 ) )
+!   GOOD .......... Global goodness combining significance and S/N ........... GOOD = sqrt ( sum ( GOODM^2 ) )
+!   FM ............ Flag describing monochromatic properties ................. see definitions below
+!   SIGNM ......... Detection significance from monochromatic single scales .. SIGNM = SSPEAK / SSTDEV single-scale analog of S/N ratio
+!   GOODM ......... Monochromatic goodness combining significance and S/N .... GOODM = (SIGNM / SIGNM_MIN) * sqrt ( SNRP / SNRP_MIN * SNRT / SNRT_MIN ) * (BFWHM / AFWHM)
+!   FXP_BST ....... Peak intensity ........................................... (Jy/beam|H2/cm^2/beam) conversion from MJy/sr|H2/cm^2: 1.8792E-03 4.8538E-03 2.0651E+02 1.0013E-02 1.8122E-02 3.8218E-02
+!   FXP_ERR ....... Peak intensity error ..................................... (Jy/beam|H2/cm^2/beam) conversion from MJy/sr|H2/cm^2: 1.8792E-03 4.8538E-03 2.0651E+02 1.0013E-02 1.8122E-02 3.8218E-02
+!   FXT_BST ....... Total flux ............................................... (Jy|H2/cm^2*arcsec^2)
+!   FXT_ERR ....... Total flux error ......................................... (Jy|H2/cm^2*arcsec^2)
+!   FXT_ALT ....... Total flux (Gaussian) or MASS ............................ (Msun) conversion of FXT_BST to MASS (Msun): 3.5623E-26 for a distance of 2.60E+02 pc
+!   SCALE ......... Characteristic size (FWHM) or ALPHABE .................... ALPHABE = 2.4 * FWHMSIZE * SOUND^2 / GRAVITY / MASS
+!   AFWHM ......... Major size at half-maximum (FWHM) ........................ (arcsec) interpolated from intensities at half-maximum
+!   BFWHM ......... Minor size at half-maximum (FWHM) ........................ (arcsec) interpolated from intensities at half-maximum
+!   ASIZE ......... Major size from intensity moments ........................ (arcsec) below half-maximum for non-Gaussian sources
+!   BSIZE ......... Minor size from intensity moments ........................ (arcsec) below half-maximum for non-Gaussian sources
+!   THETA ......... Angle of the major axis (east of vertical) ............... (degrees) position angle PA = THETA + 3.200E+01 (east of north)
+!   FOFA .......... Footprint expansion or shrinkage scaling factor .......... "negative" for sources with unfinished footprints
+!   FOOA .......... Full major axis of an elliptical footprint ............... (arcsec)
+!   FOOB .......... Full minor axis of an elliptical footprint ............... (arcsec)
+!
+! DEFINITIONS AND COMMENTS:
+!
+! 1. Catalog entries may have a value of 0.000E+00 for sources outside the observational mask
+! 2. SIGNM has a special value of 9.999E-31 if a source is not visible in clean single scales
+! 3. SIGNM has a special value of 7.777E-31 if a source has deconvolved peak intensity equal zero
+! 4. FX*_BST and FX*_ERR have a special value of 9.999E-31 if their measurements are < 1.0E-30
+! 5. Monochromatic S/N ratios can be computed as SNRP = FXP_BST / FXP_ERR, SNRT = FXT_BST / FXT_ERR
+! 6. Meaning of the global flag FG:
+!     FG = 0 ..... source is isolated: not blended with any other source in any waveband
+!     FG = 1 ..... source is blended: footprints intersect by more than 20% in at least one waveband
+!     FG = 2 ..... source is sub-structured: its footprint area contains at least one other source
+!     FG = 3 ..... source is sub-structuring: causing a larger source to be sub-structured
+! 7. Meaning of the monochromatic flag FM: <~ "negative" when deblending iterations did not converge
+!     FM =   0 ... source has no problems identified in waveband
+!     FM =   1 ... source sizes are suspicious: sqrt ( AFWHM * BFWHM ) / BEAM < 0.95 or AFWHM / ASIZE > 1.4 or BFWHM / BSIZE > 1.4
+!     FM =   2 ... source is larger than the desired maximum size: sqrt ( FOOA * FOOB ) / FOFA > 1.25 * SRCMAXSIZE = 13.0 80.0 80.0 80.0 80.0 80.0 arcsec
+!     FM =   4 ... source is too much elongated: AFWHM / BFWHM > 2 or AFWHM / FOOA is too close to 1.
+!     FM =  10 ... source peak intensity is not measurable: FXP_BST / FXP_ERR < 2
+!     FM =  20 ... source total flux is not measurable: FXT_BST / FXT_ERR < 2
+!     FM =  40 ... source peak intensity FXP_BST < 0 or FXP_BST and total flux FXT_BST have opposite signs
+!     FM = 100 ... source is sub-structured: its footprint area contains at least one mesurable source
+!  _______________________________________________________________________________
+! |                                                                               |
+! | *!*( SOURCES FROM MULTI-WAVELENGTH CATALOGS SHOULD NEVER BE USED BLINDLY )*!* |
+! |                                                                               |
+! |  Select only sufficiently good sources in each waveband, on the basis of the  |
+! |  quantities provided: SIGNM, GOODM, FM, FXP_BST / FXP_ERR, FXT_BST / FXT_ERR, |
+! |  AFWHM / BFWHM, FOOA / AFWHM, etc.                                            |
+! |                                                                               |
+! | *!*(   RECOMMENDED OPTIMAL SELECTION CRITERIA BASED ON BENCHMARK TESTS   )*!* |
+! |                                                                               |
+! |      abs ( GOODM ) > 1  &  abs ( SIGNM ) > 1  &  FXP_BST / FXP_ERR > 2  &     |
+! |      FXT_BST / FXT_ERR > 2  &  AFWHM / BFWHM < 2  &  FOOA / AFWHM > 1.15      |
+! |_______________________________________________________________________________|
+!____________________________________________________________________________________________________________________________________________________________________
+!
+!   OK ............   47
+!   NO ............   36
+!   XCO_P .........   922.0
+!   YCO_P .........   820.0
+!   WCS_ACOOR .....  277.2701551
+!   WCS_DCOOR .....   -1.3698445
+!   FS ............    0
+!   SIGN ..........  8.665E+01
+!   GOOD ..........  3.822E+02
+!   FM ............     75     31      0     21     21      1
+!   SIGNM .........  9.999E-31  9.999E-31  8.665E+01  9.999E-31  9.999E-31  9.999E-31
+!   GOODM .........  4.461E-32  8.057E-32  3.822E+02  1.147E-31  9.976E-32  1.147E-31
+!   FXP_BST .......  4.295E+00  1.179E+01  1.226E+22  1.827E+01  1.077E+01  3.931E+00
+!   FXP_ERR .......  4.942E+00  7.775E+00  3.112E+20  9.077E+00  5.378E+00  1.797E+00
+!   FXT_BST ....... -1.705E-02  3.857E-02  2.739E+24  1.163E-01  1.376E-01  1.342E-01
+!   FXT_ERR .......  1.620E-02  4.097E-02  5.377E+22  8.027E-02  8.915E-02  6.336E-02
+!   AFWHM .........  3.876E+01  2.463E+01  1.439E+01  2.227E+01  3.305E+01  5.156E+01
+!   BFWHM .........  1.808E+01  1.661E+01  1.417E+01  1.496E+01  1.876E+01  2.747E+01
+!   ASIZE .........  3.000E+00  3.000E+00  1.353E+01  3.000E+00  3.000E+00  3.000E+00
+!   BSIZE .........  3.000E+00  3.000E+00  1.336E+01  3.000E+00  3.000E+00  3.000E+00
+!   THETA .........  5.612E+01  2.660E+01  1.777E+02  1.580E+02  1.234E+02  9.621E+01
+!____________________________________________________________________________________________________________________________________________________________________
+!
+! TABULATED QUANTITIES:
+!
+!   N ........... Running number of radial zone ...............................................
+!   RADIUS ...... Radial distance of the radial zone from source position ..................... (arcsec)
+!   INTBD# ...... Intensity profiles at waves (background & filament-subtracted, deblended) ... (MJy/sr|H2/cm^2) azimuthally averaged
+!   INTBS# ...... Intensity profiles at waves (background & filament-subtracted) .............. (MJy/sr|H2/cm^2) azimuthally averaged
+!   INTOB# ...... Intensity profiles at waves (full observed image) ........................... (MJy/sr|H2/cm^2) azimuthally averaged
+!   NPTS ........ Number of pixels used in the azimuthal averaging ............................
+!   OSQRTNPTS ... Inverse of the square root of NPTS: 1.0 / sqrt ( NPTS ) .....................
+!   RMSBD# ...... Standard deviation of the intensity profiles within radial annuli ........... (MJy/sr|H2/cm^2) azimuthal direction
+!   DE1OB# ...... Logarithmic first derivative of full intensity profile ...................... (MJy/sr|H2/cm^2/arcsec)
+!   DE1OD# ...... Logarithmic first derivative of filament-subtracted & deblended profile ..... (MJy/sr|H2/cm^2/arcsec)
+!   DE2OD# ...... Logarithmic first derivative of filament-subtracted & deblended profile ..... (MJy/sr|H2/cm^2/arcsec) radially averaged
+!____________________________________________________________________________________________________________________________________________________________________
+!
+!  1      2         3          4          5          6          7          8          9         10         11         12         13         14         15         16         17         18         19         20         21         22         23         24         25         26         27         28         29         30         31         32         33         34         35         36         37         38         39         40         41         42         43         44         45         46
+!  N   RADIUS   INTBD0070  INTBD0160  INTBD0161  INTBD0250  INTBD0350  INTBD0500  INTBS0070  INTBS0160  INTBS0161  INTBS0250  INTBS0350  INTBS0500  INTOB0070  INTOB0160  INTOB0161  INTOB0250  INTOB0350  INTOB0500     NPTS    OSQRTNPTS  RMSBD0070  RMSBD0160  RMSBD0161  RMSBD0250  RMSBD0350  RMSBD0500  DE1OB0070  DE1OB0160  DE1OB0161  DE1OB0250  DE1OB0350  DE1OB0500  DE1OD0070  DE1OD0160  DE1OD0161  DE1OD0250  DE1OD0350  DE1OD0500  DE2OD0070  DE2OD0160  DE2OD0161  DE2OD0250  DE2OD0350  DE2OD0500
+!
+   1  0.00E+00  0.000E+00  0.000E+00  1.226E+22  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.226E+22  0.000E+00  0.000E+00  0.000E+00  2.362E+01  2.375E+02  1.670E+22  1.986E+02  1.157E+02  4.775E+01  1.000E+00  1.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00
+   2  3.00E+00  0.000E+00  0.000E+00  1.026E+22  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.026E+22  0.000E+00  0.000E+00  0.000E+00  2.077E+01  2.361E+02  1.470E+22  1.968E+02  1.151E+02  4.766E+01  8.000E+00  3.536E-01  0.000E+00  0.000E+00  6.593E+20  0.000E+00  0.000E+00  0.000E+00 -3.584E-02 -1.377E-02 -2.649E-01 -1.999E-02 -1.164E-02 -4.740E-03 -3.584E-02 -1.377E-02 -2.649E-01 -1.999E-02 -1.164E-02 -4.740E-03 -3.584E-02 -1.377E-02 -2.649E-01 -1.999E-02 -1.164E-02 -4.740E-03
+   3  6.00E+00  0.000E+00  0.000E+00  6.358E+21  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  6.358E+21  0.000E+00  0.000E+00  0.000E+00  2.003E+01  2.328E+02  1.081E+22  1.929E+02  1.137E+02  4.743E+01  1.600E+01  2.500E-01  0.000E+00  0.000E+00  1.112E+21  0.000E+00  0.000E+00  0.000E+00 -4.335E-01 -1.203E-02 -5.734E-01 -3.909E-02 -2.594E-02 -1.125E-02 -4.335E-01 -1.203E-02 -5.734E-01 -3.909E-02 -2.594E-02 -1.125E-02 -4.335E-01 -1.203E-02 -5.734E-01 -3.909E-02 -2.594E-02 -1.125E-02
+   4  9.00E+00  0.000E+00  0.000E+00  3.258E+21  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  3.258E+21  0.000E+00  0.000E+00  0.000E+00  1.569E+01  2.314E+02  7.708E+21  1.891E+02  1.123E+02  4.717E+01  2.000E+01  2.236E-01  0.000E+00  0.000E+00  6.951E+20  0.000E+00  0.000E+00  0.000E+00  1.717E-01 -2.318E-02 -7.477E-01 -4.959E-02 -3.941E-02 -1.848E-02  1.717E-01 -2.318E-02 -7.477E-01 -4.959E-02 -3.941E-02 -1.848E-02  1.717E-01 -2.318E-02 -7.477E-01 -4.959E-02 -3.941E-02 -1.848E-02
+   5  1.20E+01  0.000E+00  0.000E+00  1.331E+21  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.331E+21  0.000E+00  0.000E+00  0.000E+00  1.659E+01  2.297E+02  5.787E+21  1.860E+02  1.108E+02  4.687E+01  2.400E+01  2.041E-01  0.000E+00  0.000E+00  2.940E+20  0.000E+00  0.000E+00  0.000E+00  8.645E-01 -4.482E-02 -6.965E-01 -5.175E-02 -5.419E-02 -3.116E-02  8.645E-01 -4.482E-02 -6.965E-01 -5.175E-02 -5.419E-02 -3.116E-02  8.645E-01 -3.400E-02 -7.221E-01 -5.067E-02 -5.419E-02 -3.116E-02
+   6  1.50E+01  0.000E+00  0.000E+00  2.806E+20  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  2.806E+20  0.000E+00  0.000E+00  0.000E+00  2.017E+01  2.271E+02  4.779E+21  1.836E+02  1.093E+02  4.651E+01  4.000E+01  1.581E-01  0.000E+00  0.000E+00  2.123E+20  0.000E+00  0.000E+00  0.000E+00  1.720E-01 -1.750E-02 -3.300E-01 -2.828E-02 -4.999E-02 -3.480E-02  1.720E-01 -1.750E-02 -3.300E-01 -2.828E-02 -4.999E-02 -3.480E-02  5.182E-01 -2.850E-02 -5.914E-01 -4.320E-02 -5.209E-02 -3.480E-02
+   7  1.80E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  2.086E+01  2.263E+02  4.464E+21  1.825E+02  1.082E+02  4.619E+01  3.600E+01  1.667E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  2.052E-01  3.939E-02 -5.923E-02 -4.749E-03 -3.220E-02 -3.846E-02  2.052E-01  3.939E-02 -5.923E-02 -4.749E-03 -3.220E-02 -3.846E-02  4.139E-01 -1.153E-02 -5.012E-01 -3.359E-02 -4.546E-02 -3.663E-02
+   8  2.10E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  2.158E+01  2.278E+02  4.420E+21  1.824E+02  1.076E+02  4.589E+01  4.800E+01  1.443E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -7.440E-01  2.260E-02  2.305E-02  1.032E-02 -1.822E-02 -3.562E-02 -7.440E-01  2.260E-02  2.305E-02  1.032E-02 -1.822E-02 -3.562E-02  1.244E-01 -4.702E-03 -4.737E-01 -2.481E-02 -3.865E-02 -3.629E-02
+   9  2.40E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.928E+01  2.285E+02  4.435E+21  1.827E+02  1.073E+02  4.566E+01  5.600E+01  1.336E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -1.326E+00 -2.646E-02  3.079E-02  1.230E-02  1.721E-03 -2.716E-02 -1.326E+00 -2.646E-02  3.079E-02  1.230E-02  1.721E-03 -2.716E-02 -2.118E-02 -1.451E-02 -4.711E-01 -1.862E-02 -3.058E-02 -3.401E-02
+  10  2.70E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.609E+01  2.278E+02  4.452E+21  1.829E+02  1.074E+02  4.550E+01  5.600E+01  1.336E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  2.054E+00  4.189E-02  5.075E-02  1.286E-02  9.450E-03 -1.562E-02  2.054E+00  4.189E-02  5.075E-02  1.286E-02  9.450E-03 -1.562E-02  8.239E-01 -8.436E-04 -4.645E-01 -1.413E-02 -2.391E-02 -3.033E-02
+  11  3.00E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.976E+01  2.288E+02  4.477E+21  1.832E+02  1.075E+02  4.542E+01  6.800E+01  1.213E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -1.205E+00  5.622E-02  6.929E-02  1.562E-02  1.330E-02 -9.740E-03 -1.205E+00  5.622E-02  6.929E-02  1.562E-02  1.330E-02 -9.740E-03  9.065E-03  2.022E-03 -4.583E-01 -1.373E-02 -1.859E-02 -2.690E-02
+  12  3.30E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.738E+01  2.301E+02  4.508E+21  1.835E+02  1.076E+02  4.538E+01  6.400E+01  1.250E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -7.366E-01 -4.847E-02  1.639E-02  4.809E-03  7.110E-03  3.969E-03 -7.366E-01 -4.847E-02  1.639E-02  4.809E-03  7.110E-03  3.969E-03  1.263E-01 -1.891E-02 -4.759E-01 -1.528E-02 -1.538E-02 -2.249E-02
+  13  3.60E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.621E+01  2.291E+02  4.514E+21  1.836E+02  1.077E+02  4.539E+01  8.000E+01  1.118E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  3.929E-01 -1.155E-02  5.281E-02  3.113E-02  2.175E-02  8.489E-03  3.929E-01 -1.155E-02  5.281E-02  3.113E-02  2.175E-02  8.489E-03  4.086E-01 -1.153E-02 -4.638E-01 -1.151E-02 -1.125E-02 -1.862E-02
+  14  3.90E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.674E+01  2.289E+02  4.534E+21  1.840E+02  1.079E+02  4.543E+01  9.200E+01  1.043E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  2.279E-01  1.828E-02  8.778E-02  1.635E-02  2.247E-02  1.478E-02  2.279E-01  1.828E-02  8.778E-02  1.635E-02  2.247E-02  1.478E-02  3.674E-01 -5.567E-03 -4.522E-01 -1.363E-02 -1.117E-02 -1.491E-02
+  15  4.20E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.704E+01  2.292E+02  4.565E+21  1.843E+02  1.081E+02  4.548E+01  8.800E+01  1.066E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -1.521E+00  4.060E-02  6.795E-02  5.708E-03  2.289E-02  1.327E-02 -1.521E+00  4.060E-02  6.795E-02  5.708E-03  2.289E-02  1.327E-02 -6.983E-02 -1.102E-03 -4.588E-01 -1.515E-02 -1.113E-02 -1.209E-02
+  16  4.50E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.519E+01  2.299E+02  4.587E+21  1.844E+02  1.082E+02  4.552E+01  9.600E+01  1.021E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.481E+00 -3.633E-02  2.221E-02 -6.278E-03  1.957E-02  7.337E-03  1.481E+00 -3.633E-02  2.221E-02 -6.278E-03  1.957E-02  7.337E-03  6.807E-01 -1.649E-02 -4.740E-01 -1.686E-02 -1.149E-02 -1.032E-02
+  17  4.80E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.669E+01  2.293E+02  4.594E+21  1.843E+02  1.084E+02  4.554E+01  9.600E+01  1.021E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.109E+00  5.712E-03  1.592E-02 -2.311E-02 -1.688E-03 -9.733E-06  1.109E+00  5.712E-03  1.592E-02 -2.311E-02 -1.688E-03 -9.733E-06  5.877E-01 -8.079E-03 -4.761E-01 -1.926E-02 -1.386E-02 -9.465E-03
+  18  5.10E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.784E+01  2.294E+02  4.598E+21  1.840E+02  1.084E+02  4.554E+01  1.160E+02  9.285E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -1.203E+00  1.419E-02  3.331E-02 -1.231E-02 -3.301E-03 -1.130E-03 -1.203E+00  1.419E-02  3.331E-02 -1.231E-02 -3.301E-03 -1.130E-03  9.635E-03 -6.384E-03 -4.703E-01 -1.772E-02 -1.404E-02 -8.824E-03
+  19  5.40E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.658E+01  2.296E+02  4.607E+21  1.839E+02  1.084E+02  4.554E+01  1.200E+02  9.129E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -7.299E-01 -6.305E-02 -6.048E-02 -4.209E-02 -1.928E-02 -1.560E-02 -7.299E-01 -6.305E-02 -6.048E-02 -4.209E-02 -1.928E-02 -1.560E-02  1.279E-01 -2.183E-02 -5.016E-01 -2.198E-02 -1.581E-02 -9.308E-03
+  20  5.70E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.591E+01  2.288E+02  4.592E+21  1.834E+02  1.082E+02  4.550E+01  1.200E+02  9.129E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  7.786E-01 -9.636E-02 -9.295E-02 -2.593E-02 -1.850E-02 -8.587E-03  7.786E-01 -9.636E-02 -9.295E-02 -2.593E-02 -1.850E-02 -8.587E-03  5.051E-01 -2.849E-02 -5.124E-01 -1.967E-02 -1.573E-02 -8.807E-03
+  21  6.00E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.656E+01  2.276E+02  4.569E+21  1.832E+02  1.081E+02  4.548E+01  1.240E+02  8.980E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.013E-01 -1.519E-02 -3.854E-02 -3.768E-02 -2.640E-02 -1.176E-02  1.013E-01 -1.519E-02 -3.854E-02 -3.768E-02 -2.640E-02 -1.176E-02  3.357E-01 -1.226E-02 -4.943E-01 -2.134E-02 -1.660E-02 -9.033E-03
+  22  6.30E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.664E+01  2.274E+02  4.561E+21  1.829E+02  1.080E+02  4.545E+01  1.440E+02  8.333E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  2.162E-01  4.846E-02 -7.689E-03 -1.477E-02 -1.352E-02  2.745E-03  2.162E-01  4.846E-02 -7.689E-03 -1.477E-02 -1.352E-02  2.745E-03  3.645E-01  4.705E-04 -4.840E-01 -1.807E-02 -1.517E-02 -7.997E-03
+  23  6.60E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.681E+01  2.280E+02  4.559E+21  1.827E+02  1.079E+02  4.546E+01  1.360E+02  8.575E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -4.804E-01 -5.276E-02 -1.406E-02  1.519E-02  4.292E-03  2.579E-02 -4.804E-01 -5.276E-02 -1.406E-02  1.519E-02  4.292E-03  2.579E-02  1.903E-01 -1.977E-02 -4.861E-01 -1.379E-02 -1.319E-02 -6.351E-03
+  24  6.90E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.645E+01  2.274E+02  4.556E+21  1.829E+02  1.079E+02  4.551E+01  1.400E+02  8.452E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -1.929E+00 -1.117E-01 -2.155E-02  5.364E-03  3.213E-03  3.681E-02 -1.929E+00 -1.117E-01 -2.155E-02  5.364E-03  3.213E-03  3.681E-02 -1.718E-01 -3.156E-02 -4.886E-01 -1.520E-02 -1.331E-02 -5.564E-03
+  25  7.20E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.507E+01  2.263E+02  4.552E+21  1.829E+02  1.080E+02  4.559E+01  1.600E+02  7.906E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -1.447E-02  8.473E-02  9.919E-02  5.393E-02  6.555E-02  6.312E-02 -1.447E-02  8.473E-02  9.919E-02  5.393E-02  6.555E-02  6.312E-02  3.068E-01  7.724E-03 -4.483E-01 -8.258E-03 -6.386E-03 -3.685E-03
+  26  7.50E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.506E+01  2.271E+02  4.571E+21  1.833E+02  1.082E+02  4.571E+01  1.600E+02  7.906E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  3.012E+00  1.151E-01  5.989E-02 -5.168E-03  4.209E-02  7.044E-02  3.012E+00  1.151E-01  5.989E-02 -5.168E-03  4.209E-02  7.044E-02  1.064E+00  1.380E-02 -4.614E-01 -1.670E-02 -8.993E-03 -3.162E-03
+  27  7.80E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.687E+01  2.282E+02  4.582E+21  1.833E+02  1.084E+02  4.583E+01  1.760E+02  7.538E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -7.298E-01  3.607E-02  7.647E-02  8.011E-02  7.929E-02  8.824E-02 -7.298E-01  3.607E-02  7.647E-02  8.011E-02  7.929E-02  8.824E-02  1.280E-01 -2.007E-03 -4.559E-01 -4.518E-03 -4.860E-03 -1.890E-03
+  28  8.10E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.640E+01  2.285E+02  4.595E+21  1.838E+02  1.088E+02  4.599E+01  1.640E+02  7.809E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -1.424E-01  1.121E-01  1.743E-01  1.099E-01  8.881E-02  1.011E-01 -1.424E-01  1.121E-01  1.743E-01  1.099E-01  8.881E-02  1.011E-01  2.748E-01  1.320E-02 -4.233E-01 -2.563E-04 -3.802E-03 -9.712E-04
+  29  8.40E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.631E+01  2.294E+02  4.625E+21  1.846E+02  1.091E+02  4.616E+01  1.760E+02  7.538E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.254E+00  1.518E-02  1.102E-01  1.167E-01  1.054E-01  1.123E-01  1.254E+00  1.518E-02  1.102E-01  1.167E-01  1.054E-01  1.123E-01  6.240E-01 -6.185E-03 -4.447E-01  7.141E-04 -1.958E-03 -1.737E-04
+  30  8.70E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.704E+01  2.295E+02  4.643E+21  1.853E+02  1.095E+02  4.635E+01  1.840E+02  7.372E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -3.239E-01  6.245E-02  1.706E-01  1.482E-01  1.337E-01  1.280E-01 -3.239E-01  6.245E-02  1.706E-01  1.482E-01  1.337E-01  1.280E-01  2.294E-01  3.269E-03 -4.246E-01  5.206E-03  1.187E-03  9.483E-04
+  31  9.00E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.685E+01  2.300E+02  4.670E+21  1.863E+02  1.100E+02  4.655E+01  1.880E+02  7.293E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  3.285E-01  2.106E-01  3.205E-01  1.587E-01  1.817E-01  1.779E-01  3.285E-01  2.106E-01  3.205E-01  1.587E-01  1.817E-01  1.779E-01  3.925E-01  3.290E-02 -3.746E-01  6.708E-03  6.525E-03  4.517E-03
+  32  9.30E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.704E+01  2.317E+02  4.720E+21  1.873E+02  1.107E+02  4.683E+01  2.080E+02  6.934E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -1.034E+00  2.636E-01  3.124E-01  1.722E-01  1.728E-01  1.649E-01 -1.034E+00  2.636E-01  3.124E-01  1.722E-01  1.728E-01  1.649E-01  5.203E-02  4.349E-02 -3.773E-01  8.632E-03  5.530E-03  3.582E-03
+  33  9.60E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.647E+01  2.336E+02  4.768E+21  1.883E+02  1.113E+02  4.708E+01  2.000E+02  7.071E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00 -7.921E-01  1.044E-01  3.602E-01  1.756E-01  2.045E-01  2.075E-01 -7.921E-01  1.044E-01  3.602E-01  1.756E-01  2.045E-01  2.075E-01  1.124E-01  1.166E-02 -3.613E-01  9.128E-03  9.048E-03  6.629E-03
+  34  9.90E+01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.606E+01  2.344E+02  4.821E+21  1.894E+02  1.120E+02  4.738E+01  2.080E+02  6.934E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.024E+00  8.092E-02  1.926E-01  1.313E-01  1.622E-01  1.693E-01  1.024E+00  8.092E-02  1.926E-01  1.313E-01  1.622E-01  1.693E-01  5.663E-01  6.961E-03 -4.172E-01  2.801E-03  4.350E-03  3.901E-03
+  35  1.02E+02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.656E+01  2.350E+02  4.850E+21  1.901E+02  1.126E+02  4.763E+01  2.280E+02  6.623E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  5.464E-02  9.124E-02  2.550E-01  2.025E-01  2.218E-01  1.812E-01  5.464E-02  9.124E-02  2.550E-01  2.025E-01  2.218E-01  1.812E-01  3.241E-01  9.027E-03 -3.964E-01  1.297E-02  1.097E-02  4.752E-03
+  36  1.05E+02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.659E+01  2.356E+02  4.886E+21  1.912E+02  1.133E+02  4.788E+01  2.080E+02  6.934E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  3.563E+00  1.882E-01  4.441E-01  1.970E-01  2.301E-01  2.093E-01  3.563E+00  1.882E-01  4.441E-01  1.970E-01  2.301E-01  2.093E-01  1.201E+00  2.841E-02 -3.334E-01  1.218E-02  1.190E-02  6.757E-03
+  37  1.08E+02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  1.828E+01  2.369E+02  4.948E+21  1.923E+02  1.141E+02  4.817E+01  2.400E+02  6.455E-02  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  3.563E+00  1.882E-01  4.441E-01  1.970E-01  2.301E-01  2.093E-01  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  0.000E+00  3.104E-01 -9.222E-03 -4.814E-01 -1.596E-02 -1.367E-02 -8.193E-03
