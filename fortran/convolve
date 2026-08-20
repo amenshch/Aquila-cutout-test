@@ -1,0 +1,282 @@
+#!/bin/bash
+#___________________________________________________________________________________________________________________________________
+#
+# GETSF • Multi-Scale Multi-Wavelength Source & Filament Extraction • Alexander Men'shchikov, DAp IRFU CEA Saclay
+#___________________________________________________________________________________________________________________________________
+#
+LC_ALL="en_US.UTF-8" #<-- enforce en_US to avoid problems with decimal commas
+echo -n $'\e%G' #<-- enforce UTF-8 terminal character encoding to display '·' and '•'
+# Development initiated on 2010/12/24 by A.M. (alexander.menshchikov@cea.fr)
+banner[1]='_______________________________________________________________________________'
+banner[2]='                                                                               '
+banner[3]='                                    CONVOLVE                                   '
+banner[4]='              Alexander Men’shchikov, DAp IRFU CEA Saclay, France              '
+banner[6]='_______________________________________________________________________________'
+#___________________________________________________________________________________________________________________________________
+#
+executing="$0"; export top_pid=$$; installpath=${executing%/*}; source $installpath'/comfun'
+nparams=${#*}; commandline="$*"; scriptname=`basename "$executing"`; script=`printf "%s\n" $scriptname | tr a-z A-Z`
+scriptnameup=`printf "%s\n" $scriptname | tr a-z A-Z`; scriptnamelo=`printf "%s\n" $scriptname | tr A-Z a-z`; hell='/dev/null'
+##trap 'killhandler' SIGINT; trap 'errorhandler' SIGTERM; trapfirst='yes'
+outsameline='no'; cwavenum=''
+funo=$fun; fun=$scriptnameup
+currentres=$1; desiredres=$2; expokern=$3; fitsimage=$4; maskimage=$5; minuso=$6; imageout=$7; verb=$8
+
+if [[ $maskimage == '-o' ]]
+then verb=$imageout; imageout=$minuso; minuso=''; maskimage=''
+fi
+if [[ ${maskimage:0:5} == '-verb' ]]
+then verb=$maskimage; maskimage=''; minuso=''; imageout=''
+elif [[ ${minuso:0:5} == '-verb' ]]
+then verb=$minuso; minuso=''; imageout=''
+elif [[ ${imageout:0:5} == '-verb' ]]
+then verb=$imageout; minuso=''; imageout=''
+elif [[ $verb == '' ]]
+then verb='-verb2'
+fi
+##if [[ $imageout == '' ]]; then minuso=''; fi
+#___________________________________________________________________________________________________________________________________
+
+l=0; versnum=''
+{
+while read -r line
+do
+  l=$(( l + 1 ))
+  'POSITION' ' VERSION' "$line" ncv
+  if [[ $ncv -gt 0 || $l -eq 100 ]]; then versnum=${line:ncv:14}; break; fi
+done
+} < $installpath'/comfun'
+versnum=${versnum/VERSION/Version}
+banner[5]='                                 '$versnum
+
+header[1]='#  ___________________________________________________________________________________________________________________________________'
+header[2]='# |                                                                                                                                   '
+header[3]='# | CONVOLVE • Convolve or Deconvolve Image to Desired Resolution • '$versnum' • Alexander Men'\''shchikov, DAp IRFU CEA Saclay       '
+header[4]='# |___________________________________________________________________________________________________________________________________'
+
+if [[ "$*" == ":" ]]
+then
+  printlh "${header[3]:3:98}"
+  exit 0
+fi
+
+'AGREEMENT' > '+log.AGREE'
+
+if [[ $verb == "-verb2" ]]
+then 
+  for (( b=1; b <= 6; b++ )); do printlh "${banner[b]}"; done
+  printlh
+fi
+if [[ $commandline == '' ]]
+then printlh ' Executing: '$executing
+else printlh ' Executing: '$scriptnamelo $commandline
+fi
+##if [[ $verb == "-verb1" ]]
+##then
+##  printlh; printlh ' CONVOLVE image from '$currentres' to '$desiredres' arcsec resolution: '$fitsimage
+##fi
+
+if [[ $currentres != "" && $desiredres != "" ]]
+then
+  'COMPARE_FLOATS' $currentres '<=' $desiredres doconvolve
+  if [[ $doconvolve -eq 1 ]]
+  then smobeam=$(print "scale=9; sqrt($desiredres*$desiredres-$currentres*$currentres)" | bc); chk_rc
+  else smobeam=$(print "scale=9; sqrt($currentres*$currentres-$desiredres*$desiredres)" | bc); chk_rc
+  fi
+  'ROUND_FLOAT' 5 $smobeam smobeam
+  smofraction=''
+  if [[ $currentres != "0" && $currentres != "0." && $currentres != "0.0" ]]
+  then
+    smofraction=$(print "scale=9; $smobeam/$currentres" | bc); chk_rc
+    if [[ ${smofraction:0:1} == '.' ]]
+    then smofraction='0'$smofraction
+    fi
+    'ROUND_FLOAT' 5 $smofraction smofraction
+    smofraction=' = '$smofraction
+  fi
+fi
+if [[ $fitsimage == "" ]]
+then
+  printlh
+  printlh ' convolve <currentsize> <desiredsize> <expokern>[,<frac>] <imagein> [<maskimage>] [-o <imageout>] [-verb{0|1|2}]'
+  printlh
+  printlh ' This script convolves or deconvolves any FITS image with a kernel from a'
+  printlh ' resolution <currentsize> to a desired resolution <desiredsize> (in arcsec).'
+  printlh
+  printlh ' Convolution of <imagein> is done if <currentsize> is smaller than <desiredsize>,'
+  printlh ' otherwise the input image is deconvolved and the resulting image is a Gaussian'
+  printlh ' having a deconvolved FWHM size.'
+  printlh
+  printlh ' If only <currentsize> and <desiredsize> are specified on the command line,'
+  printlh ' the script just returns the size of the additional (Gaussian) convolution beam'
+  printlh ' or the size of the deconvolved image.'
+  printlh
+  printlh ' If <maskimage> is specified, then the mask image will be used to expand the'
+  printlh ' masked area to the image edges, to avoid edge artefacts when convolving.'
+  printlh
+  printlh ' The parameter <expokern> can be set to a positive non-zero value to specify'
+  printlh ' a non-Gaussian (Moffat) convolution kernel with power-law wings. For usual'
+  printlh ' convolutions with Gaussian kernels, set this parameter to 0.'
+  printlh
+  printlh ' The optional parameter <frac> defines the proportion of Gaussian and Moffat:'
+  printlh ' kernel = (1-frac) * gauss + frac * moffat. If <expokern> > 0 and <frac>'
+  printlh ' is not given, then frac = 1 and kernel = moffat.'
+  printlh
+  printlh ' The parameter <expokern> can also specify names of the images of external'
+  printlh ' kernels to be used in convolution (the images must be locally available):'
+  printlh ' <expokern>={ $psf070a | $psf070b | $psf100a | $psf100b | $psf160a | $psf160b |'
+  printlh ' $psf250 | $psf350 | $psf500 | $k160160 | $k160250 | $k160350 | $k160500 |'
+  printlh ' $k250250 | $k250350 | $k250500 | $k350350 | $k350500 | $k500500 }, referring'
+  printlh ' to the environment variable containing the full path to the kernel image.'
+
+  if [[ $currentres != "" && $desiredres != "" ]]
+  then
+    printlh; printlh ' '$scriptname $*
+    if [[ $doconvolve -eq 1 ]]
+    then printlh; printlh ' Additional convolution beam: '$smobeam' arcsec'$smofraction
+    else printlh; printlh ' Deconvolved FWHM size: '$smobeam' arcsec'$smofraction
+    fi
+  fi
+  printlh; exit 1
+fi
+
+'POSITION' ',' $expokern ncom
+if [[ $ncom -gt 0 ]]
+then
+  frac=${expokern:ncom}
+  expokern=${expokern:0:ncom-1}
+  'COMPARE_FLOATS' $frac '=' '0' reslt
+  if [[ $reslt -eq 1 ]]
+  then ncom=0
+  fi
+else
+  'COMPARE_FLOATS' $expokern '>' '0' reslt
+  if [[ $reslt -eq 1 ]]
+  then frac=1; ncom=2
+  else frac=0
+  fi
+fi
+
+##if [[ $verb == "-verb2" ]]
+##then
+##  printlh; printlh ' '$scriptname $*
+##fi
+if [[ $verb == "-verb2" ]]
+then
+  if [[ $doconvolve -eq 1 ]]
+  then printlh; printlh ' Additional convolution beam: '$smobeam' arcsec'$smofraction
+  else printlh; printlh ' Deconvolved FWHM size: '$smobeam' arcsec'$smofraction
+  fi
+fi
+fitsimage=${fitsimage/.fits/}
+
+##if [[ $verb != '-verb2' ]]  #<-- This is to avoid a bizarre problem of an extra empty space in the screen output.
+##then verb='-verb0'          #<-- This is to avoid a bizarre problem of an extra empty space in the screen output.
+##fi
+
+('readhead' save NAXIS1 NAXIS2 $fitsimage'.fits' $verb$cwavenum; echo $? > .rc) | 'tehi'
+read -r naxis1 nx naxis2 ny < '.+readhead'$cwavenum; chk_rc; \rm '.+readhead'$cwavenum 2>&1; chk_rc
+('readhead' save CDELT1 CDELT2 $fitsimage'.fits' $verb$cwavenum; echo $? > .rc) | 'tehi'
+read -r cdelt1 dx cdelt2 dy < '.+readhead'$cwavenum; chk_rc; \rm '.+readhead'$cwavenum 2>&1; chk_rc
+if [[ ${dx:0:1} == "-" ]]; then dx=${dx:1}; fi                        
+'SCIENTIFIC2FIXED' $dx dx; dxas=$(print "scale=20; $dx*3600" | bc); chk_rc
+'SCIENTIFIC2FIXED' $dy dy; dyas=$(print "scale=20; $dy*3600" | bc); chk_rc
+
+#verb='-verb1'
+
+if [[ $imageout == "" ]]
+then 
+  if [[ $ncom -eq 0 ]]
+  then outfile=$fitsimage'.r'${desiredres/./p}'x'${expokern/./p}'.fits'
+  else outfile=$fitsimage'.r'${desiredres/./p}'x'${expokern/./p}'~'${frac/./p}'.fits'
+  fi
+else outfile=$imageout
+fi
+
+if [[ $currentres != $desiredres ]]
+then
+  expanded=$fitsimage'.exp'
+  if [[ $maskimage == 'normalize' ]]
+  then norm='normalize'; maskimage=''
+  else norm=''
+  fi
+  if [[ $maskimage == "" ]]
+  then \cp $fitsimage'.fits' $expanded'.fits' 2>&1; chk_rc
+  else ('expanda' 1 $fitsimage $maskimage -o $expanded $verb; echo $? > .rc) | 'tehi'
+  fi
+
+  if [[ $doconvolve -eq 1 ]]
+  then
+    if [[ "${expokern:~0}" = '.' ]]
+    then len=${#expokern}; lenm1=$(( len - 1 )); expokern=${expokern:0:lenm1}
+    fi
+    if [[ "${expokern:0:1}" = '+' ]]
+    then expokern=${expokern:1}; plus='+'; else plus=''
+    fi
+    if [[ ! "$expokern" =~ ^[+-]?[0-9]+([.][0-9]+)?$ ]]
+    then
+      psfimage=$plus''${expokern/.fits/}
+      psfnopath=`basename "$psfimage"`
+      \cp $psfimage'.fits' $psfnopath'.fits' 2>&1; chk_rc 
+      psfimage=$psfnopath
+      ('readhead' save NAXIS1 NAXIS2 $psfimage'.fits' $verb$cwavenum; echo $? > .rc) | 'tehi'
+      read -r naxis1 nxpsf naxis2 nypsf < '.+readhead'$cwavenum; chk_rc; \rm '.+readhead'$cwavenum 2>&1; chk_rc
+      ('readhead' save CDELT1 CDELT2 $psfimage'.fits' $verb$cwavenum; echo $? > .rc) | 'tehi'
+      read -r cdelt1 dxpsf cdelt2 dypsf < '.+readhead'$cwavenum; chk_rc; \rm '.+readhead'$cwavenum 2>&1; chk_rc
+      if [[ ${dxpsf:0:1} == "-" ]]; then dxpsf=${dxpsf:1}; fi                        
+      'SCIENTIFIC2FIXED' $dxpsf dxpsf; dxpsf=$(print "scale=20; $dxpsf*3600" | bc); chk_rc
+      'SCIENTIFIC2FIXED' $dypsf dypsf; dypsf=$(print "scale=20; $dypsf*3600" | bc); chk_rc
+      ndot=0
+      'POSITION' '.r' $psfimage ndot
+      psfbeam=${psfimage:ndot+1}
+      psfbeam=${psfbeam/p/.}
+      if [[ $ndot -eq 0 ]]
+      then
+        printlh; printlh ' '$script': ERROR: PSF image name does not contain resolution (in arcsec).'
+                 printlh ' '$script':  HINT: Rename it to contain this pattern: *.rXXpX.*'; printlh; exit 99
+      fi
+      'CALCULATE' pixfactor "$smobeam/$psfbeam" 10
+      'CALCULATE' dxpsff "$dxpsf*$pixfactor" 10
+      'CALCULATE' dypsff "$dypsf*$pixfactor" 10
+      ('modfits' key CDELT1 -$dxpsff $psfimage -o $psfimage $verb; echo $? > .rc) | 'tehi'
+      ('modfits' key CDELT2  $dypsff $psfimage -o $psfimage $verb; echo $? > .rc) | 'tehi'
+      ('modfits' key CD1_1  -$dxpsff $psfimage -o $psfimage $verb; echo $? > .rc) | 'tehi'
+      ('modfits' key CD2_2   $dypsff $psfimage -o $psfimage $verb; echo $? > .rc) | 'tehi'
+      nxresamp=$(print "scale=4; $nxpsf*$dxpsf/$dxas" | bc); chk_rc; nxresamp=${nxresamp%.*}  #<-- make the number integer
+      nyresamp=$(print "scale=4; $nypsf*$dypsf/$dyas" | bc); chk_rc; nyresamp=${nyresamp%.*}  #<-- make the number integer
+      if [[ $imageout == "" ]]
+      then outfile=$fitsimage'.r'${desiredres/./p}'as.'$psfimage
+      fi
+      addpix=$(print "scale=20; (1/5)*$smobeam/$dxas + e(7.0/e(0.363636*l(1.5)))" | bc -l); chk_rc
+      'resample' $psfimage $dxas $nxresamp $nyresamp $verb $psfimage'.resamp'; chk_rc
+      ('modfits' expand ${addpix:0:8} $expanded -o $outfile $verb; echo $? > .rc) | 'tehi'
+      ('fftconv' $smobeam $psfimage'.resamp' $outfile $norm -o $outfile $verb; echo $? > .rc) | 'tehi'
+      ('modfits' border -${addpix:0:8} $outfile -o $outfile $verb; echo $? > .rc) | 'tehi'
+      \rm $psfimage'.fits'; chk_rc
+      \rm $psfimage'.resamp.fits'; chk_rc
+    else
+      if [[ $expokern == "0" ]]
+      then addpix=$(print "scale=20; 5*$smobeam/$dxas" | bc); chk_rc
+      else addpix=$(print "scale=20; 5*$smobeam/$dxas+e(7.0/e(0.363636*l($expokern)))" | bc -l); chk_rc
+      fi
+      ('modfits' expand ${addpix:0:8} $expanded -o $outfile $verb; echo $? > .rc) | 'tehi'
+      ('fftconv' $smobeam "$expokern,$frac" $outfile $norm -o $outfile $verb; echo $? > .rc) | 'tehi'
+      ('modfits' border -${addpix:0:8} $outfile -o $outfile $verb; echo $? > .rc) | 'tehi'
+    fi
+    \rm $expanded'.fits'; chk_rc
+  else 
+    ('fftconv' $smobeam $expokern; echo $? > .rc) | 'tehi' >$hell
+    if [[ $expokern == "0" ]]
+    then \mv -f 'kern.gausgaus.k'*'.fits' $outfile 2>&1; chk_rc
+    else \mv -f 'kern.gausmoff.k'*'.fits' $outfile 2>&1; chk_rc
+    fi
+  fi
+  ##else
+##  \cp $fitsimage'.fits' ${outfile/.fits/}'.fits' 2>&1; chk_rc 
+fi
+
+if [[ $verb == "verb0" ]]
+then printlh; printlh ' '$script': DONE.'
+fi
+\rm .rc 2>$hell
+exit
