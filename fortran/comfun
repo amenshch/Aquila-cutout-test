@@ -1,0 +1,1565 @@
+#___________________________________________________________________________________________________________________________________
+#
+# GETSF • Multi-Scale Multi-Wavelength Source & Filament Extraction • Alexander Men'shchikov, DAp IRFU CEA Saclay
+#___________________________________________________________________________________________________________________________________
+#
+# Common functions used by GETSF and other Bash scripts • Alexander Men’shchikov, DAp IRFU CEA Saclay, France
+#
+HISTORY ()
+{
+  for (( b=1; b <= 7; b++ ))
+  do print "${banner[b]}"
+  done
+  print
+  print '                               HISTORY OF CHANGES'
+  print '                               (last months only)'
+  print
+  print '-------------------------------- VERSION 260721 -------------------------------'
+  print
+  print ' [MOD] Updated IMGSTAT by adding a median value over mask edge to its output.'
+  print
+  print '-------------------------------- VERSION 260706 -------------------------------'
+  print
+  print ' [MOD] Improved CLEANBG in interpolating source background. Instead of the old'
+  print ' simpler interpolation along 4 directions, it now interpolates along arbitrary'
+  print ' number of directions, defaulting to 16. This improves source backgrounds,'
+  print ' eliminating linear artifacts that sometimes appeared in complex surroundings'
+  print ' with the simpler algorithm.'
+  print
+  print ' [FIX] Corrected TOOLS functions FFTCONVOLVE, RLFT3, FOURN to eliminate very'
+  print ' low-level stripes in convolved images.'
+  print
+  print ' [MOD] Improved COMFUN functions SCIENTIFIC2FIXED, CALCULATE, COMPARE_FLOATS'
+  print ' making them robust in extreme cases.'
+  print
+  print '-------------------------------- VERSION 260628 -------------------------------'
+  print
+  print ' [MOD] Minor fix in FINALCAT to avoid NaNs in additional catalog.'
+  print
+  print '-------------------------------- VERSION 260618 -------------------------------'
+  print
+  print ' [MOD] Minor improvements in IMGSTAT, MODFITS, TOOLS, and HIRES.'
+  print
+  print '-------------------------------- VERSION 251201 -------------------------------'
+  print
+  print ' [MOD] Minor improvements in IMGSTAT.'
+  print
+  print '-------------------------------- VERSION 251002 -------------------------------'
+  print
+  print ' [MOD] Minor improvements in MODFIST and IMGSTAT.'
+  print
+  print '-------------------------------- VERSION 250703 -------------------------------'
+  print
+  print ' [MOD] Reduced the smoothing window size in FMEASURE for calculation of slopes.'
+  print
+  print '-------------------------------- VERSION 250617 -------------------------------'
+  print
+  print ' [MOD] Removed from GETSF creation of unnecessary visualization images when'
+  print '       filament measurements on an additional scale is requested.'
+  print
+  print '-------------------------------- VERSION 250615 -------------------------------'
+  print
+  print ' [MOD] Improved GETSF in filament detection: now spurious filaments at the'
+  print '       observational mask edges will not appear anymore. Added an acton to'
+  print '       MODFITS to contract masks by one pixel; made a slight change to HIRES.'
+  print
+  print '-------------------------------- VERSION 250612 -------------------------------'
+  print
+  print ' [FIX] Corrected a minor bug in that GETSF did not produce measurements of'
+  print '       filaments with the new non-overlapping scale-dependent skeletons.'
+  print
+  print '-------------------------------- VERSION 250609 -------------------------------'
+  print
+  print ' [NEW] Now GETSF is able to produce measurements of filaments detected on each'
+  print '       spatial scale, where skeletons are detected. Normally, GETSF measures'
+  print '       filaments only on the largest scale FILMAXSIZE of user unterest. To'
+  print '       derive additional backgrounds on smaller scales and obtain measurements,'
+  print '       it is necessary to run GETSF for just two additional steps: separation'
+  print '       and measurements of filaments using smaller FILMAXSIZE values.'
+  print
+  print '-------------------------------- VERSION 250605 -------------------------------'
+  print
+  print ' [FIX] Corrected a minor bug in FITFLUXES that led to huge log files.'
+  print
+  print '-------------------------------- VERSION 250603 -------------------------------'
+  print
+  print ' [MOD] Improvements of GETSF in the derivation of global skeletons. The new'
+  print '       FIXSKELS utility recreates scale-dependent skeletons as the isolated'
+  print '       ones -- not overlapping with skeletons on any of the larger scales.'
+  print '       The global skeletons are now correctly obtained by a simple summation'
+  print '       of the isolated scale-dependent skeletons over all scales. This version'
+  print '       also slightly rearranged structure of subdirectories for the resulting'
+  print '       skeletons and filaments, as well as renamed some output files to better'
+  print '       reflect their contents.'
+  print
+  print '-------------------------------- VERSION 250531 -------------------------------'
+  print
+  print ' [NEW] Added new utility FIXSKELS to create accurate scale-dependent skeletons'
+  print '       for each spatial scale without overlaps with skeletons on any of the'
+  print '       larger spatial scales.'
+  print
+  print '-------------------------------- VERSION 250530 -------------------------------'
+  print
+  print ' [MOD] Added an option for FMEASURE to produce just catalogs of skeleton points'
+  print '       and DS9 region files with skeletons.'
+  print
+  print '-------------------------------- VERSION 250527 -------------------------------'
+  print
+  print ' [MOD] Improved FMEASURE in calculating logarithmic slopes of filaments.'
+  print
+  print '-------------------------------- VERSION 250523 -------------------------------'
+  print
+  print ' [FIX] Corrected FMEASURE by removing incorrect condition that filament normals'
+  print '       must not be longer than the skeleton length.'
+  print
+  print '-------------------------------- VERSION 250507 -------------------------------'
+  print
+  print ' [MOD] Improved GETSF in visualization of the skeletons overlaid on images.'
+  print
+  print '-------------------------------- VERSION 250429 -------------------------------'
+  print
+  print ' [MOD] Several minor improvements not affecting anything.'
+  print
+  print '-------------------------------- VERSION 250330 -------------------------------'
+  print
+  print ' [MOD] Improved FITFLUXES by adding dust-to-gas ratio to its command line'
+  print '       parameters. Added optional sub-parameters to specify relative errors on'
+  print '       distance, opacity, and dust-to-gas ratio. Adjusted HIRES correspondingly.'
+  print
+  print '-------------------------------- VERSION 250325 -------------------------------'
+  print
+  print ' [FIX] Corrected FITFLUXES that failed to read the "-" sign when sources have'
+  print '       negative fluxes. Missing the "-" sign leads to the fluxes treated as the'
+  print '       positive ones, therefore used in SED fitting and giving wrong results.'
+  print
+  print '-------------------------------- VERSION 250310 -------------------------------'
+  print
+  print ' [MOD] Added visualization of scale-dependent filaments by removing the scales'
+  print '       smaller than the one considered.'
+  print
+  print '-------------------------------- VERSION 250309 -------------------------------'
+  print
+  print ' [MOD] Added accumulation of scale-dependent filaments over a range of scales'
+  print '       within a factor of two, corresponding to the scale-dependent skeletons.'
+  print
+  print '-------------------------------- VERSION 250307 -------------------------------'
+  print
+  print ' [MOD] Generalized the COMPILE script for GCC Fortran 4.8.5 (Red Hat).'
+  print
+  print '-------------------------------- VERSION 250227 -------------------------------'
+  print
+  print ' [MOD] Slightly improved FITFLUXES by commenting why a waveband is not selected'
+  print '       for SED fitting.'
+  print
+  print '-------------------------------- VERSION 250127 -------------------------------'
+  print
+  print ' [MOD] Enhanced FINALCAT by adding source contrasts and deconvolved sizes to'
+  print '       the catalogs *.add.cat.'
+  print
+  print '-------------------------------- VERSION 241216 -------------------------------'
+  print
+  print ' [MOD] Enhanced FMEASURE by measuring FWHMs of the median profiles of filaments'
+  print '       and including the values in the catalog of filament widths.'
+  print
+  print '-------------------------------- VERSION 241209 -------------------------------'
+  print
+  print ' [MOD] Removed images and catalogs of skeleton curvatures from GETSF output.'
+  print
+  print '-------------------------------- VERSION 241206 -------------------------------'
+  print
+  print ' [FIX] Improved FMEASURE in production of filament footprints and corrected a'
+  print '       problem in calculation of the filament masses and corresponding linear'
+  print '       densities (mass/length) over the one-sided footprints. Masses and linear'
+  print '       densities for some blended filaments may change, as a result. Images of'
+  print '       the one-sided footprints are no more created.'
+  print
+  print '-------------------------------- VERSION 241202 -------------------------------'
+  print
+  print ' [MOD] Minor change in GETSF and FMEASURE in color names for DS9 regions.'
+  print
+  print '-------------------------------- VERSION 241122 -------------------------------'
+  print
+  print ' [FIX] Minor corrections in GETSF. Restart of the source background iterations'
+  print '       after a filament background iteration has completed is now consistent'
+  print '       with the iterations before the restart. Narrowed down the selection of'
+  print '       spatial scales for which filaments are measured to just three scales,'
+  print '       centered on the FILMAXSIZE value. This is aimed at avoiding confusion,'
+  print '       because meaning of FILMAXSIZE is somewhat different from that of'
+  print '       SRCMAXSIZE, in the context of filament measurements. Background of'
+  print '       filaments is determined for the filaments detected on spatial scales'
+  print '       around the adopted FILMAXSIZE, therefore the background subtraction is'
+  print '       valid only for such filaments. Measurements of the filaments detected on'
+  print '       much different scales are likely to be inaccurate, because of the'
+  print '       inaccurate background subtraction. To properly measure also narrower (or'
+  print '       wider) filaments detected on a smaller (or larger) spatial scale, GETSF'
+  print '       must be additionally run using the corresponding smaller (or larger)'
+  print '       value of FILMAXSIZE.'
+  print
+  print '-------------------------------- VERSION 240729 -------------------------------'
+  print
+  print ' [FIX] Corrected a bug in FITFLUXES in claculating the source luminosity error.'
+  print
+  print '-------------------------------- VERSION 240722 -------------------------------'
+  print
+  print ' [MOD] Slightly improved diagnostic of image headers in VERIFY_INPUT_IMAGES.'
+  print
+  print '-------------------------------- VERSION 240512 -------------------------------'
+  print
+  print ' [FIX] Corrected a minor bug when the HIGHLIGHT utility is not installed.'
+  print
+  print '-------------------------------- VERSION 240405 -------------------------------'
+  print
+  print ' [MOD] Extended GETSF removal of unnecessary files.'
+  print
+  print '-------------------------------- VERSION 240319 -------------------------------'
+  print
+  print ' [MOD] Improved GETSF removal of unnecessary files. Now intermediate images'
+  print '       in iterations during component separation are removed to save space.'
+  print
+  print '-------------------------------- VERSION 240124 -------------------------------'
+  print
+  print ' [MOD] Modified ELLIPSES by encapsulating creation of DS9 region files into a'
+  print '       subroutine DS9REGION (in TOOLS). Made more logical creation of the'
+  print '       *coaddedomask* images in GETSF, producing them only when necessary.'
+  print
+  print '-------------------------------- VERSION 240111 -------------------------------'
+  print
+  print ' [MOD] Modified ELLIPSES to save a separate sub-catalog of only good sources,'
+  print '       that is only those whose mono flag is zero.'
+  print
+  print '-------------------------------- VERSION 240110 -------------------------------'
+  print
+  print ' [MOD] Modified MODFITS azimuthal averaging by excluding three horizontal and'
+  print '       three vertical lines (passing through the averaging center) to avoid'
+  print '       contamination of the averages of Fourier amplitudes by their spikes.'
+  print
+  print '-------------------------------- VERSION 2311111 -------------------------------'
+  print
+  print ' [MOD] Added another parameter (<distpc>) to IMGSTAT to compute source masses'
+  print '       from surface density images for a specific distance.'
+  print
+  print '-------------------------------- VERSION 231026 -------------------------------'
+  print
+  print ' [MOD] Modified ELLIPSES and FMEASURE to include numbers of the sources and'
+  print '       filament (catalog) numbers in the DS9 region files.'
+  print
+  print '-------------------------------- VERSION 231023 -------------------------------'
+  print
+  print ' [MOD] Now GETSF creates accumulated all-scales skeletons in *.ske.all.fits as'
+  print '       an additional illustration that may be useful.'
+  print
+  print '-------------------------------- VERSION 231004 -------------------------------'
+  print
+  print ' [FIX] Reinstated clearance of borders of images to be rescaled by FFTCONVOL'
+  print '       that was removed in v221120, because it affected the GETSF results.'
+  print
+  print '-------------------------------- VERSION 231002 -------------------------------'
+  print
+  print ' [MOD] Enhanced FINALCAT by saving individual images of sources in the original'
+  print '       observed images, in addition to the background-subtracted and deblended'
+  print '       individual source images, created previously.'
+  print
+  print '-------------------------------- VERSION 230712 -------------------------------'
+  print
+  print ' [MOD] Further slight improvements related to the DS9 region files in ELLIPSES.'
+  print
+  print '-------------------------------- VERSION 230711 -------------------------------'
+  print
+  print ' [MOD] Moved creation of DS9 region files with source ellipses from FINALCAT'
+  print '       to ELLIPSES, the most suitable utility to create them.'
+  print
+  print '-------------------------------- VERSION 230709 -------------------------------'
+  print
+  print ' [MOD] Improved FITFLUXES, TOOLS, PSPLOT, and PS12D in plotting special symbols'
+  print '       (such as the Sun subscript) and converting PS to PDF.'
+  print
+  print '-------------------------------- VERSION 230706 -------------------------------'
+  print
+  print ' [MOD] Improved FITFLUXES and TOOLS by adjusting limitations of the fitting'
+  print '       parameter space to allow fitting SEDs of sources in the nearby galaxies.'
+  print
+  print '-------------------------------- VERSION 230531 -------------------------------'
+  print
+  print ' [MOD] Improved the COMPILE script by adding another library (-LBZ2), required'
+  print '       for the Ubuntu installations of GETSF.'
+  print
+  print '-------------------------------- VERSION 230410 -------------------------------'
+  print
+  print ' [FIX] Corrected a minor bug in the recomputed rotation matrix in FFTCONV and'
+  print '       MODFITS (when saving FITS images) that led to a wrong sign in CD1_2.'
+  print
+  print '-------------------------------- VERSION 230329 -------------------------------'
+  print
+  print ' [MOD] Minor change in MODFITS: commented out action "sim[fil]" that produced'
+  print '       filaments (blended) from one-pixel skeletons.'
+  print
+  print '-------------------------------- VERSION 230323 -------------------------------'
+  print
+  print ' [MOD] Minor improvements in GETSF and FINALCAT enabling default region colors.'
+  print
+  print '-------------------------------- VERSION 230320 -------------------------------'
+  print
+  print ' [MOD] Minor improvements in GETSF and FMEASURE in the structure of the output'
+  print '       directories for the results of filament measurements.'
+  print
+  print '-------------------------------- VERSION 230317 -------------------------------'
+  print
+  print ' [FIX] Corrected mistakes in GETSF and FINALCAT in the creation of individual'
+  print '       images and intensity profiles for each cataloged source.'
+  print
+  print '-------------------------------- VERSION 230315 -------------------------------'
+  print
+  print ' [MOD] Minor changes in GETSF: removed excessive DS9 region files for sources.'
+  print
+  print '-------------------------------- VERSION 230314 -------------------------------'
+  print
+  print ' [MOD] Minor changes in GETSF and FINALCAT file naming of the DS9 region files.'
+  print
+  print '-------------------------------- VERSION 230312 -------------------------------'
+  print
+  print ' [MOD] Made FINALCAT produce two DS9 region files ("fk5" and "physical") that'
+  print '       may be useful, if the FITS header carries a wrong type of coordinates'
+  print '       (CTYPE*). The physical region files have the coordinates (x,y) in pixels'
+  print '       from the lower-left image corner.'
+  print
+  print '-------------------------------- VERSION 230308 -------------------------------'
+  print
+  print ' [FIX] Corrected CD1_1 to be negative in FFTCONV and MODFITS, when saving FITS.'
+  print
+  print '-------------------------------- VERSION 230125 -------------------------------'
+  print
+  print ' [MOD] Minor improvements in MODFITS image reshaping.'
+  print
+  print '-------------------------------- VERSION 230108 -------------------------------'
+  print
+  print ' [MOD] Minor improvements in TOOLS, FFTCONV, CONVOLVE, and MODFITS for more'
+  print '       flexible usage of external kernels; in HIRES changed prefix.'
+  print
+  print '-------------------------------- VERSION 221202 -------------------------------'
+  print
+  print ' [FIX] Corrected a minor bug in the selection criteria for good sources when'
+  print '       creating the DS9 region files for sources.'
+  print
+  print '-------------------------------- VERSION 221120 -------------------------------'
+  print
+  print ' [MOD] Removed clearance of borders of images to be convolved by FFTCONVOL, a'
+  print '       very old and potentially problematic stuff for large convolution beams.'
+  print
+  print '-------------------------------- VERSION 221118 -------------------------------'
+  print
+  print ' [MOD] Minor improvements in FFTCONVOL (TOOLS), FFTCONV, and CONVOLVE: kernel'
+  print '       fitting level is now explicitly given on command line.'
+  print
+  print '-------------------------------- VERSION 221108 -------------------------------'
+  print
+  print ' [MOD] Minor improvement in the output clarity of HIRES.'
+  print
+  print '-------------------------------- VERSION 221105 -------------------------------'
+  print
+  print ' [MOD] Increased the maximum scale for creating global skeletons from'
+  print '       FILMAXSIZE to 2*FILMAXSIZE.'
+  print
+  print '-------------------------------- VERSION 221020 -------------------------------'
+  print
+  print ' [FIX] Minor corrections in FITFLUXES and HIRES: changed modbbody to modbody.'
+  print
+  print '-------------------------------- VERSION 220729 -------------------------------'
+  print
+  print ' [MOD] Minor cosmetic improvements in GETSF and scripts.'
+  print
+  print '-------------------------------- VERSION 220722 -------------------------------'
+  print
+  print ' [MOD] Minor cosmetic improvement in GETSF: removed the highlight plugin.'
+  print
+  print '-------------------------------- VERSION 220703 -------------------------------'
+  print
+  print ' [MOD] Minor improvement in DS9 region files for sources and skeletons: for'
+  print '       best visibility, a set of 21 distinct colors is defined: red gre yel blu'
+  print '       ora pur cya mag lim pin tea lav bro bei mar min oli apr gra whi bla.'
+  print
+  print '-------------------------------- VERSION 220702 -------------------------------'
+  print
+  print ' [MOD] Minor improvement in DS9 region files for sources and skeletons: for'
+  print '       better visibility, the lines are now drawn additionally in black.'
+  print
+  print '-------------------------------- VERSION 220630 -------------------------------'
+  print
+  print ' [FIX] Minor correction in SFINDER.'
+  print
+  print '-------------------------------- VERSION 220627 -------------------------------'
+  print
+  print ' [NEW] A new utility MAKECUBE allows creation of 3D data cubes from separate'
+  print '       2D images to facilitate analysis of extraction results, primarily when'
+  print '       running GETSF on slices extracted from line data cubes.'
+  print
+  print '-------------------------------- VERSION 220625 -------------------------------'
+  print
+  print ' [FIX] Minor correction in GETSF to clean up monochromatic directories.'
+  print
+  print '-------------------------------- VERSION 220624 -------------------------------'
+  print
+  print ' [MOD] Minor improvement in GETSF in output names of some skeletons.'
+  print
+  print '-------------------------------- VERSION 220620 -------------------------------'
+  print
+  print ' [MOD] Improved GETSF usability when several single-image extractions are done'
+  print '       concurrently in same extraction directory. Corresponding minor changes'
+  print '       in FINALCAT, SFINDER, and SMEASURE.'
+  print
+  print '-------------------------------- VERSION 220615 -------------------------------'
+  print
+  print ' [FIX] Corrected minor bugs in GETSF and ELLIPSES introduced in v220613.'
+  print
+  print '-------------------------------- VERSION 220613 -------------------------------'
+  print
+  print ' [FIX] Corrected DS9 region files for sources by commenting out those sources'
+  print '       that fail to pass the GETSF selection criteria for acceptable sources.'
+  print '       This makes the region files consistent with images produced by ELLIPSES.'
+  print '       Region file headers now document all symbolic color names known to DS9.'
+  print
+  print '-------------------------------- VERSION 220610 -------------------------------'
+  print
+  print ' [NEW] Now FINALCAT and FMEASURE create DS9 region files for both sources'
+  print '       (half-maximum and footprint ellipses) and filaments (global and scale-'
+  print '       dependent skeletons) to facilitate their visualization and analyses.'
+  print '       Adjusted GETSF config file and User’s Guide correspondingly.'
+  print
+  print '-------------------------------- VERSION 220530 -------------------------------'
+  print
+  print ' [FIX] Corrected SMEASURE by making FLX_ALT for surface densities use the same'
+  print '       actual source pixel values instead of an equivalent Gaussian, wihch is'
+  print '       used for normal images with intensities.'
+  print
+  print '-------------------------------- VERSION 220525 -------------------------------'
+  print
+  print ' [FIX] Minor fixes in COMPLIB and COMPILE to work natively on Apple MacBooks:'
+  print '       For some reason, \cp commands did not correctly overwrite executables,'
+  print '       producing a stupid "Killed: 9" message when running GETSF utilities.'
+  print
+  print '-------------------------------- VERSION 220510 -------------------------------'
+  print
+  print ' [FIX] Corrected a minor bug in plotting sources on filaments and skeletons.'
+  print '       Now plotting sources over the filaments and global skeletons only.'
+  print
+  print '-------------------------------- VERSION 220502 -------------------------------'
+  print
+  print ' [FIX] Corrected a minor mistake in creating global skeletons: a wrong omask'
+  print '       image was used, corresponding to the first wavelength in config.'
+  print
+  print '-------------------------------- VERSION 220427 -------------------------------'
+  print
+  print ' [FIX] Corrected a minor mistake in COMPLIB related to SLEEP with GFORTRAN.'
+  print '       Made few minor improvements in FINALCAT to avoid compiler warnings.'
+  print
+  print '-------------------------------- VERSION 220325 -------------------------------'
+  print
+  print ' [MOD] Simplified HIRES by moving old stuff in a separate script PEDRO.'
+  print
+  print '-------------------------------- VERSION 220321 -------------------------------'
+  print
+  print ' [MOD] Minor improvement in all FORTRAN utilities in handling FITS images. Now'
+  print '       on input the BLANK values are replaced with NaNs, whereas on the output'
+  print '       image values are transformed to make BZERO = 0 and BSCALE = 1.'
+  print
+  print '-------------------------------- VERSION 220318 -------------------------------'
+  print
+  print ' [MOD] Minor improvements in SPLITCUBE to split also 4-dimensional "cubes".'
+  print
+  print '-------------------------------- VERSION 220223 -------------------------------'
+  print
+  print ' [MOD] Minor improvements in GETSF in diagnostics of missing GETSF utilities.'
+  print
+  print '-------------------------------- VERSION 220209 -------------------------------'
+  print
+  print ' [MOD] Minor changes in almost all GETSF routines and scripts to compile on'
+  print '       new Apple M1 MacBooks when using the new Intel FORTRAN 2021.5.0 and'
+  print '       GFORTRAN 11.2.'
+  print
+  print '-------------------------------- VERSION 220118 -------------------------------'
+  print
+  print ' [MOD] Added diagnostics and error messages when a user does not replace the'
+  print '       placeholder for SRCMAXSIZE or FILMAXSIZE in the config file with the'
+  print '       actual values estimated from the input images.'
+  print
+  print '-------------------------------- VERSION 220112 -------------------------------'
+  print
+  print ' [MOD] Cosmetic changes in all utilities: removed the trailing "..." in the'
+  print '       informational messages on screen.'
+  print
+  print '-------------------------------- VERSION 220103 -------------------------------'
+  print
+  print ' [MOD] Minor changes in MODFITS reshaping of images.'
+  print
+  print '-------------------------------- VERSION 211221 -------------------------------'
+  print
+  print ' [MOD] Minor changes in IMGSTAT calculation of direct FWHM sizes.'
+  print
+  print '-------------------------------- VERSION 211109 -------------------------------'
+  print
+  print ' [FIX] Corrected a bug in IMGSTAT in calculation of pixel distributions (PDF).'
+  print
+  print '-------------------------------- VERSION 211012 -------------------------------'
+  print
+  print ' [MOD] Inverted the sign of FOFA in the final source catalogs for clarity. Now'
+  print '       the values are positive for completed footprints and "negative" for'
+  print '       those that have not finished their expansion or shrinkage. Modified the'
+  print '       catalog header comments accordingly.'
+  print
+  print '-------------------------------- VERSION 211011 -------------------------------'
+  print
+  print ' [FIX] Minor correction in FINALCAT that failed to remove the sources larger'
+  print '       than 1.25 * MAXSIZE from the source catalogs. The catalog headers for'
+  print '       FOFA now clarify that the values must be used without "-".'
+  print
+  print '-------------------------------- VERSION 211004 -------------------------------'
+  print
+  print ' [FIX] Minor cosmetic correction in the thickness of the global skeletons that'
+  print '       are visualized over the component of filaments.'
+  print
+  print '-------------------------------- VERSION 210920 -------------------------------'
+  print
+  print ' [MOD] Minor cosmetic changes in plotting sources: now the output images are'
+  print '       multiplied by the observational masks. Sources are also plotted on the'
+  print '       source detection image. Minor cosmetic changes in COMFUN.'
+  print
+  print '-------------------------------- VERSION 210915 -------------------------------'
+  print
+  print ' [FIX] Corrected a minor bug in counting header lines in catalogs, introduced'
+  print '       in v210912.'
+  print
+  print '-------------------------------- VERSION 210913 -------------------------------'
+  print
+  print ' [NEW] Added measurements of filaments for the global skeletons, the same way'
+  print '       the measurements are done for the set of scale-dependent skeletons.'
+  print
+  print '-------------------------------- VERSION 210912 -------------------------------'
+  print
+  print ' [FIX] Corrected a rare minor problem in visualizing sources, when the first'
+  print '       source in a catalog happens to be commented out (bad).'
+  print
+  print '-------------------------------- VERSION 210907 -------------------------------'
+  print
+  print ' [MOD] Improvements in the creation of the global, scale-independent skeletons.'
+  print
+  print '-------------------------------- VERSION 210901 -------------------------------'
+  print
+  print ' [NEW] Added to GETSF creation of the global, scale-independent skeletons,'
+  print '       named *ske.global.fits, located in +skeletons and +filaments/+visuals.'
+  print
+  print '-------------------------------- VERSION 210824 -------------------------------'
+  print
+  print ' [MOD] Minor improvements in DECOMPOSE IMAGES, GET_BACK_FLATTEN, and'
+  print '       DETECT_STRUCTURES. In the latter, another image of skeletons is now'
+  print '       produced, accumulating all spatial scales.'
+  print
+  print '-------------------------------- VERSION 210722 -------------------------------'
+  print
+  print ' [MOD] Minor improvement in FMEASURE catalogs of selected filament profiles:'
+  print '       now they are cataloged up to the radii of 3 times the standard value.'
+  print
+  print '-------------------------------- VERSION 210609 -------------------------------'
+  print
+  print ' [FIX] Minor correction in COMBINE_WAVEBANDS for filaments, when some wavebands'
+  print '       are not used in the combination and the separation of filaments in those'
+  print '       images was not done.'
+  print
+  print '-------------------------------- VERSION 210602 -------------------------------'
+  print
+  print ' [MOD] Improved FMEASURE by limiting the filament profiles by the lengths of'
+  print '       the one-sided normals. Changed the limiting length of the normals from'
+  print '       its median to mean value along the skeleton.'
+  print
+  print '-------------------------------- VERSION 210531 -------------------------------'
+  print
+  print ' [FIX] Very minor corrections in MEASURE_DETECTIONS for filaments.'
+  print
+  print ' [MOD] Improved FMEASURE by splitting the standard deviations of filament'
+  print '       profiles into their independent positive and negative parts. Modified'
+  print '       the script PLOTS accordingly.'
+  print
+  print '-------------------------------- VERSION 210521 -------------------------------'
+  print
+  print ' [FIX] Directory results/+components was not created in MEASURE_DETECTION when'
+  print '       extracting only filaments.'
+  print
+  print '-------------------------------- VERSION 210517 -------------------------------'
+  print
+  print ' [FIX] Very minor correction in MODFITS in noise generation.'
+  print
+  print '-------------------------------- VERSION 210509 -------------------------------'
+  print
+  print ' [FIX] Corrected MODFITS in similation of filaments from skeletons and slightly'
+  print '       fixed the script PLOTS.'
+  print
+  print '-------------------------------- VERSION 210507 -------------------------------'
+  print
+  print ' [MOD] Removed from FINALCAT creation of the unused catalog of colors. Slightly'
+  print '       improved few functions in COMFUN and fixed the script PLOTS.'
+  print
+  print '-------------------------------- VERSION 210414 -------------------------------'
+  print
+  print ' [MOD] Removed the changes introduced in v210412. Improved GETSF and FINALCAT'
+  print '       in handling NWAVESDETECT erroneously set to 0. Increased maximum number'
+  print '       of skeleton segmentation iterations 25 ~> 40 in MODFITS.'
+  print
+  print '-------------------------------- VERSION 210412 -------------------------------'
+  print
+  print ' [MOD] Attempt to improve footprints and measurements by making the footprints'
+  print '       circular for erroneously narrow sources with BFHWM < BEAM in FINALCAT.'
+  print
+  print '-------------------------------- VERSION 210403 -------------------------------'
+  print
+  print ' [FIX] Minor correction in FINALCAT that did not replace SCALESX with ALPHABE'
+  print '       in the surface density catalog columns in the presence of other images.'
+  print
+  print ' [MOD] Minor improvements in ELLIPSES.'
+  print
+  print '-------------------------------- VERSION 210329 -------------------------------'
+  print
+  print ' [MOD] Improved in FINALCAT the measurement accuracy of the unresolved sources'
+  print '       with erroneously small sizes: sqrt ( AFWHM * BFWHM ) < BEAM.'
+  print
+  print '-------------------------------------------------------------------------------'
+}
+#___________________________________________________________________________________________________________________________________
+
+AGREEMENT ()
+{
+  for (( b=1; b <= 7; b++ ))
+  do print "${banner[b]}"
+  done
+  print
+  print '                                 USER AGREEMENT                                '
+  print
+  print ' In what follows, "this software" refers to the scripts GETSF, COMFUN, COMPILE,'
+  print ' CONVOLVE, HIGHRES, INSTALLG, IOSPEED, PREPOBS, RESAMPLE, and the related uti- '
+  print ' lities CLEANBG, ELLIPSES, EXPANDA, EXTRACTX, FFTCONV, FINALCAT, FITFLUXES,    '
+  print ' FMEASURE, IMGSTAT, MAKECUBE, MODFITS, OPERATE, READHEAD, SFINDER, SMEASURE,   '
+  print ' SPLITCUBE, and library TOOLS; "the author" refers to Alexander Men’shchikov   '
+  print ' of the Département d’Astrophysique, IRFU, CEA Saclay, France.                 '
+  print                                                                                 
+  print ' It is assumed that anyone using this software ("the user") has read, under-   '
+  print ' stood, and agreed to the following conditions of use:                         '
+  print                                                                                 
+  print ' 1. This software is freely available for download and use. A user is free to  '
+  print '    share this software with co-workers and students, but when it is requested '
+  print '    by a colleague not working directly with the user, the latter is asked to  '
+  print '    redirect that person to the GETSF web site:                                '
+  print '    http://irfu.cea.fr/Pisp/alexander.menshchikov/                             '
+  print '    or to the author: alexander.menshchikov@cea.fr                             '
+  print                                                                                 
+  print ' 2. This software shall be used exclusively for research, education, non-pro-  '
+  print '    fit, and non-military purposes. Specific written permission from the author'
+  print '    must be obtained before any commercial use of this software is undertaken. '
+  print                                                                                 
+  print ' 3. The banners of this software, these conditions of use, and information     '
+  print '    about the author shall remain with this software and any descendent deve-  '
+  print '    loped from and still based substantially upon this software.               '
+  print                                                                                 
+  print ' 4. The names of the institutions with which the author is affiliated shall not'
+  print '    be used to publicize any data and/or results generated by this software.   '
+  print '    All findings and their interpretation are the opinions of the user and do  ' 
+  print '    not necessarily reflect those of the author nor the institutions with which'
+  print '    the author is affiliated.                                                  '
+  print                                                                                 
+  print ' 5. The author makes no representations about the suitability of this software '
+  print '    for any purpose. Subject to the above conditions, this software is provided'
+  print '    "as is" without any expressed or implied warranty.                         '
+  print                                                                                 
+  print '                                   CITATIONS                                   '
+  print                                                                                 
+  print ' The algorithms used in this software are described in:                        '
+  print                                                                                 
+  print ' Men’shchikov A. 2021, A&A, 649, A89                                           '
+  print ' Men’shchikov A. 2021, A&A, 654, A78                                           '
+  print ' Men’shchikov A. 2017, A&A, 607, A64                                           '
+  print ' Men’shchikov A. 2016, A&A, 593, A71                                           '
+  print ' Men’shchikov A. 2013, A&A, 560, A63                                           '
+  print ' Palmeirim P., André Ph., Kirk J., et al. 2013, A&A, 550, A38                  '
+  print ' Men’shchikov A., André Ph., Didelon P., et al. 2012, A&A, 542, A81            '
+  print ' Men’shchikov A., André Ph., Didelon P., et al. 2010, A&A, 518, L103           '
+  print                                                                                 
+  print ' Any publication reporting results obtained using this software or any of its  '
+  print ' derivatives includes a citation of Men’shchikov (2021) or a phrase like this: '
+  print ' “Use of GETSF, developed by A. Men’shchikov at DAp, IRFU, CEA Saclay, France, '
+  print ' is hereby acknowledged.” (if only individual scripts or utilities were used,  '
+  print ' then GETSF may be substituted with their names).                              '
+}
+USAGE ()
+{
+  for (( b=1; b <= 7; b++ ))
+  do printlh "${banner[b]}"
+  done
+  printlh
+  printlh '                          '$cdate
+  printlh 
+  printlh ' USAGE: '$scriptname' [<revision>|help]'
+  printlh
+  printlh ' Input data must be defined in a configuration file +getsf.cfg. If it does not'
+  printlh ' exist in the current directory, a new default version of the file is created.'
+  printlh ' The config file must be edited as explained in the User’s Guide, included in'
+  printlh ' the downloaded archive. For more information, refer to getsf.guide.pdf.'
+  printlh
+  printlh ' Web site http://irfu.cea.fr/Pisp/alexander.menshchikov/'
+}
+#___________________________________________________________________________________________________________________________________
+
+DEFAULTPARAMS ()   # Default parameters will be saved in a configuration file if no such file exists in the current directory.
+{
+  for (( v=1; v <= 4; v++ ))
+  do headinfo='#'"${headerinfo[v]:3}"; headinfo=${headinfo/' • '$versnum/}; print $headinfo
+  done
+  print '#                    |                                   !'
+  print '# VALUES             | PARAMETERS                        ! COMMENT  NB: default beams are for Herschel fast (60"/s) parallel mode'
+  print '#____________________|___________________________________!_____________________________________________________________________________'
+  print '#                    |                                   !'
+  print ' fieldname 100       | prefix distance ................. ! prefix for naming files (never use ~=.?), distance (pc) to objects'
+  print ' 6                   | nwmax ............{ nwmax < 100 } ! maximum number of wavelengths specified in this configuration file'
+  print ' 6 1 2 3 4 5 6       | nwaves nw[i] .................... ! number of wavelengths and their indices to process'
+  print ' 070 '$b070s60p' s070 f070 n col | ............................ ! wave, beam, [-]srcmaxsize, [-]filmaxsize("FWHM), apcorr (Herschel), [color] (gre red yel blu ora pur cya mag lim pin tea lav bro bei mar min oli apr gra whi bla)'
+  print ' /path/to/image ../070 | ............................... ! paths to image and monochromatic directory'
+  print ' image_070           | ................................. ! prepared image name'
+  print ' 100 '$b100s60p' s100 f100 n col | ............................ ! wave, beam, [-]srcmaxsize, [-]filmaxsize("FWHM), apcorr (Herschel), [color] (gre red yel blu ora pur cya mag lim pin tea lav bro bei mar min oli apr gra whi bla)'
+  print ' /path/to/image ../100 | ............................... ! paths to image and monochromatic directory'
+  print ' image_100           | ................................. ! prepared image name'
+  print ' 160 '$b160s60p' s160 f160 n col | ............................ ! wave, beam, [-]srcmaxsize, [-]filmaxsize("FWHM), apcorr (Herschel), [color] (gre red yel blu ora pur cya mag lim pin tea lav bro bei mar min oli apr gra whi bla)'
+  print ' /path/to/image ../160 | ............................... ! paths to image and monochromatic directory'
+  print ' image_160           | ................................. ! prepared image name'
+  print ' 250 '$b250' s250 f250 n col | ............................ ! wave, beam, [-]srcmaxsize, [-]filmaxsize("FWHM), apcorr (Herschel), [color] (gre red yel blu ora pur cya mag lim pin tea lav bro bei mar min oli apr gra whi bla)'
+  print ' /path/to/image ../250 | ............................... ! paths to image and monochromatic directory'
+  print ' image_250           | ................................. ! prepared image name'
+  print ' 350 '$b350' s350 f350 n col | ............................ ! wave, beam, [-]srcmaxsize, [-]filmaxsize("FWHM), apcorr (Herschel), [color] (gre red yel blu ora pur cya mag lim pin tea lav bro bei mar min oli apr gra whi bla)'
+  print ' /path/to/image ../350 | ............................... ! paths to image and monochromatic directory'
+  print ' image_350           | ................................. ! prepared image name'
+  print ' 500 '$b500' s500 f500 n col | ............................ ! wave, beam, [-]srcmaxsize, [-]filmaxsize("FWHM), apcorr (Herschel), [color] (gre red yel blu ora pur cya mag lim pin tea lav bro bei mar min oli apr gra whi bla)'
+  print ' /path/to/image ../500 | ............................... ! paths to image and monochromatic directory'
+  print ' image_500           | ................................. ! prepared image name'
+  print ' y y        | sources filaments ............. ! extract sources and/or filaments {y|n}'
+  print ' y 1 1 '"$def_itbgsmax"'   | separate its1 itf1 niter ...... ! separate components and backgrounds; restart iterations, niter'
+  print ' y 1 1      | flatten itsd1 itfd1 ........... ! flatten background-subtracted components; restart iterations'
+  print ' y          | complete ...................... ! complete separation and flattening'
+  print ' y          | combine ....................... ! combine decomposed structures over wavelengths'
+  print ' y 2        | detect skelsig ................ ! detect structures; minimum detection significance for skeletons'
+  print ' y 1 1 50 n | measure goodmin itn itx sproima ! measure structures; minimum goodness; iterations numbers; profile sources'
+  print ' y          | visualize ..................... ! visualize sources'
+  print ' '"$def_nsigmacombos"'          | nsigmacombos (!expert) ........ ! number of sigmas for combining sources in single scales'
+  print ' '"$def_nsigmacombof"'          | nsigmacombof (!expert) ........ ! number of sigmas for combining filaments in single scales'
+  print ' 1          | nwavesdetect .................. ! required minimum number of wavelengths for source detection'
+  print ' 2 ?        | savespace delete .............. ! space saving level {0|1|2}: clean up more files; auto delete {?|n|y}'
+  print ' 0          | verbosity ..................... ! verbosity level {0|1|2} for the screen and log file output'
+  print '#______________________________________________________________________________________________________________________________________'
+} 
+#___________________________________________________________________________________________________________________________________
+
+hell='/dev/null'; ncolors=17
+trap 'killhandler' SIGINT; trap 'errorhandler' SIGTERM; trapfirst='yes'
+for i in `seq  1 $ncolors 999`; do color[$i]='red' ; done
+for i in `seq  2 $ncolors 999`; do color[$i]='gre' ; done
+for i in `seq  3 $ncolors 999`; do color[$i]='blu' ; done
+for i in `seq  4 $ncolors 999`; do color[$i]='cya' ; done
+for i in `seq  5 $ncolors 999`; do color[$i]='mag' ; done
+for i in `seq  6 $ncolors 999`; do color[$i]='bro' ; done
+for i in `seq  7 $ncolors 999`; do color[$i]='ora' ; done
+for i in `seq  8 $ncolors 999`; do color[$i]='gol' ; done
+for i in `seq  9 $ncolors 999`; do color[$i]='dred'; done
+for i in `seq 10 $ncolors 999`; do color[$i]='dgre'; done
+for i in `seq 11 $ncolors 999`; do color[$i]='dblu'; done
+for i in `seq 12 $ncolors 999`; do color[$i]='dcya'; done
+for i in `seq 13 $ncolors 999`; do color[$i]='dmag'; done
+for i in `seq 14 $ncolors 999`; do color[$i]='dbro'; done
+for i in `seq 15 $ncolors 999`; do color[$i]='dora'; done
+for i in `seq 16 $ncolors 999`; do color[$i]='dgol'; done
+for i in `seq 17 $ncolors 999`; do color[$i]='bla' ; done
+ red='\033[0;31m';  lred='\033[1;31m';  gre='\033[0;32m'; lgre='\033[1;32m';  yel='\033[0;33m'
+lyel='\033[1;33m';   blu='\033[0;34m'; lblu='\033[1;34m';  mag='\033[0;35m'; lmag='\033[1;35m'
+ cya='\033[0;36m';  lcya='\033[1;36m';  gra='\033[0;37m'; dgra='\033[1;30m';  whi='\033[1;37m'
+xgre="echo -e \x1b[38;2;60;224;75m$rcol\x1b[m"    ## regcolor='#3ce04b' RGB ( 60,224, 75) # old: #3cb44b
+xblu="echo -e \x1b[38;2;115;131;255m$rcol\x1b[m"  ## regcolor='#7383ff' RGB (115,131,255) # old: #4363d8
+xora="echo -e \x1b[38;2;255;146;65m$rcol\x1b[m"   ## regcolor='#ff9241' RGB (255,146, 65) # old: #f58231
+xpur="echo -e \x1b[38;2;161;78;255m$rcol\x1b[m"   ## regcolor='#a14eff' RGB (161, 78,255) # old: #911eb4
+xcya="echo -e \x1b[38;2;102;255;255m$rcol\x1b[m"  ## regcolor='#66ffff' RGB (102,255,255) # old: #42d4f4
+xmag="echo -e \x1b[38;2;255;82;255m$rcol\x1b[m"   ## regcolor='#ff52ff' RGB (255, 82,255) # old: #f032e6
+xlim="echo -e \x1b[38;2;188;246;12m$rcol\x1b[m"   ## regcolor='#bcf60c' RGB (188,246, 12) # old: #bfef45
+xpin="echo -e \x1b[38;2;255;181;181m$rcol\x1b[m"  ## regcolor='#ffb5b5' RGB (255,181,181) # old: #fabed4
+xtea="echo -e \x1b[38;2;0;160;160m$rcol\x1b[m"    ## regcolor='#00a0a0' RGB (  0,160,160) # old: #469990
+xlav="echo -e \x1b[38;2;230;190;255m$rcol\x1b[m"  ## regcolor='#e6beff' RGB (230,190,255) # old: #dcbeff
+xbro="echo -e \x1b[38;2;186;115;52m$rcol\x1b[m"   ## regcolor='#ba7334' RGB (186,115, 52) # old: #9a6324
+xbei="echo -e \x1b[38;2;242;242;202m$rcol\x1b[m"  ## regcolor='#f2f2ca' RGB (242,242,202) # old: #fffac8
+xmar="echo -e \x1b[38;2;170;0;0m$rcol\x1b[m"      ## regcolor='#aa0000' RGB (170,  0,  0) # old: #800000
+xmin="echo -e \x1b[38;2;170;255;195m$rcol\x1b[m"  ## regcolor='#aaffc3' RGB (170,255,195) # old: #aaffc3
+xoli="echo -e \x1b[38;2;165;181;0m$rcol\x1b[m"    ## regcolor='#a5b500' RGB (165,181,  0) # old: #808000
+xapr="echo -e \x1b[38;2;255;216;177m$rcol\x1b[m"  ## regcolor='#ffd8b1' RGB (255,216,177) # old: #ffd8b1
+xgra="echo -e \x1b[38;2;144;144;144m$rcol\x1b[m"  ## regcolor='#909090' RGB (144,144,144) # old: #a9a9a9
+xred="echo -e \x1b[38;2;240;25;75m$rcol\x1b[m"    ## regcolor='#f0194b' RGB (240, 25, 75) # old: #e6194b
+xyel="echo -e \x1b[38;2;255;240;25m$rcol\x1b[m"   ## regcolor='#fff019' RGB (255,240, 25) # old: #ffe119
+xwhi="echo -e \x1b[38;2;255;255;255m$rcol\x1b[m"  ## regcolor='#ffffff' RGB (255,255,255) # old: #ffffff
+xbla="echo -e \x1b[38;2;0;0;0m$rcol\x1b[m"        ## regcolor='#000000' RGB (  0,  0,  0) # old: #000000
+coff="\x1b[m"
+#_________________________________________________________________________________________________________________________________
+
+lenexe=${#executing}; lenscr=${#scriptname}
+lastps=$(( lenexe - lenscr )); lastp=$(( lastps - 1 ))
+if [[ "${executing:lastps:lenexe}" == "$scriptname" ]]
+then path=${executing:0:lastp}
+else path=''
+fi
+themelangok='no'
+themefile=$GETSF_HOME'/sasha.theme'
+langfile=$GETSF_HOME'/sasha.lang'
+##plugfile=$GETSF_HOME'/sasha.plug'
+if [[ -e $themefile && -e $langfile ]]    ## && -e $plugfile 
+then themelangok='yes'
+else
+  themefile=$GETSF_BIN'/sasha.theme'
+  langfile=$GETSF_BIN'/sasha.lang'
+##  plugfile=$GETSF_BIN'/sasha.plug'
+  if [[ -e $themefile && -e $langfile ]]    ## && -e $plugfile
+  then themelangok='yes'
+  else
+    themefile=$path'/sasha.theme'
+    langfile=$path'/sasha.lang'
+##    plugfile=$path'/sasha.plug'
+    if [[ -e $themefile && -e $langfile ]]    ## && -e $plugfile
+    then themelangok='yes'
+    else
+      themefile=~/.sasha.theme
+      langfile=~/.sasha.lang
+##      plugfile=~/.sasha.plug
+      if [[ -e $themefile && -e $langfile ]]    ## && -e $plugfile
+      then themelangok='yes'
+      fi
+    fi
+  fi
+fi
+if [[ $themelangok == 'yes' ]]
+then
+  highlight='highlight'
+  $highlight --version 2>$hell >$hell; rchigh=$?
+  if [[ $rchigh -gt 0 ]]
+  then 
+    highlight='/opt/local/bin/highlight'
+    $highlight --version 2>$hell >$hell; rchigh=$?
+  fi
+  if [[ $rchigh -eq 0 ]]
+  then 
+    highlight=$highlight" --out-format=xterm256 --config-file=$themefile --config-file=$langfile"   ## --plug-in=$plugfile
+  else 
+    highlight='tee'
+  fi
+else
+  highlight='tee'
+fi
+#_________________________________________________________________________________________________________________________________
+
+killhandler ()
+{
+  if [[ "$waitingforinput" == 'yes' ]]
+  then 
+    if [[ "$trapfirst" == "yes" ]]; then printlh; fi
+    printlh ' HINT: To cleanly kill '$script': hit ENTER, then press CTRL-C '
+    trapfirst='no'
+  else 
+    if [[ "$outsameline" == 'yes' ]]; then printlh; fi
+    printlh; printlh ' '$script': ABORTED BY USER REQUEST (CTRL-C)'; printlh; exit
+  fi
+}
+#___________________________________________________________________________________________________________________________________
+
+errorhandler ()
+{
+  printlh; printlh ' '$script': ERRORS ENCOUNTERED: ABORTED'; printlh; exit
+}
+#___________________________________________________________________________________________________________________________________
+
+print () 
+{ 
+  (printf "%s\n" "$*")
+}
+printl () 
+{ 
+  (printf "$*") | 'tee' -a $logfile
+}
+printlh () 
+{ 
+  (printf "%s\n" "$*") | "tee" -a $logfile | $highlight
+}
+printhn () 
+{ 
+  if [[ "$highlight" == 'tee' ]]
+  then (printf "%s" "$*") | "tee"
+  else (printf "%s\n" "$*") | $highlight --no-trailing-nl
+  fi
+}
+#___________________________________________________________________________________________________________________________________
+
+tehi ()
+{
+  local rc
+  if [[ $verb != '-verb0' ]]
+  then ('tee' -a $logfile) | $highlight
+  else 'tee'
+  fi
+  if [[ -e ".rc$cwavenum" ]]
+  then rc=`cat < .rc$cwavenum | { IFS= read -r first; printf "%s\n" "$first"; }`; chk_rc $rc
+  fi
+}
+#___________________________________________________________________________________________________________________________________
+
+chk_rc ()
+{ 
+  rc=$?
+  if [[ $rc -eq 0 && "$1" != "" ]]; then rc=$1; fi
+  if [[ $rc -gt 0 ]]
+  then 
+    where=$script
+    if [[ $fun != "" ]]
+    then where="$where: '$fun'"; fi
+    printlh " $where: ERROR (RC=$rc)"
+    kill -SIGTERM $top_pid
+  fi
+  return $rc
+}
+#___________________________________________________________________________________________________________________________________
+
+chk_rch ()
+{
+  local rc
+  rc=`cat < .rc$cwavenum | { IFS= read -r first; printf "%s\n" "$first"; }`
+  rch=$rc
+  if [[ $rc -gt 0 ]]; then printlh; printl ' Press Enter to continue...'; read -r -s ans; printlh; fi
+  return $rch
+}
+#___________________________________________________________________________________________________________________________________
+
+CLEAR_STDIN ()
+{ # Discard all stdin buffer before prompting user input.
+  old_tty_settings=`stty -g`
+  stty -icanon min 0 time 0
+  while read none; do :; done 
+  stty "$old_tty_settings"
+}
+#___________________________________________________________________________________________________________________________________
+
+LEADZEROS ()
+{
+  local zizi; local y; local numz=$1; zizi=$2
+  if [[ $numz -eq 1 ]]; then if [[ $2 -lt 10 ]]; then zizi="0"$2  ; fi; fi
+  if [[ $numz -eq 2 ]]; then if [[ $2 -lt 10 ]]; then zizi="00"$2 ; else if [[ $2 -lt 100  ]]; then zizi="0"$2 ; fi; fi; fi
+  if [[ $numz -eq 3 ]]; then if [[ $2 -lt 10 ]]; then zizi='000'$2; else if [[ $2 -lt 100  ]]; then zizi='00'$2; else
+                                                                         if [[ $2 -lt 1000 ]]; then zizi='0'$2 ; fi; fi; fi; fi
+  y=\$"$3"; eval "$3=$zizi"
+}
+#___________________________________________________________________________________________________________________________________
+
+TRIM () 
+{
+  local funo=$fun; fun='TRIM'
+  if [[ $2 == "" ]]
+  then 'ERROR' 'Too few parameters: "'$1'" "'$2'"'
+  fi
+  local string="$1"
+##  echo "Original string: '$string'"
+  trimmed="${string#"${string%%[![:space:]]*}"}"
+  trimmed="${trimmed%"${trimmed##*[![:space:]]}"}"
+##  echo "Trimmed string: '$trimmed'"
+  y=\$"$2"; eval "$2='$trimmed'"
+
+  fun=$funo
+}
+#___________________________________________________________________________________________________________________________________
+
+POSITION ()
+{
+  local funo=$fun; fun='POSITION'
+  if [[ $3 == "" ]]
+  then 'ERROR' 'Too few parameters: "'$1'" "'$2'" "'$3'"'
+  fi
+  local substr=$1; local string=$2; local y
+  lensub=${#substr}; lenstr=${#string}
+  local dlen=$(( lenstr - lensub )); local i
+  returnposition=0
+  if [[ $lensub -le $lenstr ]]
+  then
+    for (( i=0; i <= $dlen; i++ ))
+    do 
+      if [[ "$substr" == "${string:$i:$lensub}" ]]
+      then returnposition=$(( i + 1 )); break
+      fi
+    done
+  fi
+  y=\$"$3"; eval "$3=$returnposition"
+
+  fun=$funo
+}
+#___________________________________________________________________________________________________________________________________
+
+ERROR ()
+{
+  local message=$1; local advice1=$2; local advice2=$3
+  if [[ $fun == '' ]]; then funx=''; else funx=\'$fun\'': '; fi
+  printlh
+  printlh ' '$script': '$funx'ERROR:'
+  printlh ' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+  printlh ' INFO: '$message
+  if [[ "$advice1" == '&' ]]; then printlh '       '$advice2; fi
+  printlh ' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+  if [[ "$advice1" != '' && "$advice1" != '&' ]]
+  then 
+    printlh ' HINT: '$advice1
+    if [[ "$advice2" != '' ]]; then printlh '       '$advice2; fi
+    printlh ' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+  fi
+  printlh ' ERROR in '$script': Aborted.'
+  printlh
+  exit 99
+}
+#___________________________________________________________________________________________________________________________________
+
+SCIENTIFIC2FIXED ()
+{
+  local funo=$fun; fun='SCIENTIFIC2FIXED'
+  if [[ $2 == "" ]]
+  then 'ERROR' 'Too few parameters: "'$1'" "'$2'"'
+  fi
+  local valuexxx=$1; local lenval; local expo; local y; local nE; local ne; local nD; local nd
+  
+  'POSITION' 'E' $valuexxx nE; 'POSITION' 'e' $valuexxx ne
+  'POSITION' 'D' $valuexxx nD; 'POSITION' 'd' $valuexxx nd
+  nexp=0
+  if   [[ $nE -gt 0 ]]; then nexp=$nE
+  elif [[ $ne -gt 0 ]]; then nexp=$ne
+  elif [[ $nD -gt 0 ]]; then nexp=$nD
+  elif [[ $nd -gt 0 ]]; then nexp=$nd
+  fi
+  if [[ $nexp -gt 0 ]]
+  then
+    expo=${valuexxx:nexp}                                  ##; lenexp=${#expo}
+    if [[ ${expo:0:1} == '+' ]]; then expo=${expo:1}; fi
+                                                           ## if [[ ${expo:0:1} == '0' && $lenexp -gt 1 ]]; then expo=${expo:1}; fi
+    if [[ ${expo:0:1} == '-' ]]
+    then expo='-'$(echo "${expo:1}" | sed 's/^0*//')
+    else expo=$(echo "$expo" | sed 's/^0*//'); [[ -z "$expo" ]] && expo='0'
+    fi
+    valuexxx=$(echo "scale=40; ${valuexxx:0:(nexp-1)}*10^$expo" | bc)
+    if [[ ${valuexxx:0:1} == '.' ]]
+    then valuexxx='0'${valuexxx:0}
+    fi
+  fi
+  y=\$"$2"; eval "$2=$valuexxx"
+
+  fun=$funo
+}
+#___________________________________________________________________________________________________________________________________
+
+ROUND_FLOAT ()
+{
+  local funo=$fun; fun='ROUND_FLOAT'
+  if [[ $3 == "" ]]
+  then 'ERROR' 'Too few parameters: "'$1'" "'$2'" "'$3'"'
+  fi
+  local ndecim=$1; local float=$2; local y
+
+  if [[ ${float:0:1} == "." ]]; then float='0'$float; fi
+  digit=$(( 6 - dot )); float=`printf "%.${ndecim}f\n" $float`
+
+  y=\$"$3"; eval "$3=$float"
+
+  fun=$funo
+}
+#___________________________________________________________________________________________________________________________________
+
+CALCULATE ()  #<~ Not this function should be able to use both scientific and fixed notation
+{
+  local funo=$fun; fun='CALCULATE'
+  if [[ $3 == "" ]]
+  then 'ERROR' 'Too few parameters: "'$1'" "'$2'" "'$3'"'
+  fi
+  local expression=$2; local ndigits=$3; local result; local y
+
+  expression="${expression// /}"  #<~ remove (illegal) empty spaces that may be present in the input expression
+
+# Find and replace all scientific notation tokens within an arbitrary expression string:
+
+  expression=$(echo "$expression" | awk '{
+      while (match($0, /[0-9]*\.?[0-9]+[eE][+-]?[0-9]+/)) {
+          printf "%s", substr($0, 1, RSTART-1)
+          val = substr($0, RSTART, RLENGTH)
+          printf "%.42f", val+0
+          $0 = substr($0, RSTART+RLENGTH)
+      }
+      print
+  }')
+  'POSITION' 'e(' $expression nexp
+  'POSITION' 'l(' $expression nlog
+  'POSITION' 's(' $expression nsin
+  'POSITION' 'c(' $expression ncos
+  if [[ $nexp -eq 0 && $nlog -eq 0 && $nsin -eq 0 && $ncos -eq 0 ]]
+  then result=$(print "scale=$ndigits; $expression" | bc); chk_rc
+  else result=$(print "scale=$ndigits; $expression" | bc -l); chk_rc
+  fi
+  if [[ ${result:0:1} == "." ]]; then result='0'$result; fi
+
+  y=\$"$1"; eval "$1=$result"
+
+  fun=$funo
+}
+#___________________________________________________________________________________________________________________________________
+
+CORRECT_HEADERS ()
+{                                         
+  local funo=$fun; fun='CORRECT_HEADERS'; title=$script': => '\'$fun\'
+  if [[ $verb == '-verb2' ]]
+  then printlh; printlh ' '$title
+  fi
+  local image=$1; local verb=$2
+
+  if [[ $verb == '-verb2' ]]
+  then printlh; printlh ' '$script': Reading reference pixels from '\'$image\''...'
+  fi
+  ('readhead' save CRPIX1 CRPIX2 $image $verb$cwavenum; echo $? > .rc$cwavenum) | 'tehi'
+  read crpix1 crpix1 crpix2 crpix2 < '.+readhead'$cwavenum; chk_rc; \rm '.+readhead'$cwavenum 2>&1; chk_rc
+  
+  if [[ $verb == '-verb2' ]]
+  then printlh; printlh ' '$script': Reading reference coords from '\'$image\''...'
+  fi
+  ('readhead' save CRVAL1 CRVAL2 $image $verb$cwavenum; echo $? > .rc$cwavenum) | 'tehi'
+  read crval1 crval1 crval2 crval2 < '.+readhead'$cwavenum; chk_rc; \rm '.+readhead'$cwavenum 2>&1; chk_rc
+  
+  if [[ $verb == '-verb2' ]]
+  then printlh; printlh ' '$script': Reading linear projection matrix from '\'$image\''...'
+  fi
+  ('readhead' save CD1_1 CD1_2 $image $verb$cwavenum; echo $? > .rc$cwavenum) | 'tehi'
+  read cd11 cd11 cd12 cd12 < '.+readhead'$cwavenum; chk_rc; \rm '.+readhead'$cwavenum 2>&1; chk_rc
+  ('readhead' save CD2_1 CD2_2 $image $verb$cwavenum; echo $? > .rc$cwavenum) | 'tehi'
+  read cd21 cd21 cd22 cd22 < '.+readhead'$cwavenum; chk_rc; \rm '.+readhead'$cwavenum 2>&1; chk_rc
+
+  ('modfits' keyword CTYPE1   $ctype1 $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CTYPE2   $ctype2 $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CRPIX1   $crpix1 $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CRPIX2   $crpix2 $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CROTA1 $rotangle $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CROTA2 $rotangle $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CRVAL1   $crval1 $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CRVAL2   $crval2 $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword RA       $crval1 $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword DEC      $crval2 $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CDELT1  -$pixel  $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CDELT2   $pixel  $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CD1_1    $cd11   $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CD1_2    $cd12   $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CD2_1    $cd21   $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword CD2_2    $cd22   $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword BUNIT   "$bunit" $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+  ('modfits' keyword WAVE     $wave   $image -o $image $verb; echo $? > .rc$cwavenum) | 'tehi'
+
+  fundone=$fun; fun=$funo
+}
+#_________________________________________________________________________________________________________________________________
+
+CHECK_IMGSTAT ()
+{
+  local minimum=$1; local maximum=$2; local sigma=$3; local scriptname=$4; local funname=$5; local funoname=$6; local place=$7
+
+  if [[ ${minimum:0:1} == "*" || ${maximum:0:1} == "*" || ${sigma:0:1} == "*" || $sigma == "0.0000000000000000000" ]]
+  then 
+    printlh
+    printlh ' '$scriptname': '$funname': ERROR:'
+    printlh ' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+    printlh ' WARNING: Results from IMGSTAT ('$place'): min max std: '$minimum $maximum $sigma
+    printlh ' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+    printlh; fun=$funoname
+    return 99
+  else 
+    \rm -f '.+imgstat2'$cwavenum 2>$hell
+  fi
+}
+#___________________________________________________________________________________________________________________________________
+
+COMPARE_FLOATS ()
+{
+  local funo=$fun; fun='COMPARE_FLOATS'
+  if [[ $4 == "" ]]
+  then 'ERROR' 'Too few parameters: "'$1'" "'$2'" "'$3'" "'$4'"'
+  fi
+  local num1=$1; local oper=$2; local num2=$3; local result=99; local i; local y
+  local res1; local res2; local dot1; local dot2; local sign1; local sign2
+
+  if [[ $oper != ">" && $oper != "<" && $oper != "=" && $oper != "!=" && $oper != ">=" && $oper != "<=" ]]
+  then 'ERROR' 'Unsupported operator: "'$oper'"'
+  fi
+  if [[ ${num1:0:1} == "-" ]]; then sign1='-'; anum1=${num1:1}; else sign1=''; anum1=$num1; fi
+  if [[ ${num2:0:1} == "-" ]]; then sign2='-'; anum2=${num2:1}; else sign2=''; anum2=$num2; fi
+  'POSITION' '.' "$anum1" dot1
+  if [[ $dot1 -eq 0 ]]; then anum1=$anum1'.0'; 'POSITION' '.' "$anum1" dot1; fi
+  'POSITION' '.' "$anum2" dot2
+  if [[ $dot2 -eq 0 ]]; then anum2=$anum2'.0'; 'POSITION' '.' "$anum2" dot2; fi
+  local ddot=$(( dot1 - dot2 ))
+  local len1=${#anum1}; local len2=${#anum2}; local dlen=$(( len1 - len2 ))
+  local fra1=$(( len1 - dot1 )); local fra2=$(( len2 - dot2 )); local dfra=$(( fra1 - fra2 ))
+  if [[ $ddot -lt 0 ]]; then for (( i=1; i <= -$ddot; i++ )); do anum1='0'$anum1; done; fi
+  if [[ $ddot -gt 0 ]]; then for (( i=1; i <=  $ddot; i++ )); do anum2='0'$anum2; done; fi
+  if [[ $dfra -lt 0 ]]; then for (( i=1; i <= -$dfra; i++ )); do anum1=$anum1'0'; done; fi
+  if [[ $dfra -gt 0 ]]; then for (( i=1; i <=  $dfra; i++ )); do anum2=$anum2'0'; done; fi
+  if [[ $anum1 =~ ^0+\.0+$ ]]; then sign1=''; fi
+  if [[ $anum2 =~ ^0+\.0+$ ]]; then sign2=''; fi
+  result='0'
+  if [[ ${oper:0:1} == ">"  ]]
+  then 
+    if [[ $sign1 == ""  && $sign2 == "-" ]]; then result='1'; fi
+    if [[ $sign1 == ""  && $sign2 == ""  && $anum1 > $anum2 ]]; then result='1'; fi
+    if [[ $sign1 == "-" && $sign2 == "-" && $anum1 < $anum2 ]]; then result='1'; fi
+##    if [[ $oper == ">=" ]]; then if [[ $anum1 == $anum2 ]]; then result='1'; fi; fi
+    if [[ $oper == ">=" ]]; then if [[ $sign1 == $sign2 && $anum1 == $anum2 ]]; then result='1'; fi; fi
+  fi
+  if [[ ${oper:0:1} == "<"  ]]
+  then 
+    if [[ $sign1 == "-" && $sign2 == ""  ]]; then result='1'; fi
+    if [[ $sign1 == ""  && $sign2 == ""  && $anum1 < $anum2 ]]; then result='1'; fi
+    if [[ $sign1 == "-" && $sign2 == "-" && $anum1 > $anum2 ]]; then result='1'; fi
+##    if [[ $oper == "<=" ]]; then if [[ $anum1 == $anum2 ]]; then result='1'; fi; fi
+    if [[ $oper == "<=" ]]; then if [[ $sign1 == $sign2 && $anum1 == $anum2 ]]; then result='1'; fi; fi
+  fi
+    
+##  if [[ $oper == "="  && $anum1 == $anum2 ]]; then result='1'; fi
+##  if [[ $oper == "!=" && $anum1 != $anum2 ]]; then result='1'; fi
+  if [[ $oper == "="  && $sign1 == $sign2 && $anum1 == $anum2 ]]; then result='1'; fi
+  if [[ $oper == "!=" && ($sign1 != $sign2 || $anum1 != $anum2) ]]; then result='1'; fi
+      
+  y=\$"$4"; eval "$4=$result"
+
+  fun=$funo
+}
+#___________________________________________________________________________________________________________________________________
+
+PROGRESS_BAR ()
+{ 
+  local funo=$fun; fun='PROGRESS_BAR'
+  if [[ $1 != "complete" && $6 == "" ]]
+  then 'ERROR' 'Too few parameters: "'$1'" "'$2'" "'$3'" "'$4'" "'$5'" "'$6'"'
+  fi
+  local i; local nbeg; local nend; local width; local ncur; local sym='•'; local nrange; local iter=0; local nrange
+  progresstitle=$1; ncur=$2; nbeg=$3; nend=$4; width=$5; char=$6; iter=$7
+
+  progresstitle=${progresstitle%% }  #<~ remove trailing space if it exists
+
+  if [[ "${progresstitle:0:8}" != "complete" ]]
+  then
+    if [[ $ncur -eq $nbeg ]]
+    then                
+      lniter=${#iter}; lnbeg=${#nbeg}; lnend=${#nend}; ltitle=${#progresstitle}
+      lbar=$(( width - 3 - ltitle - 1 - lnend - 1 ))
+      nrange=$(( nend - nbeg + 1 )) ## + lnend - 1
+      if [[ $lbar -gt $nrange ]]
+      then lbar=$nrange
+      fi
+      lbarp1=$(( lbar + 1 + lniter + 1 ))
+      lback=$(( lbarp1 + lnend + 1 ))
+      if [[ "$char" == "·" ]]
+      then
+        printlh
+        printhn     ' '$progresstitle; printf "%b" $red' ['$coff
+        printf "%b" ' '"$progresstitle"' [' >> $logfile
+      else 
+        printf "%b" "$red]$coff $dgra$nend$coff $iter\033[${lback}D"
+        printf "%b" "$sym] $nend [" >> $logfile
+      fi
+      for (( i=1; i <= $lbar; i++ ))
+      do printf "%b" "${char:0:1}"
+      done
+      printf "%b" "$red]$coff $dgra$nend$coff $iter\033[${lback}D"
+      nprogress=1; npos=0; sleep 1
+    else
+      if [[ $nprogress -eq 0 ]]
+      then 'ERROR' 'Initial value /= lower bound: '$ncur' '$nbeg' '$nend' '$width
+      fi
+    fi
+  fi
+  nbegm1=$(( nbeg - 1 )); nrange=$(( nend - nbegm1 ))
+  ncurm1=$(( ncur - 1 )); lncur=${#ncur}; lncurm1=${#ncurm1}; lncurm1p1=$(( lncurm1 + 1 ))
+  lenr=$(print "scale=20; $nbegm1+($ncur-($nbegm1))*($lbar-$nbeg)/$nrange" | bc); chk_rc
+  if [[ ${lenr:0:1} != "." && ${lenr:0:1} != "-" && $ncur -gt $nbeg ]]
+  then leni=${lenr%.*}
+  else leni=0
+  fi
+  if [[ "${progresstitle:0:8}" == "complete" ]]
+  then 
+    if [[ $ncur -ge $nend ]]
+    then
+      many=''
+      for (( i=1; i <= $lncur; i++ ))
+      do many=$many$sym
+      done
+      printf "%b" "\033[${lncur}D$many"
+      printf "%b" "$sym" >> $logfile
+      printf "%b" "] $nend $iter" >> $logfile
+    else
+      ladd=$(( lbar - npos + 1 ))
+      many=''
+      for (( i=1; i <= $ladd; i++ ))
+      do many=$many"·"
+      done
+      printf "%b" "$many] $nend $iter" >> $logfile
+    fi
+    if [[ "$progresstitle" == "complete" ]]
+    then printlh
+    fi
+    fun=$funo
+    return 0
+  fi
+  if [[ $leni -lt $nprogress ]]
+  then
+    if [[ $ncur -eq $nbeg ]]
+    then 
+      npos=$(( npos + lncur ))
+      printf "%b" "$gre$ncur$coff"; sleep 1
+    else 
+      npos=$(( npos - lncurm1 + lncur ))
+      if [[ $npos -gt $lbar ]]
+      then 
+        lncorr=$(( npos - lbar ))
+        npos=$(( npos - lncorr ))
+        printf "%b" "\033[${lncorr}D"
+      fi
+      printf "%b" "\033[${lncurm1}D$gre$ncur$coff"
+    fi
+  else
+    nprogress=$(( nprogress + 1 ))
+    many=''
+    for (( i=1; i <= $lncurm1p1; i++ ))
+    do many=$many$sym
+    done
+    if [[ $npos -lt $lbar ]]
+    then
+      npos=$(( npos + 1 ))
+      printf "%b" "$sym" | 'tee' -a $logfile
+    fi
+    printf "%b" "\033[${lncurm1p1}D$many\033[${lncur}D$gre$ncur$coff"
+  fi
+
+  fun=$funo
+}
+#___________________________________________________________________________________________________________________________________
+
+REPLACE ()
+{
+  arg1="$1"; arg2="$2"; arg3="$3"
+  if [[ $arg3 == '' ]]
+  then echo "$arg1" >> $stdcfg
+  else echo "$arg1" | sed "s/$arg2/$arg3/g" >> $stdcfg
+  fi
+}
+#___________________________________________________________________________________________________________________________________
+
+# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+DEFINEPLOT ()
+{
+  local title="$1"; local txaxis="$2"; local tyaxis="$3"; local tuaxis="$4"; local traxis="$5"; local xsize="$6"; local ysize="$7"
+  local plt1x0="$8"; local plt1y0="$9"; local axtype="${10}"; local fnorm="${11}"; local xmin="${12}"; local xmax="${13}"
+  local ymin="${14}"; local ymax="${15}"; local colors="${16}"; local convertx="${17}"; local converty="${18}"
+  local xhlp="${19}"; local yhlp="${20}"
+  if [[ "$title" == '' ]]; then title=' '; fi
+  if [[ $xhlp == '' ]]; then xhlp='allxh'; fi
+  if [[ $yhlp == '' ]]; then yhlp='allyh'; fi
+  echo ";"                                                                                                  > $stdcfg
+  echo '; Parameters for 1D plotting in PostScript (plot): ital |F10| greek |F5| deflt |F0| sun |BF18|* deg |F18|o asec |F18|"' >> $stdcfg
+  echo ";"                                                                                                 >> $stdcfg
+  echo "'$title' .................. phdr   : plot title (none if blank or ??)"                             >> $stdcfg
+  echo "'$txaxis' ................. xlab   : label of the main horizontal axis (none if blank or ??)"      >> $stdcfg
+  echo "'$tyaxis' ................. ylab   : label of the main vertical axis (none if blank or ??)"        >> $stdcfg
+  echo "'$tuaxis' ................. xlabu  : label of the upper horizontal axis (none if blank or ??)"     >> $stdcfg
+  echo "'$traxis' ................. ylabr  : label of the right vertical axis (none if blank or ??)"       >> $stdcfg
+  echo "'portrait' ................ orient : {portrait landscape} page orientation"                        >> $stdcfg
+  echo " $xsize ................... xsize  : horizontal size of the plot (e.g. ~12 or ~24) in cm"          >> $stdcfg
+  echo " $ysize ................... ysize  : vertical size of the plot (e.g. ~12) in cm"                   >> $stdcfg
+  echo " $plt1x0 .................. plt1x0 : x-coord of the lower-left corner (e.g. ~3.3 or ~2.3) in cm"   >> $stdcfg
+  echo " $plt1y0 .................. plt1y0 : y-coord of the lower-left corner (e.g. ~14.5 or ~5.5) in cm"  >> $stdcfg
+  echo "'$axtype' ................. axtype : {linlin linlog loglin loglog} axes types"                     >> $stdcfg
+  echo "'$fnorm' .................. fnorm  : {norm nono} normalize function to 1.0 or not"                 >> $stdcfg
+  echo " $xmin .................... xmin   : minimum value of argument x to plot (0.0: automatic)"         >> $stdcfg
+  echo " $xmax .................... xmax   : maximum value of argument x to plot (0.0: automatic)"         >> $stdcfg
+  echo " $convertx 1.0 0.0 ........ upper  : coeffs a b c in a*x^b+c for upper axis (0.0 * *: none)"       >> $stdcfg
+  echo " $ymin .................... ymin   : minimum value of function y to plot (0.0: automatic)"         >> $stdcfg
+  echo " $ymax .................... ymax   : maximum value of function y to plot (0.0: automatic)"         >> $stdcfg
+  echo " $converty 1.0 0.0 ........ right  : coeffs d e f in d*y^e+f for right axis (0.0 * *: none)"       >> $stdcfg
+  echo " 2 ........................ allxl  : {0,1,2} plot all labels/annotations on the x side"            >> $stdcfg
+  echo " 2 ........................ allyl  : {0,1,2} plot all labels/annotations on the y side"            >> $stdcfg
+  echo " $xhlp .................... xhlp   : {allxh major none} help tick lines normal to x axis"          >> $stdcfg
+  echo " $yhlp .................... yhlp   : {allyh major none} help tick lines normal to y axis"          >> $stdcfg
+  echo "'$colors' ................. colors : {auto manual} choose colors automatically or not"             >> $stdcfg
+  echo " 0 ........................ nfun   : number of functions to plot (0: plot all)"                    >> $stdcfg
+  echo ";"                                                                                                 >> $stdcfg
+  echo '; Parameters for each variable (up to 999 functions): sub |B| sup |S| norm |N| times |F18|x .ge. |F18|>= prop |F18|~' >> $stdcfg
+}
+#___________________________________________________________________________________________________________________________________
+
+DEFINEDATA ()
+{
+  local datafile="$1"; local argcolumn="$2"; local funcolumn="$3"; local xerrorp="$4"; local xerrorm="$5"; local yerrorp="$6"
+  local yerrorm="$7"; local ascale="$8"; local fscale="$9"; local varname="${10}"; local color="${11}"; local ndash="${12}"
+  local lwidth="${13}"; local symsize="${14}"; local symbol="${15}"
+  if [[ "$argcolumn" =~ [a-zA-Z] ]]; then argcolumn="'"$argcolumn"'"; else argcolumn=" $argcolumn"; fi
+  if [[ "$funcolumn" =~ [a-zA-Z] ]]; then funcolumn="'"$funcolumn"'"; else funcolumn=" $funcolumn"; fi
+  if [[ "$xerrorp"   =~ [a-zA-Z] ]]; then xerrorp="'"$xerrorp"'"; else xerrorp=" $xerrorp"; fi
+  if [[ "$xerrorm"   =~ [a-zA-Z] ]]; then xerrorm="'"$xerrorm"'"; else xerrorm=" $xerrorm"; fi
+  if [[ "$yerrorp"   =~ [a-zA-Z] ]]; then yerrorp="'"$yerrorp"'"; else yerrorp=" $yerrorp"; fi
+  if [[ "$yerrorm"   =~ [a-zA-Z] ]]; then yerrorm="'"$yerrorm"'"; else yerrorm=" $yerrorm"; fi
+  if [[ ${ascale:0:1} == '.' ]]; then ascale='0'${ascale}; fi
+  if [[ ${fscale:0:1} == '.' ]]; then fscale='0'${fscale}; fi
+  echo ";"                                                                                                     >> $stdcfg
+  echo "'$datafile' .................... fname  : data file name"                                              >> $stdcfg
+  echo "$argcolumn ..................... nxc    : column name/number of argument x"                            >> $stdcfg
+  echo "$funcolumn ..................... nyc    : column name/number of function y (or intervals, e.g., 2-48)" >> $stdcfg
+  echo "$xerrorp ....................... nexpc  : column name/number of errx+ (< 0: percentage, 0: no errors)" >> $stdcfg
+  echo "$xerrorm ....................... nexmc  : column name/number of errx- (< 0: percentage, 0: no errors)" >> $stdcfg
+  echo "$yerrorp ....................... neypc  : column name/number of erry+ (< 0: percentage, 0: no errors)" >> $stdcfg
+  echo "$yerrorm ....................... neymc  : column name/number of erry- (< 0: percentage, 0: no errors)" >> $stdcfg
+  echo " $ascale ....................... ascale : {1.0} argument scaling factor"                               >> $stdcfg
+  echo " $fscale ....................... fscale : {1.0} function scaling factor"                               >> $stdcfg
+  echo "'$varname' ..................... var    : variable name (none if blank)"                               >> $stdcfg
+  echo "'$color' ....................... color  : {red gre blu cya mag bro ora gol d(ark)* bla gra# auto}"     >> $stdcfg
+  echo " $ndash ........................ ndsh   : {2-4-8-16-} dash styles (0: solid lines)"                    >> $stdcfg
+  echo " $lwidth ....................... lwid   : {-8-6-4-2-1} line width (0: no lines)"                       >> $stdcfg
+  echo " $symsize ...................... ssze   : {-0.5-1.5-} symbol size (0.0: no symbols)"                   >> $stdcfg
+  echo "'$symbol' ...................... symbol : {circle square triangle trianglei diamond}"                  >> $stdcfg
+}
+#___________________________________________________________________________________________________________________________________
+
+DEFINELGND ()
+{
+  local datafile="$1"; textline="$2"; local xcoo="$3"; local ycoo="$4"
+  if [[ "$datafile" == '' ]]
+  then
+    echo ";"                                                                                                     >> $stdcfg
+    echo "; Text lines to be overlaid on plot (as many lines as needed):"                                        >> $stdcfg
+    echo ";"                                                                                                     >> $stdcfg
+  else
+    if [[ -e $datafile ]]
+    then
+      {
+      while read -r num name mean stde min max therest
+      do
+        if [[ "${num:0:1}" != '#' && "$name" == $textline ]]
+        then
+          if [[ "$name" == 'N' ]]
+          then 
+            text=$max' sources'
+          fi
+          if [[ "$name" != 'N' ]]
+          then 
+            'ROUND_FLOAT' 3 $mean mean
+            'ROUND_FLOAT' 3 $stde stde
+            text='|F5|r|B| |NF0|=|B| |N|'$mean'  |F5|s|B| |NF0|=|B| |N|'$stde
+          fi
+        fi
+      done
+      } < $datafile
+    else
+      text=$textline
+    fi
+    echo "'$text' $xcoo $ycoo ............ textxy : {annotation X Y} (cm) to overlay on plot"                    >> $stdcfg
+  fi
+}
+#___________________________________________________________________________________________________________________________________
+
+HORIZONTAL ()
+{
+  local horizdata="$1"; local arg1="$2"; local arg2="$3"; local scale="$4"
+  maxlines=5
+  for (( i=1; i <= $maxlines ; i++ ))
+  do fun0[i]="$5"; shift
+  done
+  arg1=$arg1'0000000000000'; arg1=${arg1:0:26}
+  arg2=$arg2'0000000000000'; arg2=${arg2:0:26}
+  for (( i=1; i <= $maxlines; i++ ))
+  do
+    if [[ ${fun0[i]} != '' ]]
+    then
+      fun1[i]=$(echo "scale=10; $scale*${fun0[i]}" | bc -l)
+      fun2[i]=$(echo "scale=10; $scale*${fun0[i]}" | bc -l)
+    fi
+    if [[ ${fun1[i]:0:1} == '.' ]]; then fun1[i]='0'${fun1[i]}; fi; fun1[i]=${fun1[i]:0:9}
+    if [[ ${fun2[i]:0:1} == '.' ]]; then fun2[i]='0'${fun2[i]}; fi; fun2[i]=${fun2[i]:0:9}
+  done
+  echo ";"                                                                                   > $horizdata
+  echo "; Helper horizontal lines"                                                          >> $horizdata
+  echo ";"                                                                                  >> $horizdata
+  echo "; ARGUMENT                   FUNCTION1  FUNCTION2  FUNCTION3  FUNCTION4  FUNCTION5" >> $horizdata
+  echo ";"                                                                                  >> $horizdata
+  echo " $arg1  ${fun1[1]}  ${fun1[2]}  ${fun1[3]}  ${fun1[4]}  ${fun1[5]}"                 >> $horizdata
+  echo " $arg2  ${fun2[1]}  ${fun2[2]}  ${fun2[3]}  ${fun2[4]}  ${fun2[5]}"                 >> $horizdata
+}
+#___________________________________________________________________________________________________________________________________
+
+JEANSLENGTH ()
+{
+  local jeansdata="$1"; local arg1="$2"; local arg2="$3"
+  xmH='0.0000000000000000000000016726'; xmuH2='2.8'
+  cm2pc='0.0000000000000000003240734739'; xgrav='0.0000000667259'
+  cs10K='20000'; cs15K=$(echo "scale=5; $cs10K*sqrt(15/10)" | bc)
+  arg1=$arg1'0000000000000'; arg1=${arg1:0:26}
+  arg2=$arg2'0000000000000'; arg2=${arg2:0:26}
+  fun1a=$(echo "scale=25; $cm2pc*$cs10K^2/($xgrav*$xmuH2)/($xmH*$arg1)" | bc); if [[ ${fun1a:0:1} == '.' ]]; then fun1a='0'${fun1a}; fi
+  fun2a=$(echo "scale=25; $cm2pc*$cs10K^2/($xgrav*$xmuH2)/($xmH*$arg2)" | bc); if [[ ${fun2a:0:1} == '.' ]]; then fun2a='0'${fun2a}; fi
+  fun1b=$(echo "scale=25; $cm2pc*$cs15K^2/($xgrav*$xmuH2)/($xmH*$arg1)" | bc); if [[ ${fun1b:0:1} == '.' ]]; then fun1b='0'${fun1b}; fi
+  fun2b=$(echo "scale=25; $cm2pc*$cs15K^2/($xgrav*$xmuH2)/($xmH*$arg2)" | bc); if [[ ${fun2b:0:1} == '.' ]]; then fun2b='0'${fun2b}; fi
+  echo ";"                                                        > $jeansdata
+  echo "; Thermal Jeans length = cs^2 / (G * Sigma)"             >> $jeansdata
+  echo "; cs = 0.2 km/s (at Tgas = 10 K) = 200 m/s = 20000 cm/s" >> $jeansdata
+  echo "; G = 6.67259E-11 m^3/kg/s^2 = 6.67259E-8 cm^3/g/s^2"    >> $jeansdata
+  echo "; Sigma = xmuH2 * mH * NH2 = 2.8 * 1.6726E-24 * NH2"     >> $jeansdata
+  echo "; pc = 3.08572e18 cm; cm2pc = 3.240734739E-19"           >> $jeansdata
+  echo ";"                                                       >> $jeansdata
+  echo "; SURFDENSITY                JEANSLENGTH1  JEANSLENGTH2" >> $jeansdata
+  echo ";  cm^-2                        10K pc        15K pc"    >> $jeansdata
+  echo " $arg1  ${fun1a:0:12}  ${fun1b:0:12}"                    >> $jeansdata
+  echo " $arg2  ${fun2a:0:12}  ${fun2b:0:12}"                    >> $jeansdata
+}
+#___________________________________________________________________________________________________________________________________
+
+POWERLAW ()
+{
+  maxlines=10
+  local plawdata="$1"; local exp="$2"; local arg0="$3"; local arg1="$4"; local arg2="$5"; local scale="$6"
+  for (( i=1; i <= $maxlines; i++ )); do fun0[i]="$7"; shift; done
+  scale=${scale/1e/}
+  for (( i=1; i <= $maxlines; i++ ))
+  do
+    fun1[i]=$(echo "scale=10; ${fun0[i]}*e(l($arg1/$arg0)*$exp)" | bc -l)
+    fun2[i]=$(echo "scale=10; ${fun0[i]}*e(l($arg2/$arg0)*$exp)" | bc -l)
+    if [[ ${fun1[i]:0:1} == '.' ]]; then fun1[i]='0'${fun1[i]}; fi; fun1[i]=${fun1[i]:0:7}
+    if [[ ${fun2[i]:0:1} == '.' ]]; then fun2[i]='0'${fun2[i]}; fi; fun2[i]=${fun2[i]:0:7}
+    if [[ ${arg1:0:1} == '.' ]]; then arg1='0'$arg1; fi; arg1=$arg1'000000000'; arg1=${arg1:0:9}
+    if [[ ${arg2:0:1} == '.' ]]; then arg2='0'$arg2; fi; arg2=$arg2'000000000'; arg2=${arg2:0:9}
+    fun1[i]=${fun1[i]}'e'$scale
+    fun2[i]=${fun2[i]}'e'$scale
+  done
+  echo ";"                                                                                                                         > $plawdata
+  echo "; Helper power-law lines (exponent = $exp)"                                                                               >> $plawdata
+  echo ";"                                                                                                                        >> $plawdata
+  echo "; ARGUMENT  FUNCTION1  FUNCTION2  FUNCTION3  FUNCTION4  FUNCTION5  FUNCTION6  FUNCTION7  FUNCTION8  FUNCTION9 FUNCTION10" >> $plawdata
+  echo ";"                                                                                                                        >> $plawdata
+  echo " $arg1 ${fun1[1]} ${fun1[2]} ${fun1[3]} ${fun1[4]} ${fun1[5]} ${fun1[6]} ${fun1[7]} ${fun1[8]} ${fun1[9]} ${fun1[10]}"    >> $plawdata
+  echo " $arg2 ${fun2[1]} ${fun2[2]} ${fun2[3]} ${fun2[4]} ${fun2[5]} ${fun2[6]} ${fun2[7]} ${fun2[8]} ${fun2[9]} ${fun2[10]}"    >> $plawdata
+}
+#___________________________________________________________________________________________________________________________________
+
+GAUSSIAN ()
+{
+  local gausdata="$1"; local fwhm="$2"; local scale="$3"; local arg1="$4"; local arg2="$5"; local fun0="$6"
+  npts=50; delta=$(echo "scale=7; ($arg2-$arg1)/$npts" | bc)
+  echo ";"                                        > $gausdata
+  echo "; Helper Gaussian (FWHM = $fwhm arcsec)" >> $gausdata
+  echo ";"                                       >> $gausdata
+  echo "; ARGUMENT  GAUSSIAN"                    >> $gausdata
+  echo ";"                                       >> $gausdata
+  for (( i=1; i <= $npts; i++ ))
+  do
+    arg[i]=$(echo "scale=10; $arg1+($i-1)*$delta" | bc)
+    fun[i]=$(echo "scale=10; $scale*$fun0/e(${arg[i]}^2/(2*($fwhm/2)^2/l(4)))" | bc -l)
+    if [[ ${arg[i]:0:1} == '.' ]]; then arg[i]='0'${arg[i]}; fi; arg[i]=${arg[i]}'00000000'; arg[i]=${arg[i]:0:9}
+    if [[ ${fun[i]:0:1} == '.' ]]; then fun[i]='0'${fun[i]}; fi; fun[i]=${fun[i]:0:30}
+    echo " ${arg[i]}  ${fun[i]}" >> $gausdata
+  done
+}
+#_________________________________________________________________________________________________________________________________
