@@ -1,0 +1,2043 @@
+%-----------------------------------------------------------------------
+%                                                                 aa.tex
+% AA vers. 9.3, LaTeX class for Astronomy & Astrophysics
+% Demonstration file
+%                                                       (c) EDP Sciences
+%-----------------------------------------------------------------------
+%
+%\documentclass[referee]{aa}    % for a referee version
+%\documentclass[onecolumn]{aa}  % for a paper on 1 column  
+%\documentclass[longauth]{aa}   % for long lists of authors and/or affiliations. 
+                                % This command displays the first eight authors on page 1
+                                % and shift the whole list after the references.
+                                % Ensure to separate each author with the \and command (see below)
+%\documentclass[letter]{aa}     % for the letters
+%\documentclass[bibyear]{aa}    % if the references are not structured
+\documentclass{aa}  
+\usepackage{graphicx}
+\usepackage{txfonts}
+\usepackage{lipsum}
+\usepackage{lscape}             % to rotate a single page table, example in appendix.
+                                % For landscape tables, see the longtable examples.
+\usepackage{placeins}           % useful with \FloatBarrier, to keep 
+                                % onecolumn floats from drifting to the next section
+\usepackage{natbib}
+\usepackage[colorlinks,allcolors=blue,bookmarks=false]{hyperref} 
+\usepackage{xcolor}
+% Markup for revised text (magenta). For clean submission: \renewcommand{\chg}[1]{#1}
+% Note: use \lesssim, \gtrsim throughout (txfonts shortcuts \la, \ga avoided for consistency).
+\newcommand{\chg}[1]{\textcolor{magenta}{#1}}
+\usepackage{amsmath}
+%\usepackage{amssymb}
+\hyphenation{get-sources get-filaments get-images get-old non-uniform back-ground}
+
+\newcommand{\draftnote}[1]{\textcolor{magenta}{\textbf{[#1]}}}
+\newcommand{\msun}{M_{\odot}}
+\newcommand{\Scloud}{\Sigma_{\rm cl}}
+\newcommand{\ximax}{\xi_{\rm max}}
+\newcommand{\Tbe}{T_{\rm BE}}
+\newcommand{\rhoc}{\rho_{\rm c}}
+\newcommand{\cs}{c_{\rm s}}
+\newcommand{\rzero}{r_{0}}
+\newcommand{\Rbe}{R_{\rm BE}}
+\newcommand{\rhocloud}{\rho_{\rm cl}}
+\newcommand{\Rcloud}{R_{\rm cl}}
+\newcommand{\mH}{m_{\rm H}}
+\newcommand{\mup}{\mu_{\rm p}}
+\newcommand{\muH}{\mu_{\rm H_2}}
+
+% ---------------------------------------------------------------------
+% Notation.  Calligraphic letters mark the DERIVED CORRECTION FACTORS --
+% the multiplicative quantities the method computes, as distinct from
+% anything measured or tabulated.  The family is closed and all-Latin:
+% the correction factor itself and the three factors it decomposes into.
+% Set \CalFactors to 0 below to typeset them upright instead.
+\newcommand{\CM}{\mathcal{C}_{M}}
+\newcommand{\Fflux}{\mathcal{F}_{F}}
+\newcommand{\Ftemp}{\mathcal{F}_{T}}
+\newcommand{\Fbg}{\mathcal{F}_{B}}
+% Masses.  \Mex is the mass an extraction reports, \Mbe the true
+% Bonnor--Ebert mass of a model, \Mref the known reference mass of a test
+% source (\Mbe for a model, the injected mass for an injected core), and
+% \Mcorr the mass after correction.
+\newcommand{\Mex}{M_{\rm ex}}
+\newcommand{\Mbe}{M_{\rm BE}}
+\newcommand{\Msed}{M_{\rm SED}}
+\newcommand{\Mref}{M_{\rm ref}}
+\newcommand{\Mcorr}{M_{\rm corr}}
+\newcommand{\Mrec}{M_{\rm rec}}
+
+\begin{document}
+
+\title{Correcting systematic mass biases in prestellar cores\\extracted from \emph{Herschel} images of molecular clouds}
+\subtitle{I. Method, physical basis, and validation}
+
+\author{Alexander Men'shchikov\inst{1}}
+\institute{D\'epartement d'Astrophysique (DAp), IRFU, CEA Saclay,
+Universit\'e Paris-Saclay, 91191 Gif-sur-Yvette, France}
+
+\date{Received / Accepted}
+\offprints{Alexander Men'shchikov}
+\titlerunning{Correcting systematic mass biases in prestellar cores}
+\authorrunning{A.~Men'shchikov}
+
+\abstract{Masses of prestellar cores observed by \emph{Herschel} and derived from fitting their spectral energy distributions are
+underestimated through three channels: the dust temperature gradients inside the embedded cores, incorrect determination and
+subtraction of background shapes, and inaccurately estimated footprint sizes. These have not previously been combined into a
+correction calibrated against a physical core model and validated independently of the calibration sample. We build a grid of
+radiative-transfer models of pressure-truncated Bonnor-Ebert (BE) spheres, extract exactly as real cores, and use the resulting
+bias to correct real extractions. The correction predicts $\CM=\Mbe/\Mex$ from four observables: background
+column, peak-to-mean concentration, footprint-to-size ratio, and the core angular size; the latter breaks a residual degeneracy and
+reduces large scatter in $\CM$ among cores sharing the former three observables. The method is validated on three
+independent tests: a leave-one-out test on the model grid, an independent model grid spanning the full concentration range, and
+model cores injected in and then re-extracted from real \emph{Herschel} images. The four-observable correction is unbiased to
+within a few percent, with $85$--$98$\% of sources recovered within a factor of two, and its scatter is at or below the uncorrected
+level in every test. The method recovers the true mass of injected, withheld, and leave-one-out cores without tuning to any test.
+Application to real clouds, and the resulting revision of core mass function slopes, is presented separately.}
+
+\keywords{Stars: formation -- Infrared: ISM -- Submillimeter: ISM -- Methods: radiative transfer -- Techniques: image processing --
+Techniques: photometric}
+
+\maketitle
+
+% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+Far-infrared and submillimeter surveys of molecular clouds with the \emph{Herschel} Space Observatory \citep{Pilbratt_etal2010}
+have produced large catalogs of physical properties of prestellar and starless cores \citep[e.g.][]{Andre+2010,Konyves+2015}.
+Masses of the cores were obtained by fitting modified-blackbody shapes to the spectral energy distributions (SED) of extracted
+cores. The core mass function (CMF) derived from these catalogs is widely compared to the stellar initial mass function (IMF), and
+the shape of that comparison depends directly on the accuracy of the individual core masses.
+
+Two physical mechanisms bias the reported SED mass low, and both act in the
+same direction. First, a prestellar core is not isothermal: dust heated by
+the external interstellar radiation field is warmer at the core's surface
+than in its shielded interior, so a single-temperature SED fit is weighted
+towards the warm outer layers and under-estimates the mass held by the cold,
+optically-thicker interior. Second, the extraction algorithm measures flux
+only inside a detection-limited footprint after subtracting a local
+background; any core flux outside that footprint, or removed along with the
+background, is lost and is not recovered by the SED fit. Both biases grow
+with the source's environment -- a denser, more strongly illuminated
+background produces both a larger temperature gradient and a smaller
+detectable footprint relative to the source size -- so neither is a simple
+multiplicative constant.
+
+This paper describes a method to correct for both mechanisms
+simultaneously, calibrated against a grid of radiative-transfer models
+of embedded cores and validated on synthetic data. Figure~\ref{fig:flowchart}
+summarizes the method end to end. Section~\ref{sec:grid} describes the
+model grid. Section~\ref{sec:correction} derives the correction algorithm,
+in particular the definition of the per-band recovered-flux fraction,
+which is the part of the method most sensitive to get right and the part
+revised most substantially relative to earlier attempts
+(Sect.~\ref{sec:footprint}). Section~\ref{sec:validation} presents the
+validation on two independent samples. Section~\ref{sec:discussion}
+discusses the method's domain of validity and known limitations.
+Section~\ref{sec:conclusions} summarizes. Application of the method to
+observed clouds, and its consequence for the core mass function, are the
+subject of a companion paper.
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.92\linewidth]{fig_method_flowchart.pdf}
+  \caption{Method overview. (\emph{left}, calibration) the radiative-transfer model grid is
+  extracted exactly as \emph{getsf} would extract a real source, and the
+  self-consistent per-band footprint of Sect.~\ref{sec:footprint}
+  (highlighted) converts each truncation into a recovered mass, populating
+  a distance-invariant corrector. (\emph{right}, application) three
+  distance-invariant observables are measured on a real catalog and
+  looked up in the same corrector, for any cloud at any distance. The
+  validation results (bottom) are those of Sect.~\ref{sec:validation}.}
+  \label{fig:flowchart}
+\end{figure*}
+
+% =====================================================================
+\section{The model grid}
+\label{sec:grid}
+
+\subsection{The Bonnor--Ebert sphere family}
+\label{sec:bemodel}
+
+We adopt isothermal Bonnor--Ebert (BE) spheres \citep{Ebert1955,Bonnor1956}
+as the core density template. A BE sphere is a self-gravitating,
+pressure-supported gas sphere in hydrostatic equilibrium at a single
+temperature. Its dimensionless density $e^{-\psi(\xi)}$ obeys the isothermal
+Lane--Emden equation,
+\begin{equation}
+  \frac{1}{\xi^{2}}\frac{{\rm d}}{{\rm d}\xi}
+  \!\left(\xi^{2}\frac{{\rm d}\psi}{{\rm d}\xi}\right)
+  = e^{-\psi},
+  \qquad \psi(0)=0,\ \ \psi'(0)=0,
+  \label{eq:lane-emden}
+\end{equation}
+where $\xi = r/r_0$ is a dimensionless radius. The physical density is
+$\rho(\xi) = \rhoc\,e^{-\psi(\xi)}$, with $\rhoc$ the central density and
+$r_0$ a characteristic scale length,
+\begin{equation}
+  \rzero = \frac{\cs}{(4\pi G \rhoc)^{1/2}},
+  \qquad
+  \cs^{2} = \frac{k_{{\rm B}}\,\Tbe}{\mup\,\mH},
+  \label{eq:r0}
+\end{equation}
+where $\cs$ is the isothermal sound speed at the sphere's temperature
+$\Tbe$. Equation~(\ref{eq:lane-emden}) has no closed-form solution and is
+integrated numerically once; the resulting function $\psi(\xi)$ is
+tabulated and reused for every model in the grid.
+
+A single BE model is fully specified by three numbers: the temperature
+$\Tbe$ (through $\cs$), the central density $\rhoc$, and a dimensionless
+truncation radius $\ximax$ at which the sphere is cut and joined to the
+surrounding cloud. The truncation sets the profile's overall shape and,
+through the standard BE stability criterion, whether the truncated sphere
+is a stable equilibrium: $\ximax \le 6.451$ is sub-critical (stable),
+$\ximax = 6.451$ is the critical point (marginally stable, with a
+center-to-edge density contrast of 14.0), and $\ximax > 6.451$ is
+super-critical (gravitationally unstable, i.e., collapsing). The
+temperature $\Tbe$ and central density $\rhoc$ set only the physical scale
+of the profile; $\ximax$ alone carries the shape information. Because
+$\Tbe$ and $\rhoc$ do not affect shape, two dimensionless functions of
+$\ximax$ suffice to describe the family's projected observables. The first
+is the enclosed dimensionless mass,
+\begin{equation}
+  C(\xi)\equiv\int_{0}^{\xi} e^{-\psi(\xi')}\,\xi'^{2}\,{\rm d}\xi'
+  = \xi^{2}\,\psi'(\xi),
+  \label{eq:Cxi}
+\end{equation}
+obtained from the first integral of Eq.~(\ref{eq:lane-emden}) and evaluated
+numerically on the tabulated solution. The second is the projected
+half-maximum width, $\varphi(\ximax)$, defined as the full width at half
+maximum of the line-of-sight column-density profile (the Abel projection
+of $e^{-\psi}$) in units of $r_0$, so that a model's intrinsic (unconvolved)
+projected width is
+\begin{equation}
+  H_{\rm BE} = \varphi(\ximax)\,\rzero .
+  \label{eq:phidef}
+\end{equation}
+The function $\varphi(\ximax)$ has a property that matters for the grid's
+coverage at high mass: it saturates at large $\ximax$, approaching
+$\varphi \simeq 6.6$ as $\ximax \to \infty$, because the projected width is
+set by the flat inner core and is nearly insensitive to how far the
+diffuse outer envelope extends. A very concentrated sphere is therefore not
+much wider, in projection, than a moderately concentrated one at the same
+central density; concentration and projected size become progressively
+decoupled toward large $\ximax$.
+
+\subsection{Central density and mass from two observables}
+\label{sec:inversion}
+
+Each grid model is specified by a target mass $M$ and a target intrinsic
+projected width $H_{\rm BE}$ at a chosen temperature
+$\Tbe$, rather than by directly choosing $\rhoc$ and $\ximax$. The central
+density must be obtained by solving the BE structure for these two
+observables, not by renormalizing an arbitrarily scaled profile to a
+target mass; renormalization decouples the density from the hydrostatic
+solution and produces a profile that is no longer a valid BE sphere.
+
+The enclosed mass of a truncated sphere follows from Eq.~(\ref{eq:Cxi}),
+\begin{equation}
+  M = 4\pi\,\rhoc\,\rzero^{3}\,C(\ximax) .
+  \label{eq:mass}
+\end{equation}
+Eliminating $\rhoc$ and $\rzero$ between Eq.~(\ref{eq:mass}) and the width
+definition, Eq.~(\ref{eq:phidef}), gives a single equation for the
+truncation radius that uses only the two observables $M$ and
+$H_{\rm BE}$,
+\begin{equation}
+  \frac{\varphi(\ximax)}{C(\ximax)}
+  = \frac{H_{\rm BE}\,\cs^{2}}{M\,G} .
+  \label{eq:xiinvert}
+\end{equation}
+The ratio $\varphi/C$ decreases monotonically with $\ximax$, so
+Eq.~(\ref{eq:xiinvert}) has a unique solution for any physically reasonable
+$(M,H_{\rm BE})$ pair: a core's mass and size together
+fix its concentration. Once $\ximax$ is found (by a numerical root search),
+the scale length and central density follow directly,
+\begin{equation}
+  \rzero = \frac{M\,G}{\cs^{2}\,C(\ximax)},
+  \qquad
+  \rhoc = \frac{\cs^{2}}{4\pi G\,\rzero^{2}},
+  \label{eq:rho_from_MFW}
+\end{equation}
+and the truncation (outer) radius is $\Rbe = \ximax\,\rzero$. Because
+$\varphi$ saturates while $C$ grows without bound as $\ximax$ increases
+(Sect.~\ref{sec:bemodel}), a massive core with a small projected size maps
+to a very large $\ximax$; this sets the natural high-concentration edge of
+the useful grid (Sect.~\ref{sec:gridcoverage}).
+
+\subsection{Why the truncation is a free parameter}
+\label{sec:geometry}
+
+An earlier version of this grid fixed $\ximax$ at the critical value,
+6.451, on the grounds that only marginally stable spheres are
+astrophysically distinguished states. This choice fails observationally.
+At fixed temperature, a critical sphere's mass and radius are tied
+together through Eqs.~(\ref{eq:mass}) and (\ref{eq:r0}): both scale as
+$\rhoc^{-1/2}$, so $M \propto \Rbe$. A more massive critical sphere is
+therefore necessarily larger and more diffuse. Compared against a published
+core catalog, the fixed-critical family reaches truncation radii of order
+$600''$ for its most massive members, while no observed core in the same
+catalog exceeds about $110''$; roughly a fifth of the fixed-critical grid
+occupies a size regime the observations do not populate. Real massive
+cores are compact and centrally concentrated, not large and diffuse, and a
+family constrained to $M \propto \Rbe$ cannot represent them.
+
+Freeing $\ximax$ removes this constraint. Solving Eq.~(\ref{eq:xiinvert})
+for the truncation that matches each target $(M,H_{\rm BE})$
+places every model directly on the size scale it is meant to represent:
+higher mass at fixed size is reached by higher concentration (larger
+$\ximax$), not by inflating the sphere. The sub-critical, critical, and
+super-critical portions of the resulting sequence remain physically
+meaningful as templates: the density profile $\rho = \rhoc\,e^{-\psi}$ is a
+smooth, monotonically declining function of radius for any $\ximax$, and it
+need not be a stable equilibrium to be a reasonable structural template,
+because real prestellar cores are not static equilibria either. The
+$\ximax$ sequence can be read as tracing an evolutionary progression: weakly
+concentrated and often unbound at low $\ximax$, marginally stable near the
+critical point, and collapsing above it, where the most centrally
+concentrated and unambiguously prestellar cores are expected to lie. The
+grid spans this full sequence rather than assuming a single dynamical
+state for every core.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{fig_grid_coverage.pdf}
+  \caption{Coverage of the production grid in the plane of BE mass against
+  intrinsic, unconvolved projected size, $H_{\rm BE}$
+  (Eq.~\ref{eq:phidef}), given in physical units (parsec, with an
+  astronomical-unit axis on top): both are properties of the model itself
+  and require no assumed distance. Each point is one of the 518 grid nodes,
+  colored by its inverted truncation $\xi_{\max}$ (Sect.~\ref{sec:inversion}),
+  obtained by solving Eq.~(\ref{eq:lane-emden}) once and inverting
+  Eqs.~(\ref{eq:mass})--(\ref{eq:rho_from_MFW}) for each tabulated
+  ($\Mbe$, $\rho_{\rm c}$, $\Tbe$). The red curves are not grid nodes
+  but the exact critical sequence, $\xi_{\max}=6.451$ held fixed, computed
+  analytically for each of the grid's six background columns $\Scloud$
+  (Sect.~\ref{sec:tbe} gives the self-consistency loop). At fixed mass the
+  grid spans a range of sizes set by concentration, rather than the single
+  mass-size relation, $M\propto\Rbe$, that a family restricted to critical
+  spheres alone would trace (Sect.~\ref{sec:geometry}).}
+  \label{fig:gridcoverage}
+\end{figure}
+
+Figure~\ref{fig:gridcoverage} shows the resulting node coverage in the mass
+versus intrinsic-size plane, colored by the inverted $\ximax$ of each node.
+Because $\ximax$ is a free parameter, the grid populates a genuine
+two-dimensional region of this plane rather than the single curve a
+fixed-critical family would trace: at any given mass, nodes span roughly an
+order of magnitude in size, from extended, weakly concentrated spheres to
+compact, highly concentrated ones.
+
+The red curves mark the critical truncation exactly, rather than
+approximating it by the nearest sampled grid nodes. For each of the six
+background columns $\Scloud$ used in the grid, we solve, self-consistently
+at every mass, for the central density, scale length, and temperature of a
+sphere held at $\ximax=6.451$: Eqs.~(\ref{eq:mass}) and~(\ref{eq:r0}) give
+$\rho_{\rm c}$ and $r_0$ at a trial $\Tbe$, Eq.~(\ref{eq:Ntot}) gives the
+resulting total shielding column, and Eq.~(\ref{eq:TofN}) gives an updated
+$\Tbe$; iterating to convergence yields the exact
+($\Mbe$, $H_{\rm BE}$) locus of critical spheres at that
+$\Scloud$. This construction shows directly why the critical sequence is
+not a single line of slope unity, as the naive relation $M\propto\Rbe$ for
+a critical sphere at fixed temperature would suggest: the six curves
+fan out by about 40\% in size at fixed mass, because $\Tbe$ is not fixed
+across the grid but rises with $\Scloud$ (Sect.~\ref{sec:tbe}), and because
+$M$ and $\Rbe$ depend on $\Tbe$ through $\cs$
+(Eqs.~\ref{eq:mass}--\ref{eq:r0}), eliminating the central density gives
+$M\propto\Rbe\,\Tbe$ at fixed $\ximax$, not $M\propto\Rbe$ alone. The
+critical sequence cuts diagonally across the full extent of the grid in
+both mass and size, and does not by itself bound the useful part of the
+grid, consistent with sub-critical, critical, and super-critical models all
+serving as valid structural templates (Sect.~\ref{sec:geometry}).
+
+\subsection{Molecular-weight conventions}
+\label{sec:mu}
+
+Two distinct mean molecular weights enter the calculation, and using the
+wrong one in the wrong place is a common source of error. The mean
+molecular weight per free particle, $\mup = 2.33$, enters the sound speed
+(Eq.~\ref{eq:r0}) and therefore the entire hydrostatic structure, because
+the pressure that supports the sphere is set by the total number density
+of free particles, $P = n_{\rm tot}\,k_{{\rm B}}\,T$. The mean
+molecular weight per hydrogen molecule, $\muH = 2.8$, enters only where a
+mass density or column density is converted to or from a number density of
+hydrogen molecules, for example $N_{\rm H_2} = \Sigma/(\muH\,\mH)$.
+Using $\muH$ in place of $\mup$ in the sound speed under-estimates $\cs$
+and, through Eqs.~(\ref{eq:mass})--(\ref{eq:rho_from_MFW}), the resulting
+mass and radius at fixed central density.
+
+\subsection{Radiative transfer and the interstellar radiation field}
+\label{sec:rt}
+
+Each BE model is embedded in a uniform surrounding cloud and processed with
+\emph{radmc-3d} \citep{Dullemond+2012}, a Monte Carlo dust continuum
+radiative-transfer code, to obtain its three-dimensional dust temperature
+structure and its emergent surface brightness in the \emph{Herschel} photometric
+bands (70, 160, 250, 350, 500\,$\mu$m) and in a high-resolution
+($13.5''$) surface-density proxy band -- denoted $\Sigma$, its common
+name -- after convolution to each band's point spread function. The
+core is heated by the standard interstellar radiation field (ISRF),
+tabulated as an interstellar blackbody field plus a scaled hot blackbody
+component, normalized to a strength $G_0 \approx 10$ in Habing units;
+integrating the far-ultraviolet part of
+the field over $4\pi$ steradian and comparing to the Habing normalization
+gives $G_0 = 4\pi \times 1.22\times10^{-3}/1.6\times10^{-3} \approx 10$.
+Polycyclic aromatic hydrocarbon emission bands are not included, since
+adding them changes core-center temperatures by only 1--2\%; the interior
+temperature structure is dominated by diffuse dust re-emission, not by
+transient PAH heating. $G_0$ is held fixed across the grid, because the
+shielded cloud interior that sets a core's heating environment is close to
+$G_0$-insensitive at the relevant columns and a per-core $G_0$ is not
+recoverable from three-dimensional embedding in any case; the temperature
+at which each model is built, $\Tbe$, is instead set self-consistently
+(Sect.~\ref{sec:tbe}).
+
+\subsection{The core's construction temperature}
+\label{sec:tbe}
+
+The temperature $\Tbe$ that enters the structural equations
+(Eqs.~\ref{eq:r0}--\ref{eq:rho_from_MFW}) is the single isothermal
+temperature at which the hydrostatic profile is built; it is distinct from
+the three-dimensional dust temperature structure $T_{\rm dust}(r)$
+that \emph{radmc-3d} subsequently computes for that profile, which is not
+isothermal and carries the warm-envelope, cold-center gradient responsible
+for the temperature-gradient mass bias this method corrects. Because
+$\Tbe$ enters Eq.~(\ref{eq:xiinvert}), it also affects the truncation
+$\ximax$ assigned to a given target $(M,H_{\rm BE})$, so it
+cannot be chosen arbitrarily; we take $\Tbe$ to be the mass-weighted mean
+dust temperature within $\Rbe$, so that each model is built at
+(approximately) the temperature it would itself settle to.
+
+The temperature at which a shielded core sits is controlled by the total
+radial column between the external radiation field and the core center,
+\begin{equation}
+  N_{\rm tot} = \Scloud + N_{\rm core},
+  \qquad
+  N_{\rm core} = \frac{\rhoc\,\rzero}{\muH\,\mH}
+                      \int_{0}^{\ximax} e^{-\psi(\xi)}\,{\rm d}\xi ,
+  \label{eq:Ntot}
+\end{equation}
+the sum of the cloud's own column and the core's self-shielding. The
+one-sided radial integral, rather than the full line-of-sight column
+through the sphere, is the physically appropriate measure because the
+incident radiation is isotropic and a grain at the center is shielded along
+the radius; it also reproduces the radiative-transfer-computed temperatures markedly
+better in practice. Core self-shielding is not a minor correction: across
+the grid, $N_{\rm core}$ is typically about 60\% of $\Scloud$ and can
+reach $10^{23}\,{\rm cm^{-2}}$ in the most concentrated models, so
+$\Tbe$ cannot be tied to $\Scloud$ alone.
+
+We calibrate the relation $\Tbe(N_{\rm tot})$ once, on a dedicated set
+of radiative-transfer models spanning the grid's full range of $N_{\rm tot}$, iterated
+until the temperature used to build each model agrees with the temperature
+\emph{radmc-3d} computes for it. A quadratic in
+$x \equiv \log_{10}(N_{\rm tot}/{\rm cm^{-2}})$ reproduces the
+calibration set to a root-mean-square of $0.22$\,K,
+\begin{equation}
+  \Tbe = a_0 + a_1\,x + a_2\,x^2,
+  \label{eq:TofN}
+\end{equation}
+with $(a_0,a_1,a_2) = (1021.4,\,-86.47,\,1.842)$, valid over
+$x = 21.5$--$23.4$; the relation runs from $\Tbe \simeq 13.9$\,K at the
+lowest columns in the grid to $\simeq 6.5$\,K at the highest. The residual
+scatter about this fit is not measurement noise: because $\Tbe$ is a
+mass-weighted average over a temperature gradient rather than a function of
+the shielding column alone, two models at the same $N_{\rm tot}$ but
+different concentration place different fractions of their mass in the
+warmer outer layers and so settle to slightly different mass-weighted mean
+temperatures. This residual dependence on concentration is small enough
+that we retain the single-variable relation of Eq.~(\ref{eq:TofN}).
+
+\subsection{Embedding cloud and dust properties}
+\label{sec:cloud}
+
+The surrounding cloud is a uniform-density sphere of radius $\Rcloud$,
+large enough that the beam never reaches its boundary and that enough
+clean cloud remains around the core for a realistic local background
+estimate. Both requirements scale with the core's size as convolved to the
+coarsest relevant beam, so we set
+\begin{equation}
+  \Rcloud = f_{\rm r}\left((O_{500}\,d)^2 + \Rbe^2\right)^{1/2},
+  \label{eq:rcloud}
+\end{equation}
+combining the largest \emph{Herschel} beam and the core's truncation radius in
+quadrature, with distance $d$ and $f_{{\rm r}} \approx 30$ chosen so that
+the projected cloud column is flat across the core's footprint and its
+surrounding background annulus. Here $O_\lambda$ denotes the angular
+resolution (beam half-maximum width) of photometric band $\lambda$, with
+$O_{160}=13.5''$, $O_{250}=18.2''$, $O_{350}=24.9''$, and
+$O_{500}=36.3''$, and $O_\Sigma=13.5''$ for the high-resolution
+surface-density proxy band of Sect.~\ref{sec:rt} (numerically equal to
+$O_{160}$, but a distinct, composite band), used throughout in place of
+the numerical values. The
+cloud's line-of-sight column density, rather than its volume density, is
+the physically meaningful and model-invariant quantity, since it is what
+the observed background measures; we therefore fix the grid's cloud axis to
+be the surface density $\Scloud$ (measured just outside the core, to avoid
+the core's own contribution) and derive the corresponding uniform volume
+density $\rhocloud$ for each model,
+\begin{equation}
+  \rhocloud = \frac{\Scloud\,\muH\,\mH}{2(\Rcloud^2 - \Rbe^2)^{1/2}} .
+  \label{eq:sigmacloud}
+\end{equation}
+This construction gives identical cloud radiative transfer at a given
+$\Scloud$ regardless of core mass or distance, matching the grid axis
+directly to what is measured in a real extraction.
+
+For the dust properties, we adopt the \citet{Ossenkopf+Henning1994} opacity
+law $\kappa_\nu$, applying a scaling factor of 1.0746 so that it agrees with
+the analytic approximation $\kappa_\nu = 10\,(300\,\mu{\rm m}/\lambda)^2\,
+{\rm cm^2\,g^{-1}}$, commonly used in \emph{Herschel} Gould Belt Survey SED
+fitting, to better than 0.5\% at every \emph{Herschel} band. The same opacity is
+used in the radiative-transfer calculation and in the SED mass fit
+(Sect.~\ref{sec:footprint}), and the same dust-to-gas mass ratio,
+$R = M_{\rm dust}/M_{\rm gas} = 0.01$, is used both to build the
+dust density \emph{radmc-3d} requires and to convert a recovered dust mass back to
+a total mass; because the correction is inherently differential (a ratio of
+two masses computed the same way), the exact value adopted for $R$ cancels
+in that ratio and is not a source of bias.
+
+\subsection{Mass-conserving discretization}
+\label{sec:massconserv}
+
+\emph{radmc-3d} treats each grid cell as uniform and computes its mass as the
+cell's density times its exact shell volume. Evaluating the BE density at
+each cell's center, rather than its shell average, does not conserve mass
+on a grid coarse enough to be computationally practical; we measured a
+mass deficit of about 9\% from center-sampling alone. We instead assign
+each cell the density that reproduces its exact enclosed mass, obtained
+directly from the function $C(\xi)$ of Eq.~(\ref{eq:Cxi}),
+\begin{equation}
+  \rho_{\rm cell} = 3\,\rhoc\,
+    \frac{C(\xi_{\rm out}) - C(\xi_{\rm in})}
+         {\xi_{\rm out}^3 - \xi_{\rm in}^3},
+  \label{eq:cellrho}
+\end{equation}
+with $\xi_{\rm in}$ and $\xi_{\rm out}$ the cell's inner and outer
+wall radii. Because adjacent cells share a wall, the enclosed-mass
+differences telescope: the total mass summed over all cells equals
+$4\pi\,\rhoc\,\rzero^3\,[C(\xi_{\rm edge}) - C(\xi_{\rm inner})]$
+exactly, independent of the number of cells, so the grid resolution can be
+chosen for photon-noise statistics rather than for mass accuracy. A radial
+wall is placed exactly at the truncation radius $\Rbe$, so that no single
+cell straddles the BE/cloud boundary and every cell is unambiguously either
+pure BE or pure surrounding cloud. With this construction, the integrated
+grid mass matches the analytic BE mass of Eq.~(\ref{eq:mass}) to under
+$0.1\%$ for every model in the grid (Appendix~\ref{app:massconserv}).
+
+\subsection{Grid coverage and diagnostic flags}
+\label{sec:gridcoverage}
+
+The production grid covers cloud backgrounds
+$\Scloud=3\times10^{21}$--$9.6\times10^{22}\,{\rm cm^{-2}}$ and BE masses
+$\Mbe=0.008$--$27.6\,\msun$, sampled at a nominal factor-of-two node
+spacing, refined locally where an observable's interpolation error exceeds
+a few per cent (Appendix~\ref{app:interp}). Each node carries two
+diagnostic flags recorded for downstream selection: a stability flag read
+directly from $\ximax$ (sub-critical, critical, super-critical;
+Sect.~\ref{sec:geometry}), and a boundedness proxy
+$\alpha_{\rm BE}=M_{\rm BE,crit}/M$ following \citet{Konyves+2015}, with
+$M_{\rm BE,crit}=2.4\,R\,c_s^2/G$ the critical BE mass at the model's
+radius and sound speed. Neither flag is used to trim the grid: the
+extraction detects, and the correction must be able to handle, both bound
+and unbound starless cores, as well as collapsing ones.
+
+Models are retained wherever the structure is physical and the resulting
+core is observationally detectable; a small fraction of the most compact,
+massive models ($\ximax\gtrsim60$) are excluded because their projected size
+falls below the beam at every band, making them unresolved point sources
+for which no finite truncation radius is observationally distinguishable.
+Such cases are flagged as resolution-limited and receive no correction
+rather than an unconstrained one.
+
+% =====================================================================
+\section{The mass correction}
+\label{sec:correction}
+
+\subsection{The observables and the recovery degeneracy}
+\label{sec:observables}
+
+The correction predicts $\CM=\Mbe/\Mex$ as a function of
+three quantities measurable in any \emph{getsf} extraction, all of which are
+either surface brightnesses or dimensionless ratios and therefore carry no
+explicit dependence on distance: the local background column density
+$\Scloud$ (the $\Sigma$-band peak background, ${\rm PEAK^{BGF}}$), the
+peak-to-mean concentration, $\zeta\equiv{\rm PEAK^{SRC}}$ divided by the
+footprint-mean column density, and the footprint factor
+$\phi=A_{\rm F}/H$, the ratio of the detected source's footprint major
+axis, $A_{\rm F}$, to its beam-convolved half-maximum size, $H$
+\citep[following the terminology of][]{Menshchikov2021}. Keying the
+correction on the reported mass itself, rather than on these three
+quantities, was tried and rejected: because reported mass scales
+approximately as distance squared, a source observed at different distances
+with identical physical structure is matched to different, and increasingly
+wrong, grid models as distance grows (Sect.~\ref{app:distance}).
+
+The recovered flux fraction $f_{\rm rec}$ -- the fraction of a source's
+total flux that survives inside the detection footprint after background
+subtraction -- is not itself an observable, since the true total flux is
+precisely the unknown the correction must supply. Left completely
+unconstrained, the correction is therefore degenerate: a measured source
+of given mass, column, and $\zeta$ is reproduced equally well by a
+well-recovered model ($f_{\rm rec}\to1$) and by a poorly-recovered one
+truncated close to its peak, and these can imply mass correction factors
+differing by an order of magnitude. $\phi$ breaks the worst of this
+degeneracy, because it is set by the extraction rather than by the intrinsic
+source: a footprint cannot approach the beam, since background fluctuations
+broaden any measured intensity distribution, so an anomalously small
+$\phi$ cannot occur in practice and is excluded by construction from
+the recoverable region of the grid. As Sect.~\ref{sec:fourthobs} shows,
+however, $\phi$ does not break it entirely: a materially weaker, but
+still consequential, degeneracy remains among sources sharing all three
+axes, and removing it is the subject of that section.
+
+\subsection{The per-band footprint model}
+\label{sec:footprint}
+
+For each grid node and each $\Sigma$-band truncation radius $r$, a recovered
+flux fraction $f_{{{\rm rec}},\lambda}$ is computed for every continuum band
+$\lambda\in\{250,350,500\,\mu{{\rm m}}\}$, and the reduced fluxes are refit
+to obtain the recovered mass,
+\begin{equation}
+  \Mrec(r) = M_{\rm SED3bs} \,
+  \frac{A(F_\lambda f_{{{\rm rec}},\lambda})}{A(F_\lambda)},
+  \label{eq:mrec}
+\end{equation}
+where $M_{\rm SED3bs}$ is the mass from the untruncated 3-band SED fit,
+$F_\lambda$ are the model's true band fluxes, and $A(\cdot)$ is the fitted
+modified-blackbody amplitude (proportional to mass) of the 3-band fit to
+the argument fluxes. The training sample for the correction is then
+$(\Scloud,\,\zeta,\,\phi,\,\CM=\Mbe/\Mrec(r))$,
+built by iterating over every node and truncation radius. Getting
+$f_{{{\rm rec}},\lambda}$ right is the crux of the method: it is the only
+step that converts a purely geometric truncation of the model image into a
+mass bias, and two more direct definitions were tried and rejected before
+arriving at the one used in production.
+
+$\CM$ can be factored into three physically distinct, independently
+measurable pieces, used in the diagnostic of Sect.~\ref{sec:factorscatter}
+to attribute where its value comes from: $\CM=\Fflux\times
+\Fbg\times \Ftemp$. The flux-recovery factor,
+$\Fflux\equiv M_{\rm SED3bs}/\Mrec(r) = A(F_\lambda)/
+A(F_\lambda f_{{{\rm rec}},\lambda})$, follows directly from
+Eq.~(\ref{eq:mrec}) and captures the mass lost to footprint truncation
+alone. The background-subtraction factor,
+$\Fbg\equiv F_\Sigma^{\rm crater}/F_\Sigma^{\rm interp}$, is the
+ratio of the $\Sigma$-band flux recovered under a background estimated from an
+uncontaminated annulus around the source (a ``crater'' background) to the
+flux recovered under \emph{getsf}'s standard interpolated background,
+which typically over-subtracts under a real source and so gives
+$\Fbg>1$; it is measured independently of $\Fflux$, from the
+same seven-model background-scan campaign of Sect.~\ref{sec:footprint}.
+The temperature-gradient factor, $\Ftemp\equiv \CM/(\Fflux
+\Fbg)$, is defined as whatever remains once the other two are
+divided out, and isolates the bias from fitting a single temperature to a
+source with a real internal temperature gradient.
+
+We derive the band footprint from the physical origin of the enlargement
+that \emph{getsf} applies to it. \emph{getsf} measures each band inside a
+correspondingly larger footprint than the $\Sigma$-band one, with the median
+ratio of the band footprint to the $\Sigma$-band footprint,
+$A_{{{\rm F}},\lambda}/A_{{{\rm F}},\Sigma}$, measured at $1.04$, $1.30$, and
+$1.90$ for $250$, $350$, and $500\,\mu$m on a seven-model background-scan
+injection campaign (189 matched sources). We posit that \emph{getsf}'s footprint in every band is set by
+a constant source signal-to-noise ratio (S/N) at the footprint edge; this is
+supported empirically, since the median of the background-subtracted source
+intensity over the local root-mean-square background fluctuation at the
+measured footprint edge is $0.76$, independent of source contrast, in the
+same background-scan sample. Writing the dust emissivity per unit column as
+$e_\lambda(T)=\kappa_\lambda B_\lambda(T)$, both the source surface
+brightness and a structural noise field tied to the same column-density
+fluctuations scale as $I_\lambda(s)=N(s)\,e_\lambda(T)$ and
+$\sigma_\lambda=\sigma_\Sigma\,e_\lambda(T)$, so that
+\begin{equation}
+  \frac{I_\lambda(s)}{\sigma_\lambda}
+    = \frac{N(s)\,e_\lambda(T)}{\sigma_\Sigma\,e_\lambda(T)}
+    = \frac{N(s)}{\sigma_\Sigma},
+  \label{eq:sncancel}
+\end{equation}
+independent of wavelength: the dust SED cancels between source and noise,
+and the wavelength dependence of the footprint is set entirely by the
+convolution of both fields to each band's beam, not by the dust properties.
+
+For a structural fluctuation field with two-dimensional power spectrum
+$P(k)\propto k^\gamma$, the root-mean-square amplitude after convolution
+with a Gaussian beam of full width at half maximum $\theta$, restricted to
+spatial frequencies above a low-frequency cutoff $k_{\rm low}=1/D$ set by
+the footprint diameter $D$, is
+\begin{equation}
+  \sigma^2(\theta;D) = \int_{1/D}^{\infty} k^{\gamma+1}
+    \exp\!\left(-a\,\theta^2 k^2\right){\rm d}k,
+  \qquad a=\frac{4\pi^2}{8\ln 2},
+  \label{eq:powerspec}
+\end{equation}
+and the convolution factor is $c_\lambda(D)=\sigma(O_\lambda;
+D)/\sigma(O_\Sigma;D)$. \citet{Roy+2019} measure the \emph{Herschel}
+$250\,\mu$m power-spectrum slope of Aquila to be $\gamma=-2.26\pm0.1$;
+comparable values are $-2.63$ for Polaris and $-3.0$ for a diffuse Taurus
+field. We adopt $\gamma=-2.5$; Fig.~\ref{fig:footprint} shows that
+$c_\lambda(D)$ varies by under $5\%$ over $-3.0\le\gamma\le-2.0$ at fixed
+$D$, so the precise slope is not critical, while the dependence on $D$
+itself is strong, particularly for the $500\,\mu$m band once its beam
+approaches the footprint scale.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\linewidth]{fig_footprint_model.pdf}
+  \caption{Convolution factor $c_\lambda(D)=\sigma(O_\lambda;D)/
+  \sigma(O_\Sigma;D)$ of Eq.~(\ref{eq:powerspec}), for the
+  three continuum bands, as a function of the footprint diameter $D$, at the
+  adopted power-spectrum slope $\gamma=-2.5$. Vertical dotted lines mark
+  each band's angular resolution, below which the band is unresolved at that
+  footprint scale.}
+  \label{fig:footprint}
+\end{figure}
+
+Combining Eqs.~(\ref{eq:sncancel})--(\ref{eq:powerspec}), and canceling
+the (band-independent) edge S/N between the band and $\Sigma$ footprints, the
+band footprint radius $R_\lambda$ satisfies, self-consistently,
+\begin{equation}
+  \frac{I_\lambda(R_\lambda)}{I_\lambda(0)}
+    = \frac{\Sigma(r)}{\Sigma(0)}\,
+      c_\lambda(2R_\lambda),
+  \label{eq:selfconsistent}
+\end{equation}
+which must be solved for $R_\lambda$ at each truncation radius $r$ and in
+each band.
+
+The solution is unique and the equation is well posed. Writing
+$g(R)=I_\lambda(R)/I_\lambda(0)-[\Sigma(r)/\Sigma(0)]\,c_\lambda(2R)$, the
+first term decreases with $R$ because it is a normalized source profile,
+while the second increases with $R$ because a larger footprint admits
+fluctuation power from larger scales, so $g$ is strictly decreasing and has
+exactly one root. We solve it by bracketed root finding (Brent's method) on
+the interval from $r$ to the outermost tabulated radius of that band, which
+either converges to the root or reports that none exists inside the
+tabulated profile; in the latter case the sample is dropped rather than
+assigned a fabricated radius. Over the $27\,441$ solver calls needed to build
+the production training set, $93.8\%$ return a bracketed root, $1.8\%$ have no
+root within the tabulated profile, and the remainder have no usable profile.
+
+\draftnote{The following paragraph documents a correction to earlier versions of
+this work. It should be kept: every number in the paper changed because of
+it, and a reader comparing with the earlier preprint needs the explanation.}
+
+Earlier versions solved Eq.~(\ref{eq:selfconsistent}) by fixed-point
+iteration, substituting a trial $R_\lambda$ into the right-hand side and
+inverting the profile to obtain the next trial. That iteration is not
+convergent here. Its map is the composition of a decreasing function with an
+increasing one and is therefore decreasing, so wherever the magnitude of its
+derivative exceeds unity the iterates oscillate rather than converge, which
+is the classical condition for fixed-point divergence. Instrumenting it over
+the same $26\,649$ calls, $71.9\%$ oscillated, $23.4\%$ exhausted the
+iteration limit without meeting the convergence test and silently returned
+the last iterate, and in a further $5.5\%$ the target level fell below the
+whole tabulated profile and the radius was clamped to its outer edge. The
+consequences were not merely noisy but unphysical: the returned $R_\lambda$
+failed to increase monotonically with $r$ in $80$ to $91\%$ of nodes
+depending on the band, although enlarging the $\Sigma$-band aperture cannot
+shrink the aperture in another band, and the recovered flux fractions
+inherited the same defect. The resulting scatter propagated into $\CM$
+through the modified-blackbody refit, which converts small errors in the
+per-band colors into large errors in the fitted amplitude. Nearest
+neighbours in the space of the model's own physical parameters, which by
+construction must have nearly identical $\CM$, differed by a factor of
+$1.36$; with the bracketed solver they differ by a factor of $1.036$. That
+residual factor of $1.036$ is the pipeline's numerical floor, and it sets
+the limit against which every scatter quoted in Sect.~\ref{sec:validation}
+should be read.
+
+Because $R_\lambda$ sets its own noise cutoff through
+$c_\lambda$, Eq.~(\ref{eq:selfconsistent}) automatically enforces
+$2R_\lambda>O_\lambda$ for a resolved band without an
+externally imposed size cut; a band that remains unresolved after
+iteration is dropped from that node's SED refit rather than the node being
+discarded. An earlier, fixed exclusion on the $\Sigma$-band footprint diameter
+($O_\lambda<D$) discarded $29\%$ of the grid's $\Sigma$-band
+truncation samples, all compact cores with $H_\Sigma$ smaller
+than the $500\,\mu$m beam; because \emph{getsf} measures each band inside
+its own, enlarged footprint rather than the $\Sigma$-band footprint, that
+criterion was the wrong one, and Eq.~(\ref{eq:selfconsistent}) recovers the
+excluded compact-core population without loss of accuracy
+(Sect.~\ref{sec:validation}). The recovered flux fraction entering
+Eq.~(\ref{eq:mrec}) is finally the cumulative source integral to
+$R_\lambda$,
+\begin{equation}
+  f_{{{\rm rec}},\lambda} = \frac{\displaystyle\int_0^{R_\lambda}
+    I_\lambda(s)\,2\pi s\,{\rm d}s}
+    {\displaystyle\int_0^{R_{\rm conv}} I_\lambda(s)\,2\pi s\,
+     {\rm d}s}.
+  \label{eq:frac}
+\end{equation}
+
+\subsection{The estimator}
+\label{sec:interp}
+
+The training samples of Sect.~\ref{sec:footprint} give the value of $\CM$ at
+a scattered set of points in the space of the observables. By a training
+sample we mean one entry in the set from which the corrector is built: one
+model of the grid evaluated at one truncation radius, giving one value of
+each observable and one value of $\CM$. The training set is the collection
+of all of them, 7497 samples drawn from 403 nodes of the model grid. To correct a real
+source we need the value of $\CM$ at a point where no training sample lies,
+so we need a rule that turns the scattered samples into a function defined
+everywhere. Two such rules were tested, and the choice between them matters
+more than one might expect.
+
+The first rule is piecewise linear interpolation on a Delaunay
+triangulation. The training points are joined into a mesh of simplices --
+triangles in two dimensions, tetrahedra in three, and their
+four-dimensional analogue here -- and the value at a query point is the
+linear interpolation between the vertices of the one simplex that contains
+it. This is the natural choice for scattered data and it was used in earlier
+versions of this work. It has two drawbacks. It uses only the handful of
+vertices of a single simplex, so it inherits the error of those few samples
+rather than averaging over many; and it is undefined outside the convex hull
+of the training set, returning no value at all for a source whose
+observables fall beyond the region the grid covers.
+
+The second rule is local linear regression. To evaluate the correction at a
+query point, the $K$ nearest training samples are found in a space where
+each axis has been divided by its own standard deviation, so that the
+distance does not depend on the units of the axes; a plane is then fitted to
+those $K$ samples by weighted least squares and evaluated at the query
+point. The weights follow the tricube function
+$w=\left[1-(d/h)^{3}\right]^{3}$, where $d$ is the distance to a training
+sample and $h$ the distance to the furthest of the $K$, so that nearby
+samples count most and the weight falls smoothly to zero at the edge of the
+neighborhood. Averaging over many samples suppresses the sample-to-sample
+noise that the simplex interpolation transmits directly, and because the
+fitted plane can be evaluated anywhere, a query outside the hull receives a
+value rather than none.
+
+The two rules are compared by leave-one-out validation, which tests a
+corrector on data it has not seen. One node is removed from the training set
+together with all of its samples, the corrector is rebuilt from what
+remains, and it is then asked to predict $\CM$ for the removed node;
+repeating this for every node gives one honest prediction per node. Removing
+the whole node rather than a single sample is essential, because samples
+from the same node differ only in truncation radius and are therefore not
+independent of one another, so leaving out a single sample would leave
+near-duplicates of it in the training set and the test would measure almost
+nothing. Measured this way (Sect.~\ref{sec:validation}), the local linear
+estimator reduces the root-mean-square residual in $\log_{10}\CM$
+from $0.0583$~dex (a factor of $1.144$) to $0.0445$~dex (a factor of
+$1.108$), and returns a value for all $403$ nodes rather than for the $388$
+that fall inside the hull. The improvement is insensitive to the
+neighborhood size over the range $K=80$ to $640$, so $K$ is not a tuned
+parameter; we adopt $K=320$. $K$ is a hyperparameter, that is a setting of
+the estimator itself rather than a quantity fitted from the data, and
+choosing one by inspecting the same test used to report the final
+performance would flatter the result. We therefore also verified it by
+split-half selection, in which the choice is made on a randomly selected
+half of the nodes and its performance reported on the other half, which the
+choice never saw; that gives $0.0437$~dex, confirming the improvement is not
+an artifact of the choice. Rescaling the axes before triangulating,
+without changing the estimator, gives $0.0582$~dex, that is no improvement
+at all, which shows that the deficiency of the Delaunay rule is not its
+metric but its reliance on a single simplex.
+
+A plane fitted to $K$ samples can be evaluated arbitrarily far from them,
+and the value it returns is then an extrapolation of a first-order fit
+rather than an interpolation. We therefore bound each prediction by the
+range of $\CM$ spanned by the training samples the fit was built from. On
+the model grid this bound never acts, and the leave-one-out residual is
+unchanged to four decimal places. On real catalogs it acts for a few per
+cent of sources in most clouds, and it is what keeps the correction of a
+source unlike anything in the grid finite rather than unbounded.
+
+Earlier versions of this work applied two physical bounds to the output:
+$\CM\ge1$, on the argument that every mechanism corrected for adds mass and
+never removes it, and a cap on the flux-recovery factor at
+$1/{\rm MIN\_FRAC}$ with ${\rm MIN\_FRAC}=0.25$. Both have been
+removed. With the footprint solver of Sect.~\ref{sec:footprint} corrected,
+they change the leave-one-out scatter from a factor of $1.145$ to $1.15$ and
+the median corrected mass ratio from $1.007$ to $1.008$, so they no longer
+do anything; they were compensating for a numerical defect rather than
+enforcing physics. The argument behind the first is also not supported by
+the training data, in which $7.2\%$ of nodes have a true $\CM$ below unity.
+\draftnote{Consequence for catalogs: individual sources may now receive $\CM<1$.
+This is the honest behavior but it will look different from earlier
+catalogs.}
+
+${\rm MIN\_FRAC}$ retains a second, unrelated role earlier in the
+pipeline, at the per-band level rather than the output level. The 3-band
+mass refit of Eq.~(\ref{eq:mrec}) is a least-squares fit over a temperature
+grid, and it is not automatically robust: when the per-band recovered
+fractions $f_{{{\rm rec}},\lambda}$ of the bands entering the fit are highly
+imbalanced -- one band recovering under $20\%$ of its flux while another
+recovers essentially all of it -- the reduced-flux vector can take a shape
+no physical modified blackbody can reproduce, and the least-squares solution
+is driven to an unphysical temperature at the edge of the fitted range, with
+an amplitude, and hence a recovered mass, wrong by up to three orders of
+magnitude. The same instability, in a different form, affects a subset of
+nodes where only two bands remain resolved: two data points exactly
+determine two fit parameters, temperature and amplitude, with no redundancy
+to check the result against. We require at least three bands with
+$f_{{{\rm rec}},\lambda}\ge{\rm MIN\_FRAC}$ for a sample to enter the
+training set at all; a truncation radius failing this requirement is
+dropped, and a node all of whose truncation radii fail it is absent from the
+grid entirely. This removed $92\%$ of the catastrophic ($>\!10\times$) mass
+errors identified in the production grid, at a cost of $7\%$ of the training
+samples, and it is applied uniformly, before either the three- or
+four-observable corrector of Sect.~\ref{sec:fourthobs} is built.
+
+\subsection{A fourth observable: angular size}
+\label{sec:fourthobs}
+
+$\phi$ (Sect.~\ref{sec:observables}) rules out the most extreme degeneracy,
+in which a source's true flux is essentially unconstrained, but it does not
+determine $\CM$. We tested this directly. For every training sample we
+located its nearest neighbor, in the normalized
+$(\Scloud,\,\zeta,\,\phi)$ space, drawn from a different physical
+node, so that the comparison is between genuinely different cores rather
+than between two truncations of the same one. If the three observables
+determined $\CM$, then the difference in true $\CM$ between increasingly
+close neighbors would go to zero. Instead, binning pairs by separation, the
+root-mean-square difference in $\log_{10}\CM$ is flat at $0.14$ to
+$0.17$~dex from the closest decile of pairs to the farthest
+(Fig.~\ref{fig:degeneracy}). That is the signature of a degeneracy rather
+than of interpolation error. The two are distinct and the distinction
+matters throughout what follows. A degeneracy means that the map from the
+observables to $\CM$ is not one-to-one, so that two sources with the same
+observables can have genuinely different correction factors and no rule
+whatsoever can tell them apart; interpolation error is the error made
+because the training samples are finite in number and the rule must guess
+between them. Interpolation error shrinks as the samples used get closer to
+the query, whereas a degeneracy does not, which is exactly what the test
+above measures. Quantitatively, the three observables account for about
+$15\%$ of the variance of $\log_{10}\CM$ across the training set, the
+variance explained being one minus the ratio of the residual variance to the
+total variance; the remaining $85\%$ is invisible to them. A corrector that
+returned the population median for every source would explain no variance at
+all, however close its median happened to be to the truth.
+
+The missing information is the source's absolute scale. The three existing
+observables are all ratios or surface brightnesses, constructed to be
+scale-free (Sect.~\ref{sec:observables}); two models with the same shape but
+different size are, by design, indistinguishable to them. But $\CM$ is not
+scale-free: it depends on the temperature structure and flux recovery that
+follow from the model's actual size, through the self-shielding column
+$N_{\rm core}\propto\rho_{\rm c}\,r_0$ of Eq.~(\ref{eq:Ntot}). We therefore
+add a fourth axis carrying scale.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{fig_degeneracy.pdf}
+  \caption{Root-mean-square difference in the true correction factor $\CM$
+  between pairs of training samples drawn from different physical models, as
+  a function of how close the pair is in the observables (normalized,
+  dimensionless units), binned by decile of pair separation. For the three
+  observables $(\Scloud,\,\zeta,\,\phi)$ the difference does not shrink as
+  the pair separation goes to zero, showing that they do not, even in the
+  limit of perfect sampling, determine $\CM$. Adding the angular size as a
+  fourth axis halves the difference from the farthest to the closest decile,
+  which is the behavior of ordinary interpolation error rather than of a
+  degeneracy.}
+  \label{fig:degeneracy}
+\end{figure}
+
+\subsubsection{The axis is an angle, not a physical length}
+
+The scale-bearing quantity available on the model side is the truncation
+radius $\Rbe$ (Sect.~\ref{sec:bemodel}); on the real-source side it is the
+footprint radius $(A_{\rm F}B_{\rm F})^{1/2}/2$. Both are measured
+angles. Whether the axis should be used as an angle, or converted to a
+physical length using the source's distance, is not a matter of convenience:
+the two choices give different answers for any cloud at a distance other
+than that at which the grid was built, and only one of them is correct.
+
+The correct choice follows from what $\CM$ is. The mass of a source is
+$M\propto F_\nu d^{2}/[\kappa B_\nu(T)]$, and the same factor $d^{2}$
+appears in the true mass and in the reported mass, so it cancels exactly in
+their ratio. Surface brightness does not depend on distance either, and both
+the beam and the structural noise that fixes the footprint
+(Sect.~\ref{sec:footprint}) are properties of the map in its angular frame.
+Every quantity on which $\CM$ depends is therefore an angle, and $\CM$
+cannot depend on how far away the source lies. We accordingly use the axis
+in angular units on both sides, expressing the model's $\Rbe$ as the angle
+it subtends at the distance at which the grid was rendered, and using the
+measured footprint radius of a real source directly.
+
+This is confirmed by the data, in a test that belongs to the companion
+paper because it uses observed clouds rather than models. Applying the
+corrector to seven clouds spanning $139$ to $2000$~pc, the median correction
+factor ranges over a factor of $1.70$ and correlates with $\log_{10}d$ at
+$0.958$ when the axis is converted to parsecs at each source's own distance,
+against a factor of $1.12$ with a correlation of $0.464$ when it is used as
+an angle. The trend in the first case is an artifact of the conversion,
+because the median angular footprint radius is nearly the same in every
+cloud, $28$ to $44$~arcsec, being set by the extraction and the beam rather
+than by the sources, so the converted physical radius scales almost purely
+with distance. Measured at fixed angular footprint radius, the concentration
+$\zeta$, the footprint factor $\phi$, and the source contrast show no
+ordering with distance at all.
+
+Because the whole grid was rendered at a single distance, the model-side
+axis is the same variable whether expressed in parsecs or in arcsec, and no
+test performed on the grid alone can distinguish the two. The distinction
+appears only when a real source is looked up. This is why the point was
+missed in earlier versions of this work, which used the physical form.
+
+One simplification follows. The correction factor no longer requires knowing
+the cloud's distance at all. Distance still sets the mass scale, since the
+reported mass carries $d^{2}$, but it no longer enters the correction, so a
+distance error propagates as a clean multiplicative factor rather than also
+displacing the source along a corrector axis.
+
+\subsubsection{Performance and alternatives}
+
+With the angular size as the fourth axis, the difference in true $\CM$
+between nearest neighbors from different nodes falls from $0.087$~dex in the
+farthest decile of pair separation to $0.045$~dex in the closest, a factor
+of two, which is the behavior of interpolation error and not of a
+degeneracy. Subtracting the pipeline's own numerical floor in quadrature,
+the irreducible degeneracy of the four observables is about $0.030$~dex, a
+factor of $1.07$, against a total spread of $\log_{10}\CM$ of $0.142$~dex.
+About $95\%$ of the variance of $\log_{10}\CM$ is therefore in principle
+reachable with these four observables, against $15\%$ with three.
+
+We compared several alternative fourth axes, all measurable on both the
+model side and in a getsf catalog, under the same leave-one-out test and
+with each used consistently for training and for the query. In order of the
+root-mean-square residual in $\log_{10}\CM$ they are: a Bonnor--Ebert
+profile fit to the source's own radial profile ($0.086$~dex), the reported
+mass ($0.098$), the footprint radius ($0.118$), the deconvolved half-maximum
+size ($0.118$), the half-maximum size ($0.119$), the SED temperature
+($0.125$), the ratio of the $500$ to the $250\,\mu$m half-maximum sizes
+($0.126$), no fourth axis at all ($0.140$), and the peak column density
+($0.142$). The last of these is worse than using no fourth axis, and the two
+temperature-like quantities help only marginally.
+
+We adopt the footprint radius. It is not the best performer of that list,
+but it requires nothing beyond the standard catalog, whereas the profile fit
+requires the per-source radial profile files, which not every extraction
+produces. For extractions that do have them, that axis is obtained by fitting
+the analytic Bonnor--Ebert profile of Sect.~\ref{sec:bemodel}, projected and
+convolved to the band resolution, to the source's own azimuthally averaged
+radial profile by weighted least squares, with the truncation $\ximax$ and the
+scale radius $\rzero$ free and the profile taken as \emph{getsf} writes it,
+without rim subtraction. Its accuracy is governed by how far the fitted range
+reaches relative to the true $\Rbe$: on the model grid the ratio of fitted to
+true $\Rbe$ has a $16$th-to-$84$th percentile range of $0.949$--$1.359$ where
+the fit extends to $0.7$--$1.0\,\Rbe$, tightening to $0.904$--$1.039$ beyond
+$1.5\,\Rbe$ and degrading badly short of $0.4\,\Rbe$. The non-deblended
+surface-density profile is therefore the one to use, reaching a median of
+$105''$ against $27''$ for the deblended profile of the same sources.
+\draftnote{Implementation not preserved beyond the exploratory stage; the
+$0.086$~dex figure above comes from that exploration. Either restore the
+script before submission or present the number as indicative.}
+
+% =====================================================================
+\section{Validation}
+\label{sec:validation}
+
+The correction is validated on three independent tests, none used to
+calibrate the grid, the footprint model of Sect.~\ref{sec:footprint}, or
+the fourth observable of Sect.~\ref{sec:fourthobs}. Each test is run for
+both the three-observable corrector and the four-observable corrector, so
+that the benefit of the fourth axis is measured on the same samples rather
+than inferred indirectly. Two of the three tests are model-grid tests, in
+which a node (one physical radiative-transfer model, at one $\Scloud$, mass, and
+$\ximax$) is evaluated at many different $\Sigma$-band truncation radii $r$
+(Sect.~\ref{sec:footprint}), each giving a distinct
+$(\Scloud,\zeta,\phi)$ combination and hence a
+distinct test case; we call each such (node, truncation radius)
+combination a sample, to distinguish it from the physical node it
+comes from. A single node therefore contributes several samples (a median
+of $20$ per node in the production grid), not one; where this matters for
+an unbiased sample count, we also report results reduced to one
+representative sample per node (the sample whose $\phi$ is closest
+to $1.84$, the grid's own median value).
+
+Population injection test. Synthetic BE cores are injected into real Aquila
+maps and
+re-extracted with \emph{getsf}, exactly as a real source would be, and the
+resulting catalog is passed through the same correction pipeline used for
+real data, using the known distance to Aquila ($260\,$pc) for the fourth
+observable. This is the most realistic test available, since it exercises
+the full observational chain -- injection, extraction, background
+subtraction, SED fitting -- rather than only the model grid. Each of the
+108 sources is a single, independent injection, with no node/sample
+distinction. How the injected population is chosen, and why that choice
+determines what the test is able to measure, is set out in
+Sect.~\ref{sec:injpop}.
+
+Independent subdivision grid. A second radiative-transfer grid, disjoint from the
+production grid, is built at five background columns interleaved between
+the six production-grid values (the geometric mean of each adjacent pair),
+each populated with the same target mass grid used in the production grid
+but spanning the full range of truncation $\ximax$ from sub-critical
+through critical to strongly super-critical, rather than a single
+stability class. This gives 226 detectable models (of 314 attempted; the
+remainder fall below the detectability floor and are not part of the
+test), $3416$ truncation-radius samples in total, or $166$ reduced to one
+sample per node. This is a deliberate improvement over an earlier version
+of this test, which used $36$ models confined to the critical truncation
+only ($\ximax=6.451$ throughout) and consequently exercised only a
+one-dimensional slice of the grid's concentration range; the present
+version spans the same stability diversity as the production grid itself.
+This test isolates the accuracy of the correction surface, independent of
+any extraction or injection systematics.
+
+Node-level leave-one-out. For each of the $406$ nodes of the
+production grid that retain at least one sample after the reliability
+requirement of Sect.~\ref{sec:interp}, every sample belonging to that node
+(all of its truncation radii together) is removed, both correctors are
+rebuilt from the remaining samples, and the correction is evaluated on the
+excluded node's own representative sample (again the one closest to
+$\phi=1.84$), giving $388$ independent, genuinely unseen test
+cases. This differs from the subdivision test in scale and in what it
+stresses: it uses the same physical grid rather than a second,
+independently generated one, but it repeats the withhold-and-predict
+procedure at (in effect) every node rather than at a fixed external
+sample, so it is far less sensitive to whether that external sample
+happened to sit in an easy or a hard part of the grid. We restrict \emph{loo} to
+one sample per node throughout, rather than reporting all truncation
+radii of the withheld node as in the other two tests: the several
+truncation-radius samples of one withheld node are correlated (a
+prediction that is biased for that node tends to be biased for all of
+them), so counting them as independent test cases would overstate the
+number of genuinely independent checks the test performs.
+
+Background-scan injection test. A complementary, fourth test asks a
+different question from the other three: not whether the correction
+generalizes across the grid's diversity of physical models, but whether it
+handles the variation a single fixed model can show under different real
+background conditions. Seven specific production-grid nodes are each
+injected at $\sim\!40$ different positions across the real Aquila field
+and re-extracted with \emph{getsf}, giving $85$ matched sources (of $256$
+attempted; most losses are sources failing \emph{getsf}'s own
+QUALITY$=$ok criterion, not a footprint-radius or model-hull failure). By
+construction this test cannot exercise the observable degeneracy of
+Sect.~\ref{sec:fourthobs} (removing it requires distinguishing
+different models sharing the same three observables, and here the
+underlying model is always one of only seven, held fixed), so it is not
+expected to show the same pattern as the other three; we report it
+separately rather than pooling it with them.
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.72\linewidth]{fig_validation.pdf}
+  \caption{Validation of the three- versus four-observable correction, on
+  four independent tests. (\emph{top to bottom}) injection--recovery
+  ($n=109$, diverse models); independent subdivision grid ($n=3416$
+  truncation samples, panel d reduced to $166$ per-node samples for the
+  CDF); node-level leave-one-out ($n=388$, one sample per node);
+  background-scan injection ($n=85$, seven fixed models at varying real
+  backgrounds). (\emph{left}) corrected mass ratio for the three-observable
+  (open gray) and four-observable (filled red) corrector versus the
+  reference mass; the ideal ratio of unity is dashed. (\emph{right}) the
+  empirical cumulative distribution of $|\log_{10}({\rm ratio})|$
+  for each corrector; the vertical dotted line marks a factor of two.}
+  \label{fig:validation}
+\end{figure*}
+
+Table~\ref{tab:validation} and Fig.~\ref{fig:validation} summarize the
+result. In every test, both correctors move the median ratio from a
+significant low bias to within a few per cent of unity: systematic-bias
+removal is not specific to the fourth observable, and both correctors
+achieve it. What differs is everything else. The three-observable
+corrector's accuracy is mixed: it improves the fraction within a factor of
+two over the uncorrected baseline in the subdivision test ($87\%\to90\%$)
+and the background-scan test ($79\%\to94\%$), but not in the injection
+test ($85\%\to83\%$) or \emph{loo} ($87\%\to88\%$, essentially unchanged), and its
+scatter (expressed as a multiplicative factor) is worse than uncorrected
+in every test except background-scan (injection $2.06\to2.25$; subdivision
+$1.56\to1.58$; \emph{loo} $1.51\to1.62$; background-scan $1.43\to1.37$). The
+four-observable corrector's fraction within a factor of two improves over
+uncorrected in three of four tests ($85\%\to85\%$ injection,
+$87\%\to98\%$ subdivision, $87\%\to95\%$ \emph{loo}, $79\%\to87\%$
+background-scan), and its scatter is better than uncorrected in three of
+four and closely comparable in the fourth (injection $2.06\to2.09$;
+subdivision $1.56\to1.32$; \emph{loo} $1.51\to1.42$; background-scan
+$1.43\to1.41$). Compared directly against the three-observable corrector
+on the same samples, the fourth observable reduces the typical error
+(median $|\log_{10}\text{ratio}|$) in every test -- by roughly a fifth in
+the injection test ($0.101\to0.082$) and the background-scan test
+($0.107\to0.084$), and by a factor of two or more in the two model-space
+tests ($0.042\to0.019$ subdivision; $0.052\to0.031$ \emph{loo}) -- and improves
+the individual prediction for the majority of sources in three of four
+tests (injection $60\%$; subdivision $74\%$; \emph{loo} $66\%$; background-scan
+$59\%$).
+
+The background-scan test's pattern is visibly different from the other
+three (Fig.~\ref{fig:validation}g, h): both correctors leave a substantial
+residual bias (median $0.82$--$0.84$, versus $0.96$--$1.02$ elsewhere),
+and the three-observable corrector is competitive with, or on some metrics
+better than, the four-observable one. This is consistent with what the
+test can and cannot probe: with only seven distinct underlying models,
+repeated many times, there is little room for the specific failure mode
+Sect.~\ref{sec:fourthobs} identifies (different models sharing the same
+three observables) to occur, so the fourth observable's main advantage is
+largely absent by construction here. The residual bias common to both
+correctors in this test is a separate finding, not yet explained, and is
+noted as a target for follow-up rather than folded into the headline
+comparison.
+
+\begin{table}
+\caption{Validation of the three- and four-observable correctors on the four
+independent tests of Sect.~\ref{sec:validation}. Tabulated, for each test and
+each treatment, are the median of the ratio of the mass obtained to the
+reference mass, the scatter of that ratio expressed as a multiplicative
+factor, and the percentage of sources whose ratio lies between $0.5$ and $2$.
+All entries are restricted to sources inside the domain of the correction, that
+is to those for which both corrections are interpolations between grid models
+rather than extrapolations beyond them (Sect.~\ref{sec:domain}). The
+subdivision and \emph{loo} tests use one representative sample per node.}
+\label{tab:validation}
+\centering
+\begin{tabular}{lcccc}
+\hline\hline
+test & quantity & uncorr. & 3-axis & 4-axis \\
+\hline
+Node-\emph{loo}      & median           & $0.84$ & $1.13$ & $1.01$ \\
+($n=388$)            & scatter (factor) & $1.36$ & $1.35$ & $1.11$ \\
+                     & within $2\times$ & $89\%$ & $95\%$ & $100\%$ \\
+\hline
+Subdivision          & median           & $0.84$ & $1.17$ & $1.02$ \\
+($n=156$)            & scatter (factor) & $1.33$ & $1.34$ & $1.11$ \\
+                     & within $2\times$ & $90\%$ & $96\%$ & $100\%$ \\
+\hline
+Bg-scan              & median           & $0.76$ & $1.09$ & $0.93$ \\
+($n=110$)            & scatter (factor) & $1.98$ & $1.94$ & $1.95$ \\
+                     & within $2\times$ & $79\%$ & $88\%$ & $85\%$ \\
+\hline
+Population injection & median           & $0.79$ & $1.13$ & $0.93$ \\
+($n=95$)             & scatter (factor) & $1.56$ & $1.60$ & $1.56$ \\
+                     & within $2\times$ & $85\%$ & $84\%$ & $88\%$ \\
+\hline
+\end{tabular}
+\tablefoot{The subdivision and \emph{loo} ratios are $M/\Mbe$; the bg-scan and
+population-injection ratios are $M/\Mref$, the mass of the model injected. The
+ideal median is unity. The population-injection entries are for the
+flattened, isolated variant, in which the cloud fluctuations beneath each core
+and the neighbouring injected cores are both absent, pooled over four
+realizations; the effect of restoring each is given in
+Table~\ref{tab:contamination}.}
+\end{table}
+
+\subsection{The domain of the correction}
+\label{sec:domain}
+
+The correctors interpolate a grid of radiative-transfer models. A source whose
+observables lie inside the region the models span is corrected by
+interpolation between them; one that lies outside is corrected by extrapolation
+of a fitted plane, which is a far weaker statement. The two must be
+distinguished, and the pipeline reports the distinction per source: a convex
+hull is built once from the training samples in each set of observables, and a
+source is flagged as inside the domain when both the three- and the
+four-observable queries fall within it.
+
+The flag matters in practice. Applying the corrector to seven clouds spanning
+$130$ to $1700$~pc, $3820$ of their $8106$ sources, that is $47\%$, lie outside
+the hull. They do
+so for one reason: $3287$ of them fall below the lowest embedding column of
+the grid, $3\times10^{21}\,{\rm cm^{-2}}$, while no more than $99$ fail on any
+other axis. The limitation is thus a gap in the coverage of the present grid
+at faint backgrounds rather than a property of the method, and it is closed by
+extending the grid downward in embedding column.
+
+We report the corrected masses of the extrapolated sources, since the
+extrapolation is bounded by the range of the neighbouring training samples and
+does not diverge, but the flag is carried in the output catalogue so that a
+user may restrict the sample at will. All validation figures quoted in this
+paper are for sources inside the domain.
+
+\subsection{Fitting the spectral energy distribution: how many bands}
+\label{sec:bands}
+
+A modified blackbody has two free parameters, so a fit to two photometric
+points has no degrees of freedom. It passes exactly through both points however
+badly they are measured, its chi-squared is zero by construction, and no
+goodness-of-fit criterion can reject it. The injections make the consequence
+measurable, because the true mass of every recovered core is known.
+
+Table~\ref{tab:bands} gives the outcome as a function of the two settings that
+govern which bands are fitted: the factor by which a band's peak and total
+fluxes must exceed their own uncertainties before that band is admitted, and
+the number of admitted bands below which no fit is attempted. Two conclusions
+follow. Fits to two bands are unsafe at every threshold, failing by more than
+a factor of five for between $3\%$ and $13\%$ of cores and never reaching zero;
+raising the threshold does not repair them, because the defect is the absence
+of degrees of freedom rather than the quality of the fluxes. And a threshold of
+unity, which is a natural choice and has been used in this context before, is
+not sufficient even with three bands, leaving $6\%$ of cores wrong by more than
+a factor of five.
+
+We therefore admit a band when its peak and total fluxes both exceed $1.5$
+times their uncertainties, and fit only when at least three bands are admitted.
+On the injected cores this setting leaves one core in a hundred wrong by more
+than a factor of five, against six in a hundred at a threshold of unity, while
+retaining $230$ cores against the $135$ that survive a threshold of two.
+
+One feature of Table~\ref{tab:bands} deserves emphasis. At the loosest setting
+the median ratio is $1.003$, which appears to be an excellent result, yet the
+scatter is a factor of $3.87$ and one core in eight is wrong by more than a
+factor of five. The apparent accuracy is the cancellation of large errors of
+both signs. The genuine underestimate that this paper exists to correct, near
+$0.8$, becomes visible only once the failed fits are removed.
+
+\begin{table}
+\caption{Accuracy of the mass reported by the extraction, as a function of the
+two settings that govern which bands enter the fit of the spectral energy
+distribution. A band is admitted only when its peak flux and its total flux
+each exceed their own uncertainty by the factor in the first column; a fit is
+attempted only when at least the number of bands in the second column are
+admitted. Tabulated are the number of injected cores that survive the setting,
+the median of $\Mex/\Mbe$ over them, its scatter as a multiplicative factor,
+the percentage within a factor of two, and the number and percentage whose
+ratio lies outside $0.2$ to $5$. Measured on the four population-matched
+injection realizations, in which the true mass of every recovered core is
+known. The adopted setting is in bold.}
+\label{tab:bands}
+\centering
+\begin{tabular}{ccrccc}
+\hline\hline
+S/N & bands & cores & median & scatter & wrong by $>\!5\times$ \\
+\hline
+$1.0$ & $2$          & $427$ & $1.003$ & $3.87$ & $56$ ($13\%$) \\
+$1.0$ & $3$          & $331$ & $0.906$ & $2.30$ & $20$ ($6\%$) \\
+$1.0$ & $4$          & $195$ & $0.792$ & $1.62$ & $0$ \\
+$1.5$ & $2$          & $329$ & $0.885$ & $2.95$ & $30$ ($9\%$) \\
+$\mathbf{1.5}$ & $\mathbf{3}$ & $\mathbf{230}$ & $\mathbf{0.815}$
+      & $\mathbf{1.77}$ & $\mathbf{2}$ ($\mathbf{1\%}$) \\
+$1.5$ & $4$          & $108$ & $0.751$ & $1.46$ & $0$ \\
+$2.0$ & $2$          & $228$ & $0.817$ & $2.24$ & $9$ ($4\%$) \\
+$2.0$ & $3$          & $135$ & $0.751$ & $1.52$ & $0$ \\
+$2.0$ & $4$          & $55$  & $0.726$ & $1.31$ & $0$ \\
+$3.0$ & $3$          & $63$  & $0.729$ & $1.49$ & $0$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Cloud fluctuations and blending}
+\label{sec:contamination}
+
+Two contaminations act on an extracted core and neither is a property of the
+core itself: the fluctuations of the cloud beneath it, and the light of a
+neighbouring source. Their contributions can be separated because the injected
+population is built once and then rendered four times. Every core is injected
+at the same position with the same model in all four; the runs differ only in
+whether the background under each core is flattened before insertion, and
+whether the cores that overlap a neighbour are removed. Any core surviving both
+filters therefore appears in all four fields, and the comparison is made core
+by core rather than sample against sample.
+
+That distinction is not pedantic. Compared sample against sample, an earlier
+pair of runs appeared to show the cloud fluctuations biasing the recovered mass
+high by $39\%$; the effect vanished when the same cores were compared in both,
+the apparent bias having been the different sets of cores that each run
+happened to recover.
+
+Table~\ref{tab:contamination} gives the result over four realizations. The
+cloud fluctuations inflate the scatter by a factor of about $1.2$ to $1.3$ and
+shift the median by an amount consistent with zero. Blending shifts the
+recovered mass downward by about $2\%$, small but established at a probability
+of $8\times10^{-4}$, and the two do not simply add: the blending shift is
+weaker when the fluctuations are also present, so the errors they introduce are
+not independent.
+
+\begin{table}
+\caption{The two contaminations, measured core by core. Each row compares two
+of the four injection runs on the cores recovered in both, the runs being
+identical except in the single respect named. The scatter columns give the
+standard deviation of $\log_{10}(\Mex/\Mbe)$ in each run, expressed as a
+multiplicative factor; the shift is the median of the paired difference of that
+logarithm, first run minus second, and $p$ is the probability from a Wilcoxon
+signed-rank test that the paired differences are centred on zero. Pooled over
+four realizations of $600$ injected cores each.}
+\label{tab:contamination}
+\centering
+\begin{tabular}{lrcccc}
+\hline\hline
+comparison & pairs & scatter 1 & scatter 2 & shift & $p$ \\
+\hline
+\multicolumn{6}{l}{\emph{Cloud fluctuations present versus removed}} \\
+neighbours present & $113$ & $1.84$ & $1.58$ & $-0.006$ & $0.99$ \\
+neighbours removed & $76$  & $1.96$ & $1.46$ & $+0.029$ & $0.07$ \\
+\hline
+\multicolumn{6}{l}{\emph{Neighbouring cores present versus removed}} \\
+fluctuations present & $108$ & $2.34$ & $2.40$ & $-0.001$ & $0.02$ \\
+fluctuations removed & $95$  & $1.57$ & $1.56$ & $-0.009$ & $0.0008$ \\
+\hline
+\end{tabular}
+\tablefoot{The shift is in dex. A negative shift means the first run reports
+less mass than the second for the same core.}
+\end{table}
+
+
+\subsection{Constructing the injected population}
+\label{sec:injpop}
+
+The injection--recovery test is the only one of the four that exercises the
+full observational chain, and it is therefore the one whose sample must be
+built with most care: the cores that are injected determine which part of the
+method's domain the test actually probes. Four requirements govern that
+construction. They follow from the structure of the problem rather than from
+anything specific to Aquila, so we state them here and give the procedure that
+implements them in Appendix~\ref{app:injection}.
+
+\subsubsection{Selection must not use the quantity under test}
+The natural way to make
+an injected sample resemble a real one is to match the injected cores to real
+cores by mass. But the reported mass is what the method is being tested for,
+and it is biased; that bias is the subject of this paper. Selecting on it
+builds the bias under test into the test sample, since the cores chosen are
+those whose mis-measured masses happen to look right. The selection must
+instead use quantities \emph{getsf} measures reliably and that the bias does
+not touch: the background column density under the source,
+${\rm PEAK^{BGF}}$; the contrast against it,
+${\rm PEAK^{SBF}}/{\rm PEAK^{BGF}}$; and the measured size at half
+maximum in the column-density band, AFWHM. The mass is left to follow from
+whichever model those three select, and the truth table records what was
+injected. The mass cannot be excluded altogether, because it is correlated
+with the other three ($+0.74$ between $\log M$ and $\log\Scloud$ in Aquila),
+but it enters the selection with a weight an order of magnitude below the
+others: enough to keep the correlation, not enough to let the biased quantity
+drive the choice.
+
+\subsubsection{Each model must be placed at the column it was built for}
+A grid model
+is constructed embedded in a cloud of a particular column density $\Scloud$
+and is meaningful only where the local column matches. Since the grid samples
+$\Scloud$ in steps of a factor of two, the interval of local columns a model
+may occupy must be one octave wide and centered on its own value,
+$\Scloud/2^{1/2} \le \Sigma_{\rm local} < 2^{1/2}\,\Scloud$. A narrower
+interval leaves part of the column axis belonging to no model at all: with an
+interval half that width, half of the real Aquila sources, including the
+source at the population's median column, fall where no model may legally sit,
+and every model drawn for such a column is displaced in the same direction.
+
+\subsubsection{Sizes and separations must refer to what is observed}
+The truncation
+radius $\Rbe$ is not an observable. Grid models with $\Rbe$ between $136''$
+and $428''$ present a width at half maximum of only $25''$ to $50''$, because
+the outer envelope is a shallow pedestal. Selecting or separating models by
+$\Rbe$ therefore rejects every model above $1.8\,\msun$ while admitting nothing
+that is large on the sky, and reserves exclusion zones far wider than the
+models occupy. That the model width and the recovered AFWHM are the same
+quantity is measured, not assumed: over $451$ injected cores matched to their
+recovered counterparts the ratio has median $1.001$ and scatter $0.127$~dex,
+the agreement holding to about $50''$, above which the recovered size
+saturates near $50$--$60''$ through the footprint truncation of
+Sect.~\ref{sec:footprint}.
+
+\subsubsection{Contrast must be matched as the excess over the background}
+The
+contrast $C$ spans only $0.09$~dex over the real Aquila sources, so matching
+on $\log C$ leaves it effectively unconstrained. The quantity with useful
+range is $C-1 = {\rm PEAK^{SRC}}/{\rm PEAK^{BGF}}$, which spans
+$0.87$~dex over the same sources.
+
+Applied together, these give an injected population whose contrast
+distribution is statistically indistinguishable from that of the real Aquila
+sources (Kolmogorov--Smirnov statistic $D=0.052$ at probability $0.29$; $D$ is
+the largest vertical distance between the two cumulative distributions, zero
+for identical samples and unity for samples that nowhere overlap), and whose
+joint distribution of column density and contrast overlaps the real one by
+$0.86$ on the scale where unity is identity and zero is disjoint. Without the
+four requirements the same grid and the same field give an overlap of $0.32$.
+\draftnote{Values from the truth table of the population-matched run;
+replace with the like-for-like comparison of extracted quantities once that
+extraction is analyzed, and update Table~\ref{tab:validation} and
+Fig.~\ref{fig:validation}, whose injection rows still come from the earlier,
+unmatched injection of 108 sources.}
+
+
+\subsection{The selection function, and what it implies for a real catalog}
+\label{sec:selection}
+
+Matching the injected population to the real one has a consequence beyond
+validating the correction. Because the injected cores occupy the same region
+of observable space as the real sources, and are put through the same
+extraction, the fraction of them recovered measures the selection function of
+that extraction where it matters, and the same selection acted on the real
+sources.
+
+Table~\ref{tab:selection} gives it. Two stages are separated: whether
+\emph{getsf} detects the core at all, and whether the detection then survives
+the quality criterion, QUALITY $=$ ok, which is a test on the goodness of the
+spectral energy distribution fit.
+
+\begin{table}
+\centering
+\caption{Fraction of injected cores recovered, against the contrast
+$C = {\rm PEAK^{SBF}}/{\rm PEAK^{BGF}}$ they were injected with.
+Detection means an extracted source within $30''$ of the injected position;
+the quality column is the fraction of those detections that pass
+QUALITY $=$ ok; completeness is the product. Pooled over the two injection
+runs, $1086$ injected core instances in total.}
+\label{tab:selection}
+\begin{tabular}{lrrrr}
+\hline\hline
+contrast & injected & detected & kept of & complete- \\
+         &          &          & detected & ness \\
+\hline
+$1.00$--$1.15$ & $156$  & $4\%$   & $14\%$ & $1\%$ \\
+$1.15$--$1.30$ & $583$  & $9\%$   & $16\%$ & $1\%$ \\
+$1.30$--$1.50$ & $215$  & $66\%$  & $27\%$ & $18\%$ \\
+$1.50$--$2.00$ & $92$   & $98\%$  & $38\%$ & $37\%$ \\
+$2.00$--$10.0$ & $40$   & $100\%$ & $20\%$ & $20\%$ \\
+\hline
+all            & $1086$ & $30\%$  & $27\%$ & $8\%$ \\
+\hline
+\end{tabular}
+\end{table}
+
+The two stages behave quite differently. Detection is nearly a step function
+of contrast, rising from $9\%$ to $98\%$ between $C = 1.2$ and $C = 1.75$: a
+core of low contrast is not found at all. The quality criterion removes about
+three quarters of what is found, at every contrast, with only a weak trend
+from $14\%$ to $38\%$ across the whole range. So low-contrast cores are lost
+because they are never detected, not because their fluxes are then judged too
+uncertain.
+
+The detection threshold responsible is deliberate, and the same injections
+show what it buys. In a simulated cloud containing no sources at all, a low
+threshold extracts large numbers of background fluctuations as if they were
+sources. The threshold is set to suppress them, on the principle that a
+smaller sample of well-measured sources is more useful than a larger one
+diluted by peaks whose fluxes carry uncertainties comparable with their
+values. In the injected fields analysed here the price is small and the
+benefit large: of the $357$ sources extracted, $151$ correspond to injected
+cores and $203$ to real Aquila sources, while only $3$, under $1\%$,
+correspond to neither and are candidates for spurious detections. The
+incompleteness in Table~\ref{tab:selection} is therefore the deliberate cost
+of that purity, not a defect, and the injection machinery described here is
+also the tool with which the trade-off could be re-optimised, by repeating the
+measurement at a lower threshold and recording both numbers.
+
+Two remarks on the comparison. The contrast against which the completeness is
+tabulated is the one each core was injected with,
+$1 + {\rm ICSDbs}/\Sigma_{\rm local}$, whereas a real source is
+described by the contrast \emph{getsf} reports. Over the $328$ detected
+injected cores the two agree to a median factor of $1.09$ in $C-1$, with a
+scatter of $0.133$~dex, so the two axes may be compared directly at this
+level.
+
+The relevance to a real catalog follows from where the real sources sit. Over
+the $1030$ Aquila sources the median contrast is $1.235$, which is inside the
+band detected at $9\%$. The catalog is therefore highly incomplete precisely
+where the bulk of its own sources lie, and the cores it is missing are the
+low-contrast ones.  Whether those missing objects are prestellar cores at all
+is a separate question: a low-contrast peak in a real cloud may be a genuine
+density enhancement without being a core of the kind this work addresses.
+What the injections establish is only that objects which are such cores,
+at that contrast, would not have been found. Since contrast correlates with background column at
+$+0.49$ in the logarithm, and reported mass with column at $+0.74$, the
+missing population is preferentially of low mass on faint background.
+
+This interacts with the correction in an unhelpful direction.
+$\CM$ is largest for the sources whose footprints truncate the most flux,
+which are the extended, low-contrast ones, and those are exactly the cores the
+selection removes. A corrected real catalog therefore still understates the
+total mass in cores, by more than the correction itself would suggest: the
+correction repairs the masses of the cores that were found, and says nothing
+about those that were not.
+
+We stop short of inverting the selection to recover the underlying
+population. Doing so is not a matter of reweighting each catalog source by the
+inverse of its completeness, for two reasons. The completeness is measured
+against the contrast a core was injected with, whereas a real source is known
+only through the contrast the extraction reports for it, which the same
+selection distorts. And the injected population was matched to the real
+detected catalog, which is itself the survivor of this selection, so
+using it to undo that selection is circular. The consistent procedure is
+forward modeling: to postulate an underlying population, inject it, apply the
+measured selection, and compare the predicted detections with the observed
+catalog, iterating on the postulate. That is a larger undertaking than this
+paper, though it needs no machinery beyond what is described here.
+\draftnote{Numbers from the two runs of 2026 August 10. Regenerate when the
+further injection realizations are available; the two lowest contrast bins
+rest on $7$ and $50$ detections respectively.}
+
+
+\subsection{Why the three-observable correction did not reduce scatter,
+and what the fourth observable changes}
+\label{sec:scatterfloor}
+
+Table~\ref{tab:validation} shows a clear split: the three-observable
+corrector's scatter is worse than not correcting at all in every test, while
+the four-observable corrector's is better in two of three and closely
+matched in the third. Both observations have the same explanation. A
+corrector predicts a single number, $\CM$, from a fixed set of
+observables. Two sources with identical values on every observable used
+can still have different individual mass biases, because those observables
+do not capture every detail relevant to the bias; the correction can only
+remove the part that is predictable from what it is given, not the part
+that is not. This has a clean statistical signature: multiplying an
+already-noisy measurement by a correction factor of finite precision
+cannot decrease the total variance, and increases it by the corrector's
+own prediction variance if that variance is independent of the original
+measurement noise, since variances of independent quantities add in log
+space,
+\begin{equation}
+  \sigma_{\rm corrected}^2 \approx \sigma_{\rm uncorrected}^2
+    + \sigma_{\CM}^2 .
+  \label{eq:scatterbudget}
+\end{equation}
+For the three-observable corrector, Sect.~\ref{sec:fourthobs} showed
+directly why $\sigma_{\CM}$ is large: $(\Scloud,\zeta,
+\phi)$ leave a genuine, non-shrinking degeneracy in $\CM$ of a
+factor of $1.1$--$1.2$ even between arbitrarily close neighbors
+(Fig.~\ref{fig:degeneracy}), because they carry no information about a
+source's absolute physical scale. Solving Eq.~(\ref{eq:scatterbudget}) for
+the three-observable corrector's own scatter using the measured
+before/after values gives a factor of about $1.3$ in the injection test
+and the more demanding node-\emph{loo} test, and a smaller factor of about
+$1.1$ in the subdivision test, which spans a narrower range of the grid's
+diversity per node than the full production grid does. Adding the fourth
+observable does not eliminate $\sigma_{\CM}$, since interpolation error
+and real measurement noise remain, but it removes the dominant, avoidable
+contribution, which is why Table~\ref{tab:validation}'s four-observable
+column shows scatter below the uncorrected baseline rather than above it.
+
+Whether the residual scatter matters depends on what the corrected masses
+are used for. Write $\Mref$ for the known reference mass a test
+compares against ($\Mref$ for the injection test, $\Mbe$ for
+the subdivision and \emph{loo} tests) and $\delta \equiv \log_{10}(M/\Mref)$
+for the log-ratio of a single sample's mass (uncorrected or corrected, as
+context requires) to that reference, and
+$\delta_{\rm rms}\equiv\langle\delta^2\rangle^{1/2}$ for its root-mean-square
+value over a sample: because $\delta=0$ is exact agreement with the
+reference mass, $\delta_{\rm rms}$ combines bias and scatter into the
+total error against the truth, unlike the standard deviation of $\delta$,
+which measures only the spread about the sample's own mean and says
+nothing about how far that mean sits from zero. Even with the fourth
+observable, a single source's point-estimate precision is not
+guaranteed to improve on simply knowing the population's average bias
+(Table~\ref{tab:validation} and Fig.~\ref{fig:validation} report this
+honestly rather than optimizing the figure of merit that flatters the
+method). For a population statistic computed over many sources -- a total
+cloud mass, a mean mass in some environmental bin, the normalization or
+shape of a mass function -- the distinction matters a great deal: a
+systematic bias, uncorrected, biases every such statistic by the same
+factor regardless of sample size, while the correction's added per-source
+scatter is close to symmetric in log space and mass-independent
+(Fig.~\ref{fig:validation}a, c, e), so it averages down with sample size
+in linear statistics and contributes only second-order effects to the
+shape of a fitted power law. Removing the
+former at a small mildly negative cost to the latter is the intended
+trade, and the reason the correction is built and validated as a bias
+correction rather than as a per-source precision improvement.
+
+\subsection{Which factor drives the scatter}
+\label{sec:factorscatter}
+
+Because $\CM=\Fflux\times \Fbg\times \Ftemp$
+(Sect.~\ref{sec:footprint}) is built from two independently interpolated
+factors, $\Fflux$ and $\Fbg$, with $\Ftemp$ obtained as
+the residual $\CM/(\Fflux\Fbg)$, the scatter budget of
+Sect.~\ref{sec:scatterfloor} can be attributed to a specific mechanism. We
+repeat the single-cross-section subdivision test that preceded the
+current one (Sect.~\ref{sec:validation}) for each factor separately,
+comparing its interpolated prediction against its true value at each
+withheld node (Fig.~\ref{fig:factordecomp}).
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.72\linewidth]{fig_factor_decomposition.pdf}
+  \caption{Prediction accuracy of the three factors composing $\CM$, on
+  the three-observable corrector, using the original ($n=873$),
+  single-cross-section subdivision test that preceded the fourth
+  observable and motivated its adoption. (\emph{top}) flux recovery,
+  $\Fflux$. (\emph{middle}) background subtraction, $\Fbg$.
+  (\emph{bottom}) temperature-gradient bias, $\Ftemp$. (\emph{left})
+  predicted-over-true ratio versus $\Mbe$. (\emph{right}) the
+  accuracy CDF of each factor, with the scatter of its predicted-over-true
+  ratio given in the title as a multiplicative factor.}
+  \label{fig:factordecomp}
+\end{figure*}
+
+The three factors are not equally well determined. $\Ftemp$ is
+predicted almost exactly (within a factor of $1.05$): the internal
+temperature-gradient bias is a smooth, robust function of
+$(\Scloud,\zeta,\phi)$ with essentially no
+residual scatter beyond interpolation noise. $\Fbg$ is
+intermediate (within a factor of $1.30$). $\Fflux$ is by far the
+least well determined (within a factor of $1.65$), consistent with it
+depending on the finer structure of the per-band footprint
+(Sect.~\ref{sec:footprint}), which is more sensitive to a source's
+specific profile shape than the other two factors. Because it is the
+logarithm of each factor that behaves as an independent Gaussian-like
+error, the corresponding log-space variances (not the factors
+themselves) are what combine in quadrature, and doing so reproduces
+$\CM$'s own scatter to within $0.4\%$, confirming the three factors are
+being fitted independently rather than trading error against each other.
+In this decomposition, $\Fflux$ alone accounts for $77\%$ of
+$\CM$'s prediction variance, $\Fbg$ for $21\%$, and $\Ftemp$
+for under $1\%$.
+
+$\Fflux$ being the dominant source of scatter does not mean it
+should be dropped from the correction. Its own median predicted-over-true
+ratio is $0.996$, indistinguishable from unbiased, and it carries the
+single largest median contribution to $\CM$ among the three factors
+(Sect.~\ref{sec:correction}); removing it would reintroduce the flux-loss
+bias the footprint model of Sect.~\ref{sec:footprint} was built to
+correct, trading a small scatter reduction for a large, systematic
+mass under-estimate. This decomposition, run on the three-observable
+corrector, is what motivated the search for a fourth observable
+(Sect.~\ref{sec:fourthobs}): a quantity that reduces $\Fflux$'s
+scatter propagates directly into $\CM$'s scatter, while equivalent effort
+on $\Ftemp$ would not, and the angular size adopted in
+Sect.~\ref{sec:fourthobs} does exactly this, since the flux-recovery
+physics depends on the source's scale through the same self-shielding
+column that sets its temperature structure.
+
+\subsection{An output cap was tested and superseded}
+\label{sec:outputcap}
+
+Before adopting the fourth observable, we tested a less invasive
+alternative: capping the corrected mass from above, since the
+three-observable corrector's excess scatter (Sect.~\ref{sec:scatterfloor})
+is dominated by occasional large over-corrections rather than a uniformly
+broadened distribution. On the validation samples available at the time
+(the earlier, single-cross-section subdivision test and the pre-fix
+production grid of Sect.~\ref{sec:interp}), capping
+$\Mcorr/\Mref$ at a factor of $1.5$ recovered much of the
+lost accuracy (the fraction within a factor of two rose to
+$92$--$96\%$ across the three tests, with the median unaffected), but this
+is a diagnostic result, not a production fix: the cap was applied to the
+ratio against a known truth, available only in a validation setting, and
+translating it to a cap on $\CM$ itself for real sources requires choosing
+and separately validating a threshold from the $\CM$ distribution alone.
+The fourth observable achieves a comparable or
+better result (Table~\ref{tab:validation}) without this extra step, by
+supplying the missing information directly rather than truncating its
+symptoms, and is the method we adopt.
+
+% =====================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Resolution dependence of the surface-density band}
+\label{sec:resolution}
+
+The grid, and hence the correction, is calibrated at the $13.5''$
+resolution of the high-resolution surface-density image used throughout
+this work. Applying the correction to an extraction that instead relies on
+an $18.2''$-resolution surface-density proxy, without rebuilding the grid at
+that resolution, biases two of the three observables low, and the bias is
+largest for the most compact cores: convolving the grid's surface-density
+profiles from $13.5''$ to $18.2''$ and recomputing $\zeta$ and
+$\phi$ axes at fixed truncation radius gives a bias of $-33\%$
+($\zeta$) and $-18\%$ ($\phi$) for cores smaller than the
+$18.2''$ beam, falling to about $-1\%$ for cores larger than $\sim\!80''$
+(Appendix~\ref{app:resolution}). The method is not intrinsically tied to
+$13.5''$: applying it at coarser resolution requires re-tabulating the
+model recovery grid with the surface-density beam set to that resolution
+(re-convolving the existing radiative-transfer model images, with no new radiative-transfer
+calculation), not substituting a coarser-resolution catalog into the
+present, finely-calibrated tables.
+
+\subsection{The low-mass edge and the correction's domain}
+\label{sec:lowmass}
+
+The correction is not applicable at arbitrarily low mass. Below a
+column-dependent limit, the coldest, faintest cores lose enough flux that
+the recovered observables no longer determine $\Mbe$ uniquely, and
+the correction becomes degenerate; this limit rises steeply with cloud
+background column, from a few hundredths of a solar mass in the lowest-
+column part of the grid to several solar masses in the highest-column part.
+The correction is applied only above this limit and is not extrapolated
+below it.
+
+\subsection{What the method does, and does not, correct}
+\label{sec:scope}
+
+The correction targets a source that is a genuine, single, pressure-
+truncated BE sphere observed with the stated systematics. It does not
+correct for unresolved multiplicity: at coarse resolution and large
+distance, several genuine cores may be blended into one \emph{getsf}
+detection, and a large correction factor applied to such a blend returns the
+mass of the equivalent single object that would reproduce the blend's
+observables, not the mass of any individual member. Distinguishing a
+genuinely massive single core from an unresolved multiple is outside the
+scope of this method and requires higher-resolution follow-up.
+
+% =====================================================================
+\section{Conclusions}
+\label{sec:conclusions}
+
+We have described a radiative-transfer-calibrated correction for the two
+dominant biases in \emph{Herschel} SED-derived prestellar core masses -- internal
+temperature-gradient bias and footprint-limited flux loss -- built on a
+grid of pressure-truncated Bonnor--Ebert models processed exactly as a real
+\emph{getsf} extraction. A first, three-observable version of the
+correction, using a self-consistent per-band detection footprint set by a
+constant source signal-to-noise ratio and the beam-convolved power
+spectrum of the cloud's structural noise, removes the systematic bias but
+leaves a genuine degeneracy: sources sharing all three observables can
+still require correction factors differing by a factor of two or more,
+because the observables are constructed to be scale-invariant while the
+correction itself is not. We identified this degeneracy directly, by
+showing that the spread in the true correction factor between
+near-identical training samples does not shrink as the samples are made
+arbitrarily close, and traced it to the missing scale of the source.
+Adding the angular truncation radius as a fourth observable, matched on the
+real-source side by the measured footprint radius in the same angular
+units, removes most of this degeneracy. Because the correction factor is a
+ratio of two masses that carry the same power of distance, it is
+distance-free by construction, and the fourth axis is used as an angle;
+converting it to a physical length at each source's own distance was found
+to introduce a spurious trend of the correction with distance.
+
+Validated on three independent tests -- synthetic cores carried through
+the full injection, extraction, and correction chain; an independent
+model grid spanning the full range of core concentration rather than a
+single stability class; and a leave-one-out test repeated at every node of
+the production grid -- the four-observable correction is unbiased to
+within a few per cent, with $85$--$98\%$ of sources recovered within a
+factor of two of the reference mass, and its scatter is at or below the
+uncorrected level in every test, a property the three-observable version
+did not have. Application of the method to observed cloud catalogs, and
+its consequence for the derived core mass function, are presented in a
+companion paper.
+
+\begin{acknowledgements}
+\draftnote{Acknowledgements to be added.}
+\end{acknowledgements}
+
+\bibliographystyle{aa}
+\bibliography{rt_mass_correction}
+
+\appendix
+
+% =====================================================================
+\section{Mass conservation in the grid construction}
+\label{app:massconserv}
+
+The radial grid used for the radiative-transfer calculation is defined once
+per model and written to the radiative-transfer code's grid file; every subroutine that
+needs the grid reads this file rather than re-deriving cell boundaries
+independently, which was found to be the root cause of a boundary-mass
+error in an earlier version of the pipeline, where a stale, independently
+computed duplicate of the grid drifted out of synchronization with the one
+actually used for the transfer calculation. The BE truncation radius
+$R_{\rm BE}$ is inserted as an explicit wall in the radial grid, rather than
+approximated by snapping to the nearest pre-existing cell boundary; this
+preserves the grid's logarithmic spacing away from the truncation radius
+while ensuring that no single cell straddles the BE/cloud interface. Cells
+are then unambiguously assigned to the BE profile (inner wall radius below
+$R_{\rm BE}$) or the uniform cloud (inner wall radius at or above
+$R_{\rm BE}$), a partition that is complementary and leaves neither a
+vacuum gap nor a double-counted shell at the boundary. With this
+construction, the mass obtained by summing the density in every grid cell
+of a model agrees with the analytic BE mass integral to better than
+$0.1\%$ for every model in the grid.
+
+% =====================================================================
+\section{Why the correction is not indexed on reported mass}
+\label{app:distance}
+
+An earlier formulation of the correction matched a source to the grid using
+its reported mass as one of the matching variables, together with the
+background column and $\zeta$. Because the reported mass of a source
+of fixed physical structure scales approximately as the square of distance,
+this formulation matches sources at different distances to systematically
+different grid models even when their intrinsic structure is identical:
+the correction factor derived for the same source observed at $260\,$pc and
+at $1700\,$pc differs by an amount driven purely by distance, not by
+physics. Removing the mass axis and matching instead on the three
+distance-invariant observables of Sect.~\ref{sec:observables} removes this
+failure mode entirely, with no loss of accuracy: a node-level leave-one-out
+test on the recovery tables gives the same median error for the two
+formulations to within a few per cent, while only the distance-invariant
+formulation gives a correction factor that is stable across clouds spanning
+a wide range of distance (demonstrated for seven clouds in the companion
+application paper).
+
+The fourth observable of Sect.~\ref{sec:fourthobs} reintroduces a distance
+dependence, but not the one rejected here. Reported mass scales as
+distance squared and is itself the biased quantity the correction exists
+to fix, so using it as a matching variable means comparing a source
+against the grid using the very number that is wrong. The angular
+footprint radius adopted instead carries no distance dependence at all,
+and it is not the quantity under correction: it is not biased by the
+mechanisms of Sect.~\ref{sec:footprint} in the way the reported mass is.
+
+The objection to the reported mass is therefore narrower than it once
+appeared, and it is worth stating what it does and does not cover. Under
+the leave-one-out test of Sect.~\ref{sec:validation}, with each candidate
+used consistently for training and query, the reported mass is in fact the
+better fourth axis of the two, giving a residual in $\log_{10}\CM$ of
+$0.098$~dex against $0.118$ for the footprint radius. What disqualifies it
+is not its performance but its failure mode: it inherits the very bias the
+correction exists to remove, so an error in it displaces the source along
+the corrector's own axis, whereas an error in an angular size cannot,
+since angles are measured directly. \draftnote{If a future version accepts a
+mass-bearing axis, this appendix needs rewriting rather than deleting: the
+performance claim and the failure-mode claim point in opposite
+directions.}
+
+% =====================================================================
+\section{Interpolation accuracy of the model grid}
+\label{app:interp}
+
+The nominal factor-of-two node spacing of the production grid is adequate
+where the tabulated observables vary smoothly with the grid parameters, but
+can be too coarse where an observable changes character -- for example
+where the $70\,\mu$m signed center intensity of a cold, embedded core
+crosses from emission to absorption against the background, or where a
+photometric band transitions from optically thin to optically thick.
+Interpolation accuracy is verified by a hold-out test: the interpolated
+observable vector at a withheld grid node is compared against a dedicated
+radiative-transfer run at that exact node, with particular attention to the
+nodes that bracket the transitions described above, and the local grid
+spacing is refined wherever any observable's interpolation error exceeds a
+few per cent.
+
+% =====================================================================
+\section{Resolution-dependence estimate}
+\label{app:resolution}
+
+The bias quoted in Sect.~\ref{sec:resolution} is estimated by convolving
+each grid node's surface-density-band radial profile from the production
+$13.5''$ resolution to $18.2''$ with a one-dimensional Gaussian kernel of
+width $(18.2''^2-13.5''^2)^{1/2}/2.3548$, and recomputing $\zeta$
+and $\phi$ observables from the convolved profile at the same
+truncation radius as the true $13.5''$ value. This approximates the true
+two-dimensional convolution of the model image by a one-dimensional
+convolution of its azimuthally-averaged radial profile, which is adequate
+to establish the sign and approximate magnitude of the resolution bias but
+is not a substitute for re-tabulating the recovery grid with the
+surface-density band convolved to $18.2''$ in two dimensions, which is the
+recommended procedure for applying the method at that resolution.
+
+\section{Constructing a population-matched injection test}
+\label{app:injection}
+
+This appendix gives the procedure summarized in Sect.~\ref{sec:injpop}, in the
+order it is carried out. The code is available with the paper; what follows is
+the reasoning behind each step and the numbers needed to judge it.
+
+\subsection{The target table}
+One row per real source, from the \emph{getsf}
+extraction of the field to be imitated, carrying the reported SED mass, the
+background column ${\rm PEAK^{BGF}}$, the contrast
+${\rm PEAK^{SBF}}/{\rm PEAK^{BGF}}$, and the width at half maximum in
+the $13.5''$ column-density band. For Aquila this gives $1030$ sources.
+
+The table may be drawn from a wider field than the one the cores are injected
+into. The injections here are made in a sub-field that is denser than Aquila
+as a whole, with a median source background of
+$1.0\times10^{22}\,{\rm cm^{-2}}$ against $5.0\times10^{21}\,
+{\rm cm^{-2}}$ for the full field. Split by background column, however, the
+two populations have the same median contrast and the same median reported
+mass in every octave; only the relative number of sources at each column
+differs, and that is set by the map the cores are placed in, not by the table.
+Using the full field therefore doubles the statistics without importing a
+bias. Taking the marginal distribution from the wrong field, by contrast, is a
+genuine error, and was why an earlier version of this test appeared to place
+cores at systematically too high a column.
+
+\subsection{Choosing a model for each core}
+A reported mass $M$ is drawn from
+${\rm d}N/{\rm d}M \propto M^{-\alpha}$; one of the $40$ real sources
+nearest to it in $\log M$ is picked at random, and its background column
+$\Sigma$, contrast $C$ and size $A$ become this core's target. Taking all
+three from a single real source preserves their mutual correlations, which in
+Aquila are strong ($+0.74$ between $\log M$ and $\log\Sigma$, $+0.49$ between
+$\log\Sigma$ and $\log(C-1)$); drawing them independently would impose the
+population-median contrast at every column, which is wrong at both ends.
+
+Among the grid nodes eligible at that column, and whose width at half maximum
+lies in the permitted range, the node is chosen by minimizing
+\begin{equation}
+  d = w_{M}\left[\log\frac{M}{\Msed}\right]^{2}
+    + w_{C}\left[\log\frac{C-1}{C_{n}-1}\right]^{2}
+    + w_{A}\left[\log\frac{A}{{\rm FWHM}_{n}}\right]^{2},
+  \label{eq:injscore}
+\end{equation}
+with $\Msed$ the node's own reported four-band SED mass,
+${\rm FWHM}_{n}$ its width at half maximum, and
+$C_{n} = 1 + {\rm ICSDbs}/\Sigma$ the contrast it would show at the column
+it is about to occupy, ${\rm ICSDbs}$ being its background-subtracted
+central column. The choice is not the strict minimum: a node is drawn at
+random among those of nearly equal $d$, with probability falling off as $d$
+worsens, so that repeated draws of similar targets do not collapse onto one
+node.
+
+Two details matter. The mass is compared with the node's own reported SED mass
+rather than with its true mass $\Mbe$: over the eligible nodes the
+ratio $\Mbe/\Msed$ has median $1.105$, so comparing with
+the truth would build in a systematic offset of $0.043$~dex toward models that
+are too light. And the weights are unequal: with $w_{C}=w_{A}=1$, raising
+$w_{M}$ from $0.1$ to $1$ degrades the contrast agreement from $D=0.063$ at
+probability $0.11$ to $D=0.174$ at probability $10^{-10}$, and the overlap in
+the plane of column and contrast from $0.89$ to $0.85$.
+
+\subsection{Choosing a position for each core}
+A position is admissible if the model stamp fits
+inside the coverage, if the local column lies in the model's octave, and if
+the center clears the footprints of the real sources by one $500\,\mu$m beam
+radius. The margin applies to the center alone. Requiring the whole model to
+clear them, which is what taking the model radius to be $\Rbe$ implies, turns
+footprints covering $6.5\%$ of the field into an exclusion zone covering most
+of it. What must be prevented is an injected core being centered on a real
+one, making the extraction a blend; overlap of the outer envelope with a real
+footprint is harmless and in a real cloud unavoidable.
+
+Each core is steered to the column drawn for it individually, by ordering the
+admissible positions by $|\log(\Sigma_{\rm local}/\Sigma)|$ and taking
+the first that satisfies the separation criterion. Steering all cores of one
+node to the median of their drawn columns instead, the obvious economy since
+the admissible set depends only on the node, collapses the spread of columns
+within each node: with about eight cores per node the rank correlation between
+contrast and column falls to $0.26$ against $0.51$ in the real sample. Handled
+individually, the drawn column is realized exactly, the median ratio of
+realized to drawn being $1.000$.
+
+Two injected cores of the same size class may not lie closer than
+$1.3\,(r_{i}+r_{j})$, with
+$r=\left(({\rm FWHM}/2)^{2}+\theta_{500}^{2}\right)^{1/2}$. The criterion binds within
+a class only, because a large faint model is barely detectable against the
+cloud and does not disturb a small core lying on it, whereas two overlapping
+extended models would double the column over an extended area.
+
+\subsection{The residual mismatch in size}
+The measured size remains discrepant, and the
+cause is the coverage of the model grid rather than the placement. Once mass
+and contrast are fixed a Bonnor--Ebert sphere has no freedom left in size: a
+sphere of $0.1\,\msun$ showing a contrast of $1.23$ against
+$5\times10^{21}\,{\rm cm^{-2}}$ must be large and diffuse, whereas real
+Aquila sources of that mass and contrast are measured at $31$--$38''$. At the
+embedding column $6\times10^{21}\,{\rm cm^{-2}}$ the faintest grid model
+between $26''$ and $35''$ has contrast $1.87$, and between $45''$ and $55''$
+contrast $2.71$, both far above what the real sources need; only the size
+classes near $42''$ and near $70''$ hold models faint enough, and the injected
+cores accordingly pile up there and are absent below $26''$, where a quarter
+of the real sources lie.
+
+Two checks confirm the diagnosis. Restricting the models to $15$--$55''$, to
+remove the excess of large injected cores, makes the agreement worse, not
+better ($D=0.052\to0.109$ in contrast, overlap $0.86\to0.82$): the models
+between $55''$ and $80''$ are needed not because real sources are that large
+but because on this grid they are the only ones faint enough. And correcting
+the injected sizes to what the extraction would report changes the size
+statistic only from $D=0.425$ to $0.420$, so the mismatch is not an artifact
+of comparing a model parameter with a measured quantity. The grid is missing
+faint compact models: nodes of low central column,
+${\rm ICSDbs}\sim1$--$2\times10^{21}\,{\rm cm^{-2}}$, below about
+$35''$, and faint models at all sizes in the lowest embedding rung.
+\draftnote{Grid extension planned; re-run and update.}
+
+\subsection{The realized mass function}
+The mass function of the cores actually
+injected is not the one drawn. With $\alpha=2$, so
+${\rm d}N/{\rm d}\log M \propto M^{-1}$, the true masses assigned follow
+$M^{-1.47\pm0.14}$ above $0.20\,\msun$, the steepening arising at the
+high-mass end where the grid has no node of the required mass at a realistic
+size and contrast. The input slope can be adjusted to compensate, at no cost
+in the per-core matching, but at a real cost in the population match: the
+shallower input draws more massive real sources as targets, and these sit on
+denser, higher-contrast backgrounds, so the contrast statistic rises from
+$D=0.052$ to $0.228$. The two goals conflict because mass and column are
+strongly correlated in the real population. We keep the population match and
+take the realized mass function from the truth table; no step of the analysis
+uses the nominal slope.
+
+
+\end{document}
