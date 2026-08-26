@@ -1,0 +1,679 @@
+%-----------------------------------------------------------------------
+%                          hires_correction_letter.tex
+% A&A LaTeX class (aa.cls)
+%-----------------------------------------------------------------------
+%\documentclass[referee]{aa}    % for a referee version
+%\documentclass[letter]{aa}     % for the letters
+\documentclass{aa}
+\usepackage{graphicx}
+\usepackage{txfonts}
+\usepackage{placeins}
+\usepackage{natbib}
+\usepackage[colorlinks,allcolors=blue,bookmarks=false]{hyperref}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\hyphenation{get-sources get-filaments get-images non-uniform back-ground}
+
+\newcommand{\draftnote}[1]{\textcolor{magenta}{\textbf{[#1]}}}
+\newcommand{\chg}[1]{\textcolor{magenta}{#1}}
+\newcommand{\mH}{m_{\rm H}}
+\newcommand{\muH}{\mu_{\rm H_2}}
+\newcommand{\um}{\,$\mu$m}
+\newcommand{\Teff}{T_{\rm eff}}
+\newcommand{\Sc}{\mathcal{D}_{\rm c}}
+\newcommand{\Sim}{\mathcal{D}}
+\newcommand{\Iim}{\mathcal{I}}
+
+\begin{document}
+
+\title{Correcting the dust temperature bias of high-resolution surface
+       density images of molecular clouds}
+
+\author{Alexander Men'shchikov\inst{1}}
+\institute{D\'epartement d'Astrophysique (DAp), IRFU, CEA Saclay,
+Universit\'e Paris-Saclay, 91191 Gif-sur-Yvette, France}
+
+\date{Received / Accepted}
+\offprints{Alexander Men'shchikov}
+
+\abstract{Dust surface densities of molecular clouds are derived by fitting a
+single modified blackbody to the far-infrared intensities of each pixel. A line
+of sight crossing a dense structure is not isothermal, and such a fit is
+weighted towards the warmer material, so the surface densities come out too low.
+The bias grows with the surface density of the environment, with the
+concentration of a structure, and with the degree to which it is unresolved, so
+it distorts the relative surface densities of structures in different
+environments and at different distances. We present a method that removes it,
+without extracting sources and without calibrating on models. The image is
+decomposed into levels by a granulometry, a nested set of greyscale
+morphological openings; the levels are non-negative, sum exactly to the image,
+and each holds material within a range of widths. The same decomposition of the
+waveband images yields a dust temperature for each level, of material of that
+width alone. Each level is then converted with its own
+temperature rather than with the single temperature of the pixel, which
+multiplies it by the ratio of the Planck functions at the two temperatures. The
+correction is exactly unity where a line of sight is isothermal. On a sub-field of
+the Aquila cloud it leaves the diffuse emission unchanged and raises the peaks
+of dense structures by a median factor of 1.7; on radiative transfer models of
+embedded cores, the median recovered fraction of the true peak rises from 0.63
+to 0.84.}
+
+\keywords{ISM: clouds -- ISM: structure -- Stars: formation --
+Infrared: ISM -- Submillimeter: ISM -- Techniques: image processing}
+
+\maketitle
+
+% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+Far-infrared and submillimeter surveys of molecular clouds with the
+\emph{Herschel} Space Observatory have produced the images from which most of
+what is known about the structure of nearby star-forming regions has been
+derived \citep[e.g.][]{Andre+2010, Konyves+2015, Andre+2014}. The physical
+quantity of interest, the surface density of dust and gas, is not observed
+directly. It is obtained by fitting an optically thin modified blackbody to the
+intensities observed in each pixel \citep{Hildebrand1983}, which yields one
+dust temperature and one surface density per line of sight.
+
+The angular resolution of such an image is that of the longest waveband used,
+$36\farcs3$ at 500\um, unless a differential scheme transfers to it the higher
+resolution of the shorter wavebands \citep{Palmeirim+2013}. The implementation
+used here, \emph{hires}, is described in
+\citet[][Appendix~A]{Menshchikov2021method} and produces surface density images
+at the resolution of any of the observed wavebands. Such images are the basis
+of the extraction of dense cores and filaments
+\citep{Menshchikov2021, Konyves+2015}, and every quantity derived from them, in
+particular the core mass function, inherits their accuracy.
+
+The single-temperature assumption is the weak point of the procedure. It is
+accurate for diffuse material, whose temperature varies little along the line
+of sight, and it fails for a cold dense structure embedded in a warmer cloud.
+The fitted temperature is weighted by the emission, hence by the warmer
+material, and the surface density derived from it is too low. The magnitude of
+the effect follows from the logarithmic sensitivity of the Planck function,
+%
+\begin{equation}
+   \frac{\partial \ln \Sigma}{\partial \ln T} =
+   -\,\frac{x_\lambda}{1-{\rm e}^{-x_\lambda}}\,,
+   \qquad x_\lambda \equiv \frac{h c}{\lambda k T}\,,
+   \label{eq:sensitivity}
+\end{equation}
+%
+which at $T = 10$\,K equals $-8.99$ at 160\um, $-5.78$ at 250\um, $-4.18$ at
+350\um, and $-3.05$ at 500\um. Overestimating the dust temperature of a cold
+core by only 1\,K therefore lowers the surface density derived from the
+500\um\ intensity by 30\,per cent, and that derived from the 160\um\ intensity
+by a factor of 2.3. A modest error in the temperature is a large error in the
+surface density.
+
+The bias is not a multiplicative constant that could be absorbed into the
+assumed dust opacity. It grows with the surface density of the surrounding
+cloud, because a denser environment produces a larger temperature contrast
+along the line of sight; it grows with the concentration of the structure,
+because a more centrally condensed core is more strongly shielded; and it grows
+as the structure becomes unresolved, because the beam then mixes the cold
+interior with warmer material across the sky as well as along the line of
+sight. Two structures of the same true surface density, observed in different
+environments or at different distances, are therefore recovered with different
+values, and their surface densities are not comparable.
+
+In this Letter we describe a correction that removes the bias directly from a
+derived surface density image. Section~\ref{sec:method} presents the method,
+Sect.~\ref{sec:aquila} illustrates it on a sub-field of the Aquila cloud,
+Sect.~\ref{sec:tests} presents the tests that establish its behaviour, and
+Sect.~\ref{sec:limits} states its limitations. Figure~\ref{fig:flowchart}
+summarises the procedure end to end.
+
+Throughout this paper images are denoted by capital calligraphic characters
+(for instance $\Iim$, $\Sim$, $\mathcal{L}$), to distinguish them from the
+scalar quantities that appear alongside them.
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.92\linewidth]{fig_method_flowchart.pdf}
+  \caption{Overview of the method. The surface density image to be corrected
+  (\emph{top}) and the observed waveband images brought to a common beam
+  (\emph{bottom}) are decomposed into the same levels by a nested set of
+  morphological openings (Sect.~\ref{sec:levels}). The image and the longest
+  waveband give the effective temperature $\Teff$ with which the image was
+  built, and the levels of the waveband images give a dust temperature $T_k$ for
+  the material of each width (Sect.~\ref{sec:leveltemp}). Each level of the
+  image is then multiplied by the ratio of the Planck functions at those two
+  temperatures, $\Teff$ in the numerator and $T_k$ in the denominator, and the
+  levels are summed (Sect.~\ref{sec:correction}). No source is detected at any
+  stage and no calibration enters.}
+  \label{fig:flowchart}
+\end{figure*}
+
+% =====================================================================
+\section{Method}
+\label{sec:method}
+
+\subsection{Decomposition into levels}
+\label{sec:levels}
+
+The correction must act on material of different widths separately, because
+material of different widths has different temperatures. The decomposition that
+separates it is a granulometry, the classical tool of mathematical morphology
+for measuring size, introduced by \citet{Matheron1975} for binary images and
+extended to greyscale images by \citet{Serra1982} and \citet{Sternberg1986}.
+
+The two operations from which it is built are simple to state. With a flat
+disk $B$ of diameter $d$ as the structuring element, the erosion and the
+dilation of an image $\Iim$ replace each pixel by, respectively, the smallest and
+the largest value of the image within the disk centred on that pixel,
+%
+\begin{equation}
+   [\varepsilon_d \Iim](x) = \min_{y \in B} \Iim(x+y) \,,
+   \qquad
+   [\delta_d \Iim](x) = \max_{y \in B} \Iim(x+y) \,,
+   \label{eq:erodil}
+\end{equation}
+%
+and the opening is the one followed by the other,
+$O_d(\Iim) = \delta_d\,[\varepsilon_d \Iim]$.
+
+The composition of the two has a geometrical meaning that is more useful than
+the formula. Think of the image as a surface whose height is the intensity, and
+of the disk as a rigid flat plate of diameter $d$ held horizontally. The erosion
+gives, at each position, the highest level at which the plate can be held
+centred there without any part of it emerging above the surface. The dilation
+then spreads each of those admissible positions back over the whole area of the
+plate. The result, at every pixel, is the highest level that any plate lying
+entirely beneath the surface reaches at that pixel:
+%
+\begin{equation}
+   [O_d \Iim](x) = \max_{\{B\,\ni\,x\}}\ \min_{y \in B} \Iim(y) \,.
+   \label{eq:opening}
+\end{equation}
+%
+This answers a question that the picture of a ball rolled beneath a surface
+leaves open. The plate touches the surface only at isolated points, and those
+contact points do not by themselves define a surface; it is the envelope of all
+admissible positions of the plate, and not the set of contacts, that is the
+opening, and Eq.~(\ref{eq:opening}) is defined at every pixel whether or not a
+plate touches the surface there. Fluctuations narrower than $d$ are therefore
+removed regardless of where they sit: a spike cannot support a plate, and a
+dip on the flank of a broad structure is simply bridged by a plate resting on
+either side of it.
+
+Three properties follow directly from Eq.~(\ref{eq:opening}) and are used
+below. The opening never exceeds the image, $O_d(\Iim) \le I$, since a plate lies
+beneath the surface by construction; it is decreasing in the diameter,
+$O_{d'}(\Iim) \le O_d(\Iim)$ for $d' > d$, since a larger plate is admissible in
+fewer positions; and applying it twice changes nothing. A structure narrower
+than the plate cannot hold it up and is therefore absent from $O_d(\Iim)$, whereas
+a structure wider than the plate supports it and is retained. The opening is
+thus a filter in width, and $d$ is a width threshold and nothing else.
+
+The single-opening version of this operation, the top-hat transform
+$I - O_d(\Iim)$, is the background subtraction used routinely in biomedical
+imaging, where the structuring element is often taken to be a ball rather than
+a flat plate and the operation is known as rolling-ball background subtraction
+\citep{Sternberg1983}. We use a flat disk, for which
+Eq.~(\ref{eq:opening}) holds exactly as written.
+
+A granulometry applies a sequence of such openings with structuring elements of
+increasing size, in the manner of sieving a granular sample through sieves of
+decreasing hole size, and records what is removed at each step. With an
+increasing set of diameters $d_1 < d_2 < \ldots < d_N$ we therefore define the
+levels
+%
+\begin{equation}
+   \mathcal{L}_k \equiv O_{d_{k-1}}(\Iim) - O_{d_k}(\Iim)\,,
+   \qquad O_{d_0} \equiv I \,,
+   \label{eq:levels}
+\end{equation}
+%
+so that the image is recovered exactly as
+%
+\begin{equation}
+   \Iim = O_{d_N}(\Iim) + \sum_{k=1}^{N} \mathcal{L}_k \,.
+   \label{eq:sum}
+\end{equation}
+%
+The collection $\{\mathcal{L}_k\}$ is the greyscale pattern spectrum of
+\citet{Maragos1989}, whose integrals over the image give the distribution of
+material over width. Here we do not use those integrals: we keep the levels
+themselves as images and treat each of them as a separate physical component.
+In astronomy the same construction has been used to measure the size
+distribution of ionized regions in simulations of reionization
+\citep{Kakiichi+2017}, on binary fields rather than on greyscale images.
+
+Because $O_{d_k}(\Iim) \le O_{d_{k-1}}(\Iim)$ everywhere, every level is
+non-negative. Material appears in the level that matches its own width, and the
+widest background $O_{d_N}(\Iim)$, the diffuse cirrus, is set aside and left
+uncorrected. Figure~\ref{fig:levelscut} shows the construction along a cut
+across the Aquila sub-field.
+
+Nothing is classified as a source or as a filament at any point. A structure is
+assigned to a level by its width, which is a well defined quantity, whereas
+deciding whether an elongated structure is a filament or a wide source is not
+\citep{Menshchikov2021}. A wide source and a filament of the same width
+receive the same treatment, which is what the physics requires: both are cold
+material seen through warmer material, and the bias that affects them has the
+same origin.
+
+A granulometry is deliberately preferred here to a decomposition into spatial
+scales. A scale decomposition, formed from differences between successive
+convolutions of the image, produces components that change sign, so that a
+compact source is accompanied by a negative ring and is spread over several
+components. A temperature derived from such a component would be a ratio of
+quantities that pass through zero, and would be correspondingly unstable; we
+found its pixel-to-pixel scatter to be several kelvin, comparable to its whole
+range. The levels of Eq.~(\ref{eq:levels}) are non-negative differences between
+an image and a surface lying beneath it, and their temperatures are stable to
+$0.2$\,K between adjacent pixels (Sect.~\ref{sec:stability}).
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{fig_levels_cut.pdf}
+  \caption{Decomposition into levels along a cut across the Aquila sub-field.
+  The black curve is the surface density image and the coloured curves are the
+  openings $O_d$ with plates of increasing diameter, each of which passes
+  beneath every structure narrower than itself. The three grey bars are
+  admissible positions of the plate of diameter $91\arcsec$: each lies entirely
+  beneath the surface, and the opening $O_{91\arcsec}$ is the envelope of all
+  such positions (Eq.~\ref{eq:opening}), not the set of points at which a plate
+  touches the surface. A level is the material between two successive curves,
+  and the lowest curve is the cirrus, which is left uncorrected. The levels are
+  non-negative and sum exactly to the image (Eq.~\ref{eq:sum}).}
+  \label{fig:levelscut}
+\end{figure}
+
+\subsection{Dust temperature of a level}
+\label{sec:leveltemp}
+
+The same decomposition, with the same diameters, is applied to each observed
+waveband image after all of them have been convolved to a common beam, that of
+the longest waveband. The level $\mathcal{L}_k^\lambda$ then contains the emission of the
+material of the corresponding width, while the warmer material in front of it
+and behind it has been assigned to the wider levels and to the background.
+
+Fitting an optically thin modified blackbody with a fixed emissivity index to
+the set $\{\mathcal{L}_k^\lambda\}$ of one level yields a dust temperature $T_k$ that
+describes material of that width alone, and not the whole line of sight. This
+is the essential measurement of the method, and it is possible only because the
+levels are non-negative: the spectral energy distribution of a level is a set
+of positive intensities of comparable magnitude, not a set of small differences
+between large numbers.
+
+\subsection{Correction}
+\label{sec:correction}
+
+Let $\Sim$ be the surface density image to be corrected and $\lambda_{\rm r}$
+the longest waveband used to build it. The image was constructed as
+%
+\begin{equation}
+   \Sim = \frac{\Iim_{\lambda_{\rm r}}}
+                 {B_{\lambda_{\rm r}}(T)\,\kappa_{\lambda_{\rm r}}\,
+                  \eta\,\muH\,\mH} \,,
+   \label{eq:sigma}
+\end{equation}
+%
+where $\kappa_\lambda$ is the dust opacity, $\eta$ the dust-to-gas mass ratio,
+and $\muH$ the mean molecular weight per hydrogen molecule. Its effective dust
+temperature $\Teff$ is therefore recovered exactly by inverting
+Eq.~(\ref{eq:sigma}), without refitting anything,
+%
+\begin{equation}
+   B_{\lambda_{\rm r}}(\Teff) =
+   \frac{I_{\lambda_{\rm r}}}
+        {\Sim\,\kappa_{\lambda_{\rm r}}\,\eta\,\muH\,\mH} \,.
+   \label{eq:teff}
+\end{equation}
+%
+Every level of $\Sim$ was converted into surface density with $\Teff$,
+whereas it should have been converted with its own temperature $T_k$. The two
+conversions differ by the ratio of the Planck functions, so the corrected image
+is
+%
+\begin{equation}
+   \Sc = O_{d_N}(\Sim) + \sum_{k=1}^{N} C_k\, \mathcal{L}_k(\Sim) \,,
+   \qquad
+   C_k = \frac{B_{\lambda_{\rm r}}(\Teff)}{B_{\lambda_{\rm r}}(T_k)} \,.
+   \label{eq:correction}
+\end{equation}
+%
+No empirical calibration and no model enter Eq.~(\ref{eq:correction}). Three
+properties follow immediately and are worth stating separately.
+
+First, the correction vanishes identically where it should. If the line of
+sight is isothermal, every level shares the temperature of the pixel, $T_k =
+\Teff$, hence $C_k = 1$ and the image is returned unchanged. The correction
+acts only where material of different widths has different temperatures, which
+is precisely the condition under which the single-temperature fit is in error.
+This is not an approximate statement but an algebraic identity, and it is
+verified numerically in Sect.~\ref{sec:nulltest}.
+
+Second, the corrected image can neither become negative nor develop a
+depression. The levels are non-negative and each is multiplied by a factor
+$C_k \ge 1$, so nothing is ever subtracted.
+
+Third, the shape of a structure is preserved. Multiplying a level by a factor
+changes its amplitude and not its profile, so a round source stays round and no
+structure is deformed. This is a practical requirement rather than an aesthetic
+one: an image that is to be searched for sources must not contain artefacts
+that a source-extraction algorithm would mistake for structures.
+
+The dust temperature corresponding to the corrected image follows by inverting
+Eq.~(\ref{eq:teff}) with $\Sc$ in place of $\Sim$, which is the same as
+dividing the Planck function by the correction factor. Defined that way it is
+exactly consistent with $\Sc$ and identical to $\Teff$ wherever the correction
+is unity, so that no feature can appear in it where nothing has been corrected.
+
+\subsection{Practical considerations}
+\label{sec:practical}
+
+Five points matter in an application to observed images.
+
+\subsubsection{The ladder of diameters}
+\label{sec:ladder}
+
+The diameters need not be chosen individually. A geometric ladder from twice
+the angular resolution to a largest ball, beyond which material is treated as
+cirrus and left unchanged, removes the arbitrariness. On the Aquila sub-field of
+Sect.~\ref{sec:aquila} the median correction changes by 2\,per cent when the
+ratio between successive diameters is varied from 1.3 to 2.0, so the result
+does not depend on the choice.
+
+\subsubsection{Coverage}
+\label{sec:coverage}
+
+The coverage masks of all wavebands are multiplied together and contracted by a
+few pixels. Pixels outside the common coverage are filled with the value of the
+nearest covered pixel before any opening or convolution, so that neither
+operation is affected by the boundary, and the correction is tapered to unity
+near the edge, because a structure cut by the edge of the coverage is not
+measured correctly. Pixels in which the input image is not positive are
+excluded, since inverting Eq.~(\ref{eq:teff}) there would return meaningless
+temperatures.
+
+\subsubsection{Angular resolution}
+\label{sec:resolution}
+
+The correction is a temperature effect and has no structure below the angular
+resolution of the image, which has none either. The correction field
+$\Sc/\Sim$ is therefore smoothed to the resolution before it is applied.
+Without this step the correction, which is built from the levels, carries
+structure down to the pixel scale and amplifies the noise differentially.
+
+\subsubsection{Noise}
+\label{sec:noise}
+
+Instrumental noise is independent between wavebands, whereas real emission
+appears at the same position in all of them. Regressing each waveband of a
+level on the longest waveband and taking the robust scatter of the residual
+therefore measures the noise of that level, in the units of the reference
+waveband, without any noise image being supplied. Where a level does not stand
+above its own incoherent part, the correction is faded out. There is a
+systematic reason for doing so and not merely accepting the scatter: $C_k$ is
+convex in $T_k$ and is bounded below by unity, so random scatter in $T_k$ would
+produce a mean correction above unity even where the true answer is one.
+
+\subsubsection{Internally heated sources}
+\label{sec:protostars}
+
+A protostar has a steep temperature gradient along the line of sight, from tens
+of kelvin in its interior to about 10\,K in its envelope, and a single
+temperature per level does not describe it. Such objects are identified
+unambiguously by their compact emission at 70\um, and the correction is
+switched off smoothly over the heated region. The 70\um\ image is used here
+only as a flag and never as a photometric measurement: on the Aquila sub-field
+its compact component amounts to two parts in a thousand of the local
+background, with a pixel-to-pixel scatter far larger, so it carries no usable
+temperature information.
+
+% =====================================================================
+\section{Application to the Aquila cloud}
+\label{sec:aquila}
+
+We illustrate the method on a sub-field of $31\arcmin \times 31\arcmin$ of the
+Aquila cloud observed with \emph{Herschel} at 70, 160, 250, 350, and 500\um\
+\citep{Andre+2010, Konyves+2015}, using the surface density image at
+$13\farcs5$ resolution produced with \emph{hires}. The ladder of ball diameters
+runs geometrically from $27\arcsec$ to $205\arcsec$ with a ratio of 1.5.
+\draftnote{Adopted distance and its reference to be inserted.}
+
+Figure~\ref{fig:leveltemp} shows the central measurement. The dust temperature
+of a level rises systematically with its width, from $8.7$\,K for material
+narrower than $27\arcsec$ to $10.4$\,K for material narrower than $205\arcsec$,
+while the single-temperature fit of the same lines of sight gives about 15\,K.
+The correction factors of Eq.~(\ref{eq:correction}) fall correspondingly, from
+about 2.4 for the narrowest level to about 1.7 for the widest. That the narrow
+material is colder than the wide material is not assumed anywhere; it is
+measured, and it is the entire content of the correction.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{fig_level_temperatures.pdf}
+  \caption{Dust temperature of each level (black, left axis) as a function of
+  the ball diameter that defines it, on the Aquila sub-field, with the median
+  and the 16th to 84th percentile range over the pixels in which the level
+  carries material. The dashed line is the median effective temperature $\Teff$
+  of the same lines of sight, obtained from the single-temperature fit. The
+  purple symbols and the shaded band (right axis) are the resulting correction
+  factors $C_k$ of Eq.~(\ref{eq:correction}).}
+  \label{fig:leveltemp}
+\end{figure}
+
+Figure~\ref{fig:maps} shows the original image, the corrected image, and the
+correction factor. The diffuse emission is untouched and the dense structures
+are raised. Over the whole sub-field the ratio $\Sc/\Sim$ has a median of
+1.02, a 90th percentile of 1.35, and a maximum of 1.83, while in the faintest
+30\,per cent of the image its median is 1.00. The correction factor traces the
+dense material and reaches its largest values on the coldest structures, so
+that the third panel of Fig.~\ref{fig:maps} is, in effect, a map of where the
+single-temperature assumption fails.
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=\linewidth]{fig_aquila_maps.pdf}
+  \caption{The Aquila sub-field, $31\arcmin \times 31\arcmin$.
+  (\emph{left}) the surface density image at $13\farcs5$ produced with
+  \emph{hires}; (\emph{middle}) the same image after the correction of
+  Eq.~(\ref{eq:correction}), on the same scale; (\emph{right}) the correction
+  factor $\Sc/\Sim$, which is unity in the diffuse emission and reaches 1.8
+  on the coldest dense structures.}
+  \label{fig:maps}
+\end{figure*}
+
+Measured at the positions of the 144 brightest local maxima of the original
+image, the background-subtracted peak surface density rises by a median factor
+of 1.71, with a 16th to 84th percentile range of 1.06 to 2.15.
+Figure~\ref{fig:profile} shows the effect on the radial profile of the
+brightest structure of the field: the amplitude increases while the shape is
+preserved, as Sect.~\ref{sec:correction} requires.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{fig_core_profile.pdf}
+  \caption{Radial profile of the brightest structure of the Aquila sub-field,
+  before and after the correction. The amplitude is raised and the shape is
+  unchanged, since each level is multiplied by a factor and not reshaped.}
+  \label{fig:profile}
+\end{figure}
+
+The corrected image is smooth. The absolute difference between adjacent pixels,
+relative to the local value, has a median of 1.6\,per cent against 1.4\,per
+cent for the original image; no pixel is negative and none is lowered.
+
+% =====================================================================
+\section{Tests}
+\label{sec:tests}
+
+\subsection{An isothermal sky}
+\label{sec:nulltest}
+
+The most informative test of Eq.~(\ref{eq:correction}) is that it must do
+nothing where there is nothing to do. A simulated image of a cloud containing
+cirrus, a filament, dense cores, and noise was constructed with a single dust
+temperature assigned to each line of sight, and the waveband images were
+computed from it. In such an image the single-temperature fit is exact by
+construction and no correction is due.
+
+The method returns factors below 1.01 for the cirrus and for the filament, that
+is, it leaves them alone as it must. The dense cores of the same simulation
+were computed from radiative transfer models and therefore do possess a
+temperature structure along the line of sight; they are corrected by up to a
+factor of 2.1. The method thus distinguishes, within one image and with no
+external information, between cold material that is biased and cold material
+that is not.
+
+\subsection{Stability of the level temperatures}
+\label{sec:stability}
+
+On the Aquila sub-field the dust temperature of a level has a root mean square
+difference of $0.2$\,K between adjacent pixels, against a spread of $3.7$\,K
+over the field. The ratio of the two, about one to twenty, is the property that
+makes the method usable: the quantity that drives the correction is measured
+far more precisely than it varies.
+
+The median temperature of material narrower than $60\arcsec$ is $9.9$\,K on the
+Aquila sub-field and $9.7$\,K over a grid of radiative transfer models of
+embedded cores, two independent determinations of the same quantity that agree
+to within the width of the distributions.
+
+\subsection{Radiative transfer models}
+\label{sec:models}
+
+The tests above establish that the correction acts where it should and not
+elsewhere, but they cannot show that the corrected values are closer to the
+truth, because the truth is unknown in an observed image. For that we use
+models of embedded dense cores whose surface density is known exactly and
+whose emission is not isothermal along the line of sight.
+
+Each model is a truncated isothermal Bonnor--Ebert sphere
+\citep{Ebert1955, Bonnor1956} of gas mass $M$ and projected half-maximum
+width $H$, embedded at the centre of a uniform spherical cloud of surface
+density $\mathcal{D}_{\rm cl}$, whose radius is thirty times that of the sphere.
+The sphere is specified by the three quantities $(\mathcal{D}_{\rm cl}, M, H)$,
+which are directly comparable with what an observation measures, and its
+dimensionless truncation radius, central density, and gas temperature follow
+from them by inverting the Lane--Emden equation. The gas temperature of the
+sphere is solved self-consistently against the total surface density along its
+central line of sight, so that a more deeply embedded core is colder, as
+radiative transfer requires. The models are described in detail in
+Appendix~\ref{app:models}.
+
+The dust temperature structure of each model is computed with the
+Monte Carlo radiative transfer code \emph{radmc-3d} \citep{Dullemond+2012},
+with the sphere and its cloud heated by the interstellar radiation field, on a
+spherical grid of \draftnote{$N$} logarithmically spaced shells and with
+\draftnote{$N_{\rm ph}$} photon packages. The dust opacity is a power law,
+$\kappa_\nu = \kappa_0\,(\nu/\nu_0)^\beta$ with
+$\kappa_0 = 10$\,cm$^2$\,g$^{-1}$ of dust at $\nu_0 = 1000$\,GHz and
+$\beta = 2$, and a dust-to-gas mass ratio $\eta = 0.01$
+\citep{Hildebrand1983, Ossenkopf+Henning1994}, the same values that are
+assumed when the surface density image is derived, so that the comparison
+tests the method and not the opacity.
+
+For each model the synthetic \emph{Herschel} images of all wavebands were
+computed, the surface density image at $13\farcs5$ was produced from them
+exactly as for an observed field, and the correction of
+Eq.~(\ref{eq:correction}) was applied to it. Figure~\ref{fig:validation}
+compares the peak surface density recovered before and after the correction
+with the true value, for 30 models spanning a factor of 40 in
+peak-to-background contrast. The median recovered fraction rises from 0.63 to
+0.84; over the models of contrast below 5, which is the range in which most
+observed cores lie, it rises from 0.69 to 0.85.
+
+The models of the highest contrast remain under-corrected, at 0.66 against
+0.53 before the correction. They are the most compact objects of the sample,
+and they illustrate the limitation of Sect.~\ref{sec:limits}: a structure
+whose width approaches the angular resolution is mixed by the beam with its
+warmer surroundings, so the temperature measured for its level is too high.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{fig_model_validation.pdf}
+  \caption{Peak surface density recovered from synthetic \emph{Herschel}
+  images of embedded Bonnor--Ebert spheres, divided by the true value
+  convolved to the same resolution, before (open circles) and after (filled
+  squares) the correction of Eq.~(\ref{eq:correction}), as a function of the
+  peak-to-background contrast of the model. The grey line marks exact
+  recovery.}
+  \label{fig:validation}
+\end{figure}
+
+% =====================================================================
+\section{Limitations}
+\label{sec:limits}
+
+Three limitations should be stated plainly.
+
+Structures narrower than about twice the angular resolution are
+under-corrected. The beam mixes such a structure with its warmer surroundings
+across the sky, so the temperature measured for its level is too high and the
+factor of Eq.~(\ref{eq:correction}) too small. The effect is visible in
+Fig.~\ref{fig:leveltemp} as the flattening of the temperature towards the
+narrowest levels. It is intrinsic to a correction driven by a measured
+temperature, and a correction of the photometry of individual sources, which
+can use their measured sizes explicitly, remains the more accurate route for
+that purpose.
+
+Internally heated sources are excluded rather than corrected
+(Sect.~\ref{sec:protostars}). Representing them would require more than one
+temperature per level, which is a substantially more elaborate method for a
+small minority of the sources.
+
+The correction is not a deconvolution. It removes the bias of the
+single-temperature assumption and leaves the beam dilution of a compact
+structure untouched.
+
+% =====================================================================
+\section{Conclusions}
+\label{sec:conclusions}
+
+We have described a method that removes the dust temperature bias from derived
+surface density images of molecular clouds.
+
+\begin{enumerate}
+\item An image is decomposed into levels by a nested set of morphological
+      openings. The levels are non-negative, they sum exactly to the image, and
+      each contains the material within a range of widths
+      (Eqs.~\ref{eq:levels} and \ref{eq:sum}).
+\item Each level is converted into surface density with a dust temperature
+      measured for that level alone, instead of the single temperature of the
+      whole line of sight. The correction is the ratio of the Planck functions
+      at the two temperatures (Eq.~\ref{eq:correction}).
+\item The correction is exactly unity where the line of sight is isothermal. It
+      requires no extraction of sources, no assumption about their shapes, and
+      no calibration on models, and it can neither create a depression nor
+      deform a structure.
+\item Applied to a sub-field of the Aquila cloud, it leaves the diffuse
+      emission unchanged and raises the peak surface densities of the dense
+      structures by a median factor of 1.7, with dust temperatures of the levels
+      between 8.7 and 10.4\,K against 15\,K from the single-temperature fit.
+\end{enumerate}
+
+Masses of dense cores and linear densities of filaments are derived from
+surface density images and inherit their bias. The corrected images are the
+natural starting point for those measurements, which are the subject of
+separate work.
+
+% =====================================================================
+\appendix
+
+\section{The grid of embedded Bonnor--Ebert spheres}
+\label{app:models}
+
+\draftnote{To be completed once the grid computed for this paper is
+available. It should give: the axes of the grid and their ranges; the
+inversion of the Lane--Emden equation that turns
+$(\mathcal{D}_{\rm cl}, M, H)$ into $(\xi_{\rm max}, \rho_{\rm c}, T)$; the
+self-consistent solution for the gas temperature; the constraint that the
+density at the outer boundary of the sphere must not fall below the density of
+the cloud, which sets the lowest core mass at each cloud surface density; and
+the \emph{radmc-3d} setup, with the radiation field, the grid, and the number
+of photon packages.}
+
+\begin{acknowledgements}
+\draftnote{To be written.}
+\end{acknowledgements}
+
+\bibliographystyle{aa}
+\bibliography{hires_correction}
+
+\end{document}
