@@ -1,0 +1,167 @@
+% ==================================================================================================================================
+% An appendix for hires_correction.tex, on the radiation field a cloud requires of the models.
+% To follow the appendix on the arrangement of the material along the line of sight.
+% ==================================================================================================================================
+
+\section{The radiation field a cloud requires of the models}
+\label{app:field}
+
+A correction that reads the fitted temperature can be applied only where the models cover the observations.  The grid of
+Sect.~\ref{sec:law} heats its cores with a single radiation field, and a cloud illuminated more strongly is warmer at every
+surface density than any model of that column, so its pixels fall outside the calibration however finely the latter is binned.
+This appendix gives the procedure that decides, for a cloud in hand, which fields the models must have.  It is meant to be applied
+by the reader to a cloud of their own and not only read.
+
+\subsection{The scaling}
+\label{app:field:scaling}
+
+Dust that is optically thin to the radiation heating it settles where absorption balances emission.  The absorbed power is
+proportional to the strength of the field, which we write as $G_0$ in units of the local interstellar field, and the power a grain
+of opacity $\propto \lambda^{-\beta}$ emits is proportional to $T^{4+\beta}$, so
+
+\begin{equation}
+   T \propto G_0^{1/(4+\beta)} ,
+\label{eq:g0scaling}
+\end{equation}
+
+which for the $\beta = 2$ adopted throughout is $T \propto G_0^{1/6}$.  This is the standard result for grains that are optically
+thin to the radiation heating them \citep{IvezicElitzur1997, Tielens2005}, and we use it only as a scaling, since the calibration
+itself comes from the radiative transfer and not from it.  The exponent is small, and that is the whole difficulty: a factor of
+two in temperature demands a factor of $2^6 = 64$ in the field, so a cloud only moderately warmer than the models lies far
+outside them in $G_0$, while a grid computed at one field covers a narrow band of temperature.  It is also what makes the remedy
+affordable, since a ladder that is long in $G_0$ is short in temperature.
+
+\subsection{The procedure}
+\label{app:field:procedure}
+
+The scaling is not applied to a cloud as a whole.  A pixel is as warm as it is because of the field that reaches it and because of
+the column that shields it, and only the first is to be inferred.  The two are separated by comparing like with like, at a fixed
+surface density:
+
+\begin{enumerate}
+\item Take the surface density image of the cloud and the temperature image that the same fit produced, both of which the
+      reconstruction writes.  Bin the pixels by surface density.
+\item In each bin, take the range of the observed temperature, for instance its 1st and 99th percentiles, which excludes the few
+      pixels that any map has at its extremes.
+\item In the same bin, take the range of temperature that the models give at the reference field $G_{\rm ref}$ of the existing
+      grid.  This is a property of the grid and not of the cloud, and it is read from the same table the correction uses.
+\item The field required to reach an observed temperature in that bin is
+      \begin{equation}
+         G_0 = G_{\rm ref} \left( \frac{T_{\rm observed}}{T_{\rm model}} \right)^{4+\beta} ,
+      \label{eq:g0needed}
+      \end{equation}
+      evaluated at the low end of the observed range against the low end of the models, and likewise at the high end.
+\item The ladder must span from the smallest such value over all bins to the largest.
+\end{enumerate}
+
+Only the ratio of the two temperatures enters, so nothing depends on the absolute calibration of either, and the shielding
+divides out because both are taken at the same surface density.  Inferring a radiation field from a dust temperature is of course
+common, and Eq.~(\ref{eq:g0needed}) adds nothing to the physics of it; what the comparison at a fixed surface density supplies is
+a way to ask the narrower question this method needs answered, which is not whether a cloud is warm but whether the models reach
+it.  For the diffuse gas, where nothing shields the dust, the model
+temperature is the unattenuated $T_0$ of Eq.~(\ref{eq:law}) and the procedure reduces to the quick form
+
+\begin{equation}
+   G_0 = G_{\rm ref} \left( \frac{T}{T_0} \right)^{6} = 10 \left( \frac{T}{22.45\,{\rm K}} \right)^{6} ,
+\label{eq:g0quick}
+\end{equation}
+
+which is accurate enough to place a cloud on the ladder before any of its data are binned.
+
+\subsection{The procedure applied to Aquila}
+\label{app:field:aquila}
+
+\begin{table}
+\caption{The procedure of Sect.~\ref{app:field:procedure} applied to the field of Sect.~\ref{sec:aquila}.  The third column is the
+range of temperature the models of the grid span in that bin of surface density, the fourth the range the observations span, and
+the last the fraction of the observed pixels that falls inside the models.}
+\label{tab:g0aquila}
+\centering
+\begin{tabular}{lcccc}
+\hline\hline
+\noalign{\smallskip}
+$\log_{10}\Sig$ & pixels & models (K) & Aquila (K) & inside \\
+\noalign{\smallskip}
+\hline
+\noalign{\smallskip}
+21.4 -- 21.6 &  1\,600 & 14.9 -- 17.3 & 15.9 -- 17.2 & 99.5{\%} \\
+21.6 -- 21.8 & 26\,000 & 13.7 -- 15.9 & 14.8 -- 23.6 & 57.9{\%} \\
+21.8 -- 22.0 & 78\,000 & 12.5 -- 14.7 & 14.1 -- 24.0 & 15.5{\%} \\
+22.0 -- 22.2 & 88\,000 & 11.7 -- 13.7 & 13.2 -- 17.9 & 12.4{\%} \\
+22.2 -- 22.4 & 66\,000 & 10.9 -- 11.9 & 12.6 -- 16.4 &  0{\%} \\
+22.4 -- 22.6 & 42\,000 & 10.7 -- 11.1 & 12.0 -- 16.1 &  0{\%} \\
+22.6 -- 22.8 & 27\,000 &  9.9 -- 10.5 & 11.6 -- 16.4 &  0{\%} \\
+22.8 -- 23.0 & 15\,000 &  9.1 --  9.1 & 11.0 -- 15.9 &  0{\%} \\
+above 23.0   &  9\,000 & no models    & 10.8 -- 16.3 & --      \\
+\noalign{\smallskip}
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:g0aquila} carries the four steps out on the field of Sect.~\ref{sec:aquila}.  Over the whole field 17{\%} of the
+pixels lie within the band of temperature that the models span at their surface density, and above $2{\times}10^{22}$\,cm$^{-2}$
+none do: the dust of Aquila is one to five kelvin warmer than any model of the same column.  Inserting the ratios of the fourth
+column to the third into Eq.~(\ref{eq:g0needed}) gives fields between about ten and about sixty, the upper end being reached in
+the neighborhood of W40.  The grid of this paper, which has $G_0 = 10$, therefore covers the coolest of that field and nothing
+else.
+
+That table is the diagnostic to run before applying a temperature-dependent correction to any field.  It costs nothing, it uses
+only images the reconstruction has already written, and it says at once whether the calibration covers the data or would be
+extrapolating beyond them.
+
+\subsection{Other clouds}
+\label{app:field:others}
+
+\begin{table}
+\caption{The field required to reach the dust temperatures usually reported for the cold dust of each region, from the quick form
+of Eq.~(\ref{eq:g0quick}).  These temperatures are indicative and serve only to place each cloud on the ladder; the procedure of
+Sect.~\ref{app:field:procedure}, applied to the images of a particular field, supersedes them.}
+\label{tab:g0}
+\centering
+\begin{tabular}{lcc}
+\hline\hline
+\noalign{\smallskip}
+cloud & dust $T$ (K) & $G_0$ \\
+\noalign{\smallskip}
+\hline
+\noalign{\smallskip}
+Taurus              & 11 -- 16 & 0.14 -- 1.3 \\
+Lupus, Scorpius     & 12 -- 20 & 0.23 -- 5.0 \\
+Ophiuchus           & 12 -- 28 & 0.23 -- 38 \\
+Aquila, with W40    & 11 -- 30 & 0.14 -- 57 \\
+Cygnus~X            & 13 -- 32 & 0.38 -- 84 \\
+Orion~A, with OMC-1 & 14 -- 45 & 0.59 -- 649 \\
+\noalign{\smallskip}
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:g0} places six regions on the ladder with the quick form.  \draftnote{The temperature ranges of this table are
+indicative values recalled from the published \emph{Herschel} temperature maps of these regions.  They must be replaced by values
+read from the specific maps that will be used, with their references, before the paper is submitted.}  The lowest entries should
+be read with the caution of Sect.~\ref{app:field:procedure}: a cloud whose densest material is at 11\,K does not require a field
+of 0.14, because that material is cold through shielding and the same grid reaches it at a higher surface density.  What the low
+end of the ladder has to reach is the coldest \emph{diffuse} gas, which for these regions implies $G_0$ between 0.7 and 1.3.
+
+\subsection{The ladder}
+\label{app:field:ladder}
+
+Two rungs are fixed from outside: the interstellar field of the models cannot be scaled below $G_0 = 0.977$, and $G_0 = 10$ is the
+grid already computed.  At a fixed surface density the models span about 17{\%} in temperature, because they differ in the
+concentration and the size of their cores, so grids whose surface temperatures differ by less than that overlap and leave no gap
+in the calibration.  Spacing the remaining rungs by the constant factor that joins the two fixed ones, $2.171$ in $G_0$ and
+13.8{\%} in temperature, gives
+
+\begin{equation}
+   G_0 = 0.98,\ 2.12,\ 4.61,\ 10,\ 21.7,\ 47.1,\ 102,\ 222,\ 483 ,
+\label{eq:g0ladder}
+\end{equation}
+
+which covers unattenuated temperatures from 15.2 to 42.8\,K in steps smaller than the spread the models themselves show.  It
+reaches every region of Table~\ref{tab:g0}, the hottest gas of OMC-1 included.  Because the exponent of Eq.~(\ref{eq:g0scaling})
+is $1/6$, those nine grids span a factor of 494 in the radiation field and only a factor of 2.8 in temperature.
+
+The nodes need not all be recomputed at every field.  What a calibration requires is coverage in surface density, in
+concentration and in the contrast between resolutions, and a subset of the lattice spanning the full range of each preserves it:
+339 nodes at each of the nine fields is close to three times the cost of the single grid already computed, and that is the whole
+price of making the correction applicable to clouds other than the coldest.
