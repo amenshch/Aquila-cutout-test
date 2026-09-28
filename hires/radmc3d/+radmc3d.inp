@@ -1,0 +1,44 @@
+
+ nphot = 1000000000    ! Number of photons
+ setthreads = 2        ! number of threads used for thermal Monte Carlo computation
+                        
+ distpc = 260.0         ! Distance (pc) to model
+ dust2gas = 0.01        ! Dust-to-gas mass ratio
+ external = 1           ! External ISRF (1) or none (0)
+ hbbfac = 6.19e-16      ! ISRF hot BB dilution factor (= 6.19e-16 for G0 = 10)
+                        
+ Rinner = 0.0           ! Inner radius (AU) of model space (if 0.0 then chosen automatically)
+ Router = 0.0           ! Outer radius (AU) of model space (if 0.0 then chosen automatically)
+ nzones = 50            ! Total number of radial zones (entire model space)
+ fgeom = 10.0           ! Geometric grid factor
+ nzembc = 15            ! Number of radial zones in embedding cloud
+ ftrans = 1.3           ! Coarser grid of cloud (0.0 for none): fractional transition radius (1.3)
+                        
+ Rgauss = 0.0           ! Radius (AU) of Gaussian sphere (or 0.0 if no Gaussian sphere)
+ gfwhm = 100.0          ! Full width at half maximum (AU) of Gaussian sphere
+ gplaw = 2.0            ! Exponent of power law attached to Gaussian sphere
+                        
+ Rbesph = 1.0           ! BE sphere (1.0) or no BE sphere (0.0)
+ besden = 1.224900e-17  ! Density (g/cm^3) of BE sphere
+ bestem = 6.750000      ! Temperature (K) of BE sphere
+ ximax = 52.2973        ! xi_max of BE sphere (6.451 for critical)
+                        
+ Rplawx = 0.0           ! Radius (AU) of power-law envelope (or 0.0 if no envelope)
+ dplawx = 0.0           ! Power-law exponent of the envelope density distribution
+                        
+ rhofac = 0.0           ! Density jump factor at inner edge of embedding cloud
+ dplout = 0.0           ! Power-law exponent of embedding cloud densities
+ embden = 1.920000e+23  ! Embedding cloud surface density
+                        
+ masstot = 0.0          ! Model mass (Msun)
+ lumstar = 0.0          ! Stellar luminosity (Lsun)
+ temstar = 5778.0       ! Effective temperature (K)
+                        
+ mcrscale = 1.0         ! Model scaling factor (radii)
+ radscale = 1.0         ! Global scaling factor (radii)
+ denscale = 1.0         ! Global scaling factor (densities)
+                        
+ fracaper = 1.0         ! Observational aperture as fraction of Rbesph or Rplawx
+
+ scattering_mode_max = 1    ! Isotropic scattering (1) or no scattering (0)
+ modified_random_walk = 1   ! Мodified random walk method (1) or not (0)

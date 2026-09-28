@@ -1,0 +1,7 @@
+2               Format number of this file
+1               Nr of dust species
+============================================================================
+1               Way in which this dust species is read
+0               0=Thermal grain
+osskopf6x1p0746 Extension of name of dustkappa_***.inp file -- MULTIPLIED by 1.0746 for consistency with kappa_0 = 10 cm^2/g at 300 um
+----------------------------------------------------------------------------
