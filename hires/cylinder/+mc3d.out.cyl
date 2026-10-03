@@ -1,0 +1,17 @@
+! True properties of the cylinder:
+    Surface density on the axis (cm^-2):  3.00000E+22
+    Half-maximum width of surface density (as):  4.00000E+01
+    Index p of n(R) = n_c [1+(R/R_flat)^2]^(-p/2):  1.75000E+00
+    Flat radius R_flat (AU):  2.39822E+03
+    Flat radius R_flat (as):  9.22394E+00
+    Central density of H2 (cm^-3):  2.26179E+05
+    Central gas density (g/cm^3):  1.05162E-18
+    Outer radius (pc):  5.00000E-01
+    Length (pc):  1.03000E+01
+    Envelope surface density through the axis (cm^-2):  4.94500E+21
+    Envelope outer radius (pc):  1.00000E+00
+    Envelope gas density (g/cm^3):  7.45115E-21
+    Total gas mass (Msun):  2.67129E+03
+    Mass per unit length (Msun/pc):  2.59349E+02
+    Radius of the computational sphere (pc):  5.25144E+00
+    Grid cells in r and theta: 400 x 240
