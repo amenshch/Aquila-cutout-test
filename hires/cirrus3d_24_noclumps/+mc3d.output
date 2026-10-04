@@ -1,0 +1,907 @@
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  1 2026 21:15    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+    Adjusting theta(ny+1) to exactly pi/2...
+ Reading star data...
+ Grid information (current status):
+   We have 96000 branches, of which 96000 are actual grid cells.
+   ---> 100.000% mem use for branches, and 100.000% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ Dust mass total =    9.6922758848334674       Msun
+ Cylinder: surface density on the axis  3.00000E+22 cm^-2
+ Cylinder: central density of H2  2.26179E+05 cm^-3
+ Cylinder: flat radius  9.22394E+00 as
+ Reading external luminosity source...
+    Central luminosity: 0.00000000E+00 Lsun
+   External luminosity: 9.62186390E+03 Lsun
+  ISRF bolometric flux: 8.31979614E-02 erg/s/cm^2  G0: 1.000E+01
+ Reading the heat source spatial distribution...
+ Using external luminosity (interstellar radiation field)...
+ Using mirror symmetry in equatorial plane, because max(theta)==pi/2.
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ Using dust scattering mode            1
+ Computing emissivity database...
+ Computing total input luminosities...
+ Modified Random Walk mode is switched ON
+  
+ Starting the thermal Monte Carlo simulation....
+ Thread  1 of  2 threads in total
+ Thread  0 of  2 threads in total
+ Elapsed time:   16032.716040999992     
+ Done with Bjorkman & Wood Monte Carlo simulation
+ Using the parallel version of RADMC-3D
+ Number of parallel threads used:            2
+ Average number of abs/scat events per photon package =   0.19231943200000001     
+ Average nr of times a photon stays in the same cell  =    1.7698317414470276E-002
+ Maximum nr of times a photon stayed in the same cell =           12
+ Saving results of thermal Monte Carlo
+
+ Execution time: 16033.22 sec = 267.22 min = 4.45 hrs
+
+ Date: 02/10/2026  Time: 01:46:57
+
+ Done...
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  1 2026 21:15    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+    Adjusting theta(ny+1) to exactly pi/2...
+ Reading star data...
+ Grid information (current status):
+   We have 96000 branches, of which 96000 are actual grid cells.
+   ---> 100.000% mem use for branches, and 100.000% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ Dust mass total =    9.6922758848334674       Msun
+ Reading dust temperatures...
+ Cylinder: surface density on the axis  3.00000E+22 cm^-2
+ Cylinder: central density of H2  2.26179E+05 cm^-3
+ Cylinder: flat radius  9.22394E+00 as
+ Reading external luminosity source...
+    Central luminosity: 0.00000000E+00 Lsun
+   External luminosity: 9.62186390E+03 Lsun
+  ISRF bolometric flux: 8.31979614E-02 erg/s/cm^2  G0: 1.000E+01
+ Reading the heat source spatial distribution...
+ Using external luminosity (interstellar radiation field)...
+ Using mirror symmetry in equatorial plane, because max(theta)==pi/2.
+ Starting procedure for rendering image...
+   --> Including dust
+       No lines included...
+       No gas continuum included...
+ Rendering image(s)...
+ Doing scattering Monte Carlo simulation for lambda =    70.000000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   70.000000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.5349519999872427     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    70.000000000000000       micron...
+ Doing scattering Monte Carlo simulation for lambda =    100.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   100.00000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.8413599999912549     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    100.00000000000000       micron...
+ Doing scattering Monte Carlo simulation for lambda =    160.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   160.00000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.6477829999930691     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    160.00000000000000       micron...
+ Doing scattering Monte Carlo simulation for lambda =    250.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   250.00000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.5920050000131596     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    250.00000000000000       micron...
+ Doing scattering Monte Carlo simulation for lambda =    350.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   350.00000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.7073030000028666     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    350.00000000000000       micron...
+ Doing scattering Monte Carlo simulation for lambda =    500.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   500.00000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.7204949999868404     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    500.00000000000000       micron...
+ Writing image to file...
+ Used scattering_mode=1, meaning: isotropic scattering approximation.
+ Diagnostics of flux-conservation (sub-pixeling):
+     Nr of main pixels (nx*ny)   =      3214849
+     Nr of (sub)pixels raytraced =      3457173
+     Nr of (sub)pixels used      =      3396592
+     Increase of raytracing cost =    1.0753764795796008     
+
+ Execution time: 622.68 sec = 10.38 min = 0.17 hrs
+
+ Date: 02/10/2026  Time: 02:03:35
+
+ Done...
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  1 2026 21:15    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+    Adjusting theta(ny+1) to exactly pi/2...
+ Reading star data...
+ Grid information (current status):
+   We have 96000 branches, of which 96000 are actual grid cells.
+   ---> 100.000% mem use for branches, and 100.000% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ Dust mass total =    9.6922758848334674       Msun
+ Reading dust temperatures...
+ Reading dust densities...
+ Dust mass total =    6.7131471887462544       Msun
+ Cylinder: surface density on the axis  3.00000E+22 cm^-2
+ Cylinder: central density of H2  2.26179E+05 cm^-3
+ Cylinder: flat radius  9.22394E+00 as
+ Reading external luminosity source...
+    Central luminosity: 0.00000000E+00 Lsun
+   External luminosity: 9.62186390E+03 Lsun
+  ISRF bolometric flux: 8.31979614E-02 erg/s/cm^2  G0: 1.000E+01
+ Reading the heat source spatial distribution...
+ Using external luminosity (interstellar radiation field)...
+ Using mirror symmetry in equatorial plane, because max(theta)==pi/2.
+ Starting procedure for rendering image...
+   --> Including dust
+       No lines included...
+       No gas continuum included...
+ Rendering image(s)...
+ Doing scattering Monte Carlo simulation for lambda =    70.000000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   70.000000000000000       micron
+ Thread Nr  0 of  2 threads in total
+ Thread Nr  1 of  2 threads in total
+ Elapsed time:   1.4672480000008363     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    70.000000000000000       micron...
+ Doing scattering Monte Carlo simulation for lambda =    100.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   100.00000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.5958990000071935     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    100.00000000000000       micron...
+ Doing scattering Monte Carlo simulation for lambda =    160.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   160.00000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.5888219999906141     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    160.00000000000000       micron...
+ Doing scattering Monte Carlo simulation for lambda =    250.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   250.00000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.6865230000112206     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    250.00000000000000       micron...
+ Doing scattering Monte Carlo simulation for lambda =    350.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   350.00000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.7949229999794625     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    350.00000000000000       micron...
+ Doing scattering Monte Carlo simulation for lambda =    500.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   500.00000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.6870829999970738     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    500.00000000000000       micron...
+ Writing image to file...
+ Used scattering_mode=1, meaning: isotropic scattering approximation.
+ Diagnostics of flux-conservation (sub-pixeling):
+     Nr of main pixels (nx*ny)   =      3214849
+     Nr of (sub)pixels raytraced =      3457173
+     Nr of (sub)pixels used      =      3396592
+     Increase of raytracing cost =    1.0753764795796008     
+
+ Execution time: 621.49 sec = 10.36 min = 0.17 hrs
+
+ Date: 02/10/2026  Time: 02:15:22
+
+ Done...
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  1 2026 21:15    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+    Adjusting theta(ny+1) to exactly pi/2...
+ Reading star data...
+ Grid information (current status):
+   We have 96000 branches, of which 96000 are actual grid cells.
+   ---> 100.000% mem use for branches, and 100.000% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ Dust mass total =    9.6922758848334674       Msun
+ Reading dust temperatures...
+ Cylinder: surface density on the axis  3.00000E+22 cm^-2
+ Cylinder: central density of H2  2.26179E+05 cm^-3
+ Cylinder: flat radius  9.22394E+00 as
+ Reading external luminosity source...
+    Central luminosity: 0.00000000E+00 Lsun
+   External luminosity: 9.62186390E+03 Lsun
+  ISRF bolometric flux: 8.31979614E-02 erg/s/cm^2  G0: 1.000E+01
+ Reading the heat source spatial distribution...
+ Using external luminosity (interstellar radiation field)...
+ Using mirror symmetry in equatorial plane, because max(theta)==pi/2.
+ Starting procedure for rendering image...
+   --> Including dust
+       No lines included...
+       No gas continuum included...
+ Rendering image(s)...
+ Doing scattering Monte Carlo simulation for lambda =    999.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   999.00000000000000       micron
+ Thread Nr  1 of  2 threads in total
+ Thread Nr  0 of  2 threads in total
+ Elapsed time:   1.5987749999912921     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    999.00000000000000       micron...
+ Writing image to file...
+ Used scattering_mode=1, meaning: isotropic scattering approximation.
+ Diagnostics of flux-conservation (sub-pixeling):
+     Nr of main pixels (nx*ny)   =      3214849
+     Nr of (sub)pixels raytraced =      3457173
+     Nr of (sub)pixels used      =      3396592
+     Increase of raytracing cost =    1.0753764795796008     
+
+ Execution time: 109.69 sec = 1.83 min = 0.03 hrs
+
+ Date: 02/10/2026  Time: 02:20:47
+
+ Done...
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  1 2026 21:15    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+    Adjusting theta(ny+1) to exactly pi/2...
+ Reading star data...
+ Grid information (current status):
+   We have 96000 branches, of which 96000 are actual grid cells.
+   ---> 100.000% mem use for branches, and 100.000% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ Dust mass total =    9.6922758848334674       Msun
+ Reading dust temperatures...
+ Reading dust densities...
+ Dust mass total =    6.7131471887462544       Msun
+ Cylinder: surface density on the axis  3.00000E+22 cm^-2
+ Cylinder: central density of H2  2.26179E+05 cm^-3
+ Cylinder: flat radius  9.22394E+00 as
+ Reading external luminosity source...
+    Central luminosity: 0.00000000E+00 Lsun
+   External luminosity: 9.62186390E+03 Lsun
+  ISRF bolometric flux: 8.31979614E-02 erg/s/cm^2  G0: 1.000E+01
+ Reading the heat source spatial distribution...
+ Using external luminosity (interstellar radiation field)...
+ Using mirror symmetry in equatorial plane, because max(theta)==pi/2.
+ Starting procedure for rendering image...
+   --> Including dust
+       No lines included...
+       No gas continuum included...
+ Rendering image(s)...
+ Doing scattering Monte Carlo simulation for lambda =    999.00000000000000       micron...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ DO_MONTE-CARLO_SCATTERING: Using dust scattering mode            1
+ Using dust scattering mode            1
+ Wavelength nr            1  corresponding to lambda=   999.00000000000000       micron
+ Thread Nr  0 of  2 threads in total
+ Thread Nr  1 of  2 threads in total
+ Elapsed time:   1.8849519999930635     
+ Average number of scattering events per photon package =    0.0000000000000000     
+ Tip for speed-up: By default the settings of RADMC-3D are conservative (i.e. safe but slow).
+    A photon package in monochromatic Monte Carlo is only destroyed after tau_abs =  30.00
+    In most cases, however, an optical depth limit of 5 is enough.
+    You can (though at your own risk) speed this up by adding the following line to radmc3d.inp:
+    mc_scat_maxtauabs = 5.d0
+ Ray-tracing image for lambda =    999.00000000000000       micron...
+ Writing image to file...
+ Used scattering_mode=1, meaning: isotropic scattering approximation.
+ Diagnostics of flux-conservation (sub-pixeling):
+     Nr of main pixels (nx*ny)   =      3214849
+     Nr of (sub)pixels raytraced =      3457173
+     Nr of (sub)pixels used      =      3396592
+     Increase of raytracing cost =    1.0753764795796008     
+
+ Execution time: 111.94 sec = 1.87 min = 0.03 hrs
+
+ Date: 02/10/2026  Time: 02:22:55
+
+ Done...
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  4 2026 15:52    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+    Adjusting theta(241) to exactly pi/2...
+ Reading star data...
+ Grid information (current status):
+   We have 192000 branches, of which 192000 are actual grid cells.
+   ---> 100.000% mem use for branches, and 100.000% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ Dust mass total =    14.860219928617695       Msun
+ Cylinder: surface density on the axis  3.00000E+22 cm^-2
+ Cylinder: central density of H2  2.26179E+05 cm^-3
+ Cylinder: flat radius  9.22394E+00 as
+ Reading external luminosity source...
+    Central luminosity: 0.00000000E+00 Lsun
+   External luminosity: 9.11286679E+03 Lsun
+  ISRF bolometric flux: 8.31979614E-02 erg/s/cm^2  G0: 1.000E+01
+ Reading the heat source spatial distribution...
+ Using external luminosity (interstellar radiation field)...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ Using dust scattering mode            1
+ Computing emissivity database...
+ Computing total input luminosities...
+ Modified Random Walk mode is switched ON
+  
+ Starting the thermal Monte Carlo simulation....
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  4 2026 19:59    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+ Reading star data...
+ Grid information (current status):
+   We have 66916608 branches, of which 66916608 are actual grid cells.
+   ---> -28.368% mem use for branches, and -28.368% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ ERROR: Found more than one file dust_density.*inp
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  4 2026 19:59    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+ Reading star data...
+ Grid information (current status):
+   We have 66916608 branches, of which 66916608 are actual grid cells.
+   ---> -28.368% mem use for branches, and -28.368% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ ERROR: Found more than one file dust_density.*inp
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  4 2026 20:14    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+ Reading star data...
+ Grid information (current status):
+   We have 66916608 branches, of which 66916608 are actual grid cells.
+   ---> -28.368% mem use for branches, and -28.368% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ ERROR: Found more than one file dust_density.*inp
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  4 2026 20:14    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+ Reading star data...
+ Grid information (current status):
+   We have 66916608 branches, of which 66916608 are actual grid cells.
+   ---> -28.368% mem use for branches, and -28.368% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ Dust mass total =    79.794965513280928       Msun
+ Reading external luminosity source...
+    Central luminosity: 0.00000000E+00 Lsun
+   External luminosity: 4.01605798E+04 Lsun
+  ISRF bolometric flux: 8.31979614E-02 erg/s/cm^2  G0: 1.000E+01
+ Reading the heat source spatial distribution...
+ Using external luminosity (interstellar radiation field)...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ Using dust scattering mode            1
+ Computing emissivity database...
+ Computing total input luminosities...
+ Modified Random Walk mode is switched ON
+  
+ Starting the thermal Monte Carlo simulation....
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  4 2026 20:18    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+ Reading star data...
+ Grid information (current status):
+   We have 66916608 branches, of which 66916608 are actual grid cells.
+   ---> -28.368% mem use for branches, and -28.368% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ Dust mass total =    79.794965513280928       Msun
+ Reading external luminosity source...
+    Central luminosity: 0.00000000E+00 Lsun
+   External luminosity: 4.01605798E+04 Lsun
+  ISRF bolometric flux: 8.31979614E-02 erg/s/cm^2  G0: 1.000E+01
+ Reading the heat source spatial distribution...
+ Using external luminosity (interstellar radiation field)...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ Using dust scattering mode            1
+ Computing emissivity database...
+ Computing total input luminosities...
+ Modified Random Walk mode is switched ON
+  
+ Starting the thermal Monte Carlo simulation....
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  4 2026 20:18    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+ Reading star data...
+ Grid information (current status):
+   We have 66916608 branches, of which 66916608 are actual grid cells.
+   ---> -28.368% mem use for branches, and -28.368% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ ERROR: dust_density.inp does not have same number
+        of cells as the grid.
+              8364576    66916608
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  4 2026 20:18    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+ Reading star data...
+ Grid information (current status):
+   We have 66916608 branches, of which 66916608 are actual grid cells.
+   ---> -28.368% mem use for branches, and -28.368% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ ERROR: dust_density.inp does not have same number
+        of cells as the grid.
+              8364576    66916608
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  4 2026 20:18    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+ Reading star data...
+ Grid information (current status):
+   We have 8364576 branches, of which 8364576 are actual grid cells.
+   ---> 100.000% mem use for branches, and 100.000% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ Dust mass total =    79.856385054768921       Msun
+ Reading external luminosity source...
+    Central luminosity: 0.00000000E+00 Lsun
+   External luminosity: 4.01605798E+04 Lsun
+  ISRF bolometric flux: 8.31979614E-02 erg/s/cm^2  G0: 1.000E+01
+ Reading the heat source spatial distribution...
+ Using external luminosity (interstellar radiation field)...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ Using dust scattering mode            1
+ Computing emissivity database...
+ Computing total input luminosities...
+ Modified Random Walk mode is switched ON
+  
+ Starting the thermal Monte Carlo simulation....
+ Thread  0 of  2 threads in total
+ Thread  1 of  2 threads in total
+ Elapsed time:   4370.7869868706912     
+ Done with Bjorkman & Wood Monte Carlo simulation
+ Using the parallel version of RADMC-3D
+ Number of parallel threads used:            2
+ Average number of abs/scat events per photon package =   0.33305282300000000     
+ Average nr of times a photon stays in the same cell  =    9.5016456593787803E-003
+ Maximum nr of times a photon stayed in the same cell =            9
+ Saving results of thermal Monte Carlo
+ Done...
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  4 2026 20:18    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+ Reading star data...
+ Grid information (current status):
+   We have 8364576 branches, of which 8364576 are actual grid cells.
+   ---> 100.000% mem use for branches, and 100.000% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ ERROR: Could not find any dust_density.*inp...
+  
+ !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+ Original screen output is redirected to '+mc3d.output'
+ ______________________________________________________________________________
+                                                                               
+                   RADMC3D: A 3D CONTINUUM AND LINE RT SOLVER                  
+                  Version 2.0 (c) 2008-2023 Cornelis Dullemond                 
+                     Modifications by Alexander Men’shchikov                   
+                      RADMC3D compiled on Oct  4 2026 20:18    
+                                 Version 2.260601
+ ______________________________________________________________________________
+
+ Reading global frequencies/wavelengths...
+ Reading grid file and prepare grid tree...
+ Reading star data...
+ Grid information (current status):
+   We have 8364576 branches, of which 8364576 are actual grid cells.
+   ---> 100.000% mem use for branches, and 100.000% mem use for actual cells.
+   No grid refinement is active. The AMR tree is not allocated (this saves memory).
+ Reading dust data...
+ Reading dust densities...
+ Dust mass total =    79.856385054802047       Msun
+ Reading external luminosity source...
+    Central luminosity: 0.00000000E+00 Lsun
+   External luminosity: 4.01605798E+04 Lsun
+  ISRF bolometric flux: 8.31979614E-02 erg/s/cm^2  G0: 1.000E+01
+ Reading the heat source spatial distribution...
+ Using external luminosity (interstellar radiation field)...
+ Beware: The OpenMP-parallel acceleration of RADMC-3D has 
+         not yet been tested with all of the modes and
+         features that RADMC-3D offers. Please check 
+         your parallel results against the serial version
+         (i.e. compiling without -fopenmp). 
+ Using dust scattering mode            1
+ Computing emissivity database...
+ Computing total input luminosities...
+ Modified Random Walk mode is switched ON
+  
+ Starting the thermal Monte Carlo simulation....
+ Thread  0 of  2 threads in total
+ Thread  1 of  2 threads in total
+ Elapsed time:   4321.3501209709793     
+ Done with Bjorkman & Wood Monte Carlo simulation
+ Using the parallel version of RADMC-3D
+ Number of parallel threads used:            2
+ Average number of abs/scat events per photon package =   0.33317304900000000     
+ Average nr of times a photon stays in the same cell  =    8.9587143355700262E-003
+ Maximum nr of times a photon stayed in the same cell =            8
+ Saving results of thermal Monte Carlo
+ Done...
