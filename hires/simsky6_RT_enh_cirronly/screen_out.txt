@@ -1,0 +1,13 @@
+py make_simsky6 --cirrus-only
+ cirrus enhanced toward the center: factor 1 + 5.00 [1 + (r/600")^2]^(-1.50/2); median now 5.355e+21 cm-2
+ filament axes at columns 224, 448, 672, 896, 1120, 1344, 1568, from left to right
+ /Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261007_RT_cyl_sd3e21_enh axis at column  896 of its image, peak 2.997e+21 cm-2, placed at column  224
+ /Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261007_RT_cyl_sd1e22_enh axis at column  896 of its image, peak 9.992e+21 cm-2, placed at column  448
+ /Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261007_RT_cylinder_enh axis at column  896 of its image, peak 2.997e+22 cm-2, placed at column  672
+ /Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261007_RT_cyl_sd5e22_enh axis at column  896 of its image, peak 4.996e+22 cm-2, placed at column  896
+ /Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261007_RT_cyl_sd1e23_enh axis at column  896 of its image, peak 9.992e+22 cm-2, placed at column 1120
+ /Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261007_RT_cyl_p2_enh axis at column  896 of its image, peak 2.998e+22 cm-2, placed at column 1344
+ /Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261007_RT_cyl_w80_enh axis at column  896 of its image, peak 2.999e+22 cm-2, placed at column 1568
+ --cirrus-only: the sky contains the cirrus alone, without filaments and without craters
+   70 microns: RADMC-3D / analytic cirrus emission, median 3.288, 1st and 99th percentiles 2.068 and 4.256
+simsky6.w40.070.r8p4.fits                      median      6.573 MJy/sr
