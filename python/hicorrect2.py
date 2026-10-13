@@ -52,15 +52,23 @@ attenuation cannot describe.
 Usage:
 
     python3 hicorrect2.py <hires configuration file> <evaluation image> <image> ...
-                          [-temp=<fitted temperature image>]
+                          [-temp=<fitted temperature image>] [-g0=<field>]
 
 The configuration file is the one hires used; the wavebands marked '+' in it
 are the ones the relation is built for. Every argument after the evaluation
 image is an image to which the correction is added. For each of them a file
-with the suffix '.corr' is written, and the image of the correction factors is
-written once alongside the first of them. If the temperature image that hires
-fitted at the resolution of the evaluation image is given with -temp=<file>,
-the dust temperature implied by the corrected surface density is also written.
+with the suffix '.correct.fits' is written, and the image of the correction
+factors is written as <evaluation image>.cfactor.fits. If the temperature image
+that hires fitted at the resolution of the evaluation image is given with
+-temp=<file>, the dust temperature implied by the corrected surface density is
+written as <file>.correct.fits. The names are the same as those of the Fortran
+version.
+
+The relation is calibrated for the radiation field G_0 = 10 in Habing units.
+For a cloud in another field, give its field with -g0=<field>, as estimated
+from the diffuse material with g0_requirement.py. The factor is then multiplied
+by a function of the fitted surface density and the field, measured on the
+grid of radiation fields from G_0 = 0.98 to 482.5 and held constant outside it.
 
 The correction must be applied once. It is not idempotent: applied again to an
 image it has already corrected, it would raise the values a second time. Every
@@ -114,6 +122,52 @@ NTFIT = 2600         # points of the temperature grid of the fit
 CAL_ERR = {70.0: 0.20, 100.0: 0.20, 160.0: 0.20, 250.0: 0.10, 350.0: 0.10, 500.0: 0.10}
                      # relative calibration uncertainty of each waveband, which sets its weight in the fit, as in hires
 SMIN, SMAX = 1.0e20, 1.0e24      # range of the tabulated relation, cm^-2
+
+# The multiplier of the factor for a radiation field other than G_0 = 10 (Habing units), measured on the grid of radiation fields
+# (harvest_calib3_G0=*.txt): the pixel-weighted mean of log f in bins of 0.1 dex of the fitted surface density, smoothed over
+# three bins, minus the same at G_0 = 10 (make_field_multiplier.py). Above 10^22.6 cm^-2 the grid has too few pixels, and the
+# multiplier is held at its value there. Rows are log10 of the fitted surface density, from RX0 in steps of RDX; columns are the
+# fields RG0. It is interpolated linearly in log G_0 and held constant outside the table.
+RG0 = np.array([0.98, 2.12, 4.61, 10.0, 21.7, 47.1, 102.4, 222.2, 482.5])
+RX0, RDX = 20.95, 0.1
+RTAB = np.array([
+    [0.991, 0.994, 0.999, 1.000, 1.001, 1.000, 0.997, 0.990, 0.994],  # 20.95
+    [0.986, 0.991, 0.995, 1.000, 1.001, 1.000, 0.997, 0.989, 0.990],  # 21.05
+    [0.978, 0.988, 0.992, 1.000, 1.001, 1.000, 0.997, 0.989, 0.986],  # 21.15
+    [0.970, 0.981, 0.987, 1.000, 1.003, 1.001, 0.996, 0.986, 0.982],  # 21.25
+    [0.960, 0.972, 0.981, 1.000, 1.007, 1.008, 1.001, 0.989, 0.982],  # 21.35
+    [0.944, 0.958, 0.973, 1.000, 1.013, 1.017, 1.008, 0.991, 0.979],  # 21.45
+    [0.920, 0.936, 0.959, 1.000, 1.026, 1.041, 1.034, 1.009, 0.985],  # 21.55
+    [0.904, 0.924, 0.955, 1.000, 1.047, 1.072, 1.068, 1.035, 0.999],  # 21.65
+    [0.904, 0.929, 0.967, 1.000, 1.124, 1.176, 1.178, 1.132, 1.010],  # 21.75
+    [0.837, 0.891, 0.936, 1.000, 1.110, 1.182, 1.188, 1.126, 1.027],  # 21.85
+    [0.815, 0.857, 0.889, 1.000, 1.084, 1.242, 1.248, 1.106, 1.029],  # 21.95
+    [0.775, 0.803, 0.919, 1.000, 1.102, 1.179, 1.209, 1.092, 0.991],  # 22.05
+    [0.756, 0.790, 0.909, 1.000, 1.107, 1.169, 1.162, 1.074, 0.936],  # 22.15
+    [0.753, 0.786, 0.846, 1.000, 1.092, 1.232, 1.126, 1.032, 0.871],  # 22.25
+    [0.756, 0.793, 0.851, 1.000, 1.099, 1.170, 1.120, 0.996, 0.838],  # 22.35
+    [0.796, 0.843, 0.899, 1.000, 1.186, 1.220, 1.120, 0.996, 0.865],  # 22.45
+    [0.767, 0.812, 0.916, 1.000, 1.168, 1.199, 1.114, 0.959, 0.834],  # 22.55
+    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.65
+    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.75
+    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.85
+    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.95
+    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 23.05
+    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 23.15
+    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 23.25
+])
+
+
+def field_multiplier(logs, g0):
+    """Multiplier of the correction factor for the field g0, at log10 of the fitted surface density logs."""
+    x = np.asarray(logs, float)
+    t = np.clip(np.log10(g0), np.log10(RG0[0]), np.log10(RG0[-1]))
+    lg = np.log10(RG0)
+    j = min(max(int(np.searchsorted(lg, t)) - 1, 0), len(lg) - 2)
+    a = (t - lg[j]) / (lg[j + 1] - lg[j])
+    xs = RX0 + RDX * np.arange(RTAB.shape[0])
+    lr = (1.0 - a) * np.log(RTAB[:, j]) + a * np.log(RTAB[:, j + 1])
+    return np.exp(np.interp(x, xs, lr))
 
 
 def planck(t, wave_um):
@@ -266,9 +320,11 @@ def write_temperature(ftemp, f, good, wref, header, out):
 
 
 def main():
-    args = [a for a in sys.argv[1:] if not a.startswith("-temp=")]
+    args = [a for a in sys.argv[1:] if not a.startswith("-")]
     ftemp = [a[6:] for a in sys.argv[1:] if a.startswith("-temp=")]
     ftemp = ftemp[0] if ftemp else None
+    g0 = [float(a[4:]) for a in sys.argv[1:] if a.startswith("-g0=")]
+    g0 = g0[0] if g0 else 10.0
     if len(args) < 3:
         print(__doc__)
         return
@@ -278,6 +334,14 @@ def main():
         print(" fewer than two wavebands are marked '+' in %s" % cfg)
         return
     fitted, factor = build_relation(waves)
+    if g0 != 10.0:
+        if g0 < RG0[0] or g0 > RG0[-1]:
+            print(" WARNING: G_0 = %g lies outside the grid of radiation fields (%g to %g);"
+                  " the multiplier of the nearest field is used" % (g0, RG0[0], RG0[-1]))
+        factor = factor * field_multiplier(np.log10(fitted), g0)
+    # The relation of uniform bodies declines above about 3e22 cm^-2, where such a body is nearly isothermal at the floor
+    # temperature; the radiative transfer models of concentrated cores do not, so the factor is held at its maximum there.
+    factor = np.maximum.accumulate(factor)
 
     hdu = fits.open(fbase)[0]
     if "HICORR" in hdu.header:
@@ -290,6 +354,7 @@ def main():
     f = np.where(good, np.interp(np.log10(np.maximum(base, 1.0)),
                                  np.log10(fitted), factor,
                                  left=factor[0], right=factor[-1]), 1.0)
+
     delta = np.where(good, (f - 1.0) * base, 0.0)
 
     print(" wavebands used: %s micron; reference %.0f micron"
@@ -300,6 +365,7 @@ def main():
           " directions, uniform structures, sphere and layer averaged;" % NANG)
     print(" below 10^%.1f cm^-2 the layer is replaced by a RADMC-3D cloud,"
           " blended into the analytic relation up to 10^%.1f cm^-2" % XBLEND)
+    print(" radiation field G_0 = %g (Habing units)%s" % (g0, "" if g0 != 10.0 else ", the field of the calibration"))
     print(" evaluation image %s: %d valid pixels" % (os.path.basename(fbase),
                                                int(good.sum())))
     p = np.percentile(f[good], [1, 25, 50, 75, 99])
@@ -324,12 +390,13 @@ def main():
         hh = h.header.copy()
         hh["BUNIT"] = "H2/cm^2"
         hh["HICORR"] = (GAMMA, "index of the temperature relation applied")
+        hh["HIG0"] = (g0, "radiation field of the correction, Habing units")
         stem = name[:-5] if name.endswith(".fits") else name
         fits.PrimaryHDU(np.asarray(out, np.float32), hh).writeto(
-            stem + ".corr.fits", overwrite=True)
+            stem + ".correct.fits", overwrite=True)
         gg = (a > 0.0) & good
         print(" %-52s ratio of the sums %.4f"
-              % (os.path.basename(stem) + ".corr.fits",
+              % (os.path.basename(stem) + ".correct.fits",
                  out[gg].sum() / a[gg].sum()))
         if first:
             hh2 = h.header.copy()
@@ -337,12 +404,10 @@ def main():
             hh2["HICORR"] = (GAMMA, "index of the temperature relation")
             fits.PrimaryHDU(np.asarray(np.where(good, f, 0.0), np.float32),
                             hh2).writeto(
-                os.path.join(os.path.dirname(os.path.abspath(name)),
-                             "hi.correction.factor.fits"), overwrite=True)
+                (fbase[:-5] if fbase.endswith(".fits") else fbase) + ".cfactor.fits", overwrite=True)
             if ftemp is not None:
                 write_temperature(ftemp, f, good, waves[-1], hdu.header,
-                                  os.path.join(os.path.dirname(os.path.abspath(name)),
-                                               "hi.temperature.corr.fits"))
+                                  (ftemp[:-5] if ftemp.endswith(".fits") else ftemp) + ".correct.fits")
             else:
                 print(" no temperature image given with -temp=<file>,"
                       " so no temperature map is written")
