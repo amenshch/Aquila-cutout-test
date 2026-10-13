@@ -53,21 +53,26 @@
 ! The correction must be applied once. It is not idempotent: applied to an image it has already corrected it would raise the values
 ! again. Every output image is stamped with the keyword HICORR, and the program refuses any input that carries it.
 !
-! usage:  hicorrect2 <config> <image> [<finer> ...] [-temp=<file>] [-verb{0|1|2}]
+! usage:  hicorrect2 <config> <image> [<finer> ...] [-temp=<file>] [-g0=<field>] [-verb{0|1|2}]
 !
 !         <config>     the configuration of the hires run that produced the images, usually '+hires.cfg'
 !         <image>      the surface density image on which the factor is evaluated and which is multiplied by it
 !         <finer>      any further surface density image of the same reconstruction, to which the same amount is added
 !         <file>       the temperature image that hires fitted at the resolution of <image>, optional
+!         <field>      the radiation field of the cloud in Habing units, as estimated by g0_requirement.py; 10 by default
 !
 ! output: <image>.correct.fits and <finer>.correct.fits, the corrected images
 !         <image>.cfactor.fits, the image of the correction factors
-!         <image>.temperature.corr.fits, the dust temperature implied by the corrected surface density, if -temp is given
+!         <file>.correct.fits, the dust temperature implied by the corrected surface density, if -temp=<file> is given
 !__________________________________________________________________________________________________________________________________
 !
        implicit      none
        integer       iotty, iolog, mband, mimg, ntab, ndep, ntfit, nang
        parameter   ( iotty = 6, iolog = 0, mband = 10, mimg = 20, ntab = 200, ndep = 512, ntfit = 3000, nang = 160 )
+       integer       nrx, nrg, lt
+       parameter   ( nrx = 24, nrg = 9 )
+       real*8        rtab(nrx,nrg), rg0(nrg), rx0, rdx, g0, fieldmult
+       parameter   ( rx0 = 20.95d0, rdx = 0.1d0 )
        logical       lunix
        character*6   cfitsversion, cverbose
        character*8   ctime
@@ -79,7 +84,7 @@
        character*80  chead(5)
        integer       nx, ny, nxi, nyi, nband, i, j, k, l, ib, nimg, iargc, narg, la, ls, nfit, nvalid, blank, ndate, igeo
        real          fitsvers
-       real*8        wave(mband), beams(mband), offset(mband), wfit(mband), waveref, cref, bb, invplanck
+       real*8        wave(mband), beams(mband), offset(mband), wfit(mband), waveref, bb, invplanck
      &             , dx, dy, dxi, dyi, crpix1, crpix2, crval1, crval2, crota1, crota2, cd11, cd12, cd21, cd22, equinox, bzero
      &             , bscale, beamkw, funmin, funmax, datamn, datamx, wavekw, pix, rnan, rhead(17), ra, dec
      &             , tfloor, tsurf, sstar, gamma, kappa0, nu0, betap, dtg, muh2, amu, hplanck, kboltz, speedolight, kapheat, pi
@@ -96,7 +101,51 @@
        character*3   cnan
        equivalence ( cnan, rnan )
        data          cnan / 'NaN' /
-       external      planckf, rfits, wfits, interp, rdcfg, putima, invplanck
+       external      planckf, rfits, wfits, interp, rdcfg, putima, invplanck, fieldmult
+! The multiplier of the factor for a radiation field other than G_0 = 10 in Habing units, measured on the grid of radiation fields
+! (harvest_calib3_G0=*.txt): the pixel-weighted mean of log f in bins of 0.1 dex of the fitted surface density, smoothed over
+! three bins, minus the same at G_0 = 10 (make_field_multiplier.py). Above 10^22.6 cm^-2 the grid has too few pixels, and the
+! multiplier is held at its value there. Rows are log10 of the fitted surface density from rx0 in steps of rdx, columns are the
+! fields rg0. It is interpolated linearly in log G_0 and held constant outside the table.
+!
+       data          rg0  / 0.98d0, 2.12d0, 4.61d0, 10.0d0, 21.7d0, 47.1d0, 102.4d0, 222.2d0, 482.5d0 /
+!                   G_0 = 0.98
+       data          rtab / 0.991d0, 0.986d0, 0.978d0, 0.970d0, 0.960d0, 0.944d0, 0.920d0, 0.904d0
+     &             , 0.904d0, 0.837d0, 0.815d0, 0.775d0, 0.756d0, 0.753d0, 0.756d0, 0.796d0
+     &             , 0.767d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0
+!                   G_0 = 2.12
+     &             , 0.994d0, 0.991d0, 0.988d0, 0.981d0, 0.972d0, 0.958d0, 0.936d0, 0.924d0
+     &             , 0.929d0, 0.891d0, 0.857d0, 0.803d0, 0.790d0, 0.786d0, 0.793d0, 0.843d0
+     &             , 0.812d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0
+!                   G_0 = 4.61
+     &             , 0.999d0, 0.995d0, 0.992d0, 0.987d0, 0.981d0, 0.973d0, 0.959d0, 0.955d0
+     &             , 0.967d0, 0.936d0, 0.889d0, 0.919d0, 0.909d0, 0.846d0, 0.851d0, 0.899d0
+     &             , 0.916d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0
+!                   G_0 = 10
+     &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
+     &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
+     &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
+!                   G_0 = 21.7
+     &             , 1.001d0, 1.001d0, 1.001d0, 1.003d0, 1.007d0, 1.013d0, 1.026d0, 1.047d0
+     &             , 1.124d0, 1.110d0, 1.084d0, 1.102d0, 1.107d0, 1.092d0, 1.099d0, 1.186d0
+     &             , 1.168d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0
+!                   G_0 = 47.1
+     &             , 1.000d0, 1.000d0, 1.000d0, 1.001d0, 1.008d0, 1.017d0, 1.041d0, 1.072d0
+     &             , 1.176d0, 1.182d0, 1.242d0, 1.179d0, 1.169d0, 1.232d0, 1.170d0, 1.220d0
+     &             , 1.199d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0
+!                   G_0 = 102.4
+     &             , 0.997d0, 0.997d0, 0.997d0, 0.996d0, 1.001d0, 1.008d0, 1.034d0, 1.068d0
+     &             , 1.178d0, 1.188d0, 1.248d0, 1.209d0, 1.162d0, 1.126d0, 1.120d0, 1.120d0
+     &             , 1.114d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0
+!                   G_0 = 222.2
+     &             , 0.990d0, 0.989d0, 0.989d0, 0.986d0, 0.989d0, 0.991d0, 1.009d0, 1.035d0
+     &             , 1.132d0, 1.126d0, 1.106d0, 1.092d0, 1.074d0, 1.032d0, 0.996d0, 0.996d0
+     &             , 0.959d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0
+!                   G_0 = 482.5
+     &             , 0.994d0, 0.990d0, 0.986d0, 0.982d0, 0.982d0, 0.979d0, 0.985d0, 0.999d0
+     &             , 1.010d0, 1.027d0, 1.029d0, 0.991d0, 0.936d0, 0.871d0, 0.838d0, 0.865d0
+     &             , 0.834d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0
+     &             /
 !__________________________________________________________________________________________________________________________________
 !
 ! The command line. The first two positional arguments are the configuration and the image to be corrected; any further ones are
@@ -111,10 +160,12 @@
        mapfile  = ' '
        cfgfile  = ' '
        tempfile = ' '
+       g0       = 10.0d0
 
        narg = iargc ( )
        if (narg .lt. 2) then
-         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <config> <image> [<finer> ...] [-temp=<file>] [-verb{0|1|2}]'
+         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <config> <image> [<finer> ...] [-temp=<file>] [-g0=<field>]'
+     &                         //' [-verb{0|1|2}]'
          stop
        endif
 
@@ -123,6 +174,8 @@
          la = len_trim ( arg )
          if (arg(1:5) .eq. '-verb') then
            cverbose = arg(1:6)
+         elseif (arg(1:4) .eq. '-g0=') then
+           read (arg(5:la),*) g0
          elseif (arg(1:6) .eq. '-temp=') then
            tempfile = arg(7:la)
          elseif (cfgfile .eq. ' ') then
@@ -148,6 +201,11 @@
          write (iotty,'(a,f8.4,a,f8.4,a,f8.4,a,1pe11.4,a,0pf8.5,a)')
      &                               '   shielding law T(s) =', tfloor, ' + (', tsurf, ' -', tfloor, ') (1 + s /', sstar
      &                             , ')**(-', gamma, ') K'
+         write (iotty,'(a,f9.3,a)')  '   radiation field G_0 =', g0, ' (Habing units)'
+       endif
+       if (g0 .lt. rg0(1) .or. g0 .gt. rg0(nrg)) then
+         write (iotty,'(a,f9.3,a)')  '   HICORRECT2: WARNING: G_0 =', g0, ' lies outside the grid of radiation fields;'
+         write (iotty,'(a)')         '   the multiplier of the nearest field is used.'
        endif
 !__________________________________________________________________________________________________________________________________
 !
@@ -321,6 +379,15 @@
          fcor(i) = fcor(i) + wb * dd
        enddo
 
+! The field of the cloud, and the factor made non-decreasing with the fitted surface density. Above about 3 x 10^22 cm^-2 the
+! relation of uniform bodies declines, because such a body is nearly isothermal at the floor temperature. The radiative transfer
+! models of concentrated cores do not decline, so the factor is held at its maximum there.
+!
+       do i=1,ntab
+         if (g0 .ne. 10.0d0) fcor(i) = fcor(i) * fieldmult ( log10 ( ffit(i) ), g0, rtab, rg0, nrx, nrg, rx0, rdx )
+         if (i .gt. 1) fcor(i) = max ( fcor(i), fcor(i-1) )
+       enddo
+
        if (cverbose .eq. '-verb2') then
          write (iotty,'(/a)') '   the tabulated relation, fitted surface density and the factor that restores the true one:'
          do i=1,ntab,20
@@ -483,7 +550,9 @@
                endif
              enddo
            enddo
-           fname = stem(1:ls)//'.temperature.corr.fits'
+           lt = len_trim ( tempfile )
+           if (tempfile(max(lt-4,1):lt) .eq. '.fits') lt = lt - 5
+           fname = tempfile(1:lt)//'.correct.fits'
 
            call putima ( iotty, cverbose, cfitsversion, nx, ny, work, valid, rnan, fname, 'K', rhead, chead, blank, cdate, ctime )
 
@@ -1241,3 +1310,37 @@ cc!      bscale = abs ( funmax - bzero ) / 32767.0d0
        end
 
 !||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+!||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+       function fieldmult
+
+     &          ( x, g0, rtab, rg0, nrx, nrg, rx0, rdx )
+!__________________________________________________________________________________________________________________________________
+!
+! Multiplier of the correction factor for the radiation field g0, at x = log10 of the fitted surface density. The logarithm of the
+! table is interpolated linearly in log g0 and in x, and held constant outside the table.
+!__________________________________________________________________________________________________________________________________
+!
+       implicit      none
+       integer       nrx, nrg, j, i
+       real*8        fieldmult, x, g0, rtab(nrx,nrg), rg0(nrg), rx0, rdx, t, a, b, xi, r1, r2
+
+       t = log10 ( min ( max ( g0, rg0(1) ), rg0(nrg) ) )
+       j = 1
+       do while (j .lt. nrg - 1 .and. t .gt. log10 ( rg0(j+1) ))
+         j = j + 1
+       enddo
+       a = ( t - log10 ( rg0(j) ) ) / ( log10 ( rg0(j+1) ) - log10 ( rg0(j) ) )
+
+       xi = ( x - rx0 ) / rdx + 1.0d0
+       xi = min ( max ( xi, 1.0d0 ), dble ( nrx ) )
+       i  = min ( int ( xi ), nrx - 1 )
+       b  = xi - dble ( i )
+
+       r1 = ( 1.0d0 - b ) * log ( rtab(i,j)   ) + b * log ( rtab(i+1,j)   )
+       r2 = ( 1.0d0 - b ) * log ( rtab(i,j+1) ) + b * log ( rtab(i+1,j+1) )
+       fieldmult = exp ( ( 1.0d0 - a ) * r1 + a * r2 )
+
+       return
+       end
