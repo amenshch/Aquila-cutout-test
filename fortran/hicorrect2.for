@@ -6,11 +6,11 @@
 !
 ! HIRES • CORRECTION OF THE SINGLE-TEMPERATURE BIAS OF THE SURFACE DENSITY IMAGES OF A RECONSTRUCTION
 !
-! A surface density image is built by fitting one modified blackboltzdy to the wavebands of each line of sight and dividing the
+! A surface density image is built by fitting one modified blackbody to the wavebands of each line of sight and dividing the
 ! reference waveband by it. A real line of sight is not isothermal: its dust is warm near the surface of the cloud and cold in the
 ! interior, the single fitted temperature is weighted toward the warm dust that dominates the emission, and the surface density is
-! therefore too low wherever the temperature varies along the line of sight. The deficit reaches a factor of three at the highest
-! surface densities.
+! therefore too low wherever the temperature varies along the line of sight. The deficit exceeds a factor of two in the densest
+! material.
 !
 ! Where the deficit is. The reconstruction of hires forms a base image at the coarsest resolution and adds to it one differential
 ! increment per waveband, so that the image at any resolution is
@@ -18,10 +18,14 @@
 !   S(theta) = S(theta_coarse) + sum of the increments finer than theta.
 !
 ! The increments are differences between an image and a smoothed copy of itself, so they very nearly cancel when integrated over
-! an extended region: on the model grid they carry less than two per cent of the true surface density. The whole integrated deficit
-! therefore sits in the base image, and one additive correction of that image corrects every image of the reconstruction by the
-! same amount, leaving the increments untouched. That is what this program does, and it is the reason it must be given the base
-! image and not one of the finer ones: the relation it applies was built for the surface density at the coarsest resolution.
+! an extended region: on the model grid they carry less than three percent of the true surface density. The whole integrated
+! deficit therefore sits in the base image, and every image of the reconstruction has nearly the same fractional deficit.
+!
+! How the correction is applied. The image given as <image> is multiplied by the correction factor evaluated on that image itself,
+! pixel by pixel. This works for an image of any resolution: the default is the hires image at 13.5 arcsec, and the factor may
+! also be evaluated on the coarsest image of 36.3 arcsec, which is the conservative alternative. Each further image named on the
+! command line receives the same additive amount, (f - 1) times <image>, which is the right choice when <image> is the coarsest
+! image of the same reconstruction, because the increments of the finer images are not changed by the correction.
 !
 ! How the correction is computed. For a line of sight of true surface density S, the material at fractional depth u is shielded by
 ! the effective attenuating column
@@ -29,34 +33,35 @@
 !   s(u) = -ln < exp ( -kapheat S l(u,psi) / 2 ) > / ( kapheat / 2 ),
 !
 ! the angular average being taken over nang directions psi and l(u,psi) being the path from the depth u to the boundary in units of
-! the half thickness. It is evaluated for a uniform sphere and for a uniform plane-parallel layer and the two are averaged, which is
-! what a real structure lies between. The dust temperature of that material follows the relation
+! the half thickness. It is evaluated for a uniform sphere and for a uniform plane-parallel layer, and the two are averaged. The
+! dust temperature of that material follows the relation
 !
 !   T(s) = tfloor + ( tsurf - tfloor ) ( 1 + s / sstar ) ** (-gamma),
 !
-! measured on a grid of RADMC3D models of Bonnor-Ebert spheres embedded in uniform clouds. The emission of the line of sight is
-! integrated over depth in each of the wavebands that the reconstruction fitted, one modified blackboltzdy is fitted to the result
-! exactly as the reconstruction fits it, and the surface density that the fit returns is compared with S. The ratio is the factor
-! by which the fitted surface density has to be multiplied. It is tabulated once against the fitted surface density, which is the
-! quantity the image holds, and interpolated onto the image.
+! measured on radmc-3d models of Bonnor-Ebert spheres embedded in uniform clouds and of isolated cylinders. The emission of the line
+! of sight is integrated over depth in each of the wavebands that the reconstruction fitted, one modified blackbody is fitted to the
+! result exactly as the reconstruction fits it, and the surface density that the fit returns is compared with S. The ratio is the
+! factor by which the fitted surface density has to be multiplied. It is tabulated once against the fitted surface density, which
+! is the quantity the image holds, and interpolated onto the image. At low surface densities the analytic layer is replaced by a
+! radmc-3d model of a diffuse cloud, whose surface layers are warmer than the relation predicts (see below).
 !
-! The geometry. Nothing has to be chosen. The sphere and the layer are the two extremes of a uniform structure, they differ by only
-! a few per cent in the correction they imply, and their average is used. What the treatment does assume is that the whole column
-! of a line of sight belongs to one connected body in which every parcel is shielded by all the material outside it. Where several
-! structures are superposed along the line of sight, a cirrus, a filament and a core, they shield each other less than that, so the
-! correction is an upper bound on the mutual shielding and overstates the deficit of a superposed line of sight.
+! The geometry. The sphere and the layer are the two limits of a uniform structure. Their factors differ by up to 10%, and by less
+! than 4% outside the range from 10^21.4 to 10^22.1 cm^-2, and their average is used. The arrangement of the material along the
+! line of sight is not known. Where a structure lies in a weak cloud, it is corrected too little; where it lies near a face of a
+! dense cloud, it is corrected too much. On radiative transfer models, these errors range from -13% to +23%.
 !
 ! The correction must be applied once. It is not idempotent: applied to an image it has already corrected it would raise the values
 ! again. Every output image is stamped with the keyword HICORR, and the program refuses any input that carries it.
 !
-! usage:  hicorrect2 <base> <config> [<image> ...] [-verb{0|1|2}]
+! usage:  hicorrect2 <config> <image> [<finer> ...] [-verb{0|1|2}]
 !
-!         <base>       the surface density image of the reconstruction at the coarsest resolution
-!         <config>     the configuration of the hires run that produced it, usually '+hires.cfg'
-!         <image>      any further surface density image of the same reconstruction, to which the same correction is added
+!         <config>     the configuration of the hires run that produced the images, usually '+hires.cfg'
+!         <image>      the surface density image on which the factor is evaluated and which is multiplied by it
+!         <finer>      any further surface density image of the same reconstruction, to which the same amount is added
 !
-! output: <base>.corr.fits and <image>.corr.fits, the corrected images
-!         <base>.correction.fits, the factor by which the base image was multiplied
+! output: <image>.correct.fits and <finer>.correct.fits, the corrected images
+!         <image>.cfactor.fits, the image of the correction factors
+!         <image>.temperature.corr.fits, the dust temperature implied by the corrected surface density
 !__________________________________________________________________________________________________________________________________
 !
        implicit      none
@@ -93,8 +98,8 @@
        external      planckf, rfits, wfits, interp, rdcfg, putima, invplanck
 !__________________________________________________________________________________________________________________________________
 !
-! The command line. The first two positional arguments are the base image and the configuration; any further ones are images to
-! which the same correction is added.
+! The command line. The first two positional arguments are the configuration and the image to be corrected; any further ones are
+! images of the same reconstruction to which the same amount is added.
 !
        call osystem ( lunix )
        call ftvers ( fitsvers )
@@ -107,7 +112,7 @@
 
        narg = iargc ( )
        if (narg .lt. 2) then
-         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect <config> <base> [<image> ...] [-verb{0|1|2}]'
+         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <config> <image> [<finer> ...] [-verb{0|1|2}]'
          stop
        endif
 
@@ -176,7 +181,7 @@
        endif
 !__________________________________________________________________________________________________________________________________
 !
-! The relation. For each of ntab true surface densities the emission is integrated over ndep layers, one modified blackboltzdy is
+! The relation. For each of ntab true surface densities the emission is integrated over ndep layers, one modified blackbody is
 ! fitted to it on a grid of ntfit temperatures exactly as the reconstruction fits it, and the surface density that the fit returns
 ! is recorded. The table therefore runs over the fitted surface density, which is what the image holds, and gives the factor that
 ! restores the true one. Both arrays increase with the index, so the interpolation below is straightforward.
@@ -185,10 +190,10 @@
          tgrid(k) = 0.98d0 * tfloor * ( 1.02d0 * tsurf / ( 0.98d0 * tfloor ) ) ** ( dble ( k - 1 ) / dble ( ntfit - 1 ) )
        enddo
 
-! The factor that diffuse material requires, measured on a RADMC-3D cirrus whose projection is the cirrus map of the simulated sky:
-! medians of the true over the fitted surface density, in bins of the fitted surface density (log10, cm^-2). Below 10^xb0 the
-! factor is the average of the analytic sphere and this cirrus, which replaces the analytic layer; the difference from the analytic
-! average of sphere and layer is reduced smoothly to zero at 10^xb1.
+! The factor that diffuse material requires, measured on a radmc-3d model of a diffuse cloud whose projection is the cloud map of
+! the simulated sky: medians of the true over the fitted surface density, in bins of the fitted surface density (log10, cm^-2).
+! Below 10^xb0 the factor is the average of the analytic sphere and this cloud, which replaces the analytic layer; the difference
+! from the analytic average of sphere and layer is reduced smoothly to zero at 10^xb1.
 !
        cirx = (/ 20.55d0, 20.65d0, 20.75d0, 20.85d0, 20.95d0, 21.05d0, 21.15d0, 21.25d0, 21.35d0, 21.45d0, 21.55d0, 21.65d0 /)
        cirf = (/ 1.049d0, 1.051d0, 1.053d0, 1.058d0, 1.066d0, 1.075d0, 1.101d0, 1.121d0, 1.146d0, 1.180d0, 1.225d0, 1.251d0 /)
@@ -276,7 +281,7 @@
        enddo
        enddo
 
-! The cirrus calibration of the diffuse end, as described above.
+! The calibration of the diffuse end on the radmc-3d cloud, as described above.
 !
        do i=1,ntab
          xg = log10 ( ffit(i) )
@@ -320,7 +325,7 @@
        endif
 !__________________________________________________________________________________________________________________________________
 !
-! The base image.
+! The image to be corrected.
 !
        call getfitshead ( mapfile(1:len_trim(mapfile)), nx, ny, dx, dy, bunit )
 
@@ -382,12 +387,12 @@
        enddo
 
        if (nvalid .eq. 0) then
-         write (iotty,'(/a/)') '   HICORRECT: ERROR: the base image has no positive pixel.'
+         write (iotty,'(/a/)') '   HICORRECT: ERROR: the image has no positive pixel.'
          stop
        endif
 !__________________________________________________________________________________________________________________________________
 !
-! The correction of the base image, and the amount that is added to every image of the reconstruction. The factor is found by
+! The correction of the image, and the amount that is added to every further image of the reconstruction. The factor is found by
 ! interpolating the table in the logarithm of the surface density, and it is held at the ends of the table rather than
 ! extrapolated.
 !
@@ -419,7 +424,7 @@
              endif
            enddo
          enddo
-         write (iotty,'(a,i10,a)')      '   valid pixels of the base image:', nvalid, ''
+         write (iotty,'(a,i10,a)')      '   valid pixels of the image:     ', nvalid, ''
          write (iotty,'(a,2(1x,f8.4))') '   correction factor, smallest and largest:', funmin, funmax
          write (iotty,'(a,f8.4)')       '   ratio of the sums, corrected to uncorrected:', tt / ss
        endif
@@ -442,9 +447,9 @@
        if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
 !__________________________________________________________________________________________________________________________________
 !
-! The finer images of the same reconstruction. They differ from the base image by increments that the correction does not touch, so
-! the same amount is added to each of them. A pixel that is not positive in one of them, or that lies outside the coverage of the
-! base image, stays undefined.
+! The finer images of the same reconstruction. They differ from the corrected image by increments that the correction does not
+! touch, so the same amount is added to each of them. A pixel that is not positive in one of them, or that lies outside the
+! coverage of the corrected image, stays undefined.
 !__________________________________________________________________________________________________________________________________
 !
 ! The dust temperature that goes with the corrected surface density. The reference waveband was observed; the reconstruction
@@ -479,7 +484,7 @@
 
          if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
        else
-         write (iotty,'(a)') '   HICORRECT2: WARNING: the reference waveband image does not match the base image,'
+         write (iotty,'(a)') '   HICORRECT2: WARNING: the reference waveband image does not match the corrected image,'
          write (iotty,'(a)') '   so no temperature map is written.'
        endif
 !__________________________________________________________________________________________________________________________________
@@ -495,7 +500,7 @@
 
          if (nxi .ne. nx .or. nyi .ne. ny) then
            write (iotty,'(a,i6,a,i6,a)') '   HICORRECT: WARNING: '''//imgfile(k)(1:la)//''' is', nxi, ' x', nyi
-     &                                 , ' and does not match the base image; skipped.'
+     &                                 , ' and does not match the corrected image; skipped.'
            cycle
          endif
 
