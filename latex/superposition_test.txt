@@ -1,0 +1,26 @@
+! superposition_test.py -- dependence of the correction on the arrangement of the line of sight
+!
+! Part 1: a plane-parallel line of sight of 2.0e22 cm^-2, with a clump thirty times the ambient density placed
+! at three depths.  The quantity given is the largest relative difference of the four intensities from those of
+! a line of sight of uniform density and the same total column.
+!   uniform: 8.138612e+01  1.194309e+02  9.926337e+01  5.700916e+01  MJy sr^-1
+!   clump at 0.15 of the depth: 2.33e-04
+!   clump at 0.50 of the depth: 6.26e-05
+!   clump at 0.85 of the depth: 1.09e-04
+!
+! Part 2: the correction factor of a cirrus of column Sigma_c with a sphere embedded in it carrying the rest of
+! the column, against the fraction q of the cirrus that lies in front of the sphere, beside the factor the
+! method applies to the same total column.
+!
+! Sigma (cm^-2)  Sigma_c (cm^-2)   one body    q=0.00    q=0.10    q=0.25    q=0.50    q=0.75    q=0.90    q=1.00     spread
+  1.00e+22       1.00e+21        1.323    1.368    1.377    1.380    1.382    1.380    1.377    1.368      1.1 %
+  1.00e+22       3.00e+21        1.323    1.208    1.256    1.304    1.336    1.304    1.256    1.208     10.6 %
+  2.00e+22       1.00e+21        1.587    1.729    1.709    1.692    1.683    1.692    1.709    1.729      2.7 %
+  2.00e+22       3.00e+21        1.587    1.594    1.586    1.588    1.597    1.588    1.586    1.594      0.7 %
+  2.00e+22       1.00e+22        1.587    1.358    1.424    1.536    1.602    1.536    1.424    1.358     17.9 %
+  5.00e+22       1.00e+21        1.879    2.114    2.076    2.042    2.027    2.042    2.076    2.114      4.3 %
+  5.00e+22       3.00e+21        1.879    2.042    1.962    1.920    1.905    1.920    1.962    2.042      7.2 %
+  5.00e+22       1.00e+22        1.879    1.875    1.815    1.846    1.872    1.846    1.815    1.875      3.3 %
+  1.00e+23       1.00e+21        1.899    2.142    2.105    2.074    2.054    2.074    2.105    2.142      4.3 %
+  1.00e+23       3.00e+21        1.899    2.116    2.026    1.970    1.947    1.970    2.026    2.116      8.7 %
+  1.00e+23       1.00e+22        1.899    2.047    1.909    1.897    1.903    1.897    1.909    2.047      7.9 %

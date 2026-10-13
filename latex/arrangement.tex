@@ -1,0 +1,182 @@
+% ==================================================================================================================================
+% Three pieces of text for hires2_correction.tex, on the arrangement of the material along the line of sight.
+%
+%  1. A replacement for the last paragraph of Sect. 5.3 (\label{sec:orient}), the one beginning "One assumption remains".
+%  2. A new subsection of Sect. 8 (\label{sec:limits}), to follow "The geometry".
+%  3. A new appendix, to follow "The grid of models".
+%
+% All the numbers are produced by superposition_test.py, which writes superposition_test.txt.
+% ==================================================================================================================================
+
+
+% ----------------------------------------------------------------------------------------------------------------------------------
+% 1. REPLACES the last paragraph of Sect. 5.3, "One assumption remains, and it is not small. ... Section~\ref{sec:limits} returns
+%    to this."
+% ----------------------------------------------------------------------------------------------------------------------------------
+
+One assumption remains, that each structure is of uniform density, and it matters far less than it appears. Along a
+plane-parallel line of sight it does not matter at all. What shields a parcel of dust is the column of material lying between it
+and the surface, and that column is what it is however the material within it is distributed: piling half of it into a dense clump
+changes nothing about how much of it there is. The mass of a line of sight per unit column is constant as well, for any density
+profile whatever, because the column is itself the integral of the density. Writing $\Sig(s)$ for the column in front of a parcel
+at the depth $s$, the emission of Eq.~(\ref{eq:emission}) integrated along the line of sight is
+\begin{equation}
+   \int_0^L B_\lambda\big(T(\Sigma_{\rm a}(\Sig(s)))\big)\,\rho(s)\,{\rm d}s
+   = \int_0^{\Sig} B_\lambda\big(T(\Sigma_{\rm a}(\Sig'))\big)\,{\rm d}\Sig' ,
+\label{eq:invariance}
+\end{equation}
+and the density has disappeared. Two structures of the same total column emit the same spectrum whether the material is smooth or
+clumped, and whether a clump sits at the near face, in the middle or at the far face. Appendix~\ref{app:arrange} confirms this
+numerically on profiles differing by a factor of thirty in density, which reproduce the smooth case to two parts in
+$10^{4}$.
+
+Concentration and arrangement can therefore act only through the one thing Eq.~(\ref{eq:invariance}) assumes, that the radiation
+leaves along the line of sight rather than sideways. They do, and by a modest amount. A sphere whose central-to-edge density ratio
+is 10 requires a correction 3 per cent larger than a uniform sphere of the same central column, and one whose ratio is $10^3$
+requires between 6 and 15 per cent more, the difference growing with the column. A cirrus with a denser structure embedded in it
+requires between 15 per cent less and 11 per cent more than the single uniform body that the method substitutes for it, depending
+on where within the cirrus the structure lies. Both are quantified in Appendix~\ref{app:arrange} and enter the budget of
+Sect.~\ref{sec:limits}.
+
+
+% ----------------------------------------------------------------------------------------------------------------------------------
+% 2. NEW SUBSECTION of Sect. 8, to follow "The geometry".
+% ----------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{The arrangement along the line of sight}
+
+An observed line of sight is not one structure but several, at depths that no observation reveals, and the method replaces them by
+a single uniform body of the same total column. Equation~(\ref{eq:invariance}) shows that this substitution is exact in the
+plane-parallel limit, so the error it commits is confined to the transverse escape of bounded structures.
+Appendix~\ref{app:arrange} measures it in the two forms it takes. Concentrating a bounded structure raises the required correction
+by 3 per cent at a central-to-edge density ratio of 10 and by up to 15 per cent at a ratio of $10^3$. Embedding a structure in a
+cirrus changes it by between $-15$ and $+11$ per cent according to the depth at which the structure sits, without a preferred
+sign, and the value the method applies falls inside that range at every column we examined. We take 15 per cent as the
+uncertainty from this source. It is comparable to the uncertainty of the shielding relation and larger than that of the geometry,
+and unlike either of them it cannot be reduced by a better calculation, because the depth of a structure within a cloud is not an
+observable.
+
+
+% ----------------------------------------------------------------------------------------------------------------------------------
+% 3. NEW APPENDIX, to follow "The grid of models".
+% ----------------------------------------------------------------------------------------------------------------------------------
+
+\section{The arrangement of the material along the line of sight}
+\label{app:arrange}
+
+The correction is applied pixel by pixel, and a pixel receives the emission of everything along its line of sight. A single
+modified blackbody is fitted to that sum, so what biases the fit is the whole distribution of dust temperatures along the line of
+sight, and not the temperature of any one structure within it. The method replaces that distribution by the one that a single
+uniform body of the same total column would have. This appendix measures what the replacement costs. All of it is computed by
+\texttt{superposition\_test.py}, which takes the relation of Eq.~(\ref{eq:law}), the angular average of Eq.~(\ref{eq:seff}) and
+the constants from the implementation itself, so that nothing is duplicated.
+
+\subsection{The invariance}
+
+For a plane-parallel geometry the emergent emission depends on the total column alone. The attenuating column of a parcel is
+determined by the column between it and each surface, which does not depend on how that column is distributed, and the mass per
+unit column of a line of sight is constant for any density profile, which is Eq.~(\ref{eq:invariance}). As a check on the algebra
+and on the integrations, we computed the four intensities of a line of sight of $2{\times}10^{22}$\,cm$^{-2}$ carrying a clump
+thirty times the ambient density, placed at 15, 50 and 85 per cent of the depth. They differ from the smooth case of the same
+total column by $2.1{\times}10^{-4}$, $4.6{\times}10^{-5}$ and $1.2{\times}10^{-4}$ at most, which is the accuracy of the
+quadrature. Neither the concentration of the material nor the position of the clump has any effect.
+
+\subsection{Concentration}
+
+Since the density profile leaves the problem entirely in the plane-parallel limit, concentration can act only through the escape
+of radiation across the line of sight, which a bounded structure permits and a layer does not. We measure it on a sphere of
+density $\rho(r) \propto (1 + r^2/a^2)^{-1}$ out to its boundary, normalized so that the column through its center is the observed
+one, with $a$ set by the central-to-edge density ratio. The parcels of the central line of sight are weighted by their density,
+which is how the emission of that line of sight weights them, and the column each of them must send its radiation through is
+integrated along the ray to the boundary in every direction of the average.
+
+\begin{table}
+\caption{Correction factor required by the central line of sight of a sphere of the given central column, for four
+central-to-edge density ratios. The first column is the uniform sphere that the method assumes.}
+\label{tab:concentr}
+\centering
+\begin{tabular}{lcccc}
+\hline\hline
+\noalign{\smallskip}
+$\Sig$ (cm$^{-2}$) & uniform & $10$ & $10^2$ & $10^3$ \\
+\noalign{\smallskip}
+\hline
+\noalign{\smallskip}
+$5{\times}10^{21}$ & 1.068 & 1.096 & 1.122 & 1.136 \\
+$1{\times}10^{22}$ & 1.218 & 1.260 & 1.316 & 1.351 \\
+$3{\times}10^{22}$ & 1.709 & 1.750 & 1.857 & 1.968 \\
+$1{\times}10^{23}$ & 2.288 & 2.327 & 2.438 & 2.635 \\
+\noalign{\smallskip}
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:concentr} gives the result. Concentration always raises the required correction, because the mass of a
+concentrated structure sits where the shielding is deepest, and the effect grows with the column, from 3 per cent at a ratio of 10
+to 15 per cent at a ratio of $10^3$. It is bounded and one-sided, and a correction built on uniform structures therefore
+underestimates the deficit of a concentrated one, never the reverse.
+
+\subsection{Two superposed components}
+
+The second form of the question is a line of sight crossing a diffuse cirrus and a denser structure embedded in it at an unknown
+depth. We take a plane-parallel cirrus of column $\Sig_{\rm c}$, in which the material at the column depth $x$ is shielded by the
+angular average of $x/|\mu|$ toward the observer and $(\Sig_{\rm c} - x)/|\mu|$ away from it, and a uniform sphere whose column
+through its center is $\Sig_{\rm s}$, embedded in that cirrus with the fraction $q$ of the cirrus column in front of it. A parcel
+at the signed position $z$ along the diameter of the sphere, in units of its radius, is shielded by its own sphere over the path
+\begin{equation}
+   l(z,\psi) = -z\cos\psi + \sqrt{1 - z^2\sin^2\psi} ,
+\label{eq:lsphere}
+\end{equation}
+in units of the radius, and by the cirrus over $q\,\Sig_{\rm c}/|\cos\psi|$ toward the observer and
+$(1-q)\,\Sig_{\rm c}/|\cos\psi|$ away from it. The sign of $z$ has to be kept: with $|z|$ in its place the sphere would be
+symmetric about its center whatever lay in front of it, and the answer would be wrong for every $q$ but one half. The angular
+average of Eq.~(\ref{eq:seff}) is then taken over $\psi$ with the isotropic weight $\sin\psi$, the temperature of every parcel
+follows from Eq.~(\ref{eq:law}), the emission of the cirrus and of the sphere are added with their masses, and one modified
+blackbody is fitted to the sum exactly as the reconstruction fits it. The correction factor is the ratio of the true column to the
+fitted one, as in Eq.~(\ref{eq:factor}). The construction is symmetric under $q \rightarrow 1-q$, as it must be, and we have
+verified that the computed factors are.
+
+\begin{table}
+\caption{Correction factor required by a cirrus of column $\Sig_{\rm c}$ with a sphere embedded in it carrying the rest of the
+column, against the fraction $q$ of the cirrus lying in front of the sphere, beside the factor the method applies to the same
+total column. The values at $q$ and at $1-q$ are equal, so only half the range is listed.}
+\label{tab:arrange}
+\centering
+\begin{tabular}{llcccc}
+\hline\hline
+\noalign{\smallskip}
+$\Sig$ (cm$^{-2}$) & $\Sig_{\rm c}$ (cm$^{-2}$) & method & $q\,{=}\,0$ & $q\,{=}\,0.25$ & $q\,{=}\,0.5$ \\
+\noalign{\smallskip}
+\hline
+\noalign{\smallskip}
+$1{\times}10^{22}$ & $1{\times}10^{21}$ & 1.266 & 1.297 & 1.308 & 1.309 \\
+                   & $3{\times}10^{21}$ & 1.266 & 1.170 & 1.253 & 1.280 \\
+$2{\times}10^{22}$ & $1{\times}10^{21}$ & 1.538 & 1.643 & 1.612 & 1.605 \\
+                   & $3{\times}10^{21}$ & 1.538 & 1.538 & 1.541 & 1.547 \\
+                   & $1{\times}10^{22}$ & 1.538 & 1.300 & 1.486 & 1.557 \\
+$5{\times}10^{22}$ & $1{\times}10^{21}$ & 2.004 & 2.206 & 2.142 & 2.127 \\
+                   & $3{\times}10^{21}$ & 2.004 & 2.160 & 2.044 & 2.027 \\
+                   & $1{\times}10^{22}$ & 2.004 & 1.945 & 1.967 & 2.001 \\
+$1{\times}10^{23}$ & $1{\times}10^{21}$ & 2.294 & 2.548 & 2.475 & 2.453 \\
+                   & $3{\times}10^{21}$ & 2.294 & 2.548 & 2.377 & 2.344 \\
+                   & $1{\times}10^{22}$ & 2.294 & 2.447 & 2.286 & 2.294 \\
+\noalign{\smallskip}
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:arrange} gives the result and Fig.~\ref{fig:superposition} shows where it comes from. The departure from the value
+the method applies runs from $-15$ to $+11$ per cent, it has no preferred sign, and the method's value lies inside the range
+spanned by the arrangement at every column. The spread is largest, 20 per cent, when the diffuse component carries half of the
+column, and falls below 10 per cent in most of the configurations we examined.
+
+The middle panel of Fig.~\ref{fig:superposition} shows why the effect exists at all, and that it is a property of the fit rather
+than of the geometry. The two lines of sight drawn there carry exactly the same total column of $2{\times}10^{22}$\,cm$^{-2}$, but
+in one of them half of it is a sphere pressed against the near face of the cirrus, where it loses radiation sideways and has
+nothing in front of it to block the incoming field. That arrangement is warmer, it is brighter in all four wavebands, and the
+single modified blackbody fitted to it returns $1.54{\times}10^{22}$\,cm$^{-2}$ where the uniform body returns
+$1.30{\times}10^{22}$\,cm$^{-2}$. The same true column would then need a correction of 1.30 rather than 1.54.
+
+Nothing observable distinguishes the two. The depth of a structure within a cloud is not a measurable quantity, and no
+improvement of the calculation can recover it, so the 15 per cent of Sect.~\ref{sec:limits} is an irreducible uncertainty of any
+method of this kind rather than a defect of this one.

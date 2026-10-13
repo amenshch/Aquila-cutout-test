@@ -1,0 +1,71 @@
+\begin{thebibliography}{13}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+
+\bibitem[{{Andr{\'e}} {et~al.}(2014){Andr{\'e}}, {Di Francesco},
+  {Ward-Thompson}, {Inutsuka}, {Pudritz}, \& {Pineda}}]{Andre+2014}
+{Andr{\'e}}, P., {Di Francesco}, J., {Ward-Thompson}, D., {et~al.} 2014,
+  Protostars and Planets VI, 27
+
+\bibitem[{{Andr{\'e}} {et~al.}(2010){Andr{\'e}}, {Men'shchikov}, {Bontemps},
+  {K{\"o}nyves}, {Motte}, {Schneider}, {Didelon}, {Minier}, {Saraceno},
+  {Ward-Thompson}, {di Francesco}, {White}, {Molinari}, {Testi}, {Abergel},
+  {Griffin}, {Henning}, {Royer}, {Mer{\'\i}n}, {Vavrek}, {Attard},
+  {Arzoumanian}, {Wilson}, {Ade}, {Aussel}, {Baluteau}, {Benedettini},
+  {Bernard}, {Blommaert}, {Cambr{\'e}sy}, {Cox}, {di Giorgio}, {Hargrave},
+  {Hennemann}, {Huang}, {Kirk}, {Krause}, {Launhardt}, {Leeks}, {Le Pennec},
+  {Li}, {Martin}, {Maury}, {Olofsson}, {Omont}, {Peretto}, {Pezzuto}, {Prusti},
+  {Roussel}, {Russeil}, {Sauvage}, {Sibthorpe}, {Sicilia-Aguilar}, {Spinoglio},
+  {Waelkens}, {Woodcraft}, \& {Zavagno}}]{Andre+2010}
+{Andr{\'e}}, P., {Men'shchikov}, A., {Bontemps}, S., {et~al.} 2010, \aap, 518,
+  L102
+
+\bibitem[{{Bonnor}(1956)}]{Bonnor1956}
+{Bonnor}, W.~B. 1956, \mnras, 116, 351
+
+\bibitem[{{Dullemond} {et~al.}(2012){Dullemond}, {Juhasz}, {Pohl}, {Sereshti},
+  {Shetty}, {Peters}, {Commercon}, \& {Flock}}]{Dullemond+2012}
+{Dullemond}, C.~P., {Juhasz}, A., {Pohl}, A., {et~al.} 2012, {RADMC-3D: A
+  multi-purpose radiative transfer tool}
+
+\bibitem[{{Ebert}(1955)}]{Ebert1955}
+{Ebert}, R. 1955, Zeitschrift f\"ur Astrophysik, 37, 217
+
+\bibitem[{{Hildebrand}(1983)}]{Hildebrand1983}
+{Hildebrand}, R.~H. 1983, \qjras, 24, 267
+
+\bibitem[{{K{\"o}nyves} {et~al.}(2015){K{\"o}nyves}, {Andr{\'e}},
+  {Men'shchikov}, {Palmeirim}, {Arzoumanian}, {Schneider}, {Roy}, {Didelon},
+  {Maury}, {Shimajiri}, {Di Francesco}, {Bontemps}, {Peretto}, {Benedettini},
+  {Bernard}, {Elia}, {Griffin}, {Hill}, {Kirk}, {Ladjelate}, {Marsh}, {Martin},
+  {Motte}, {Nguy{\^e}n Luong}, {Pezzuto}, {Roussel}, {Rygl}, {Sadavoy},
+  {Schisano}, {Spinoglio}, {Ward-Thompson}, \& {White}}]{Konyves+2015}
+{K{\"o}nyves}, V., {Andr{\'e}}, P., {Men'shchikov}, A., {et~al.} 2015, \aap,
+  584, A91
+
+\bibitem[{{Men'shchikov}(2016)}]{Menshchikov2016}
+{Men'shchikov}, A. 2016, \aap, 593, A71
+
+\bibitem[{{Men'shchikov}(2021)}]{Menshchikov2021method}
+{Men'shchikov}, A. 2021, \aap, 649, A89
+
+\bibitem[{{Men'shchikov}(2023)}]{Menshchikov2023}
+{Men'shchikov}, A. 2023, A\&A, 675, A185
+
+\bibitem[{{Ossenkopf} \& {Henning}(1994)}]{Ossenkopf+Henning1994}
+{Ossenkopf}, V. \& {Henning}, T. 1994, \aap, 291, 943
+
+\bibitem[{{Palmeirim} {et~al.}(2013){Palmeirim}, {Andr{\'e}}, {Kirk},
+  {Ward-Thompson}, {Arzoumanian}, {K{\"o}nyves}, {Didelon}, {Schneider},
+  {Benedettini}, {Bontemps}, {Di Francesco}, {Elia}, {Griffin}, {Hennemann},
+  {Hill}, {Martin}, {Men'shchikov}, {Molinari}, {Motte}, {Nguyen Luong},
+  {Nutter}, {Peretto}, {Pezzuto}, {Roy}, {Rygl}, {Spinoglio}, \&
+  {White}}]{Palmeirim+2013}
+{Palmeirim}, P., {Andr{\'e}}, P., {Kirk}, J., {et~al.} 2013, \aap, 550, A38
+
+\bibitem[{{Pilbratt} {et~al.}(2010){Pilbratt}, {Riedinger}, {Passvogel},
+  {Crone}, {Doyle}, {Gageur}, {Heras}, {Jewell}, {Metcalfe}, {Ott}, \&
+  {Schmidt}}]{Pilbratt_etal2010}
+{Pilbratt}, G.~L., {Riedinger}, J.~R., {Passvogel}, T., {et~al.} 2010, \aap,
+  518, L1+
+
+\end{thebibliography}
