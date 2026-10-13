@@ -52,12 +52,15 @@ attenuation cannot describe.
 Usage:
 
     python3 hicorrect2.py <hires configuration file> <evaluation image> <image> ...
+                          [-temp=<fitted temperature image>]
 
 The configuration file is the one hires used; the wavebands marked '+' in it
 are the ones the relation is built for. Every argument after the evaluation
 image is an image to which the correction is added. For each of them a file
 with the suffix '.corr' is written, and the image of the correction factors is
-written once alongside the first of them.
+written once alongside the first of them. If the temperature image that hires
+fitted at the resolution of the evaluation image is given with -temp=<file>,
+the dust temperature implied by the corrected surface density is also written.
 
 The correction must be applied once. It is not idempotent: applied again to an
 image it has already corrected, it would raise the values a second time. Every
@@ -228,11 +231,48 @@ def relation_geometry(waves, geometry):
     return fitted, sigma / fitted, tfit
 
 
+def invplanck(b, wave_um):
+    """Temperature whose Planck function equals b at the wavelength in um."""
+    nu = C_LIGHT / (wave_um * 1.0e-4)
+    pref = 2.0 * H_PLANCK * nu ** 3 / C_LIGHT ** 2
+    return H_PLANCK * nu / (K_BOLTZ * np.log1p(pref / np.maximum(b, 1e-300)))
+
+
+def write_temperature(ftemp, f, good, wref, header, out):
+    """Dust temperature that goes with the corrected surface density.
+
+    The reconstruction derived the surface density from the reference
+    waveband with the temperature it fitted at the resolution of the
+    evaluation image. With f times more material on the line of sight, the
+    same intensity of the reference waveband is reproduced by colder dust,
+    whose Planck function is that of the fitted temperature divided by f. The
+    fitted temperature image must have the resolution of the evaluation image.
+    """
+    t = np.nan_to_num(np.array(fits.open(ftemp)[0].data, float))
+    if t.shape != f.shape:
+        print(" %s skipped: its shape does not match the evaluation image"
+              % ftemp)
+        return
+    ok = good & (t > 0.0)
+    tc = np.where(ok, invplanck(planck(np.where(ok, t, 1.0), wref)
+                                / np.where(ok, f, 1.0), wref), 0.0)
+    hh = header.copy()
+    hh["BUNIT"] = "K"
+    hh["HICORR"] = (GAMMA, "index of the temperature relation applied")
+    fits.PrimaryHDU(np.asarray(tc, np.float32), hh).writeto(out,
+                                                             overwrite=True)
+    print(" corrected dust temperature: median %.2f K -> %s"
+          % (np.median(tc[ok]), os.path.basename(out)))
+
+
 def main():
-    if len(sys.argv) < 4:
+    args = [a for a in sys.argv[1:] if not a.startswith("-temp=")]
+    ftemp = [a[6:] for a in sys.argv[1:] if a.startswith("-temp=")]
+    ftemp = ftemp[0] if ftemp else None
+    if len(args) < 3:
         print(__doc__)
         return
-    cfg, fbase, targets = sys.argv[1], sys.argv[2], sys.argv[3:]
+    cfg, fbase, targets = args[0], args[1], args[2:]
     waves = read_config(cfg)
     if len(waves) < 2:
         print(" fewer than two wavebands are marked '+' in %s" % cfg)
@@ -299,6 +339,13 @@ def main():
                             hh2).writeto(
                 os.path.join(os.path.dirname(os.path.abspath(name)),
                              "hi.correction.factor.fits"), overwrite=True)
+            if ftemp is not None:
+                write_temperature(ftemp, f, good, waves[-1], hdu.header,
+                                  os.path.join(os.path.dirname(os.path.abspath(name)),
+                                               "hi.temperature.corr.fits"))
+            else:
+                print(" no temperature image given with -temp=<file>,"
+                      " so no temperature map is written")
             first = False
 
 
