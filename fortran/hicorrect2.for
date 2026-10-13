@@ -53,15 +53,16 @@
 ! The correction must be applied once. It is not idempotent: applied to an image it has already corrected it would raise the values
 ! again. Every output image is stamped with the keyword HICORR, and the program refuses any input that carries it.
 !
-! usage:  hicorrect2 <config> <image> [<finer> ...] [-verb{0|1|2}]
+! usage:  hicorrect2 <config> <image> [<finer> ...] [-temp=<file>] [-verb{0|1|2}]
 !
 !         <config>     the configuration of the hires run that produced the images, usually '+hires.cfg'
 !         <image>      the surface density image on which the factor is evaluated and which is multiplied by it
 !         <finer>      any further surface density image of the same reconstruction, to which the same amount is added
+!         <file>       the temperature image that hires fitted at the resolution of <image>, optional
 !
 ! output: <image>.correct.fits and <finer>.correct.fits, the corrected images
 !         <image>.cfactor.fits, the image of the correction factors
-!         <image>.temperature.corr.fits, the dust temperature implied by the corrected surface density
+!         <image>.temperature.corr.fits, the dust temperature implied by the corrected surface density, if -temp is given
 !__________________________________________________________________________________________________________________________________
 !
        implicit      none
@@ -72,7 +73,7 @@
        character*8   ctime
        character*10  cdate
        character*80  bunit, ctype1, ctype2, object, creator, history
-       character*256 mapfile, cfgfile, arg, imgfile(mimg), stem, fname
+       character*256 mapfile, cfgfile, arg, imgfile(mimg), stem, fname, tempfile
        character*1   pmflag(mband)
        character*256 bandfile(mband), maskfile(mband)
        character*80  chead(5)
@@ -109,10 +110,11 @@
        nimg     = 0
        mapfile  = ' '
        cfgfile  = ' '
+       tempfile = ' '
 
        narg = iargc ( )
        if (narg .lt. 2) then
-         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <config> <image> [<finer> ...] [-verb{0|1|2}]'
+         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <config> <image> [<finer> ...] [-temp=<file>] [-verb{0|1|2}]'
          stop
        endif
 
@@ -121,6 +123,8 @@
          la = len_trim ( arg )
          if (arg(1:5) .eq. '-verb') then
            cverbose = arg(1:6)
+         elseif (arg(1:6) .eq. '-temp=') then
+           tempfile = arg(7:la)
          elseif (cfgfile .eq. ' ') then
            cfgfile = arg
          elseif (mapfile .eq. ' ') then
@@ -452,40 +456,45 @@
 ! coverage of the corrected image, stays undefined.
 !__________________________________________________________________________________________________________________________________
 !
-! The dust temperature that goes with the corrected surface density. The reference waveband was observed; the reconstruction
-! divided it by the Planck function at the temperature it fitted. With more material on the line of sight, the same intensity is
-! reproduced by colder dust, and that is the temperature the corrected map implies.
+! The dust temperature that goes with the corrected surface density, at the resolution of the corrected image. The reconstruction
+! derived the surface density from the reference waveband with the temperature it fitted at that resolution. With f times more
+! material on the line of sight, the same intensity of the reference waveband is reproduced by colder dust, whose Planck function
+! is that of the fitted temperature divided by f. The fitted temperature image of the same resolution is given with -temp=<file>.
 !
-       la = len_trim ( bandfile(nband) )
+       if (tempfile .ne. ' ') then
 
-       call getfitshead ( bandfile(nband)(1:la), nxi, nyi, dxi, dyi, bunit )
+         la = len_trim ( tempfile )
 
-       if (nxi .eq. nx .and. nyi .eq. ny) then
+         call getfitshead ( tempfile(1:la), nxi, nyi, dxi, dyi, bunit )
 
-         call rfits ( nx, ny, bunit, ctype1, ctype2, crpix1, crpix2, crval1, crval2, iref, dxi, dyi, object, ra, dec
-     &              , bandfile(nband)(1:la), iotty, iolog, creator, beamkw, funmin, funmax, blank, crota1, crota2, cd11, cd12
-     &              , cd21, cd22, equinox, bzero, bscale, wavekw, datamn, datamx, history, cverbose )
+         if (nxi .eq. nx .and. nyi .eq. ny) then
 
-         cref = 1.0d17 * kappa0 * ( speedolight / ( waveref * 1.0d-4 ) / nu0 ) ** betap * dtg * muh2 * amu
-         
-         do j=1,ny
-           do i=1,nx
-             if (valid(i,j) .eq. 1 .and. iref(i,j) .gt. 0.0d0) then
-               bb = iref(i,j) / ( cref * max ( smap(i,j) + delta(i,j), 1.0d-30 ) )
-               work(i,j) = invplanck ( bb, waveref, hplanck, kboltz, speedolight )
-             else
-               work(i,j) = 0.0d0
-             endif
+           call rfits ( nx, ny, bunit, ctype1, ctype2, crpix1, crpix2, crval1, crval2, iref, dxi, dyi, object, ra, dec
+     &                , tempfile(1:la), iotty, iolog, creator, beamkw, funmin, funmax, blank, crota1, crota2, cd11, cd12
+     &                , cd21, cd22, equinox, bzero, bscale, wavekw, datamn, datamx, history, cverbose )
+
+           do j=1,ny
+             do i=1,nx
+               if (valid(i,j) .eq. 1 .and. iref(i,j) .gt. 0.0d0) then
+                 bb = planckf ( iref(i,j), waveref, hplanck, kboltz, speedolight ) / corr(i,j)
+                 work(i,j) = invplanck ( bb, waveref, hplanck, kboltz, speedolight )
+               else
+                 work(i,j) = 0.0d0
+               endif
+             enddo
            enddo
-         enddo
-         fname = stem(1:ls)//'.temperature.corr.fits'
+           fname = stem(1:ls)//'.temperature.corr.fits'
 
-         call putima ( iotty, cverbose, cfitsversion, nx, ny, work, valid, rnan, fname, 'K', rhead, chead, blank, cdate, ctime )
+           call putima ( iotty, cverbose, cfitsversion, nx, ny, work, valid, rnan, fname, 'K', rhead, chead, blank, cdate, ctime )
 
-         if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
+           if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
+         else
+           write (iotty,'(a)') '   HICORRECT2: WARNING: the temperature image does not match the corrected image,'
+           write (iotty,'(a)') '   so no temperature map is written.'
+         endif
        else
-         write (iotty,'(a)') '   HICORRECT2: WARNING: the reference waveband image does not match the corrected image,'
-         write (iotty,'(a)') '   so no temperature map is written.'
+         if (cverbose .ne. '-verb0') write (iotty,'(a)') '   no temperature image given with -temp=<file>,'
+     &                                                 //' so no temperature map is written.'
        endif
 !__________________________________________________________________________________________________________________________________
 !
