@@ -81,10 +81,10 @@ cloud. The derived temperature is weighted by the emission, hence by the warmer 
 densities. The size of the effect on surface density follows from the sensitivity of the Planck function to the temperature,
 \begin{equation}
    \frac{\partial \ln \Sigma}{\partial \ln T} = -\,\frac{x_\lambda}{1-{\exp\left(-x_\lambda\right)}}, \quad
-   x_\lambda \equiv \frac{h c}{\lambda k T},
+   x_\lambda \equiv \frac{h_{\rm P} c}{\lambda k_{\rm B} T},
 \label{eq:sensitivity}
 \end{equation}
-where $\lambda$ is the wavelength, $c$ is the speed of light, $h$ is the Planck constant, and $k$ is the Boltzmann constant. At $T
+where $\lambda$ is the wavelength, $c$ is the speed of light, $h_{\rm P}$ is the Planck constant, and $k_{\rm B}$ is the Boltzmann constant. At $T
 = 10$\,K, this derivative equals $-9.0$, $-5.8$, $-4.2$, and $-3.1$ at $160$, $250$, $350$, and $500${\um}, respectively. If a cold
 core's temperature is overestimated by only $1$\,K, the surface density derived at $500${\um} is too low by $24$\% and the one
 derived at $160${\um} is underestimated by a factor of $2.3$.
@@ -128,12 +128,12 @@ pixel or line of sight is $\Sigma$ as the number of hydrogen molecules per unit 
 \section{Radiative transfer models}
 \label{sec:models}
 
-This work determined and validated the surface density correction on the basis of accurate radiative transfer models of spherical
-cores, cylindrical filaments, and a diffuse cloud, in which the true surface density is known. All models were computed with the
-Monte Carlo dust continuum radiative-transfer code
-\emph{radmc-3d}\footnote{\url{http://www.ita.uni-heidelberg.de/~dullemond/software/radmc-3d}} \citep{Dullemond+2012} to obtain
-their one-, two-, or three-dimensional dust temperature structure and images of their surface density and emergent surface
-brightness in the \emph{Herschel} photometric bands ($70$, $100$, $160$, $250$, $350$, and $500$\,$\mu$m).
+The surface density correction method is based on accurate radiative transfer models of spherical cores, cylindrical filaments, and
+a diffuse cloud, in which the true surface density is known. All models were computed with the Monte Carlo dust continuum
+radiative-transfer code \emph{radmc-3d}\footnote{\url{http://www.ita.uni-heidelberg.de/~dullemond/software/radmc-3d}}
+\citep{Dullemond+2012} to obtain their one-, two-, or three-dimensional dust temperature structure and images of their surface
+density and emergent surface brightness in the \emph{Herschel} photometric bands ($70$, $100$, $160$, $250$, $350$, and
+$500$\,$\mu$m).
 
 The models were heated from outside by the isotropic interstellar radiation field \citep{Black1994}, with a strength of $G_0=0.98$
 in \citet{Habing1968} units. The radiation field was modified by an additional hot blackbody component with a temperature of
@@ -172,74 +172,87 @@ steps of a factor of $2.17$ (Sect.~\ref{sec:g0corr}).
 Each filament was modeled as an isolated cylinder, without any surrounding cloud, with the length $L = 7.2$\,pc and computed on an
 axisymmetric grid with the radial volume density profile
 \begin{equation}
-  \rho(r) = \rho_{\rm C}\left(1 + (r/r_{\rm c})^2\right)^{-p/2},
+    \rho(r) = \rho_{\rm C}\left(1 + \left(2^{2/p}-1\right)\left(\frac{2r}{h}\right)^{2}\right)^{-p/2},
 \label{eq:fdens}
 \end{equation}
-truncated at the radius $R = 0.5$\,pc. The profile resembles a Gaussian at small radii ($r \lesssim r_{\rm c}$) and asymptotically
-approaches a power law $\rho(r)\propto r^{-p}$ at $r \gg r_{\rm c}$. The crest radius $r_{\rm c}$ was found numerically, so
-that the surface density profile $\Sigma(r)$ of the truncated cylinder had a certain half-maximum width $H$. Only the middle
-section of each cylinder was used (far from its ends) that approximates properties of an infinite cylinder. There, the radiation
-entering through the end faces of the cylinder is negligible and the temperature depends only on the distance $r$ from the axis.
-Six of the eight filaments had $p = 1.75$, $H = 40{\arcsec}$, and surface densities on the axis of $3{\times}10^{21}$, $10^{22}$,
-$3{\times}10^{22}$, $5{\times}10^{22}$, $10^{23}$ and $2{\times}10^{23}$\,cm$^{-2}$. The other two filaments had
-$3{\times}10^{22}$\,cm$^{-2}$ on the axis, with $p = 2$ or with $H = 80{\arcsec}$. The cylinder with $2{\times}10^{23}$\,cm$^{-2}$
-had an optical depth of $0.84$ at $100${\um} through its axis and it was not used, like the three optically thick cores.
+truncated at the radius $R = 0.5$\,pc, where $h$ is the half-maximum width of the volume density profile and the factor
+$(2^{2/p}-1)$ makes $h$ independent of the slope $p$ \citep{Menshchikov2021method}. The profile resembles a Gaussian at small radii
+($r \lesssim h$) and asymptotically approaches a power law $\rho(r)\propto r^{-p}$ at $r \gg h$. The width $h$ of each model was
+chosen so that the surface density profile $\Sigma(r)$ of the truncated cylinder had the half-maximum width $H$ given below, which
+is about twice $h$ for these shallow profiles. Only the middle section of each cylinder was used (far from its ends) that
+approximates properties of an infinite cylinder. There, the radiation entering through the end faces of the cylinder is negligible
+and the temperature depends only on the distance $r$ from the axis. Six of the eight filaments had $p = 1.75$, $h = 20.3{\arcsec}$,
+$H = 40{\arcsec}$, and surface densities on the axis of $3{\times}10^{21}$, $10^{22}$, $3{\times}10^{22}$, $5{\times}10^{22}$,
+$10^{23}$ and $2{\times}10^{23}$\,cm$^{-2}$. The other two filaments had $3{\times}10^{22}$\,cm$^{-2}$ on the axis, with $p = 2$
+and $h = 23.7{\arcsec}$ ($H = 40{\arcsec}$) or with $p = 1.75$ and $h = 42.5{\arcsec}$ ($H = 80{\arcsec}$). The cylinder with
+$2{\times}10^{23}$\,cm$^{-2}$ had an optical depth of $0.84$ at $100${\um} along the line of sight normal to its crest and it was
+not used, like the three optically thick cores.
 
 \subsection{The diffuse cloud and the simulated sky}
 \label{sec:modcloud}
 
-Most of the area of a molecular cloud is covered by extended diffuse material, referred to here as the diffuse cloud, or simply
-the cloud. Its model was a cube $2$\,pc deep whose projection was a map with scale-free fluctuations, rising toward the center of
-the field. Its surface densities ranged from $3{\times}10^{20}$ to $3{\times}10^{22}$\,cm$^{-2}$, with a median of
-$5{\times}10^{21}$\,cm$^{-2}$.
+Most of the observed area of a molecular cloud is covered by extended diffuse material, referred to here as the diffuse cloud, or
+simply the cloud. Its was modeled as a rectangular box of $6.8{\times}6.8$\,pc with a $2$\,pc depth along the line of sight, whose
+projection was a map with scale-free fluctuations, rising toward the center of the field. The map was derived from the same
+scale-free background used previously in \citet{Menshchikov_etal2012,Menshchikov2021method,Menshchikov2021bench}. The volume
+density was constructed to fluctuate along every line of sight with the same power spectrum as across the sky
+(Appendix~\ref{app:rtmodels}). Its surface densities ranged from $3{\times}10^{20}$ to $3{\times}10^{22}$\,cm$^{-2}$, with a median
+of $5{\times}10^{21}$\,cm$^{-2}$.
 
-The simulated sky combined this cloud with seven filaments and $96$ cores, in a field of $1793{\times}1793$ pixels of $3{\arcsec}$.
-Every component came from radiative transfer, so that its emission and its surface density were consistent. For the simulated sky,
-the same cylinders were computed again inside envelopes that shield them as the surrounding cloud does. The filaments were the
-embedded cylinders. The emission of their envelopes was subtracted, so that only the filament was added to the cloud. The filaments
-lay in the middle of the cloud, which was assumed to extend far in front of and behind them. The cores were models of the grid,
-each embedded in a cloud whose surface density matched its surroundings in the sky.
+The simulated sky combined this cloud with seven filaments and $96$ cores in a $1793{\times}1793$ field with $3{\arcsec}$ pixels.
+Every structural component was computed with the radiative transfer code, so that its emission and its surface density were
+consistent. For the simulated sky, the same filaments were computed again, embedded inside cylindrical envelopes that were
+constructed to shield them the way the the surrounding cloud does. The emission of their envelopes was subtracted, so that only the
+filaments were added to the cloud. The filaments lay in the middle depth of the cloud, which was assumed to extend far in front of
+and behind them. The cores were the grid models inside embedding spherical clouds whose surface density matched its surroundings in
+the sky.
 
-The emission of every model was convolved to the beams of the wavebands at $160$ to $500${\um} and reconstructed by \emph{hires},
-as for an observation. The true surface density was convolved to the same resolutions.
+The emission of the simulated sky was convolved to the beams of the wavebands at $160$--$500${\um} and its surface density
+$\mathcal{D}$ was derived with \emph{hires}, as done for real observations. The true surface density $\mathcal{D}_{\rm T}$ was also
+convolved to the same $13.5${\arcsec} resolutions.
 
 % =====================================================================
 
 \section{Where the underestimation resides}
 \label{sec:where}
 
-Two questions must be answered before a correction can be built. The first question is whether the observations contain the answer
-themselves. Could the underestimation of $\Sigma$ along a line of sight be read from the shape of its spectrum? It cannot. The
-mixing of temperatures broadens the spectrum only slightly. At the centers of the models of cores (Sect.~\ref{sec:modcores}), a
-single modified blackbody fits the four intensities to within $1$ to $6$\%, while the fit loses $9$ to $38$\% of $\Sigma$. A method
-that derived the underestimation from these small residuals would amplify the photometric errors $7$ to $9$ times. This is far
-beyond the calibration accuracy of \emph{Herschel}. The correction must therefore be calibrated on models in which the answer is
-known (Appendix~\ref{app:colors}). The second question concerns the multi-resolution reconstruction. It is not one image but a
-sequence of images. If the underestimation were distributed differently over the resolutions, each image would need its own
-correction. Section~\ref{sec:recon} shows that this is not the case.
+Two questions must be answered before a correction can be built. The first question is whether the observations contain the answer.
+The underestimation of $\Sigma$ along a line of sight cannot be decoded from its spectral shape, because the mixing of temperatures
+broadens the shape only slightly. At the centers of the cores (Sect.~\ref{sec:modcores}), a single modified blackbody fits the four
+intensities to within $1$--$6$\%, while the fit loses $9$--$38$\% of $\Sigma$. A method that derived the underestimation from these
+small residuals would amplify the photometric errors by very large factors of $7$ to $9$. This is far beyond the calibration
+accuracy of \emph{Herschel}. The correction must therefore be calibrated on models in which the answer is known
+(Appendix~\ref{app:colors}). 
+
+The second question concerns the multi-resolution reconstruction. It is not one image but a sequence of images. If the
+underestimation were distributed differently over the resolutions, each image would need its own correction.
+Section~\ref{sec:recon} shows that this is not the case.
 
 \subsection{The multi-resolution reconstruction}
 \label{sec:recon}
 
-Let the observed wavebands be numbered in the order of increasing wavelength $\lambda_i$, with beam widths $O_i$. Let
-$\mathcal{C}(\Iim, T, \lambda)$ denote the conversion of an intensity image $\Iim$ into a surface density image, for an optically
-thin emission at the wavelength $\lambda$ and the dust temperature $T$. Let $G_{O_i \rightarrow O_{i+1}}$ be the Gaussian
-kernel that degrades the beam $O_i$ to the beam $O_{i+1}$. The reconstruction of \emph{hires} first builds a base image at
-the coarsest resolution,
+Let the observed wavebands be numbered in the order of increasing wavelength $\lambda_i$ ($i = 1, 2, \dots, N$), with beam widths
+$O_i$. Let $\mathcal{C}(\Iim_{\lambda}, T)$ denote the conversion of an intensity image $\Iim_{\lambda}$ into a surface density
+image, for an optically thin emission at the wavelength $\lambda$ and the dust temperature $T$. Let $G_{O_i \rightarrow O_{i+1}}$
+be the Gaussian kernel that degrades the beam $O_i$ to the beam $O_{i+1}$. The \emph{hires} method first builds a base image at the
+coarsest resolution,
 \begin{equation}
-  \Dim(O_N) = \mathcal{C}\!\left(\Iim_N^{O_N},\, T_N,\, \lambda_N\right),
+  \Dim_{O_N\!} = \mathcal{C}\!\left(\Iim_{{\lambda}N}, T_N\right),
 \label{eq:base}
 \end{equation}
-where $T_N$ is the dust temperature fitted at that resolution. It then adds one increment per waveband,
+where $T_N$ is the dust temperature fitted at that resolution. It then adds one increment image per wavelength $\lambda_i$,
 \begin{equation}
-  \Delta_i = \max_{j}\Big[\,\mathcal{C}\!\left(\Iim_i^{O_i}, T_j, \lambda_i\right)
-        - G_{O_i \rightarrow O_{i+1}} \ast \mathcal{C}\!\left(\Iim_i^{O_i}, T_j, \lambda_i\right)\Big],
+  \Delta_i = \max_{j}\left(\,\mathcal{C} \small(\Iim_{\lambda{i}}, T_j\small)
+        - G_{O_i \rightarrow O_{i+1}}{\ast\,}\mathcal{C} \small(\Iim_{\lambda{i}}, T_j\small)\right),
 \label{eq:increment}
 \end{equation}
-where the maximum is taken over the resolutions at which a temperature is fitted. For the wavebands shorter than $250${\um}, only
-the positive values of $\Delta_i$ are used \citep{Menshchikov2021method}. The image at any resolution is the sum
+where $T_j$ ($j = 2, 3, \dots, N$) is the dust temperature obtained by fitting the images at the wavelengths $1$ to $j$, all
+convolved to the resolution $O_j$, and the maximum is taken over these temperatures. With the wavebands from $160$ to $500${\um},
+there are three such temperatures, at the resolutions of $250$, $350$, and $500${\um}, and $T_N$ is the last of them. For the
+wavebands shorter than $250${\um}, only the positive values of $\Delta_i$ are used \citep{Menshchikov2021method}. The image at any
+resolution is then the sum
 \begin{equation}
-  \Dim(O_i) = \Dim(O_N) + \sum_{i'=i}^{N-1} \Delta_{i'}\,.
+  \Dim_{O_i\!} = \Dim_{O_N\!} + \sum_{i'=i}^{N-1} \Delta_{i'}.
 \label{eq:cumulative}
 \end{equation}
 Equation~(\ref{eq:cumulative}) has an important consequence. If a correction is added to the base image, the image at every finer
@@ -1153,13 +1166,23 @@ photon packets. Runs with $8\times10^9$ packets gave the same temperatures to $0
 
 \subsection{The cloud}
 
-The cloud of the simulated sky was a three-dimensional radiative transfer model whose projection is the map of the cloud. The map
-had scale-free fluctuations. It was multiplied by $1 + 5\,[1 + (r/600{\arcsec})^2]^{-0.75}$, where $r$ is the distance from the
-center of the field, so that its surface density rises toward the center as in a real cloud. The map was averaged into cells of
-$12{\arcsec}$. A cube $2$\,pc deep was filled with a log-normal random field whose fluctuations had the power spectrum of the map.
-Every column of the cube was then scaled so that its integral equaled the map. The cube was surrounded by margins of $2$\,pc, which
-kept the heating through its sides away from the field. It had $712 \times 712 \times 132$ cells and was computed with
-$8\times10^{10}$ photon packets. Fewer photon packets, cells of $24{\arcsec}$, or a cube without fluctuations along the line of
+The cloud of the simulated sky was a three-dimensional radiative transfer model whose projection is the map of the cloud. A
+surface density map does not determine the density along the line of sight, and the model is one of the many distributions that
+project to the map. The map had scale-free fluctuations, with a power spectrum $P(k) \propto k^{-3.0}$, a median surface density of about
+$3{\times}10^{21}$\,cm$^{-2}$, and no large-scale gradient. Real clouds such as Aquila have an extended background that rises
+toward their centers. The map was therefore multiplied by $1 + 5\,[1 + (r/600{\arcsec})^2]^{-0.75}$, where $r$ is the distance
+from the center of the field. This factor is $6$ at the center, nearly constant within $600{\arcsec}$, and declines as $r^{-1.5}$
+beyond, toward unity far from the center, while the fine structure of the map is kept. The same enhanced map was used for the
+cloud of the simulated sky and for the envelopes of the embedded filaments. The map was averaged into cells of $12{\arcsec}$ and extended on every side by margins
+of $2$\,pc, by mirror reflection. The margins kept the heating through the sides of the box away from the field.
+
+The volume density was built in three steps. First, a Gaussian random field $G$ of unit variance, with the same power spectrum
+$P(k) \propto k^{-3.0}$ in three dimensions, filled a box with the area of the extended map and a depth of $2$\,pc. Second, its
+log-normal transform $g = \exp(\sigma G - \sigma^2/2)$, with $\sigma = 0.5$, gave positive fluctuations with a mean of unity and a
+root-mean-square contrast of about $50$\%. Third, every column of $g$ was rescaled so that its integral equaled the surface density
+of the map in that pixel, $n(x, y, z) = \Sigma(x, y)\,g(x, y, z) / \int g\,{\rm d}z$. The projection of the box is therefore exactly
+the map, while the density varies along every line of sight as it does across the sky. With the margins, the box had $712 \times
+712 \times 132$ cells ($10.8 \times 10.8 \times 2.0$\,pc) and was computed with $8\times10^{10}$ photon packets. Fewer photon packets, cells of $24{\arcsec}$, or a box without fluctuations along the line of
 sight gave the same correction factors to $0.1$\%.
 
 Figure~\ref{fig:cube3d} gives a view of the model. Figure~\ref{fig:cube} shows a slice through it, along one row of the field and
