@@ -524,8 +524,8 @@ def fig_geometry(out="fig_geometry.pdf"):
     _arrows(ax[0], np.minimum(1.0 / sa, 40.0), ang, 1.00, 0.13, ARROW, tau_ref)
     ax[0].set_title("Plane-parallel layer", fontsize=7.6, pad=4.0)
     # the line of sight of the lower panels: along the normal of the layer, toward the observer below it
-    ax[0].annotate("", xy=(-1.3, -0.9), xytext=(-1.3, -0.45), annotation_clip=False, arrowprops=dict(arrowstyle="-|>", color="black", lw=0.5))
-    ax[0].text(-1.3, -0.4, "to observer", fontsize=7, color="black", rotation=90, ha="left", va="center", rotation_mode="anchor")
+    ax[0].annotate("", xy=(-1.3, -0.85), xytext=(-1.3, -0.4), annotation_clip=False, arrowprops=dict(arrowstyle="-|>", color="black", lw=0.5))
+    ax[0].text(-1.3, -0.35, "to observer", fontsize=7, color="black", rotation=90, ha="left", va="center", rotation_mode="anchor")
            
     # ---- sphere: every direction crosses the same column, none is favored
 
@@ -580,7 +580,7 @@ def fig_geometry(out="fig_geometry.pdf"):
         b.text(x, 0.92, "Uniform layer and sphere ", fontsize=7.6, color="black", ha=ha, va="center", transform=b.transAxes)
 
     b1.tick_params(labelsize=7.8)
-    b1.set_xlabel("Fractional depth along line of sight", fontsize=7.8)
+    b1.set_xlabel(r"Fractional depth $u$ along line of sight", fontsize=7.8)
     b1.set_ylabel(r"Effective attenuating column $\Sigma_{\rm A}$ (cm$^{-2}$)", fontsize=7.8, labelpad=1.5)
     hs, ls = b1.get_legend_handles_labels()
     b2.legend(hs[:3], ls[:3], fontsize=7, loc="center", bbox_to_anchor=(0.5, 0.42), ncol=1, handlelength=1.6,
@@ -593,7 +593,7 @@ def fig_geometry(out="fig_geometry.pdf"):
     b2.set_xlim(0.0, 1.0)
     b2.set_ylim(6.5, 22.0)
     b2.tick_params(labelsize=7.8)
-    b2.set_xlabel("Fractional depth along line of sight", fontsize=7.8)
+    b2.set_xlabel(r"Fractional depth $u$ along line of sight", fontsize=7.8)
     b2.set_ylabel(r"Temperature $T$ (K)", fontsize=7.8, labelpad=1.5)
 
     b1.set_box_aspect(1.0 / 1.25)
