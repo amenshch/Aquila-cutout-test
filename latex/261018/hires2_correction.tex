@@ -194,9 +194,13 @@ not used, like the three optically thick cores.
 by the black point, arrives from every direction having crossed columns of very different lengths. The rays are drawn thicker where
 less material has been crossed. Most energy arrives along the normal in the midplane of a layer; no direction is favored at the
 center of a sphere; a cylindrical filament has intermediate properties -- resembling a layer along its axis and a sphere across the
-axis. \emph{Lower left}: The effective attenuating column $\Sigma_{\rm A}$ of Eq.~(\ref{eq:seff}) against the fractional depth
-along a line of sight through a layer, for total surface densities $\Sigma$ of $10^{21}$, $10^{22}$ and $10^{23}$\,cm$^{-2}$. The
-dotted curves are the column along the shortest path, to the nearer surface of the layer. \emph{Lower right}: The dust temperature
+axis. \emph{Lower left}: The effective attenuating column $\Sigma_{\rm A}$ of Eq.~(\ref{eq:seff}) against the fractional depth $u$
+along the line of sight normal to a uniform-density layer (solid curves) and along the diameter of a uniform-density sphere (dashed
+curves), for total surface densities $\Sigma$ of $10^{21}$, $10^{22}$ and $10^{23}$\,cm$^{-2}$ along that line of sight. The dotted
+curves are the column along the shortest path to the surface, which for these central lines of sight is $\min(u, 1-u)\,\Sigma$ for
+both shapes (for off-center lines of sight through a sphere or a filament, the nearest surface lies
+across the line of sight, and the column is smaller), and the thin vertical line marks the mid-plane (the center of
+the sphere), about which the profiles are symmetric. \emph{Lower right}: The dust temperature
 that follows from $\Sigma_{\rm A}$ through Eq.~(\ref{eq:law}). The dotted line marks the floor temperature $T_{\rm min}$.}
 \label{fig:geometry}
 \end{figure*}
@@ -241,7 +245,8 @@ heating is discussed in Appendix~\ref{sec:notdo}.
 
 The radiation arrives from all directions, and it crosses different amounts of material in each direction. Let $I_{\lambda 0}$ be
 the unattenuated radiation field at a wavelength $\lambda$. Denoting $\Sigma_{\rm A}(\hat n)$ the column of hydrogen molecules
-(cm$^{-2}$) that the radiation crosses on its way in along the direction $\hat n$, the mean intensity that reaches the grain is
+(cm$^{-2}$) that the radiation crosses on its way in along the direction $\hat n$, the mean intensity $J_{\lambda}$ that reaches
+the grain is
 \begin{equation}
   J_{\lambda} = \frac{1}{4\pi} \int I_{{\lambda}0}\,\exp\left(-\sigma_{\lambda}\,\Sigma_{\rm A}(\hat{n})\right){\rm d}\Omega,
 \label{eq:meanint}
@@ -256,17 +261,26 @@ grazing directions deliver nothing. At the center of a sphere, every direction c
 favored. A filament combines the two cases. Across the filament the path is short, and along its axis it is long. A filament
 therefore resembles a sphere in its cross-section and a layer along its axis.
 
-To avoid an integral over directions in every pixel, the angular distribution was replaced by the single column that gives the same
-mean intensity. With a gray cross section $\sigma$ (see below), this effective attenuating column $\Sigma_{\rm A}$ is defined by
+The mean intensity of Eq.~(\ref{eq:meanint}) is an integral over all directions, each with its own column $\Sigma_{\rm A}(\hat n)$.
+It is convenient to describe the shielding of a parcel by a single number instead, the column that, if it were the same in all
+directions, would give the same mean intensity. With a gray cross section $\sigma$ (see below), this effective attenuating column
+$\Sigma_{\rm A}$ is defined by
 \begin{equation}
-  \exp\left({-\sigma\,\Sigma_{\rm A}}\right) = 
-    \left\langle\,\exp\left({-\sigma\,\Sigma_{\rm A}\!\left(\hat n\right)}\right)\,\right\rangle_{4\pi}.
+  \Sigma_{\rm A} = - \sigma^{-1}
+    \ln \left\langle\,\exp\left({-\sigma\,\Sigma_{\rm A}\!\left(\hat n\right)}\right)\,\right\rangle_{4\pi},
 \label{eq:seff}
 \end{equation}
-The column $\Sigma_{\rm A}$ is larger than the column along the shortest path, because the oblique directions deliver less
-radiation than the shortest path does. The dust temperature depends on $\Sigma_{\rm A}$. Figure~\ref{fig:angular} in
-Appendix~\ref{app:shape} shows how the average of Eq.~(\ref{eq:seff}) is formed at the mid-plane of a layer, and how $\Sigma_{\rm
-A}$ grows with the total surface density of the line of sight.
+where the angle brackets denote averaging over all directions. The exponential describes the fraction of the external radiation
+that reaches the parcel from the direction $\hat n$. For an isotropic external field, their average is the ratio
+$J_{\lambda}/I_{\lambda 0}$ of Eq.~(\ref{eq:meanint}), so that $\sigma\Sigma_{\rm A} = -\ln \left(J_{\lambda}/I_{\lambda 0}\right)$
+is the optical depth that would reduce the radiation reaching the parcel by the same factor. 
+
+This average in Eq.~(\ref{eq:seff}) is dominated by the least shielded directions. The effective column is therefore not the
+arithmetic mean of $\Sigma_{\rm A}(\hat n)$ over directions, which is infinite for a layer, because grazing directions cross an
+unlimited amount of material. It is larger than the column along the shortest path, from the parcel to the nearest point of the
+surface, because the oblique directions deliver less radiation than the shortest path does. The dust temperature depends on
+$\Sigma_{\rm A}$. Figure~\ref{fig:angular} in Appendix~\ref{app:shape} shows how the average of Eq.~(\ref{eq:seff}) is formed at
+the mid-plane of a layer, and how $\Sigma_{\rm A}$ grows with the total surface density of the line of sight.
 
 Two assumptions were made. First, the extinction at the heating wavelengths was taken to be gray, with $A_{V} =
 \Sigma/(0.94{\times}10^{21}\,{\rm cm}^{-2})$ \citep{Bohlin+1978} and the optical depth $\tau = A_{V}/1.086 = \sigma\,\Sigma$, where
@@ -408,7 +422,11 @@ attenuated, and every shape gives $f = 1$. At high surface densities the deepest
 and the distribution of path lengths no longer matters. The shape matters only in between, where the correction itself is modest.
 In short, where the geometry would matter, the correction is small, and where the correction is large, the geometry does not
 matter. The average of the sphere and the layer was adopted, and half of their difference, at most $5$\%, was taken as the
-uncertainty due to the geometry.
+uncertainty due to the geometry. The factor was computed for central lines of sight, along the normal of a layer and the diameter
+of a sphere. Lines of sight through the outer parts of a compact structure pass closer to its surface. They are warmer and more
+nearly isothermal than a central line of sight with the same $\Sigma$, and they are slightly over-corrected. The validation on all
+pixels of the models includes this effect (Sect.~\ref{sec:valgrid}). Inclined layers and filaments are over-corrected
+too (Appendix~\ref{sec:incl}).
 
 Appendix~\ref{app:shape} explains why the sphere and the layer are the two limits. It also explains why the angular average cannot
 be replaced by the column along the shortest path.
@@ -906,6 +924,8 @@ filament width $H$ ($40{\arcsec}$), accuracy ratio      & 1.21--1.65           &
 filament slope $\alpha$, error                          & up to $-0.22$        & within $\pm 0.05$  & 7 filaments (\ref{sec:cyl}) \\
 superposed structures, relative error of $\Sigma$       & --                   & $-0.13$ to $+0.23$ & analytic (\ref{app:twocomp}) \\
 filament flanks in a dense cloud, relative error        & --                   & $+0.10$ to $+0.19$ & simulated sky (\ref{sec:sim}) \\
+inclined layers, random, mean relative error            & --                   & $0$ to $+0.24$     & analytic (\ref{sec:incl}) \\
+inclined filaments, random, mean relative error         & --                   & $0$ to $+0.09$     & analytic (\ref{sec:incl}) \\
 field $G_0 = 1$ to 483 without $g$, relative error      & --                   & $-0.20$ to $+0.27$ & 9 radiation fields (\ref{sec:field}) \\
 field $G_0 = 1$ to 483 with $g$, relative error         & --                   & $-0.13$ to $+0.06$ & 9 radiation fields (\ref{sec:field}) \\
 local field wrong by a factor of 2.2, relative error    & --                   & $-0.10$ to $+0.13$ & 9 radiation fields (\ref{sec:field}) \\
@@ -934,8 +954,9 @@ Uncorrected images have the calibration and opacity uncertainties as well, but t
 $10$ to $25$\% in diffuse material and by factors of $1.3$ to $2.4$ in dense structures. The corrected temperature follows from the
 corrected $\Sigma$ through the intensity at $500${\um} (Sect.~\ref{sec:aquila}), independently of the absolute opacity. By
 Eq.~(\ref{eq:sensitivity}), an error of $30$ to $50$\% in $\Sigma$ corresponds to about $2$\,K at $11$ to $17$\,K. The fitted
-temperatures, in contrast, are too high by $1$ to $4$\,K in dense structures. These estimates hold for fields within the grid of
-models and for lines of sight without internal heating. For the mass of a core, the errors of its footprint and background must be
+temperatures, in contrast, are too high by $1$ to $4$\,K in dense structures. These estimates hold for fields within the grid of models and for lines of sight without internal heating. Inclined layers and
+filaments can be over-corrected by a further $10$ to $25$\% between $10^{21.5}$ and $10^{22}$\,cm$^{-2}$
+(Appendix~\ref{sec:incl}). For the mass of a core, the errors of its footprint and background must be
 added (Appendix~\ref{sec:bgerr}).
 
 \subsection{The background and the footprint}
@@ -976,6 +997,18 @@ line of sight (Appendix~\ref{app:arrange}). A concentrated structure needs $2$ t
 central-to-edge density ratio of $10$, and $8$ to $19$\% more for a ratio of $10^3$. A structure embedded in a cloud is corrected
 between $13$\% too little, in a weak cloud, and $23$\% too much, near a face of a dense cloud. The depth of a structure within a
 cloud cannot be observed, so this uncertainty cannot be reduced by a better calculation.
+
+\subsection{Inclination}
+\label{sec:incl}
+
+The factor was computed for lines of sight normal to a layer or perpendicular to the axis of a filament. Seen at an angle $i$ from
+that direction, a layer or a filament has the same temperature profile along the line of sight, but its surface density and its
+fitted surface density are both larger by the factor $1/\cos i$. The factor that it requires does not change, whereas the
+correction applies the factor of a denser structure. With the adopted factor, the corrected $\Sigma$ is too high by $2$, $5$, $13$,
+and $27$\% at $i = 30$, $45$, $60$, and $70\degr$ for $\Sigma_{\rm F} = 10^{21.5}$\,cm$^{-2}$, and by $5$, $13$, $23$, and $29$\% for
+$10^{22}$\,cm$^{-2}$. Below $10^{21}$\,cm$^{-2}$ the error is a few percent at most, and above $10^{22.5}$\,cm$^{-2}$ it vanishes,
+because the factor is held at its maximum there. For random orientations, the mean error is up to $24$\% for layers and up to $9$\%
+for filaments, in both cases between $10^{21.5}$ and $10^{22}$\,cm$^{-2}$, where the factor rises most steeply.
 
 \subsection{Diffuse material}
 
