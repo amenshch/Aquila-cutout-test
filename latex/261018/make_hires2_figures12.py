@@ -503,8 +503,9 @@ def fig_geometry(out="fig_geometry.pdf"):
 
     Upper panels: a parcel of dust, the black point, at mid-depth in a plane-parallel layer, at the center of a sphere, and on the
     axis of a filament. The arrows are the incoming radiation, drawn thick where it has crossed little material, so that the eye
-    sees which directions actually deliver energy. Lower panels: the effective attenuating column of Eq. (6) and the dust
-    temperature that follows from it, along a line of sight through a layer, for three total surface densities.
+    sees which directions actually deliver energy. Lower panels: the effective attenuating column of Eq. (4) and the dust
+    temperature that follows from it, along the normal through a uniform layer (solid) and along the diameter of a uniform
+    sphere (dashed), for three total surface densities; the thin vertical line marks the mid-plane.
     """
 
     cols = (CCURVE[0], CCURVE[1], CCURVE[2])
@@ -522,7 +523,10 @@ def fig_geometry(out="fig_geometry.pdf"):
     ax[0].add_patch(plt.Rectangle((-1.30, -0.46), 2.60, 0.92, fc="0.8", ec="0.55", lw=0.5, zorder=0))
     _arrows(ax[0], np.minimum(1.0 / sa, 40.0), ang, 1.00, 0.13, ARROW, tau_ref)
     ax[0].set_title("Plane-parallel layer", fontsize=7.6, pad=4.0)
-
+    # the line of sight of the lower panels: along the normal of the layer, toward the observer below it
+    ax[0].annotate("", xy=(-1.3, -0.9), xytext=(-1.3, -0.45), annotation_clip=False, arrowprops=dict(arrowstyle="-|>", color="black", lw=0.5))
+    ax[0].text(-1.3, -0.4, "to observer", fontsize=7, color="black", rotation=90, ha="left", va="center", rotation_mode="anchor")
+           
     # ---- sphere: every direction crosses the same column, none is favored
 
     ax[1].add_patch(plt.Circle((0.0, 0.0), 0.46, fc="0.8", ec="0.55", lw=0.5, zorder=0))
@@ -555,9 +559,15 @@ def fig_geometry(out="fig_geometry.pdf"):
     u = (np.arange(512) + 0.5) / 512.0
     for sig, col, lab in ((1.0e23, cols[2], "10^{23}"), (1.0e22, cols[1], "10^{22}"), (1.0e21, cols[0], "10^{21}")):
         sa_u = attenuating_column(sig, "layer")
+        sa_s = attenuating_column(sig, "sphere")      # the other limit: a uniform sphere along its diameter
         b1.plot(u, sa_u, "-", color=col, label=r"$\Sigma = %s$ cm$^{-2}$" % lab)
+        b1.plot(u, sa_s, "--", color=col, lw=0.9)
         b1.plot(u, np.minimum(u, 1.0 - u) * sig, ":", color=col)
         b2.plot(u, law(sa_u), "-", color=col)
+        b2.plot(u, law(sa_s), "--", color=col, lw=0.9)
+    for b in (b1, b2):                       # the mid-plane, where the layer is symmetric
+        b.axvline(0.5, ls="-", lw=0.5, color="0.65", zorder=0)
+    b1.plot([], [], ":", color="1.0", label="dashed: sphere")
     b1.plot([], [], ":", color="1.0", label="dotted: shortest path")
     b1.set_yscale("log")
     b1.set_xlim(0.0, 1.0)
@@ -567,20 +577,23 @@ def fig_geometry(out="fig_geometry.pdf"):
     b1.text(0.14, 0.92, "to observer", fontsize=7.0, color="black", va="center", transform=b1.transAxes)
 
     for b, x, ha in ((b1, 0.97, "right"), (b2, 0.5, "center")):
-        b.text(x, 0.92, "Plane-parallel layer ", fontsize=7.6, color="black", ha=ha, va="center", transform=b.transAxes)
+        b.text(x, 0.92, "Uniform layer and sphere ", fontsize=7.6, color="black", ha=ha, va="center", transform=b.transAxes)
 
     b1.tick_params(labelsize=7.8)
     b1.set_xlabel("Fractional depth along line of sight", fontsize=7.8)
-    b1.set_ylabel(r"Attenuating column $\Sigma_{\rm A}$ (cm$^{-2}$)", fontsize=7.8, labelpad=1.5)
-    b1.legend(frameon=False, fontsize=7, loc="lower center", ncol=1, handlelength=1.6, columnspacing=1.0, 
-              borderpad=0.9, labelspacing=0.25)
+    b1.set_ylabel(r"Effective attenuating column $\Sigma_{\rm A}$ (cm$^{-2}$)", fontsize=7.8, labelpad=1.5)
+    hs, ls = b1.get_legend_handles_labels()
+    b2.legend(hs[:3], ls[:3], fontsize=7, loc="center", bbox_to_anchor=(0.5, 0.42), ncol=1, handlelength=1.6,
+              labelspacing=0.25, frameon=True, facecolor="white", edgecolor="none", framealpha=1.0)                 # the surface densities, in the empty middle of the temperature panel
+    b1.legend(hs[3:], ls[3:], frameon=True, fontsize=7, loc="lower center", bbox_to_anchor=(0.5, 0.1), ncol=1, handlelength=1.6, handletextpad=0.0,
+              labelspacing=0.25, facecolor="white", edgecolor="none", framealpha=1.0)  # the line styles, below the curves of the column panel
 
     b2.axhline(TFLOOR, ls=":", color="black")
     b2.text(0.04, TFLOOR + 0.3, r"$T_{\rm min}$", fontsize=8, color="black")
     b2.set_xlim(0.0, 1.0)
-    b2.set_ylim(6.5, 19.0)
+    b2.set_ylim(6.5, 22.0)
     b2.tick_params(labelsize=7.8)
-    b2.set_xlabel("Fractional depth", fontsize=7.8)
+    b2.set_xlabel("Fractional depth along line of sight", fontsize=7.8)
     b2.set_ylabel(r"Temperature $T$ (K)", fontsize=7.8, labelpad=1.5)
 
     b1.set_box_aspect(1.0 / 1.25)
@@ -1832,9 +1845,9 @@ def fig_cube3d(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_
 
 if __name__ == "__main__":
 
-#    fig_geometry()
+    fig_geometry()
 #    fig_shielding()
-    fig_method()
+#    fig_method()
 #    fig_relation()
 #    fig_grid_validation()
 #    fig_cylinders()
