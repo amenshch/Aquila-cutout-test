@@ -199,7 +199,7 @@ along the line of sight normal to a uniform-density layer (solid curves) and alo
 curves), for total surface densities $\Sigma$ of $10^{21}$, $10^{22}$ and $10^{23}$\,cm$^{-2}$ along that line of sight. The dotted
 curves are the column along the shortest path to the surface, which for these central lines of sight is $\min(u, 1-u)\,\Sigma$ for
 both shapes (for off-center lines of sight through a sphere or a filament, the nearest surface lies
-across the line of sight, and the column is smaller), and the thin vertical line marks the mid-plane (the center of
+across the line of sight, and the column is smaller), and the thin vertical line marks the midplane (the center of
 the sphere), about which the profiles are symmetric. \emph{Lower right}: The dust temperature
 that follows from $\Sigma_{\rm A}$ through Eq.~(\ref{eq:law}). The dotted line marks the floor temperature $T_{\rm min}$.}
 \label{fig:geometry}
@@ -233,7 +233,7 @@ convolved to the same $13.5${\arcsec} resolutions.
 \section{What sets the temperature of the dust}
 \label{sec:law}
 
-\subsection{The radiation arrives from every direction}
+\subsection{Effective attenuating column}
 \label{sec:why}
 
 Dust in a molecular cloud is heated mostly by the interstellar radiation field, the ultraviolet and optical light of the stars of
@@ -244,15 +244,15 @@ the external heating only, for which this amount is reduced by the material betw
 heating is discussed in Appendix~\ref{sec:notdo}.
 
 The radiation arrives from all directions, and it crosses different amounts of material in each direction. Let $I_{\lambda 0}$ be
-the unattenuated radiation field at a wavelength $\lambda$. Denoting $\Sigma_{\rm A}(\hat n)$ the column of hydrogen molecules
+the unattenuated radiation field at a wavelength $\lambda$. Denoting $\Sigma(\hat n)$ the column of hydrogen molecules
 (cm$^{-2}$) that the radiation crosses on its way in along the direction $\hat n$, the mean intensity $J_{\lambda}$ that reaches
 the grain is
 \begin{equation}
-  J_{\lambda} = \frac{1}{4\pi} \int I_{{\lambda}0}\,\exp\left(-\sigma_{\lambda}\,\Sigma_{\rm A}(\hat{n})\right){\rm d}\Omega,
+  J_{\lambda} = \frac{1}{4\pi} \int I_{{\lambda}0}\,\exp\left(-\sigma_{\lambda}\,\Sigma(\hat n)\right){\rm d}\Omega,
 \label{eq:meanint}
 \end{equation}
-where $\sigma_{\lambda}$ is the extinction cross section per hydrogen molecule. The quantity $\Sigma_{\rm A}(\hat n)$ is referred to
-as the attenuating column for the incoming radiation.
+where $\sigma_{\lambda}$ is the extinction cross section per hydrogen molecule. The quantity $\Sigma(\hat n)$ is the attenuating
+column in the direction $\hat n$.
 
 The upper panels of Fig.~\ref{fig:geometry} illustrate this for the three shapes used to describe clouds. The rays are thicker
 where the radiation has crossed less material, so they show which directions deliver the energy. Deep inside a layer, the radiation
@@ -261,26 +261,26 @@ grazing directions deliver nothing. At the center of a sphere, every direction c
 favored. A filament combines the two cases. Across the filament the path is short, and along its axis it is long. A filament
 therefore resembles a sphere in its cross-section and a layer along its axis.
 
-The mean intensity of Eq.~(\ref{eq:meanint}) is an integral over all directions, each with its own column $\Sigma_{\rm A}(\hat n)$.
-It is convenient to describe the shielding of a parcel by a single number instead, the column that, if it were the same in all
-directions, would give the same mean intensity. With a gray cross section $\sigma$ (see below), this effective attenuating column
+The mean intensity of Eq.~(\ref{eq:meanint}) is an integral over all directions, each with its own column $\Sigma(\hat n)$.
+It is convenient to describe the shielding of a parcel by a single number instead, as the column that, if it were the same in all
+directions, would give the mean intensity. With a gray cross section $\sigma$ (see below), this effective attenuating column
 $\Sigma_{\rm A}$ is defined by
 \begin{equation}
-  \Sigma_{\rm A} = - \sigma^{-1}
-    \ln \left\langle\,\exp\left({-\sigma\,\Sigma_{\rm A}\!\left(\hat n\right)}\right)\,\right\rangle_{4\pi},
+  \Sigma_{\rm A} = - \frac{1}{\sigma}
+    \ln \left\langle\,\exp\left({-\sigma\,\Sigma\!\left(\hat n\right)}\right)\,\right\rangle_{4\pi},
 \label{eq:seff}
 \end{equation}
 where the angle brackets denote averaging over all directions. The exponential describes the fraction of the external radiation
 that reaches the parcel from the direction $\hat n$. For an isotropic external field, their average is the ratio
 $J_{\lambda}/I_{\lambda 0}$ of Eq.~(\ref{eq:meanint}), so that $\sigma\Sigma_{\rm A} = -\ln \left(J_{\lambda}/I_{\lambda 0}\right)$
-is the optical depth that would reduce the radiation reaching the parcel by the same factor. 
+is the optical depth that would reduce the radiation reaching the parcel by the same factor.
 
 This average in Eq.~(\ref{eq:seff}) is dominated by the least shielded directions. The effective column is therefore not the
-arithmetic mean of $\Sigma_{\rm A}(\hat n)$ over directions, which is infinite for a layer, because grazing directions cross an
-unlimited amount of material. It is larger than the column along the shortest path, from the parcel to the nearest point of the
-surface, because the oblique directions deliver less radiation than the shortest path does. The dust temperature depends on
-$\Sigma_{\rm A}$. Figure~\ref{fig:angular} in Appendix~\ref{app:shape} shows how the average of Eq.~(\ref{eq:seff}) is formed at
-the mid-plane of a layer, and how $\Sigma_{\rm A}$ grows with the total surface density of the line of sight.
+arithmetic mean of $\Sigma(\hat n)$ over directions, which is infinite for a layer, because grazing directions cross an unlimited
+amount of material. It is larger than the column along the shortest path, from the parcel to the nearest point of the surface,
+because the oblique directions deliver less radiation than the shortest path does. Figure~\ref{fig:angular} in
+Appendix~\ref{app:shape} shows how the average of Eq.~(\ref{eq:seff}) is formed at the midplane of a layer, and how $\Sigma_{\rm
+A}$ grows with the total surface density of the line of sight.
 
 Two assumptions were made. First, the extinction at the heating wavelengths was taken to be gray, with $A_{V} =
 \Sigma/(0.94{\times}10^{21}\,{\rm cm}^{-2})$ \citep{Bohlin+1978} and the optical depth $\tau = A_{V}/1.086 = \sigma\,\Sigma$, where
@@ -299,17 +299,18 @@ temperature $T_{\rm min}$ that fully shielded dust approaches.}
 \label{fig:shielding}
 \end{figure}
 
-\subsection{The relation}
+\subsection{Dependence of dust temperature $T$ on $\Sigma_{\rm A}$}
 \label{sec:relation}
 
-The relation between $\Sigma_{\rm A}$ and $T$ is not a free choice. It follows from radiative transfer, once the dust properties
-and the radiation field are fixed. The density structure of every model is known. The attenuating column of a shell was therefore
-computed along any direction by integrating the density along that ray. Equation~(\ref{eq:seff}) was then evaluated by summing over
-directions, and each shell was weighted by its mass. For each cylinder, $\Sigma_{\rm A}$ was computed for an infinite cylinder with
-the same profile. Near the centers of the densest cores, few photon packets of the Monte Carlo calculation arrived, and the
-temperatures of the innermost cells scattered widely. A shell among the ten innermost ones was rejected if its temperature differed
-by more than $10$\% from the median of its five neighbors, together with every shell inside it. The rejected shells were $1.8$\% of
-all shells, and they contained a negligible fraction of the mass. The fit does not depend on this choice.
+The relation between $\Sigma_{\rm A}$ and $T$ is not a free choice. It follows
+from radiative transfer, once the dust properties and the radiation field are fixed. The density structure of every model is known.
+The attenuating column of a shell was therefore computed along any direction by integrating the density along that ray.
+Equation~(\ref{eq:seff}) was then evaluated by summing over directions, and each shell was weighted by its mass. For each cylinder,
+$\Sigma_{\rm A}$ was computed for an infinite cylinder with the same profile. Near the centers of the densest cores, few photon
+packets of the Monte Carlo calculation arrived, and the temperatures of the innermost cells scattered widely. A shell among the ten
+innermost ones was rejected if its temperature differed by more than $10$\% from the median of its five neighbors, together with
+every shell inside it. The rejected shells were $1.8$\% of all shells, and they contained a negligible fraction of the mass. The
+fit does not depend on this choice.
 
 The $102\,464$ shells of the $2086$ spheres and the $315$ radii of the seven cylinders follow a single relation
 (Fig.~\ref{fig:shielding}). It was fitted with the function
@@ -1491,7 +1492,7 @@ sight, for the two limiting shapes and for the average of them that is adopted, 
 
 The cube in Fig.~\ref{fig:relation} shows that the sphere and the layer are indeed the limits. The cube has the symmetry of neither
 of them. Its factor lies between them at every surface density, within $6$\% of the sphere and within $3$\% of the layer. The layer
-is an extreme case because it is unbounded across the line of sight. For a parcel at the mid-plane, the path to the boundary is the
+is an extreme case because it is unbounded across the line of sight. For a parcel at the midplane, the path to the boundary is the
 half-thickness divided by the cosine of the angle to the normal. This path diverges as the angle approaches $90\degr$, so a whole
 band of directions near the plane of the layer delivers no radiation, however thin the layer is. At $10^{22}$\,cm$^{-2}$, the
 directions within $30\degr$ of the normal deliver $64$\% of the mean intensity, and those within $45\degr$ deliver $93$\%. In a
