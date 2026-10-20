@@ -505,7 +505,7 @@ def fig_geometry(out="fig_geometry.pdf"):
     axis of a filament. The arrows are the incoming radiation, drawn thick where it has crossed little material, so that the eye
     sees which directions actually deliver energy. Lower panels: the effective attenuating column of Eq. (4) and the dust
     temperature that follows from it, along the normal through a uniform layer (solid) and along the diameter of a uniform
-    sphere (dashed), for three total surface densities; the thin vertical line marks the mid-plane.
+    sphere (dashed), for three total surface densities; the thin vertical line marks the midplane.
     """
 
     cols = (CCURVE[0], CCURVE[1], CCURVE[2])
@@ -565,7 +565,7 @@ def fig_geometry(out="fig_geometry.pdf"):
         b1.plot(u, np.minimum(u, 1.0 - u) * sig, ":", color=col)
         b2.plot(u, law(sa_u), "-", color=col)
         b2.plot(u, law(sa_s), "--", color=col, lw=0.9)
-    for b in (b1, b2):                       # the mid-plane, where the layer is symmetric
+    for b in (b1, b2):                       # the midplane, where the layer is symmetric
         b.axvline(0.5, ls="-", lw=0.5, color="0.65", zorder=0)
     b1.plot([], [], ":", color="1.0", label="dashed: sphere")
     b1.plot([], [], ":", color="1.0", label="dotted: shortest path")
@@ -675,7 +675,7 @@ def fig_angular(out="fig_angular.pdf"):
     Left: the fraction of the heating radiation that survives the journey inward, against the cosine of the angle to the normal,
     for a parcel at mid-depth of a plane-parallel layer of three total surface densities. The dashed lines are the angular means
     of the curves, the mean intensity of Eq. (5), and the single column that gives the same mean intensity is the effective
-    attenuating column of Eq. (6). Right: that column at mid-depth against the total surface density of the line of sight, for
+    attenuating column of Eq. (4). Right: that column at mid-depth against the total surface density of the line of sight, for
     the two limiting shapes and their adopted average, with the shortest path for comparison.
     """
 
@@ -694,7 +694,7 @@ def fig_angular(out="fig_angular.pdf"):
     ax[0].set_ylim(0.01, 1.0)
     ax[0].tick_params(labelsize=7.7)
     ax[0].set_xlabel(r"Direction of incidence $\cos i$", fontsize=7.7, labelpad=3.5)
-    ax[0].set_ylabel(r"Transmitted fraction $\exp({-\kappa\,\Sigma_{\rm A}(\hat n))}$", fontsize=7.7, labelpad=1.5)
+    ax[0].set_ylabel(r"Transmitted fraction $\exp(-\sigma\,\Sigma(\hat n))$", fontsize=7.7, labelpad=1.5)
     ax[0].legend(loc="upper left", **LEG)    ##, bbox_to_anchor=(0.02, 0.98)
 
     sg = np.geomspace(1.0e20, 1.0e24, 60)
@@ -890,7 +890,7 @@ def fig_relation(out="fig_relation.pdf"):
     """The correction factor against the uncorrected surface density, for the shapes and for the shortest path.
 
     The sphere and the layer are the two extremes of a uniform structure and the cube, which has the symmetry of neither, falls
-    between them; the adopted factor is the average of the first two. The dotted curve replaces the angular average of Eq. (6)
+    between them; the adopted factor is the average of the first two. The dotted curve replaces the angular average of Eq. (4)
     by the column along the shortest path, with its geometric factor of one quarter.
     """
 
@@ -1857,4 +1857,4 @@ if __name__ == "__main__":
 #    fig_cube()
 #    fig_superposition()
 #    fig_mixing()
-#    fig_angular()
+    fig_angular()

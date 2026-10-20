@@ -230,11 +230,8 @@ convolved to the same $13.5${\arcsec} resolutions.
 
 % =====================================================================
 
-\section{What sets the temperature of the dust}
+\section{Radiation shielding and dust temperature}
 \label{sec:law}
-
-\subsection{Effective attenuating column}
-\label{sec:why}
 
 Dust in a molecular cloud is heated mostly by the interstellar radiation field, the ultraviolet and optical light of the stars of
 the Galaxy that arrives from outside the cloud. Locally, it is also heated by stars that formed within the cloud, from protostars
@@ -243,7 +240,10 @@ is therefore set by the amount of radiation that reaches it. The models and the 
 the external heating only, for which this amount is reduced by the material between the grain and the outside of the cloud. Internal
 heating is discussed in Appendix~\ref{sec:notdo}.
 
-The radiation arrives from all directions, and it crosses different amounts of material in each direction. Let $I_{\lambda 0}$ be
+\subsection{Effective attenuating column}
+\label{sec:why}
+
+The external radiation arrives from all directions, and it crosses different amounts of material in each direction. Let $I_{\lambda 0}$ be
 the unattenuated radiation field at a wavelength $\lambda$. Denoting $\Sigma(\hat n)$ the column of hydrogen molecules
 (cm$^{-2}$) that the radiation crosses on its way in along the direction $\hat n$, the mean intensity $J_{\lambda}$ that reaches
 the grain is
@@ -254,12 +254,12 @@ the grain is
 where $\sigma_{\lambda}$ is the extinction cross section per hydrogen molecule. The quantity $\Sigma(\hat n)$ is the attenuating
 column in the direction $\hat n$.
 
-The upper panels of Fig.~\ref{fig:geometry} illustrate this for the three shapes used to describe clouds. The rays are thicker
-where the radiation has crossed less material, so they show which directions deliver the energy. Deep inside a layer, the radiation
-arrives almost entirely along the normal. A direction inclined by an angle $i$ crosses $(\cos i)^{-1}$ times more material, and
-grazing directions deliver nothing. At the center of a sphere, every direction crosses the same column, and no direction is
-favored. A filament combines the two cases. Across the filament the path is short, and along its axis it is long. A filament
-therefore resembles a sphere in its cross-section and a layer along its axis.
+The upper panels of Fig.~\ref{fig:geometry} illustrate this for the three shapes used to describe structures in clouds. The rays
+are thicker where the radiation has crossed less material, so they show which directions deliver the energy. Deep inside a layer,
+the radiation arrives almost entirely along the normal. A direction inclined by an angle $i$ crosses $(\cos i)^{-1}$ times more
+material, and grazing directions deliver nothing. At the center of a sphere, every direction crosses the same column, and no
+direction is preferred. A filament combines the two cases. Across the filament the path is short, and along its axis it is long. A
+filament therefore resembles a sphere in its cross-section and a layer along its axis.
 
 The mean intensity of Eq.~(\ref{eq:meanint}) is an integral over all directions, each with its own column $\Sigma(\hat n)$.
 It is convenient to describe the shielding of a parcel by a single number instead, as the column that, if it were the same in all
@@ -275,18 +275,28 @@ that reaches the parcel from the direction $\hat n$. For an isotropic external f
 $J_{\lambda}/I_{\lambda 0}$ of Eq.~(\ref{eq:meanint}), so that $\sigma\Sigma_{\rm A} = -\ln \left(J_{\lambda}/I_{\lambda 0}\right)$
 is the optical depth that would reduce the radiation reaching the parcel by the same factor.
 
-This average in Eq.~(\ref{eq:seff}) is dominated by the least shielded directions. The effective column is therefore not the
-arithmetic mean of $\Sigma(\hat n)$ over directions, which is infinite for a layer, because grazing directions cross an unlimited
-amount of material. It is larger than the column along the shortest path, from the parcel to the nearest point of the surface,
-because the oblique directions deliver less radiation than the shortest path does. Figure~\ref{fig:angular} in
-Appendix~\ref{app:shape} shows how the average of Eq.~(\ref{eq:seff}) is formed at the midplane of a layer, and how $\Sigma_{\rm
-A}$ grows with the total surface density of the line of sight.
+This average in Eq.~(\ref{eq:seff}) is dominated by the least shielded directions, because the exponential suppresses the
+contribution of heavily shielded ones. A direction that crosses a very large column contributes almost nothing, even when that
+column is infinite. The effective column therefore differs from the arithmetic mean of $\Sigma(\hat{n})$ over directions. For an
+infinite layer, the arithmetic mean is infinite, because the column $\Sigma(\hat{n})$ grows as $(\cos i)^{-1}$ toward grazing
+directions, whereas $\Sigma_{\rm A}$ remains finite. Figure~\ref{fig:angular} in Appendix~\ref{app:shape} shows how the average of
+Eq.~(\ref{eq:seff}) is formed at the midplane of a layer, and how $\Sigma_{\rm A}$ grows with the total surface density of the line
+of sight.
 
-Two assumptions were made. First, the extinction at the heating wavelengths was taken to be gray, with $A_{V} =
-\Sigma/(0.94{\times}10^{21}\,{\rm cm}^{-2})$ \citep{Bohlin+1978} and the optical depth $\tau = A_{V}/1.086 = \sigma\,\Sigma$, where
-$\sigma = 9.8{\times}10^{-22}$\,cm$^{2}$. In reality, the extinction varies across the ultraviolet and optical, so
-Eq.~(\ref{eq:seff}) is an average over wavelength as well as over direction. Second, the radiation field outside the cloud was
-assumed to be isotropic, as in the models of Sect.~\ref{sec:models}.
+%%It is larger than the column along the shortest path, from the parcel to the nearest point of the surface,
+%%because the oblique directions deliver less radiation than the shortest path does.
+
+%%This average in Eq.~(\ref{eq:seff}) is dominated by the least shielded directions. The effective column is therefore not the
+%%arithmetic mean of $\Sigma(\hat n)$ over directions, which is infinite for a layer, because grazing directions cross an unlimited
+%%amount of material. It is larger than the column along the shortest path, from the parcel to the nearest point of the surface,
+%%because the oblique directions deliver less radiation than the shortest path does. 
+
+The above reasoning contains two implicit assumptions. The extinction across the ultraviolet and optical wavelengths is gray, with
+$A_{V} = \Sigma / (0.94{\times}10^{21}\,{\rm cm}^{-2})$ \citep{Bohlin+1978} and the optical depth $\tau = A_{V} / 1.086 =
+\sigma\,\Sigma$, where $\sigma = 9.8{\times}10^{-22}$\,cm$^{2}$. In reality, the extinction varies at those wavelengths, therefore
+the exponential in Eq.~(\ref{eq:seff}) must be an average over $\lambda$ as well. Also the radiation field outside the cloud was
+assumed to be isotropic -- the same for all directions $\hat{n}$; this is also the assumption adopted in all models
+(Sect.~\ref{sec:models}).
 
 \begin{figure}
 \centering
@@ -302,12 +312,12 @@ temperature $T_{\rm min}$ that fully shielded dust approaches.}
 \subsection{Dependence of dust temperature $T$ on $\Sigma_{\rm A}$}
 \label{sec:relation}
 
-The relation between $\Sigma_{\rm A}$ and $T$ is not a free choice. It follows
-from radiative transfer, once the dust properties and the radiation field are fixed. The density structure of every model is known.
-The attenuating column of a shell was therefore computed along any direction by integrating the density along that ray.
-Equation~(\ref{eq:seff}) was then evaluated by summing over directions, and each shell was weighted by its mass. For each cylinder,
-$\Sigma_{\rm A}$ was computed for an infinite cylinder with the same profile. Near the centers of the densest cores, few photon
-packets of the Monte Carlo calculation arrived, and the temperatures of the innermost cells scattered widely. A shell among the ten
+The relation between $\Sigma_{\rm A}$ and $T$ is not a free choice. It follows from radiative transfer, once the dust properties
+and the external radiation field are fixed. The volume density structure $\rho(r)$ of every model is known. The attenuating columns
+of a radial shell were therefore computed along all directions by integrating $\rho(r)$ along that ray. Equation~(\ref{eq:seff})
+was then evaluated by summing over directions, and each shell was weighted by its mass. For each filament, $\Sigma_{\rm A}$ was
+computed for an infinite cylinder with the same profile. For the densest cores, few photon packets of the Monte Carlo calculation
+arrive near their centers, and the temperatures of the innermost shells of such cores scattered widely. A shell among the ten
 innermost ones was rejected if its temperature differed by more than $10$\% from the median of its five neighbors, together with
 every shell inside it. The rejected shells were $1.8$\% of all shells, and they contained a negligible fraction of the mass. The
 fit does not depend on this choice.
