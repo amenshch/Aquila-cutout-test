@@ -1,0 +1,90 @@
+law_no_cyl_p2:
+! Dust temperature against the effective attenuating column, fitted on
+! 2092 RADMC-3D nodes, 100648 shells, mass weighted.
+! 100378 sphere shells and 270 cylinder radii; the cylinders carry 0.50 of the total weight
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       7.035181 K
+!   T0    =      22.861035 K
+!   Sstar =   2.388950e+21 cm^-2
+!   gamma =       1.593097
+!   mass-weighted scatter 2.41 per cent
+
+law_no_cyl_sd1e22:
+! Dust temperature against the effective attenuating column, fitted on
+! 2092 RADMC-3D nodes, 100648 shells, mass weighted.
+! 100378 sphere shells and 270 cylinder radii; the cylinders carry 0.50 of the total weight
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       7.075687 K
+!   T0    =      22.820400 K
+!   Sstar =   2.469918e+21 cm^-2
+!   gamma =       1.635493
+!   mass-weighted scatter 2.43 per cent
+
+law_no_cyl_sd1e23:
+! Dust temperature against the effective attenuating column, fitted on
+! 2092 RADMC-3D nodes, 100648 shells, mass weighted.
+! 100378 sphere shells and 270 cylinder radii; the cylinders carry 0.50 of the total weight
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       7.106654 K
+!   T0    =      22.895413 K
+!   Sstar =   2.403813e+21 cm^-2
+!   gamma =       1.619211
+!   mass-weighted scatter 2.35 per cent
+
+law_no_cyl_sd3e21:
+! Dust temperature against the effective attenuating column, fitted on
+! 2092 RADMC-3D nodes, 100648 shells, mass weighted.
+! 100378 sphere shells and 270 cylinder radii; the cylinders carry 0.50 of the total weight
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       7.091987 K
+!   T0    =      22.810426 K
+!   Sstar =   2.532432e+21 cm^-2
+!   gamma =       1.664981
+!   mass-weighted scatter 2.47 per cent
+
+law_no_cyl_sd5e22:
+! Dust temperature against the effective attenuating column, fitted on
+! 2092 RADMC-3D nodes, 100648 shells, mass weighted.
+! 100378 sphere shells and 270 cylinder radii; the cylinders carry 0.50 of the total weight
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       7.003697 K
+!   T0    =      22.901740 K
+!   Sstar =   2.287405e+21 cm^-2
+!   gamma =       1.543031
+!   mass-weighted scatter 2.36 per cent
+
+law_no_cyl_w80:
+! Dust temperature against the effective attenuating column, fitted on
+! 2092 RADMC-3D nodes, 100648 shells, mass weighted.
+! 100378 sphere shells and 270 cylinder radii; the cylinders carry 0.50 of the total weight
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       7.022227 K
+!   T0    =      22.902538 K
+!   Sstar =   2.326037e+21 cm^-2
+!   gamma =       1.565351
+!   mass-weighted scatter 2.39 per cent
+
+law_no_cylinder:
+! Dust temperature against the effective attenuating column, fitted on
+! 2092 RADMC-3D nodes, 100648 shells, mass weighted.
+! 100378 sphere shells and 270 cylinder radii; the cylinders carry 0.50 of the total weight
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       7.032768 K
+!   T0    =      22.865702 K
+!   Sstar =   2.366390e+21 cm^-2
+!   gamma =       1.583119
+!   mass-weighted scatter 2.37 per cent
