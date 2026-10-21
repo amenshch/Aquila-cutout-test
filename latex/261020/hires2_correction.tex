@@ -322,14 +322,13 @@ weighted by $\sin\psi$. Each filament was treated as an infinite cylinder with t
 shells were computed at $45$ radii. A direction is then defined by its angle $\theta$ to the axis of the cylinder and by the angle
 $\phi$ between its projection onto the cross-section and the outward radial direction. The $200$ values of $\cos\theta$ and the
 $180$ values of $\phi$ were spaced uniformly, so that all directions represent equal solid angles. Equation~(\ref{eq:seff}) was
-then evaluated by summing over directions, and each shell was weighted by its mass. Few photon packets of the Monte Carlo
-calculation arrived near the centers of the densest cores, and the temperatures of their innermost shells scattered widely. A shell
-among the ten innermost ones was rejected if its temperature differed by more than $10$\% from the median of its five neighbors,
-together with every shell inside it. The rejected shells were $1.8$\% of all shells, and they contained a negligible fraction of
-the mass. The fit does not depend on this choice. The outermost shell of every sphere was also rejected. In the thicker embedding
-clouds, it spans an extinction of several magnitudes, and its single Monte Carlo temperature, an average over a steep temperature
-gradient, exceeded that of the dust at its center, where $\Sigma_{\rm A}$ was evaluated, by up to $2.4$\,K. The mass weights of
-every sphere were renormalized after the rejections.
+then evaluated by summing over directions. Few photon packets of the Monte Carlo calculation arrived near the centers of the
+densest cores, and the temperatures of their innermost shells scattered widely. A shell among the ten innermost ones was rejected
+if its temperature differed by more than $10$\% from the median of its five neighbors, together with every shell inside it. The
+rejected shells were $1.8$\% of all shells, and they contained a negligible fraction of the mass. The fit does not depend on this
+choice. The outermost shell of every sphere was also rejected. In the thicker embedding clouds, it spans an extinction of several
+magnitudes, and its single Monte Carlo temperature, an average over a steep temperature gradient, exceeded that of the dust at its
+center, where $\Sigma_{\rm A}$ was evaluated, by up to $2.4$\,K.
 
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 %%%%% NUMBERS (2026-10-20): T_min, T_0, Sigma_star, gamma and the scatter from the header of attenuation_law.txt written by
@@ -344,8 +343,10 @@ The more than $10^5$ shells of the $2086$ spheres and the $45$ radii of each of 
   T(\Sigma_{\rm A}) = T_{\rm min} + \left(T_0 - T_{\rm min}\right) \left(1 + \Sigma_{\rm A}/{\Sigma_\star}\right)^{-\gamma},
 \label{eq:law}
 \end{equation}
-where the fit parameters are $T_{\rm min} = 7.0495$\,K, $T_0 = 22.8668$\,K, $\Sigma_\star = 2.3897{\times}10^{21}$\,cm$^{-2}$ and
-$\gamma = 1.5969$. The spheres and the cylinders were given equal total weights in the fit. The mass-weighted scatter about the
+where the four parameters are $T_{\rm min} = 7.0495$\,K, $T_0 = 22.8668$\,K, $\Sigma_\star = 2.3897{\times}10^{21}$\,cm$^{-2}$ and
+$\gamma = 1.5969$. The fit minimized the sum of the squared logarithmic differences between the fitted and the model temperatures,
+each shell weighted by its mass. The shells of every sphere, after the rejections, and the radii of every cylinder were normalized
+to the same total weight, and the two types of structure were given equal total weights. The mass-weighted scatter about the
 relation is $2.4$\%. The two limits have simple meanings. $T_0$ is the temperature of dust that the radiation reaches without
 attenuation. $T_{\rm min}$ is the temperature that dust approaches when the radiation cannot reach it at all; the dust is then
 warmed only by the little radiation that penetrates and by the microwave background. The spheres and the cylinders follow the same
