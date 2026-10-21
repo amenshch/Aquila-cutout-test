@@ -153,8 +153,9 @@ def attenuating_column(sigma, geometry="mean", ndep=512):
     """Effective attenuating column at each depth through a uniform structure.
 
     The angular average is taken over NANG directions, for a sphere sampled along a diameter, for a plane-parallel layer sampled
-    along its normal, for the average of the two, or for a uniform cube sampled along the line joining two opposite faces. The
-    first three reproduce attenuating_column() of hicorrect2 exactly; the cube is used only for the comparison of Table 5.
+    along its normal, for the average of the two, or for an infinite uniform cylinder sampled along a diameter perpendicular to its
+    axis. The first three reproduce attenuating_column() of hicorrect2 exactly; the cylinder is used only for the comparison of
+    Fig. 4 and Appendix G.
     """
     t0 = KAPHEAT * sigma / 2.0
     z = (np.arange(ndep) + 0.5) / ndep * 2.0 - 1.0
@@ -168,19 +169,17 @@ def attenuating_column(sigma, geometry="mean", ndep=512):
     jlay = np.exp(-t0 * dlay).mean(axis=1)
     ssph = -np.log(np.maximum(jsph, 1e-300)) / max(t0, 1e-12)
     slay = -np.log(np.maximum(jlay, 1e-300)) / max(t0, 1e-12)
-    if geometry == "cube":
-        # a uniform cube, sampled along the line through the centers of two opposite faces, with the directions drawn from a
-        # spiral that covers the sphere evenly, since a cube is not symmetric about the line of sight
-        nd = 4 * NANG
-        k = np.arange(nd) + 0.5
-        cz = 1.0 - 2.0 * k / nd
-        cr = np.sqrt(np.maximum(1.0 - cz ** 2, 0.0))
-        phi = np.pi * (1.0 + 5.0 ** 0.5) * k
-        nx, ny, nz = cr * np.cos(phi), cr * np.sin(phi), cz
-        far = np.where(nz > 0.0, (1.0 - z[:, None]) / np.maximum(nz, 1e-12), (1.0 + z[:, None]) / np.maximum(-nz, 1e-12))
-        lcub = np.minimum(np.minimum(1.0 / np.maximum(np.abs(nx), 1e-12), 1.0 / np.maximum(np.abs(ny), 1e-12)), far)
-        jcub = np.exp(-t0 * lcub).mean(axis=1)
-        return -np.log(np.maximum(jcub, 1e-300)) / max(t0, 1e-12) * sigma / 2.0
+    if geometry == "cylinder":
+        # an infinite uniform cylinder, sampled along a diameter perpendicular to its axis; a direction is given by its azimuth phi
+        # in the cross-section, from the line of sight, and by mu = cos(theta), theta its angle to the axis, both uniform so that
+        # all directions represent equal solid angles, as in the cylinders of fit_attenuation_law.py
+        nphi, nmu = 180, 200
+        phi = (np.arange(nphi) + 0.5) / nphi * 2.0 * np.pi
+        mu = (np.arange(nmu) + 0.5) / nmu * 2.0 - 1.0
+        sint = np.sqrt(1.0 - mu ** 2)
+        chord = -z[:, None] * np.cos(phi) + np.sqrt(np.maximum(1.0 - (z[:, None] * np.sin(phi)) ** 2, 0.0))
+        jcyl = np.exp(-t0 * chord[:, :, None] / sint[None, None, :]).mean(axis=(1, 2))
+        return -np.log(np.maximum(jcyl, 1e-300)) / max(t0, 1e-12) * sigma / 2.0
     if geometry == "short":
         u = (np.arange(len(z)) + 0.5) / len(z)
         return np.minimum(u, 1.0 - u) * sigma
@@ -890,14 +889,14 @@ def fig_relation(out="fig_relation.pdf"):
 
     """The correction factor against the uncorrected surface density, for the shapes and for the shortest path.
 
-    The sphere and the layer are the two extremes of a uniform structure and the cube, which has the symmetry of neither, falls
-    between them; the adopted factor is the average of the first two. The dotted curve replaces the angular average of Eq. (4)
+    The sphere and the layer are the two extremes of a uniform structure and the cylinder, bounded across its axis and unbounded
+    along it, falls between them; the adopted factor is the average of the first two. The dotted curve replaces the angular average of Eq. (4)
     by the column along the shortest path, with its geometric factor of one quarter.
     """
 
     fig, ax = plt.subplots(1, 1, figsize=(3.5, 2.8))
 
-    for geom, col, lab in (("layer", CCURVE[0], "plane-parallel layer"), ("cube", CCURVE[1], "cube"),
+    for geom, col, lab in (("layer", CCURVE[0], "plane-parallel layer"), ("cylinder", CCURVE[1], "cylinder"),
                            ("sphere", CCURVE[2], "sphere"), ("mean", 'black', "average of sphere and layer")):
         fit, f = relation(geom)
         ax.plot(fit, f, "--" if geom == "mean" else "-", lw=1.0 if geom == "mean" else None, color=col, label=lab)
@@ -909,16 +908,16 @@ def fig_relation(out="fig_relation.pdf"):
 
     fit, f = h2.build_relation([160.0, 250.0, 350.0, 500.0])
     # the adopted factor never decreases with the surface density (held at its maximum), Eq. (12) with g = 1
-    ax.plot(fit, np.maximum.accumulate(f), "-", color=CCURVE[3], lw=1.5, label="adopted, calibrated on a radiative transfer cloud")
+    ax.plot(fit, np.maximum.accumulate(f), "-", color=CCURVE[3], lw=1.5, label=r"adopted, $G_0 = 10$")
     # the adopted factor for two other fields, with the field factor g of Eq. (12)
     for g0, ls in ((5.0, (0, (5, 2))), (33.0, (0, (1, 1.5)))):
         fg = np.maximum.accumulate(f * h2.field_factor(np.log10(fit), g0))
-        ax.plot(fit, fg, linestyle=ls, color=CCURVE[3], lw=1.1, label=r"adopted for $G_0 = %g$" % g0)
+        ax.plot(fit, fg, linestyle=ls, color=CCURVE[3], lw=1.1, label=r"adopted, $G_0 = %g$" % g0)
     ax.set_xscale("log")
     ax.set_xlim(1e21, 3.0e23)
     ax.set_ylim(0.9, 2.98)
     ax.tick_params(labelsize=7.7)
-    ax.set_xlabel(r"Surface density $\Sigma$ (cm$^{-2}$), uncorrected", fontsize=7.7, labelpad=1.5)
+    ax.set_xlabel(r"Fitted surface density $\Sigma_{\rm F}$ (cm$^{-2}$)", fontsize=7.7, labelpad=1.5)
     ax.set_ylabel(r"Correction factor $f$", fontsize=7.7, labelpad=1.5)
     ax.legend(loc="upper left", **LEG)    ##, bbox_to_anchor=(0.02, 0.98)
 
@@ -1846,16 +1845,16 @@ def fig_cube3d(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_
 
 if __name__ == "__main__":
 
-    fig_geometry()
-    fig_shielding()
-    fig_method()
+#    fig_geometry()
+#    fig_shielding()
+#    fig_method()
     fig_relation()
-    fig_grid_validation()
-    fig_cylinders()
-    fig_simsky6()
-    fig_aquila()
-    fig_cube3d()
-    fig_cube()
-    fig_superposition()
-    fig_mixing()
-    fig_angular()
+#    fig_grid_validation()
+#    fig_cylinders()
+#    fig_simsky6()
+#    fig_aquila()
+#    fig_cube3d()
+#    fig_cube()
+#    fig_superposition()
+#    fig_mixing()
+#    fig_angular()
