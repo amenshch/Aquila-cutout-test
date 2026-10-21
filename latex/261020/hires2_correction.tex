@@ -36,7 +36,9 @@ Universit\'e Paris-Saclay, 91191 Gif-sur-Yvette, France}
 \offprints{Alexander Men'shchikov}
 \titlerunning{Correcting the temperature bias of surface density images}
 
-% NUMBERS (2026-10-20): the values of the abstract are copied from Sects. 3.2, 5 and 6; see the comments there.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): the values of the abstract are copied from Sects. 3.2, 5 and 6; see the comments there.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 \abstract{Surface densities of molecular clouds are derived by fitting one modified blackbody to each pixel of far-infrared images.
 In dense structures, the fit is dominated by the warmer material along the line of sight and underestimates the surface densities
 by more than a factor of two in the densest material. The observed spectral shapes cannot reveal this underestimation, because its
@@ -172,7 +174,7 @@ steps of a factor of $2.17$ (Sect.~\ref{sec:g0corr}).
 Each filament was modeled as an isolated cylinder, without any surrounding cloud, with the length $L = 7.2$\,pc and computed on an
 axisymmetric grid with the radial volume density profile
 \begin{equation}
-    \rho(r) = \rho_{\rm C}\left(1 + \left(2^{2/p}-1\right)\left(\frac{2r}{h}\right)^{2}\right)^{-p/2},
+  \rho(r) = \rho_{\rm C}\left(1 + \left(2^{2/p}-1\right)\left(\frac{2r}{h}\right)^{2}\right)^{-p/2},
 \label{eq:fdens}
 \end{equation}
 truncated at the radius $R = 0.5$\,pc, where $h$ is the half-maximum width of the volume density profile and the factor
@@ -199,10 +201,10 @@ axis. \emph{Lower left}: The effective attenuating column $\Sigma_{\rm A}$ of Eq
 along the line of sight normal to a uniform-density layer (solid curves) and along the diameter of a uniform-density sphere (dashed
 curves), for total surface densities $\Sigma$ of $10^{21}$, $10^{22}$ and $10^{23}$\,cm$^{-2}$ along that line of sight. The dotted
 curves are the column along the shortest path to the surface, which for these central lines of sight is $\min(u, 1-u)\,\Sigma$ for
-both shapes (for off-center lines of sight through a sphere or a filament, the nearest surface lies
-across the line of sight, and the column is smaller), and the thin vertical line marks the midplane (the center of
-the sphere), about which the profiles are symmetric. \emph{Lower right}: The dust temperature
-that follows from $\Sigma_{\rm A}$ through Eq.~(\ref{eq:law}). The dotted line marks the floor temperature $T_{\rm min}$.}
+both shapes (for off-center lines of sight through a sphere or a filament, the nearest surface lies across the line of sight, and
+the column is smaller), and the thin vertical line marks the midplane (the center of the sphere), about which the profiles are
+symmetric. \emph{Lower right}: The dust temperature that follows from $\Sigma_{\rm A}$ through Eq.~(\ref{eq:law}). The dotted line
+marks the floor temperature $T_{\rm min}$.}
 \label{fig:geometry}
 \end{figure*}
 
@@ -226,7 +228,7 @@ and behind them. The cores were the grid models inside embedding spherical cloud
 the sky.
 
 The emission of the simulated sky was convolved to the beams of the wavebands at $160$--$500${\um} and its surface density
-$\mathcal{D}$ was derived with \emph{hires}, as done for real observations. The true surface density $\mathcal{D}_{\rm T}$ was also
+$\Dim$ was derived with \emph{hires}, as done for real observations. The true surface density $\Dim_{\rm T}$ was also
 convolved to the same $13.5${\arcsec} resolutions.
 
 % =====================================================================
@@ -244,8 +246,8 @@ heating is discussed in Appendix~\ref{sec:notdo}.
 \subsection{Effective attenuating column}
 \label{sec:why}
 
-The external radiation arrives from all directions, and it crosses different amounts of material in each direction. Let $I_{\lambda 0}$ be
-the unattenuated radiation field at a wavelength $\lambda$. Denoting $\Sigma(\hat n)$ the column of hydrogen molecules
+The external radiation arrives from all directions, and it crosses different amounts of material in each direction. Let $I_{\lambda
+0}$ be the unattenuated radiation field at a wavelength $\lambda$. Denoting $\Sigma(\hat n)$ the column of hydrogen molecules
 (cm$^{-2}$) that the radiation crosses on its way in along the direction $\hat n$, the mean intensity $J_{\lambda}$ that reaches
 the grain is
 \begin{equation}
@@ -307,9 +309,11 @@ temperature $T_{\rm min}$ that fully shielded dust approaches.}
 \subsection{Dependence of dust temperature $T$ on $\Sigma_{\rm A}$}
 \label{sec:relation}
 
-% NUMBERS (2026-10-20): 2.4 K is the mass-weighted mean excess over the relation of the outermost shells of the spheres in the
-% densest embedding clouds (cSD_09), measured on attenuation_law.txt of the fit with the outermost shells kept (-keepouter); the
-% shells were identified with the node column of the table and diagnose_shielding_branches.py.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): 2.4 K is the mass-weighted mean excess over the relation of the outermost shells of the spheres in the
+%%%%% densest embedding clouds (cSD_09), measured on attenuation_law.txt of the fit with the outermost shells kept (-keepouter);
+%%%%% the shells were identified with the node column of the table and diagnose_shielding_branches.py.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 The relation between $\Sigma_{\rm A}$ and $T$ is not a free choice. It follows from radiative transfer, once the dust properties
 and the external radiation field are fixed. The density structure of every model is known. The attenuating column of a shell was
 therefore computed along many directions, by integrating the number density of hydrogen molecules along each ray. For the spherical
@@ -327,13 +331,15 @@ clouds, it spans an extinction of several magnitudes, and its single Monte Carlo
 gradient, exceeded that of the dust at its center, where $\Sigma_{\rm A}$ was evaluated, by up to $2.4$\,K. The mass weights of
 every sphere were renormalized after the rejections.
 
-% NUMBERS (2026-10-20): T_min, T_0, Sigma_star, gamma and the scatter from the header of attenuation_law.txt written by
-% fit_attenuation_law.py (2086 spheres without their outermost shells, 7 isolated cylinders, equal weights). The departures of 
-% the spheres and cylinders and the leave-one-cylinder change of the factor from python/paper_numbers/law_checks.py with
-% attenuation_law.txt and attenuation_law-leave_one_cylinder_out.txt (the seven fits run with fit_attenuation_law.py, 
-% one cylinder left out each).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): T_min, T_0, Sigma_star, gamma and the scatter from the header of attenuation_law.txt written by
+%%%%% fit_attenuation_law.py (2086 spheres without their outermost shells, 7 isolated cylinders, equal weights). The departures
+%%%%% of the spheres and cylinders and the leave-one-cylinder change of the factor from python/paper_numbers/law_checks.py with
+%%%%% attenuation_law.txt and attenuation_law-leave_one_cylinder_out.txt (the seven fits run with fit_attenuation_law.py, 
+%%%%% one cylinder left out each).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 The more than $10^5$ shells of the $2086$ spheres and the $45$ radii of each of the seven cylinders follow a single relation
-(Fig.~\ref{fig:shielding}). It was fitted with the function
+(Fig.~\ref{fig:shielding}) that can be fitted with the function
 \begin{equation}
   T(\Sigma_{\rm A}) = T_{\rm min} + \left(T_0 - T_{\rm min}\right) \left(1 + \Sigma_{\rm A}/{\Sigma_\star}\right)^{-\gamma},
 \label{eq:law}
@@ -382,7 +388,7 @@ the reason given in Sect.~\ref{sec:orient}. (\emph{ii}) The temperature at each 
 (\emph{iii}) The emergent intensity was obtained as the sum of the emission of all layers,
 \begin{equation}
    \Iim_\lambda(\Sigma) = \kappa_\lambda\,\eta\,\muH\,\mH\,\Sigma
-   \int_0^1 B_\lambda \big(T(\Sigma_{\rm A}(u))\big)\,{\rm d}u,
+     \int_0^1 B_\lambda \big(T(\Sigma_{\rm A}(u))\big)\,{\rm d}u,
 \label{eq:emission}
 \end{equation}
 where $u$ is the fraction of the total surface density that lies in front of a layer, $\kappa_\lambda$ is the dust opacity per unit
@@ -397,7 +403,7 @@ the longest one, $500${\um}:
 (\emph{v}) The correction factor is the ratio of the two surface densities. It was tabulated against $\Sigma_{\rm F}$, because an
 observed image contains $\Sigma_{\rm F}$ and not $\Sigma$:
 \begin{equation}
-   f(\Sigma_{\rm F}) = {\Sigma}/{\Sigma_{\rm F}} .
+   f(\Sigma_{\rm F}) = {\Sigma}/{\Sigma_{\rm F}}.
 \label{eq:factor}
 \end{equation}
 Figure~\ref{fig:method} shows the five steps together with the steps before and after them.
@@ -461,8 +467,8 @@ does not change the amount of material. The mass of a line of sight per unit col
 because the column is the integral of the density. Let $\Sigma(s)$ be the column in front of a parcel at the depth $s$. The
 emission of Eq.~(\ref{eq:emission}) integrated along the line of sight is then
 \begin{equation}
-   \int_0^L B_\lambda\big(T(\Sigma_{\rm A}(\Sigma(s)))\big)\,\rho(s)\,{\rm d}s
-   = \int_0^{\Sigma} B_\lambda\big(T(\Sigma_{\rm A}(\Sigma^{\prime}))\big)\,{\rm d}\Sigma^{\prime} ,
+  \int_0^L B_\lambda\big(T(\Sigma_{\rm A}(\Sigma(s)))\big)\,\rho(s)\,{\rm d}s
+   = \int_0^{\Sigma} B_\lambda\big(T(\Sigma_{\rm A}(\Sigma^{\prime}))\big)\,{\rm d}\Sigma^{\prime},
 \label{eq:invariance}
 \end{equation}
 and the density has disappeared. Two lines of sight with the same total surface density emit the same spectrum. It does not matter
@@ -521,7 +527,7 @@ $10^{21.4}$\,cm$^{-2}$ in every field. At $10^{22}$\,cm$^{-2}$, it is $0.80$ for
 
 The factor applied to a cloud in the field $G_0$ is then
 \begin{equation}
-  f_{G_0}(\Sigma_{\rm F}) = \max_{\Sigma^{\prime} \le \Sigma_{\rm F}} \Big[ f(\Sigma^{\prime})\,g(\Sigma^{\prime}, G_0) \Big] ,
+  f_{G_0}(\Sigma_{\rm F}) = \max_{\Sigma^{\prime} \le \Sigma_{\rm F}} \Big[ f(\Sigma^{\prime})\,g(\Sigma^{\prime}, G_0) \Big],
 \label{eq:factorg0}
 \end{equation}
 which also holds the factor at its maximum (Sect.~\ref{sec:factor}). For $G_0 = 10$, $g = 1$. The field is a single number for a
@@ -536,7 +542,7 @@ calculation, like the wavebands.
 
 An image is corrected by multiplying it by the image of the correction factors evaluated on the image itself,
 \begin{equation}
-  \Dimc(O) = \mathcal{F}(O)\,\Dim(O), \quad \mathcal{F}(O) \equiv f_{G_0}\big(\Dim(O)\big) ,
+  \Dimc(O) = \mathcal{F}(O)\,\Dim(O), \quad \mathcal{F}(O) \equiv f_{G_0}\big(\Dim(O)\big),
 \label{eq:correction}
 \end{equation}
 where $f_{G_0}$ of Eq.~(\ref{eq:factorg0}) is evaluated pixel by pixel. Without an estimate of the field, $G_0 = 10$ is used. This
@@ -630,9 +636,11 @@ computed for every model. Table~\ref{tab:valgrid} gives the median over the mode
 $68$\% of the models (one standard deviation from the mean of a Gaussian).
 
 \begin{table}
-% NUMBERS (2026-10-20): Table tab:valgrid and the numbers of Sect. 5.1 are from validate3_finRTlaw.txt, written by
-% validate_calib3.py on the subdivision grid: rows 'hicorrect2, fine' (factor at 13.5 arcsec) and 'hicorrect2, coarse' (36.3);
-% Center and 21 arcsec from the radial table at 3 and 21 arcsec; the footprint errors from the table of the misjudged footprint.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): Table tab:valgrid and the numbers of Sect. 5.1 are from validate3_finRTlaw.txt, written by
+%%%%% validate_calib3.py on the subdivision grid: rows 'hicorrect2, fine' (factor at 13.5 arcsec) and 'hicorrect2, coarse' (36.3);
+%%%%% Center and 21 arcsec from the radial table at 3 and 21 arcsec; the footprint errors from the table of the misjudged footprint.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 \caption{Validation on $1815$ radiative transfer models that were not used to fit the relation of Eq.~(\ref{eq:law}). Total: the
 accuracy ratio of the surface density summed over the footprint of the model. Core mass: the accuracy ratio of the same sum less
 the background, for the $1750$ models in which the mass can be measured. Center and $21{\arcsec}$: the relative residual of the
@@ -698,9 +706,11 @@ profiles are not confused by any background. Figure~\ref{fig:cylinders} and Tabl
 the median profile over the middle part of each cylinder. The true profile is convolved to the beam of $13.5{\arcsec}$.
 
 \begin{table*}
-% NUMBERS (2026-10-20): Table tab:cyl and the numbers of Sect. 5.2 from python/paper_numbers/cylinder_table.py on the seven
-% *_isolated directories (mc.surfdens.fits and hi.surface.density.r13p5.fits; the factor is applied to the median profile, 
-% as in fig_cylinders).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): Table tab:cyl and the numbers of Sect. 5.2 from python/paper_numbers/cylinder_table.py on the seven
+%%%%% *_isolated directories (mc.surfdens.fits and hi.surface.density.r13p5.fits; the factor is applied to the median profile, 
+%%%%% as in fig_cylinders).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 \caption{The isolated radiative transfer cylinders at $13.5{\arcsec}$. $\Sigma_0$: the true surface density on the axis. Crest: the
 accuracy ratio of the surface density on the axis, before and after the correction. $\Lambda$: the accuracy ratio of the linear
 density within $\pm300{\arcsec}$, before and after. $H$: the half-maximum width of the true, the uncorrected and the corrected
@@ -764,9 +774,12 @@ dashed curve is the cloud alone at the same positions.}
 \label{fig:simsky6}
 \end{figure*}
 
-% NUMBERS (2026-10-20): Sect. 5.3 from python/paper_numbers/simsky_numbers.py on simsky6_RT_enh_cirrdepth=2_nocrater (the sky),
-% simsky6_RT_enh_cirronly (the cloud alone) and the core catalog simsky6.w40.cores.cores.txt. The crests, flanks and wings are read
-% from the profiles at 0, 15-45 and 240 arcsec; the total of 0.96 is the median accuracy ratio with the cores masked (0.955).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): Sect. 5.3 from python/paper_numbers/simsky_numbers.py on simsky6_RT_enh_cirrdepth=2_nocrater (the sky),
+%%%%% simsky6_RT_enh_cirronly (the cloud alone) and the core catalog simsky6.w40.cores.cores.txt. The crests, flanks and wings are
+%%%%% read from the profiles at 0, 15-45 and 240 arcsec; the total of 0.96 is the median accuracy ratio with the cores masked
+%%%%% (0.955).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 Figure~\ref{fig:simsky6} shows the result for each component. The cloud alone, in a sky without filaments and cores, is corrected
 to $0.89$ of the truth in the median. It is $6$\% too low at $10^{21}$\,cm$^{-2}$ and $14$\% too low at $10^{22}$\,cm$^{-2}$.
 Before the correction, the reconstruction contains $0.76$ of the truth. The fractional underestimation is the same at
@@ -788,9 +801,11 @@ $0.96$ of the truth.
 \subsection{Where the correction fails, and the resolution of the factor}
 \label{sec:base}
 
-% NUMBERS (2026-10-20): from validate3_finRTlaw.txt.nodes.txt (validate_calib3.py, per node), the 926 nodes with a half radius
-% r_h below 13.5 arcsec, row 'hicorrect2, fine': median and 16th percentile of the central residual, median and 84th percentile
-% of the largest residual of the radial profile within 3 r_h.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): from validate3_finRTlaw.txt.nodes.txt (validate_calib3.py, per node), the 926 nodes with a half radius
+%%%%% r_h below 13.5 arcsec, row 'hicorrect2, fine': median and 16th percentile of the central residual, median and 84th percentile
+%%%%% of the largest residual of the radial profile within 3 r_h.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 Two kinds of structure are not corrected well by any correction that depends on the surface density alone. The centers of
 concentrated structures, the centers of cores and the crests of filaments, remain $6$ to $22$\% too low. Cores narrower than two
 beams, half of the models of the grid, remain $27$\% too low at their centers in the median and more than $56$\% too low for one in
@@ -820,8 +835,10 @@ whole Aquila map, which contains $29$ million pixels. The field is $G_0 \approx 
 percentiles of the temperature. The cloud is therefore heated by a field about three times stronger than the field of the
 calibration, and the correction used $G_0 = 33$ in Eq.~(\ref{eq:factorg0}).
 
-% NUMBERS (2026-10-20): Sect. 6 from python/paper_numbers/aquila_numbers.py on the images of hires/Aquila_cutout_g33 
-% (hicorrect2 with -g0=33); the values for G_0 = 10 are recomputed by the same script from hicorrect2.py.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): Sect. 6 from python/paper_numbers/aquila_numbers.py on the images of hires/Aquila_cutout_g33 
+%%%%% (hicorrect2 with -g0=33); the values for G_0 = 10 are recomputed by the same script from hicorrect2.py.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 The median correction factor over the field is $1.67$. The factor is below $1.21$, $1.54$, $1.88$ and $2.21$ for $1$, $25$, $75$
 and $99$\% of the pixels, and it reaches its maximum, $2.21$, above $3{\times}10^{22}$\,cm$^{-2}$. The correction is therefore
 significant everywhere in the field. The total surface density of the field increases by a factor of $1.86$. With the calibration
@@ -935,8 +952,10 @@ error of the correction, but it is the largest term for the masses of cores.
 \subsection{Summary of the accuracy}
 \label{sec:accuracy}
 
-% NUMBERS (2026-10-20): the values of this table are copied from Sects. 5, 6 and 7 and Appendices B and D; see the comments there.
 \begin{table*}[ht!]
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): the values of this table are copied from Sects. 5, 6 and 7 and Appendices B and D; see comments there.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 \caption{Accuracy of surface densities, masses and temperatures derived from \emph{Herschel} images at $160$--$500${\um}, measured
 on the radiative transfer models of this paper. Accuracy ratios (measured over true values) and relative errors are medians over
 the models, with the 16th and 84th percentiles in parentheses where they are available; ranges span the models listed. For the
@@ -1015,7 +1034,9 @@ this term.
 \subsection{The radiation field}
 \label{sec:field}
 
-% NUMBERS (2026-10-20): from Table tab:fieldR (see the comment there).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): from Table tab:fieldR (see the comment there).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 The factor $f$ was calibrated for $G_0 = 10$. In the nine fields of the grid, from $G_0 = 0.98$ to $483$, the correction without
 the field factor $g$ errs by up to $+26$\% in weak fields and by up to $-23$\% in fields of a few tens (Appendix~\ref{app:field}).
 With $g$, the errors are within $\pm 10$\% up to $6{\times}10^{22}$\,cm$^{-2}$ and between $-16$ and $+2$\% above. With $g$ built
@@ -1041,7 +1062,9 @@ cloud cannot be observed, so this uncertainty cannot be reduced by a better calc
 \subsection{Inclination}
 \label{sec:incl}
 
-% NUMBERS (2026-10-20): from python/paper_numbers/inclination_errors.py (the adopted factor of hicorrect2.py, G_0 = 10).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): from python/paper_numbers/inclination_errors.py (the adopted factor of hicorrect2.py, G_0 = 10).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 The factor was computed for lines of sight normal to a layer or perpendicular to the axis of a filament. Seen at an angle $i$ from
 that direction, a layer or a filament has the same temperature profile along the line of sight, but its surface density and its
 fitted surface density are both larger by the factor $1/\cos i$. The factor that it requires does not change, whereas the
@@ -1053,8 +1076,10 @@ up to $8$\% for filaments, in both cases between $10^{21.5}$ and $10^{22}$\,cm$^
 
 \subsection{Diffuse material}
 
-% NUMBERS (2026-10-20): the origin of 5 to 12 percent is not documented (an earlier comparison on the RADMC-3D cloud,
-% compare_cirrus3d.py); the law of 2026-10-20 changes the factor below 10^21.6 cm^-2 by less than 0.4 percent, so it was kept.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): the origin of 5 to 12 percent is not documented (an earlier comparison on the RADMC-3D cloud,
+%%%%% compare_cirrus3d.py); the law of 2026-10-20 changes the factor below 10^21.6 cm^-2 by less than 0.4 percent, so it was kept.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 Extended diffuse material is corrected too little, by about $6$\% at $10^{21}$\,cm$^{-2}$ and by up to $14$\% at
 $10^{22}$\,cm$^{-2}$, while the uniform clouds around the model cores are corrected about $2$\% too much (Sect.~\ref{sec:diffuse}).
 A calibration on the extended cloud alone would over-correct bounded clouds by $5$ to $12$\%, so the average was preferred, which
@@ -1228,9 +1253,11 @@ through its center equaled the observed one, and $a$ was set by the central-to-e
 line of sight were weighted by their density, as in the emission. For each parcel, the column was integrated along the ray to the
 boundary in every direction of the average.
 
-% NUMBERS (2026-10-20): Table tab:concentr, and the numbers of Appendix B on two components, 
-% from python/paper_numbers/superposition_numbers.py, which uses superposition_test.py and hicorrect2.py.
 \begin{table}[ht!]
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): Table tab:concentr, and the numbers of Appendix B on two components, 
+%%%%% from python/paper_numbers/superposition_numbers.py, which uses superposition_test.py and hicorrect2.py.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 \caption{Correction factor required by the central line of sight of a sphere of the given central surface density, for four
 central-to-edge density ratios. The first column is a uniform sphere.}
 \label{tab:concentr}
@@ -1293,8 +1320,10 @@ and $5{\times}10^{22}$\,cm$^{-2}$.}
 \label{fig:superposition}
 \end{figure*}
 
-% NUMBERS (2026-10-20): from python/paper_numbers/superposition_numbers.py (range of the error over q; the worked example: 
-% q = 0, Sigma = 2e22, Sigma_cl = 1e22 cm^-2).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): from python/paper_numbers/superposition_numbers.py (range of the error over q; the worked example: 
+%%%%% q = 0, Sigma = 2e22, Sigma_cl = 1e22 cm^-2).
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 Figure~\ref{fig:superposition} gives the result. The error of the corrected surface density ranges from $-13$ to $+21$\%. Its sign
 depends on the cloud. A weak cloud ($\Sigma_{\rm cl} = 10^{21}$\,cm$^{-2}$) leaves the sphere nearly isolated. The sphere needs
 more correction than the average of a sphere and a layer, so the correction is too small by $8$ to $13$\%, at any depth. A dense
@@ -1387,11 +1416,13 @@ average at $G_0 = 10$. Bins with fewer than $2{\times}10^4$ pixels took the valu
 $10^{22.6}$\,cm$^{-2}$ the field factor was held at its value there. Table~\ref{tab:fieldR} gives the errors of the corrected
 surface density, without and with the field factor, and with the field factor built without the field being tested.
 
-% NUMBERS (2026-10-20): Table tab:fieldR from python/paper_numbers/field_factor_errors.py on the histograms
-% harvest_calib3_G0=*.txt.hist.npz written by harvest_calib3.py (binned, so accurate to about 1 percent).
-% The errors for a local field that differs by a factor of 2.2 or 4.7 (Sect. 7) are the differences of the 
-% 'without g' entries of the fields one or two steps from G_0 = 10 from the G_0 = 10 row.
 \begin{table}[ht!]
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-20): Table tab:fieldR from python/paper_numbers/field_factor_errors.py on the histograms
+%%%%% harvest_calib3_G0=*.txt.hist.npz written by harvest_calib3.py (binned, so accurate to about 1 percent).
+%%%%% The errors for a local field that differs by a factor of 2.2 or 4.7 (Sect. 7) are the differences of the 
+%%%%% 'without g' entries of the fields one or two steps from G_0 = 10 from the G_0 = 10 row.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 \caption{Relative error of the corrected surface density, in percent, for the models of the grid of radiation fields, in four
 ranges of $\log_{10}\Sigma_{\rm F}$ (cm$^{-2}$): $21.6$--$22.0$, $22.0$--$22.4$, $22.4$--$22.8$ and $22.8$--$23.4$. Each entry is
 the median over the pixels in the range. The rows give the correction without the field factor $g$, with $g$ built from all nine
