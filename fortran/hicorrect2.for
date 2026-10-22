@@ -92,7 +92,7 @@
      &             , ffits(ntab), fcors(ntab), xg, fsx, fcx, dd, d0, xb0, xb1, wb, ddx(ntab), cirx(12), cirf(12)
      &             , cnu(mband), obs(mband), model(mband), wgt(mband), amp, chi2, chibest, tbest, sig, tt, ss, f, planckf
      &             , t0, zz, psi, wps, wsum, jsph, jlay, lsph, dlay, xmu, ssph, slay
-       parameter   ( tfloor = 7.045362d0, tsurf = 22.830197d0, sstar = 2.731651d21, gamma = 1.682779d0, kappa0 = 10.0d0
+       parameter   ( tfloor = 7.049531d0, tsurf = 22.866783d0, sstar = 2.389668e+21, gamma = 1.596874d0, kappa0 = 10.0d0
      &             , nu0 = 1.0d12, betap = 2.0d0, dtg = 1.0d-2, muh2 = 2.8d0, amu = 1.66053906660d-24, hplanck = 6.62607015d-27
      &             , kboltz = 1.380649d-16, speedolight = 2.99792458d10, smin = 1.0d20, smax  = 1.0d24
      &             , kapheat = 1.0d0 / ( 0.94d21 * 1.086d0 ), pi = 3.141592653589793d0 )
@@ -102,50 +102,96 @@
        equivalence ( cnan, rnan )
        data          cnan / 'NaN' /
        external      planckf, rfits, wfits, interp, rdcfg, putima, invplanck, fieldfac
+!
 ! The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 in Habing units, measured on the
-! grid of radiation fields (harvest_calib3_G0=*.txt): the pixel-weighted mean of log f in bins of 0.1 dex of the fitted surface
-! density, smoothed over three bins, minus the same at G_0 = 10 (make_field_factor.py). Above 10^22.6 cm^-2 the grid has too few
-! pixels, and the field factor is held at its value there. Rows are log10 of the fitted surface density from gx0 in steps of gdx,
-! columns are the fields gfld. It is interpolated linearly in log G_0 and held constant outside the table.
+! grid of radiation fields (harvest_calib3_G0=*.txt.hist.npz): the pixel mean of ln f in bins of 0.05 dex of the fitted surface
+! density, minus the same at G_0 = 10, smoothed by a local linear fit with Gaussian weights 0.1 dex wide times the square root of
+! the number of pixels (make_field_factor.py). Above 10^22.3 cm^-2 the grid has too few pixels, and the field factor is held at its
+! value at 10^22.25 cm^-2. Rows are log10 of the fitted surface density from gx0 in steps of gdx, columns are the fields gfld. It is
+! interpolated linearly in log G_0 and held constant outside the table.
 !
        data          gfld  / 0.98d0, 2.12d0, 4.61d0, 10.0d0, 21.7d0, 47.1d0, 102.4d0, 222.2d0, 482.5d0 /
 !                   G_0 = 0.98
-       data          gtab / 0.991d0, 0.986d0, 0.978d0, 0.970d0, 0.960d0, 0.944d0, 0.920d0, 0.904d0
-     &             , 0.904d0, 0.837d0, 0.815d0, 0.775d0, 0.756d0, 0.753d0, 0.756d0, 0.796d0
-     &             , 0.767d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0
+       data          gtab / 0.996d0, 0.987d0, 0.979d0, 0.971d0, 0.960d0, 0.945d0, 0.927d0, 0.907d0
+     &             , 0.885d0, 0.856d0, 0.828d0, 0.799d0, 0.774d0, 0.741d0, 0.741d0, 0.741d0
+     &             , 0.741d0, 0.741d0, 0.741d0, 0.741d0, 0.741d0, 0.741d0, 0.741d0, 0.741d0
 !                   G_0 = 2.12
-     &             , 0.994d0, 0.991d0, 0.988d0, 0.981d0, 0.972d0, 0.958d0, 0.936d0, 0.924d0
-     &             , 0.929d0, 0.891d0, 0.857d0, 0.803d0, 0.790d0, 0.786d0, 0.793d0, 0.843d0
-     &             , 0.812d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0
+     &             , 0.994d0, 0.991d0, 0.988d0, 0.981d0, 0.971d0, 0.959d0, 0.944d0, 0.928d0
+     &             , 0.910d0, 0.886d0, 0.861d0, 0.834d0, 0.811d0, 0.780d0, 0.780d0, 0.780d0
+     &             , 0.780d0, 0.780d0, 0.780d0, 0.780d0, 0.780d0, 0.780d0, 0.780d0, 0.780d0
 !                   G_0 = 4.61
-     &             , 0.999d0, 0.995d0, 0.992d0, 0.987d0, 0.981d0, 0.973d0, 0.959d0, 0.955d0
-     &             , 0.967d0, 0.936d0, 0.889d0, 0.919d0, 0.909d0, 0.846d0, 0.851d0, 0.899d0
-     &             , 0.916d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0
+     &             , 0.998d0, 0.995d0, 0.991d0, 0.988d0, 0.983d0, 0.976d0, 0.966d0, 0.959d0
+     &             , 0.948d0, 0.931d0, 0.916d0, 0.904d0, 0.896d0, 0.869d0, 0.869d0, 0.869d0
+     &             , 0.869d0, 0.869d0, 0.869d0, 0.869d0, 0.869d0, 0.869d0, 0.869d0, 0.869d0
 !                   G_0 = 10
      &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
      &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
      &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
 !                   G_0 = 21.7
-     &             , 1.001d0, 1.001d0, 1.001d0, 1.003d0, 1.007d0, 1.013d0, 1.026d0, 1.047d0
-     &             , 1.124d0, 1.110d0, 1.084d0, 1.102d0, 1.107d0, 1.092d0, 1.099d0, 1.186d0
-     &             , 1.168d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0
+     &             , 1.000d0, 1.000d0, 1.001d0, 1.003d0, 1.009d0, 1.016d0, 1.028d0, 1.046d0
+     &             , 1.070d0, 1.094d0, 1.111d0, 1.123d0, 1.137d0, 1.144d0, 1.144d0, 1.144d0
+     &             , 1.144d0, 1.144d0, 1.144d0, 1.144d0, 1.144d0, 1.144d0, 1.144d0, 1.144d0
 !                   G_0 = 47.1
-     &             , 1.000d0, 1.000d0, 1.000d0, 1.001d0, 1.008d0, 1.017d0, 1.041d0, 1.072d0
-     &             , 1.176d0, 1.182d0, 1.242d0, 1.179d0, 1.169d0, 1.232d0, 1.170d0, 1.220d0
-     &             , 1.199d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0
+     &             , 0.999d0, 0.999d0, 1.000d0, 1.003d0, 1.011d0, 1.023d0, 1.042d0, 1.072d0
+     &             , 1.117d0, 1.165d0, 1.204d0, 1.227d0, 1.240d0, 1.219d0, 1.219d0, 1.219d0
+     &             , 1.219d0, 1.219d0, 1.219d0, 1.219d0, 1.219d0, 1.219d0, 1.219d0, 1.219d0
 !                   G_0 = 102.4
-     &             , 0.997d0, 0.997d0, 0.997d0, 0.996d0, 1.001d0, 1.008d0, 1.034d0, 1.068d0
-     &             , 1.178d0, 1.188d0, 1.248d0, 1.209d0, 1.162d0, 1.126d0, 1.120d0, 1.120d0
-     &             , 1.114d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0
+     &             , 0.997d0, 0.995d0, 0.995d0, 0.997d0, 1.002d0, 1.013d0, 1.034d0, 1.068d0
+     &             , 1.117d0, 1.168d0, 1.205d0, 1.212d0, 1.204d0, 1.172d0, 1.172d0, 1.172d0
+     &             , 1.172d0, 1.172d0, 1.172d0, 1.172d0, 1.172d0, 1.172d0, 1.172d0, 1.172d0
 !                   G_0 = 222.2
-     &             , 0.990d0, 0.989d0, 0.989d0, 0.986d0, 0.989d0, 0.991d0, 1.009d0, 1.035d0
-     &             , 1.132d0, 1.126d0, 1.106d0, 1.092d0, 1.074d0, 1.032d0, 0.996d0, 0.996d0
-     &             , 0.959d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0
+     &             , 0.987d0, 0.988d0, 0.988d0, 0.988d0, 0.991d0, 0.997d0, 1.010d0, 1.036d0
+     &             , 1.072d0, 1.103d0, 1.117d0, 1.103d0, 1.076d0, 1.044d0, 1.044d0, 1.044d0
+     &             , 1.044d0, 1.044d0, 1.044d0, 1.044d0, 1.044d0, 1.044d0, 1.044d0, 1.044d0
 !                   G_0 = 482.5
-     &             , 0.994d0, 0.990d0, 0.986d0, 0.982d0, 0.982d0, 0.979d0, 0.985d0, 0.999d0
-     &             , 1.010d0, 1.027d0, 1.029d0, 0.991d0, 0.936d0, 0.871d0, 0.838d0, 0.865d0
-     &             , 0.834d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0
-     &             /
+     &             , 0.995d0, 0.989d0, 0.985d0, 0.983d0, 0.982d0, 0.982d0, 0.986d0, 0.999d0
+     &             , 1.013d0, 1.018d0, 1.013d0, 0.987d0, 0.952d0, 0.887d0, 0.887d0, 0.887d0
+     &             , 0.887d0, 0.887d0, 0.887d0, 0.887d0, 0.887d0, 0.887d0, 0.887d0, 0.887d0 /
+
+!!! The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 in Habing units, measured on the
+!!! grid of radiation fields (harvest_calib3_G0=*.txt): the pixel-weighted mean of log f in bins of 0.1 dex of the fitted surface
+!!! density, smoothed over three bins, minus the same at G_0 = 10 (make_field_factor.py). Above 10^22.6 cm^-2 the grid has too few
+!!! pixels, and the field factor is held at its value there. Rows are log10 of the fitted surface density from gx0 in steps of gdx,
+!!! columns are the fields gfld. It is interpolated linearly in log G_0 and held constant outside the table.
+!!!
+!!       data          gfld  / 0.98d0, 2.12d0, 4.61d0, 10.0d0, 21.7d0, 47.1d0, 102.4d0, 222.2d0, 482.5d0 /
+!!!                   G_0 = 0.98
+!!       data          gtab / 0.991d0, 0.986d0, 0.978d0, 0.970d0, 0.960d0, 0.944d0, 0.920d0, 0.904d0
+!!     &             , 0.904d0, 0.837d0, 0.815d0, 0.775d0, 0.756d0, 0.753d0, 0.756d0, 0.796d0
+!!     &             , 0.767d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0
+!!!                   G_0 = 2.12
+!!     &             , 0.994d0, 0.991d0, 0.988d0, 0.981d0, 0.972d0, 0.958d0, 0.936d0, 0.924d0
+!!     &             , 0.929d0, 0.891d0, 0.857d0, 0.803d0, 0.790d0, 0.786d0, 0.793d0, 0.843d0
+!!     &             , 0.812d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0
+!!!                   G_0 = 4.61
+!!     &             , 0.999d0, 0.995d0, 0.992d0, 0.987d0, 0.981d0, 0.973d0, 0.959d0, 0.955d0
+!!     &             , 0.967d0, 0.936d0, 0.889d0, 0.919d0, 0.909d0, 0.846d0, 0.851d0, 0.899d0
+!!     &             , 0.916d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0
+!!!                   G_0 = 10
+!!     &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
+!!     &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
+!!     &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
+!!!                   G_0 = 21.7
+!!     &             , 1.001d0, 1.001d0, 1.001d0, 1.003d0, 1.007d0, 1.013d0, 1.026d0, 1.047d0
+!!     &             , 1.124d0, 1.110d0, 1.084d0, 1.102d0, 1.107d0, 1.092d0, 1.099d0, 1.186d0
+!!     &             , 1.168d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0
+!!!                   G_0 = 47.1
+!!     &             , 1.000d0, 1.000d0, 1.000d0, 1.001d0, 1.008d0, 1.017d0, 1.041d0, 1.072d0
+!!     &             , 1.176d0, 1.182d0, 1.242d0, 1.179d0, 1.169d0, 1.232d0, 1.170d0, 1.220d0
+!!     &             , 1.199d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0
+!!!                   G_0 = 102.4
+!!     &             , 0.997d0, 0.997d0, 0.997d0, 0.996d0, 1.001d0, 1.008d0, 1.034d0, 1.068d0
+!!     &             , 1.178d0, 1.188d0, 1.248d0, 1.209d0, 1.162d0, 1.126d0, 1.120d0, 1.120d0
+!!     &             , 1.114d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0
+!!!                   G_0 = 222.2
+!!     &             , 0.990d0, 0.989d0, 0.989d0, 0.986d0, 0.989d0, 0.991d0, 1.009d0, 1.035d0
+!!     &             , 1.132d0, 1.126d0, 1.106d0, 1.092d0, 1.074d0, 1.032d0, 0.996d0, 0.996d0
+!!     &             , 0.959d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0
+!!!                   G_0 = 482.5
+!!     &             , 0.994d0, 0.990d0, 0.986d0, 0.982d0, 0.982d0, 0.979d0, 0.985d0, 0.999d0
+!!     &             , 1.010d0, 1.027d0, 1.029d0, 0.991d0, 0.936d0, 0.871d0, 0.838d0, 0.865d0
+!!     &             , 0.834d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0
+!!     &             /
 !__________________________________________________________________________________________________________________________________
 !
 ! The command line. The first two positional arguments are the configuration and the image to be corrected; any further ones are
