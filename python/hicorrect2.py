@@ -83,13 +83,14 @@ import numpy as np
 from astropy.io import fits
 
 # -------------------------------- temperature against the attenuating column
-# The relation T(Sigma_a), fitted by fit_attenuation_law.py to the 102464 shells of 2086 spheres of the main grid (without the
-# three models that are optically thick in the far infrared) and to seven cylinders computed on the full theta grid, the two
-# families with equal weight
-TFLOOR = 7.045362     # dust temperature where the radiation cannot reach, K
-TSURF = 22.830197     # dust temperature where nothing attenuates it, K
-SSTAR = 2.731651e+21   # attenuating column at which the fall sets in, cm^-2
-GAMMA = 1.682779     # index of the fall with the attenuating column
+# The relation T(Sigma_a), fitted by fit_attenuation_law.py 
+# 2093 RADMC-3D nodes, 100693 shells, mass weighted.
+# 100378 sphere shells and 315 cylinder radii; the cylinders carry 0.50 of the total weight
+# outermost shell of every sphere rejected and to seven cylinders computed on the full theta grid
+TFLOOR = 7.049531     # dust temperature where the radiation cannot reach, K
+TSURF = 22.866783     # dust temperature where nothing attenuates it, K
+SSTAR = 2.389668e+21   # attenuating column at which the fall sets in, cm^-2
+GAMMA = 1.596874     # index of the fall with the attenuating column
 
 # ------------------------------------ opacity at the heating wavelengths
 KAPHEAT = 1.0 / (0.94e21 * 1.086)    # cm^2 per H2, from A_V = N/0.94e21
@@ -124,38 +125,73 @@ CAL_ERR = {70.0: 0.20, 100.0: 0.20, 160.0: 0.20, 250.0: 0.10, 350.0: 0.10, 500.0
 SMIN, SMAX = 1.0e20, 1.0e24      # range of the tabulated relation, cm^-2
 
 # The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 (Habing units), measured on the
-# grid of radiation fields (harvest_calib3_G0=*.txt): the pixel-weighted mean of log f in bins of 0.1 dex of the fitted surface
-# density, smoothed over three bins, minus the same at G_0 = 10 (make_field_factor.py). Above 10^22.6 cm^-2 the grid has too few
-# pixels, and the field factor is held at its value there. Rows are log10 of the fitted surface density, from GX0 in steps of GDX;
-# columns are the fields GFIELD. It is interpolated linearly in log G_0 and held constant outside the table.
+# grid of radiation fields (harvest_calib3_G0=*.txt.hist.npz): the pixel mean of ln f in bins of 0.05 dex of the fitted surface
+# density, minus the same at G_0 = 10, smoothed by a local linear fit with Gaussian weights 0.1 dex wide times the square root of
+# the number of pixels (make_field_factor.py). Above 10^22.3 cm^-2 the grid has too few pixels, and the field factor is held at its
+# value at 10^22.25 cm^-2. Rows are log10 of the fitted surface density, from GX0 in steps of GDX; columns are the fields GFIELD.
+# It is interpolated linearly in log G_0 and held constant outside the table.
 GFIELD = np.array([0.98, 2.12, 4.61, 10.0, 21.7, 47.1, 102.4, 222.2, 482.5])
 GX0, GDX = 20.95, 0.1
 GTAB = np.array([
-    [0.991, 0.994, 0.999, 1.000, 1.001, 1.000, 0.997, 0.990, 0.994],  # 20.95
-    [0.986, 0.991, 0.995, 1.000, 1.001, 1.000, 0.997, 0.989, 0.990],  # 21.05
-    [0.978, 0.988, 0.992, 1.000, 1.001, 1.000, 0.997, 0.989, 0.986],  # 21.15
-    [0.970, 0.981, 0.987, 1.000, 1.003, 1.001, 0.996, 0.986, 0.982],  # 21.25
-    [0.960, 0.972, 0.981, 1.000, 1.007, 1.008, 1.001, 0.989, 0.982],  # 21.35
-    [0.944, 0.958, 0.973, 1.000, 1.013, 1.017, 1.008, 0.991, 0.979],  # 21.45
-    [0.920, 0.936, 0.959, 1.000, 1.026, 1.041, 1.034, 1.009, 0.985],  # 21.55
-    [0.904, 0.924, 0.955, 1.000, 1.047, 1.072, 1.068, 1.035, 0.999],  # 21.65
-    [0.904, 0.929, 0.967, 1.000, 1.124, 1.176, 1.178, 1.132, 1.010],  # 21.75
-    [0.837, 0.891, 0.936, 1.000, 1.110, 1.182, 1.188, 1.126, 1.027],  # 21.85
-    [0.815, 0.857, 0.889, 1.000, 1.084, 1.242, 1.248, 1.106, 1.029],  # 21.95
-    [0.775, 0.803, 0.919, 1.000, 1.102, 1.179, 1.209, 1.092, 0.991],  # 22.05
-    [0.756, 0.790, 0.909, 1.000, 1.107, 1.169, 1.162, 1.074, 0.936],  # 22.15
-    [0.753, 0.786, 0.846, 1.000, 1.092, 1.232, 1.126, 1.032, 0.871],  # 22.25
-    [0.756, 0.793, 0.851, 1.000, 1.099, 1.170, 1.120, 0.996, 0.838],  # 22.35
-    [0.796, 0.843, 0.899, 1.000, 1.186, 1.220, 1.120, 0.996, 0.865],  # 22.45
-    [0.767, 0.812, 0.916, 1.000, 1.168, 1.199, 1.114, 0.959, 0.834],  # 22.55
-    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.65
-    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.75
-    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.85
-    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.95
-    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 23.05
-    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 23.15
-    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 23.25
+    [0.996, 0.994, 0.998, 1.000, 1.000, 0.999, 0.997, 0.987, 0.995],  # 20.95
+    [0.987, 0.991, 0.995, 1.000, 1.000, 0.999, 0.995, 0.988, 0.989],  # 21.05
+    [0.979, 0.988, 0.991, 1.000, 1.001, 1.000, 0.995, 0.988, 0.985],  # 21.15
+    [0.971, 0.981, 0.988, 1.000, 1.003, 1.003, 0.997, 0.988, 0.983],  # 21.25
+    [0.960, 0.971, 0.983, 1.000, 1.009, 1.011, 1.002, 0.991, 0.982],  # 21.35
+    [0.945, 0.959, 0.976, 1.000, 1.016, 1.023, 1.013, 0.997, 0.982],  # 21.45
+    [0.927, 0.944, 0.966, 1.000, 1.028, 1.042, 1.034, 1.010, 0.986],  # 21.55
+    [0.907, 0.928, 0.959, 1.000, 1.046, 1.072, 1.068, 1.036, 0.999],  # 21.65
+    [0.885, 0.910, 0.948, 1.000, 1.070, 1.117, 1.117, 1.072, 1.013],  # 21.75
+    [0.856, 0.886, 0.931, 1.000, 1.094, 1.165, 1.168, 1.103, 1.018],  # 21.85
+    [0.828, 0.861, 0.916, 1.000, 1.111, 1.204, 1.205, 1.117, 1.013],  # 21.95
+    [0.799, 0.834, 0.904, 1.000, 1.123, 1.227, 1.212, 1.103, 0.987],  # 22.05
+    [0.774, 0.811, 0.896, 1.000, 1.137, 1.240, 1.204, 1.076, 0.952],  # 22.15
+    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.25
+    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.35
+    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.45
+    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.55
+    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.65
+    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.75
+    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.85
+    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.95
+    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 23.05
+    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 23.15
+    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 23.25
 ])
+
+### The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 (Habing units), measured on the
+### grid of radiation fields (harvest_calib3_G0=*.txt): the pixel-weighted mean of log f in bins of 0.1 dex of the fitted surface
+### density, smoothed over three bins, minus the same at G_0 = 10 (make_field_factor.py). Above 10^22.6 cm^-2 the grid has too few
+### pixels, and the field factor is held at its value there. Rows are log10 of the fitted surface density, from GX0 in steps of GDX;
+### columns are the fields GFIELD. It is interpolated linearly in log G_0 and held constant outside the table.
+##GFIELD = np.array([0.98, 2.12, 4.61, 10.0, 21.7, 47.1, 102.4, 222.2, 482.5])
+##GX0, GDX = 20.95, 0.1
+##GTAB = np.array([
+##    [0.991, 0.994, 0.999, 1.000, 1.001, 1.000, 0.997, 0.990, 0.994],  # 20.95
+##    [0.986, 0.991, 0.995, 1.000, 1.001, 1.000, 0.997, 0.989, 0.990],  # 21.05
+##    [0.978, 0.988, 0.992, 1.000, 1.001, 1.000, 0.997, 0.989, 0.986],  # 21.15
+##    [0.970, 0.981, 0.987, 1.000, 1.003, 1.001, 0.996, 0.986, 0.982],  # 21.25
+##    [0.960, 0.972, 0.981, 1.000, 1.007, 1.008, 1.001, 0.989, 0.982],  # 21.35
+##    [0.944, 0.958, 0.973, 1.000, 1.013, 1.017, 1.008, 0.991, 0.979],  # 21.45
+##    [0.920, 0.936, 0.959, 1.000, 1.026, 1.041, 1.034, 1.009, 0.985],  # 21.55
+##    [0.904, 0.924, 0.955, 1.000, 1.047, 1.072, 1.068, 1.035, 0.999],  # 21.65
+##    [0.904, 0.929, 0.967, 1.000, 1.124, 1.176, 1.178, 1.132, 1.010],  # 21.75
+##    [0.837, 0.891, 0.936, 1.000, 1.110, 1.182, 1.188, 1.126, 1.027],  # 21.85
+##    [0.815, 0.857, 0.889, 1.000, 1.084, 1.242, 1.248, 1.106, 1.029],  # 21.95
+##    [0.775, 0.803, 0.919, 1.000, 1.102, 1.179, 1.209, 1.092, 0.991],  # 22.05
+##    [0.756, 0.790, 0.909, 1.000, 1.107, 1.169, 1.162, 1.074, 0.936],  # 22.15
+##    [0.753, 0.786, 0.846, 1.000, 1.092, 1.232, 1.126, 1.032, 0.871],  # 22.25
+##    [0.756, 0.793, 0.851, 1.000, 1.099, 1.170, 1.120, 0.996, 0.838],  # 22.35
+##    [0.796, 0.843, 0.899, 1.000, 1.186, 1.220, 1.120, 0.996, 0.865],  # 22.45
+##    [0.767, 0.812, 0.916, 1.000, 1.168, 1.199, 1.114, 0.959, 0.834],  # 22.55
+##    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.65
+##    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.75
+##    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.85
+##    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 22.95
+##    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 23.05
+##    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 23.15
+##    [0.761, 0.822, 0.907, 1.000, 1.135, 1.165, 1.082, 0.933, 0.801],  # 23.25
+##])
 
 
 def field_factor(logs, g0):
