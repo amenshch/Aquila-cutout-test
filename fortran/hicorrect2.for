@@ -4,10 +4,11 @@
        program hicorrect
 !__________________________________________________________________________________________________________________________________
 !
-! HIRES • CORRECTION OF THE SINGLE-TEMPERATURE BIAS OF THE SURFACE DENSITY IMAGES OF A RECONSTRUCTION
+! HIRES • CORRECTION OF THE SINGLE-TEMPERATURE BIAS OF SURFACE DENSITY IMAGES
 !
 ! A surface density image is built by fitting one modified blackbody to the wavebands of each line of sight and dividing the
-! reference waveband by it. A real line of sight is not isothermal: its dust is warm near the surface of the cloud and cold in the
+! reference waveband by it. The correction applies to any such image, whether made by hires or by any other method, at any
+! resolution; it needs only the image and the list of wavebands that were fitted to make it. A real line of sight is not isothermal: its dust is warm near the surface of the cloud and cold in the
 ! interior, the single fitted temperature is weighted toward the warm dust that dominates the emission, and the surface density is
 ! therefore too low wherever the temperature varies along the line of sight. The deficit exceeds a factor of two in the densest
 ! material.
@@ -21,11 +22,11 @@
 ! an extended region: on the model grid they carry less than three percent of the true surface density. The whole integrated
 ! deficit therefore sits in the base image, and every image of the reconstruction has nearly the same fractional deficit.
 !
-! How the correction is applied. The image given as <image> is multiplied by the correction factor evaluated on that image itself,
-! pixel by pixel. This works for an image of any resolution: the default is the hires image at 13.5 arcsec, and the factor may
-! also be evaluated on the coarsest image of 36.3 arcsec, which is the conservative alternative. Each further image named on the
-! command line receives the same additive amount, (f - 1) times <image>, which is the right choice when <image> is the coarsest
-! image of the same reconstruction, because the increments of the finer images are not changed by the correction.
+! How the correction is applied. One surface density image is corrected per run. It is multiplied by the correction factor
+! evaluated on that image itself, pixel by pixel. This works for an image of any resolution; the default of the paper is the hires
+! image at 13.5 arcsec. If the temperature image fitted together with it is given, the dust temperature implied by the corrected
+! surface density is also written. That temperature image must have the same resolution and the same pixels as the surface density
+! image, because the temperature at each pixel is recomputed with the factor of that pixel.
 !
 ! How the correction is computed. For a line of sight of true surface density S, the material at fractional depth u is shielded by
 ! the effective attenuating column
@@ -46,29 +47,34 @@
 ! radmc-3d model of a diffuse cloud, whose surface layers are warmer than the relation predicts (see below).
 !
 ! The geometry. The sphere and the layer are the two limits of a uniform structure. Their factors differ by up to 10%, and by less
-! than 4% outside the range from 10^21.4 to 10^22.1 cm^-2, and their average is used. The arrangement of the material along the
+! than 5% outside the range from 10^21.4 to 10^22.1 cm^-2, and their average is used. The arrangement of the material along the
 ! line of sight is not known. Where a structure lies in a weak cloud, it is corrected too little; where it lies near a face of a
-! dense cloud, it is corrected too much. On radiative transfer models, these errors range from -13% to +23%.
+! dense cloud, it is corrected too much. On radiative transfer models, these errors range from -13% to +21%.
 !
 ! The correction must be applied once. It is not idempotent: applied to an image it has already corrected it would raise the values
-! again. Every output image is stamped with the keyword HICORR, and the program refuses any input that carries it.
+! again. Every output image is stamped with CREATOR = 'HICORRECT', and the program refuses any input that carries it. The output
+! images also record the radiation field of the correction (HIG0), the wavebands fitted (HIBANDS), and the four constants of the
+! temperature relation (HITMIN, HIT0, HISSTAR, HIGAMMA).
 !
-! usage:  hicorrect2 <config> <image> [<finer> ...] [-temp=<file>] [-g0=<field>] [-verb{0|1|2}]
+! usage:  hicorrect2 <image> [-temp=<file>] [-bands=<list>] [-g0=<field>] [-verb{0|1|2}]
 !
-!         <config>     the configuration of the hires run that produced the images, usually '+hires.cfg'
-!         <image>      the surface density image on which the factor is evaluated and which is multiplied by it
-!         <finer>      any further surface density image of the same reconstruction, to which the same amount is added
-!         <file>       the temperature image that hires fitted at the resolution of <image>, optional
+!         <image>      the surface density image to be corrected; the factor is evaluated on it and it is multiplied by it
+!                      (the file names of <image> and <file> may be given without the extension '.fits', which is then added)
+!         <file>       the dust temperature image fitted together with <image>, optional; it must have the same resolution and
+!                      the same pixels as <image>
+!         <list>       the wavelengths in um of the wavebands fitted to make <image>, separated by commas, for example
+!                      -bands=250,350,500; 160,250,350,500 by default. The longest one is the reference waveband.
 !         <field>      the radiation field of the cloud in Habing units, as estimated by g0_requirement.py; 10 by default
 !
-! output: <image>.correct.fits and <finer>.correct.fits, the corrected images
+! output: written to the current directory, whatever directory the inputs come from
+!         <image>.correct.fits, the corrected image
 !         <image>.cfactor.fits, the image of the correction factors
 !         <file>.correct.fits, the dust temperature implied by the corrected surface density, if -temp=<file> is given
 !__________________________________________________________________________________________________________________________________
 !
        implicit      none
-       integer       iotty, iolog, mband, mimg, ntab, ndep, ntfit, nang
-       parameter   ( iotty = 6, iolog = 0, mband = 10, mimg = 20, ntab = 200, ndep = 512, ntfit = 3000, nang = 160 )
+       integer       iotty, iolog, mband, ntab, ndep, ntfit, nang
+       parameter   ( iotty = 6, iolog = 0, mband = 10, ntab = 200, ndep = 512, ntfit = 3000, nang = 160 )
        integer       ngx, ngf, lt
        parameter   ( ngx = 24, ngf = 9 )
        real*8        gtab(ngx,ngf), gfld(ngf), gx0, gdx, g0, fieldfac
@@ -78,21 +84,19 @@
        character*8   ctime
        character*10  cdate
        character*80  bunit, ctype1, ctype2, object, creator, history
-       character*256 mapfile, cfgfile, arg, imgfile(mimg), stem, fname, tempfile
-       character*1   pmflag(mband)
-       character*256 bandfile(mband), maskfile(mband)
+       character*256 mapfile, arg, stem, fname, tempfile
        character*80  chead(5)
-       integer       nx, ny, nxi, nyi, nband, i, j, k, l, ib, nimg, iargc, narg, la, ls, nfit, nvalid, blank, ndate, igeo
+       integer       nx, ny, nxi, nyi, i, j, k, l, ib, iargc, narg, la, ls, nfit, nvalid, blank, ndate, igeo, ios
        real          fitsvers
-       real*8        wave(mband), beams(mband), offset(mband), wfit(mband), waveref, bb, invplanck
+       real*8        wfit(mband), waveref, bb, invplanck
      &             , dx, dy, dxi, dyi, crpix1, crpix2, crval1, crval2, crota1, crota2, cd11, cd12, cd21, cd22, equinox, bzero
-     &             , bscale, beamkw, funmin, funmax, datamn, datamx, wavekw, pix, rnan, rhead(17), ra, dec
+     &             , bscale, beamkw, beamsd, funmin, funmax, datamn, datamx, wavekw, pix, rnan, rhead(17), ra, dec
      &             , tfloor, tsurf, sstar, gamma, kappa0, nu0, betap, dtg, muh2, amu, hplanck, kboltz, speedolight, kapheat, pi
      &             , smin, smax, sgrid(ntab), ffit(ntab), fcor(ntab), tgrid(ntfit), seff(ndep), relerr(mband)
      &             , ffits(ntab), fcors(ntab), xg, fsx, fcx, dd, d0, xb0, xb1, wb, ddx(ntab), cirx(12), cirf(12)
      &             , cnu(mband), obs(mband), model(mband), wgt(mband), amp, chi2, chibest, tbest, sig, tt, ss, f, planckf
      &             , t0, zz, psi, wps, wsum, jsph, jlay, lsph, dlay, xmu, ssph, slay
-       parameter   ( tfloor = 7.049531d0, tsurf = 22.866783d0, sstar = 2.389668e+21, gamma = 1.596874d0, kappa0 = 10.0d0
+       parameter   ( tfloor = 7.049531d0, tsurf = 22.866783d0, sstar = 2.389668d+21, gamma = 1.596874d0, kappa0 = 10.0d0
      &             , nu0 = 1.0d12, betap = 2.0d0, dtg = 1.0d-2, muh2 = 2.8d0, amu = 1.66053906660d-24, hplanck = 6.62607015d-27
      &             , kboltz = 1.380649d-16, speedolight = 2.99792458d10, smin = 1.0d20, smax  = 1.0d24
      &             , kapheat = 1.0d0 / ( 0.94d21 * 1.086d0 ), pi = 3.141592653589793d0 )
@@ -101,7 +105,7 @@
        character*3   cnan
        equivalence ( cnan, rnan )
        data          cnan / 'NaN' /
-       external      planckf, rfits, wfits, interp, rdcfg, putima, invplanck, fieldfac
+       external      planckf, rfits, wfits, interp, putima, invplanck, fieldfac, addkeys
 !
 ! The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 in Habing units, measured on the
 ! grid of radiation fields (harvest_calib3_G0=*.txt.hist.npz): the pixel mean of ln f in bins of 0.05 dex of the fitted surface
@@ -194,23 +198,26 @@
 !!     &             /
 !__________________________________________________________________________________________________________________________________
 !
-! The command line. The first two positional arguments are the configuration and the image to be corrected; any further ones are
-! images of the same reconstruction to which the same amount is added.
+! The command line. The first positional argument is the image to be corrected; any further ones are images of the same
+! reconstruction to which the same amount is added. The wavebands that were fitted to make the image are given with -bands=.
 !
        call osystem ( lunix )
        call ftvers ( fitsvers )
        write (cfitsversion,'(f6.3)') fitsvers
 
        cverbose = '-verb1'
-       nimg     = 0
        mapfile  = ' '
-       cfgfile  = ' '
        tempfile = ' '
+       nfit     = 4
+       wfit(1)  = 160.0d0
+       wfit(2)  = 250.0d0
+       wfit(3)  = 350.0d0
+       wfit(4)  = 500.0d0
        g0       = 10.0d0
 
        narg = iargc ( )
-       if (narg .lt. 2) then
-         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <config> <image> [<finer> ...] [-temp=<file>] [-g0=<field>]'
+       if (narg .lt. 1) then
+         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <image> [-temp=<file>] [-bands=<list>] [-g0=<field>]'
      &                         //' [-verb{0|1|2}]'
          stop
        endif
@@ -224,19 +231,41 @@
            read (arg(5:la),*) g0
          elseif (arg(1:6) .eq. '-temp=') then
            tempfile = arg(7:la)
-         elseif (cfgfile .eq. ' ') then
-           cfgfile = arg
+         elseif (arg(1:7) .eq. '-bands=') then
+           nfit = 1
+           do k=8,la
+             if (arg(k:k) .eq. ',') nfit = nfit + 1
+           enddo
+           if (nfit .gt. mband) then
+             write (iotty,'(/a,i3,a/)') '   HICORRECT: ERROR: at most', mband, ' wavebands can be given with -bands=.'
+             stop
+           endif
+           read (arg(8:la),*,iostat=ios) ( wfit(k), k=1,nfit )
+           if (ios .ne. 0) then
+             write (iotty,'(/a,a/)') '   HICORRECT: ERROR: cannot read the wavelengths from ', arg(1:la)
+             stop
+           endif
          elseif (mapfile .eq. ' ') then
            mapfile = arg
          else
-           nimg = nimg + 1
-           if (nimg .gt. mimg) then
-             write (iotty,'(/a,i3,a/)') '   HICORRECT: ERROR: at most', mimg, ' images can be corrected in one run.'
-             stop
-           endif
-           imgfile(nimg) = arg
+           write (iotty,'(/a/a/)') '   HICORRECT: ERROR: only one surface density image can be corrected in one run.'
+     &                         , '   Give the temperature image with -temp=<file>.'
+           stop
          endif
        enddo
+
+       if (mapfile .eq. ' ') then
+         write (iotty,'(/a/)') '   HICORRECT: ERROR: no surface density image to correct was given.'
+         stop
+       endif
+
+! The file names may be given without the extension '.fits', which is then added.
+       la = len_trim ( mapfile )
+       if (la .lt. 5 .or. mapfile(max(la-4,1):la) .ne. '.fits') mapfile = mapfile(1:la)//'.fits'
+       if (tempfile .ne. ' ') then
+         la = len_trim ( tempfile )
+         if (la .lt. 5 .or. tempfile(max(la-4,1):la) .ne. '.fits') tempfile = tempfile(1:la)//'.fits'
+       endif
 
        call when ( lunix, ctime, cdate, ndate, 4 )
 
@@ -255,23 +284,23 @@
        endif
 !__________________________________________________________________________________________________________________________________
 !
-! The wavebands. Only those marked '+' in the configuration were fitted by the reconstruction, and the relation has to be built for
-! the same set, because the bias depends on which colors were used to find the single temperature. The longest of them is the
-! reference waveband, the one the reconstruction divides by.
+! The wavebands. The relation has to be built for the wavebands that were fitted to make the image, given with -bands= (160, 250,
+! 350 and 500 um by default), because the bias depends on which colors were used to find the single temperature. They are sorted,
+! and the longest of them is the reference waveband, the one the fit divides by.
 !
-       call rdcfg ( cfgfile, mband, nband, wave, beams, offset, bandfile, maskfile, pmflag )
-
-       nfit = 0
-       do ib=1,nband
-         if (pmflag(ib) .ne. '-') then
-           nfit = nfit + 1
-           wfit(nfit) = wave(ib)
-         endif
-       enddo
        if (nfit .lt. 2) then
-         write (iotty,'(/a/)') '   HICORRECT: ERROR: fewer than two wavebands are marked ''+'' in the configuration.'
+         write (iotty,'(/a/)') '   HICORRECT: ERROR: at least two wavebands must be given with -bands=.'
          stop
        endif
+       do k=2,nfit
+         do ib=nfit,k,-1
+           if (wfit(ib-1) .gt. wfit(ib)) then
+             bb          = wfit(ib)
+             wfit(ib)    = wfit(ib-1)
+             wfit(ib-1)  = bb
+           endif
+         enddo
+       enddo
        waveref = wfit(nfit)
 
        do k=1,nfit
@@ -459,10 +488,15 @@
          stop
        endif
 
+       beamsd = beamkw
        pix = dx
+! The outputs are written to the current directory, whatever directory the input comes from: the stem of their names is the name
+! of the input without its directory and without the extension '.fits'.
        ls = la
        if (mapfile(max(ls-4,1):ls) .eq. '.fits') ls = ls - 5
-       stem = mapfile(1:ls)
+       k  = index ( mapfile(1:ls), '/', back=.true. )
+       stem = mapfile(k+1:ls)
+       ls = ls - k
        if (bunit .eq. ' ') bunit = 'cm-2'
 
        rhead( 1) = crpix1
@@ -509,7 +543,7 @@
        endif
 !__________________________________________________________________________________________________________________________________
 !
-! The correction of the image, and the amount that is added to every further image of the reconstruction. The factor is found by
+! The correction of the image. The factor is found by
 ! interpolating the table in the logarithm of the surface density, and it is held at the ends of the table rather than
 ! extrapolated.
 !
@@ -550,6 +584,8 @@
 
        call putima ( iotty, cverbose, cfitsversion, nx, ny, corr, valid, rnan, fname, 'ratio', rhead, chead, blank, cdate, ctime )
 
+       call addkeys ( fname, g0, nfit, wfit, tfloor, tsurf, sstar, gamma )
+
        if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
 
        do j=1,ny
@@ -561,12 +597,9 @@
 
        call putima ( iotty, cverbose, cfitsversion, nx, ny, work, valid, rnan, fname, bunit, rhead, chead, blank, cdate, ctime )
 
+       call addkeys ( fname, g0, nfit, wfit, tfloor, tsurf, sstar, gamma )
+
        if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
-!__________________________________________________________________________________________________________________________________
-!
-! The finer images of the same reconstruction. They differ from the corrected image by increments that the correction does not
-! touch, so the same amount is added to each of them. A pixel that is not positive in one of them, or that lies outside the
-! coverage of the corrected image, stays undefined.
 !__________________________________________________________________________________________________________________________________
 !
 ! The dust temperature that goes with the corrected surface density, at the resolution of the corrected image. The reconstruction
@@ -586,6 +619,14 @@
      &                , tempfile(1:la), iotty, iolog, creator, beamkw, funmin, funmax, blank, crota1, crota2, cd11, cd12
      &                , cd21, cd22, equinox, bzero, bscale, wavekw, datamn, datamx, history, cverbose )
 
+           if (beamsd .gt. 0.0d0 .and. beamkw .gt. 0.0d0 .and. abs ( beamkw / beamsd - 1.0d0 ) .gt. 1.0d-2) then
+             write (iotty,'(a,f7.2,a,f7.2,a)') '   HICORRECT2: ERROR: the temperature image has the resolution', beamkw
+     &                                       , ' arcsec, the surface density image', beamsd, ' arcsec.'
+             write (iotty,'(a)') '   They must have the same resolution; no temperature map is written.'
+             deallocate ( smap, valid, delta, corr, work, iref )
+             stop
+           endif
+
            do j=1,ny
              do i=1,nx
                if (valid(i,j) .eq. 1 .and. iref(i,j) .gt. 0.0d0) then
@@ -598,9 +639,12 @@
            enddo
            lt = len_trim ( tempfile )
            if (tempfile(max(lt-4,1):lt) .eq. '.fits') lt = lt - 5
-           fname = tempfile(1:lt)//'.correct.fits'
+           k  = index ( tempfile(1:lt), '/', back=.true. )
+           fname = tempfile(k+1:lt)//'.correct.fits'
 
            call putima ( iotty, cverbose, cfitsversion, nx, ny, work, valid, rnan, fname, 'K', rhead, chead, blank, cdate, ctime )
+
+           call addkeys ( fname, g0, nfit, wfit, tfloor, tsurf, sstar, gamma )
 
            if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
          else
@@ -611,49 +655,6 @@
          if (cverbose .ne. '-verb0') write (iotty,'(a)') '   no temperature image given with -temp=<file>,'
      &                                                 //' so no temperature map is written.'
        endif
-!__________________________________________________________________________________________________________________________________
-!
-! The finer images of the same reconstruction.
-!
-       do k=1,nimg
-         la = len_trim ( imgfile(k) )
-         
-         write (*,*) imgfile(k)(1:la)
-
-         call getfitshead ( imgfile(k)(1:la), nxi, nyi, dxi, dyi, bunit )
-
-         if (nxi .ne. nx .or. nyi .ne. ny) then
-           write (iotty,'(a,i6,a,i6,a)') '   HICORRECT: WARNING: '''//imgfile(k)(1:la)//''' is', nxi, ' x', nyi
-     &                                 , ' and does not match the corrected image; skipped.'
-           cycle
-         endif
-
-         call rfits ( nx, ny, bunit, ctype1, ctype2, crpix1, crpix2, crval1, crval2, work, dxi, dyi, object, ra, dec
-     &              , imgfile(k)(1:la), iotty, iolog, creator, beamkw, funmin, funmax, blank, crota1, crota2, cd11, cd12, cd21
-     &              , cd22, equinox, bzero, bscale, wavekw, datamn, datamx, history, cverbose )
-
-         if (creator(1:10) .eq. 'HICORRECT') then
-           write (iotty,'(a)') '   HICORRECT: WARNING: '''//imgfile(k)(1:la)//''' has already been corrected; skipped.'
-           cycle
-         endif
-         do j=1,ny
-           do i=1,nx
-             if (valid(i,j) .eq. 1 .and. work(i,j) .gt. 0.0d0) then
-               work(i,j) = work(i,j) + delta(i,j)
-             else
-               work(i,j) = 0.0d0
-             endif
-           enddo
-         enddo
-         ls = la
-         if (imgfile(k)(max(ls-4,1):ls) .eq. '.fits') ls = ls - 5
-         fname = imgfile(k)(1:ls)//'.correct.fits'
-
-         call putima ( iotty, cverbose, cfitsversion, nx, ny, work, valid, rnan, fname, bunit, rhead, chead, blank, cdate, ctime )
-
-         if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
-       enddo
-
        deallocate ( smap, valid, delta, corr, work, iref )
 
        if (cverbose .ne. '-verb0') write (iotty,'(/a/)') '   HICORRECT DONE.'
@@ -746,94 +747,47 @@
 
 !||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-       subroutine rdcfg 
+       subroutine addkeys
          
-     &            ( cfgfile, mband, nband, wave, beams, offset, bandfile, maskfile, pmflag )
+     &          ( fname, g0, nfit, wfit, tfloor, tsurf, sstar, gamma )
 !__________________________________________________________________________________________________________________________________
 !
-! Read the hires configuration file '+hires.cfg'. Its columns are
-!
-!    PM  WAVE  BEAM  OFFSET  IMAGE  [MASKIMAGE]
-!
-! with PM the '+' or '-' flag stating whether hires used that waveband, WAVE in µm, BEAM the half-maximum beam width in arcsec,
-! OFFSET the zero-point offset in MJy per steradian to be added to the image, and the two file names. Reading the same file that
-! hires read removes any second, independently maintained list of wavebands. The extension may be omitted from the file names, as
-! is customary in that file.
+! Add to the header of an output image the radiation field of the correction, the wavebands fitted to make the image, and the four
+! constants of the temperature relation, so that every output records how it was corrected.
 !__________________________________________________________________________________________________________________________________
 !
        implicit      none
-       logical       there
-       character*(*) cfgfile
-       character*1   pmflag(mband)
-       character*256 name, bandfile(mband), maskfile(mband), fields(6)
-       character*512 line, rest
-       integer       mband, nband, i, j, n, ios
-       real*8        wave(mband), beams(mband), offset(mband)
+       character*(*) fname
+       integer       nfit, k, unit, status, block, la
+       real*8        g0, wfit(nfit), tfloor, tsurf, sstar, gamma
+       character*80  bands
+       character*8   cw
+       external      ftgiou, ftopen, ftpkyd, ftpkys, ftclos, ftfiou, printerr
 !__________________________________________________________________________________________________________________________________
 !
-       open ( 21, file=cfgfile, status='old', iostat=ios )
-       if (ios .ne. 0) then
-         write (6,'(a,a)') ' RDCFG: cannot open ', cfgfile
-         stop
-       endif
-
-       nband = 0
-  10   read (21,'(a)',end=90) line
-       if (line(1:1) .eq. '#' .or. len_trim(line) .eq. 0) goto 10
-       nband = nband + 1
-       if (nband .gt. mband) stop ' RDCFG: too many wavebands, raise mband'
-       maskfile(nband) = ' '
-       do n = 1, 6
-         fields(n) = ' '
-       enddo
-       rest = trim(line)
-       n = 0
-       i = 1
-       do
-! skip whitespace
-         do while (i <= len_trim(rest) .and. rest(i:i) == ' ')
-           i = i + 1
-         enddo
-         if (i > len_trim(rest)) exit
-         n = n + 1
-         if (n > 6) then
-           n = 6
-           exit
+       bands = ' '
+       do k=1,nfit
+         write (cw,'(i0)') nint ( wfit(k) )
+         la = len_trim ( bands )
+         if (la .eq. 0) then
+           bands = cw
+         else
+           bands = bands(1:la)//','//cw
          endif
-! find end of field
-         j = i
-         do while (j <= len_trim(rest) .and. rest(j:j) /= ' ')
-           j = j + 1
-         enddo
-         fields(n) = rest(i:j-1)
-         i = j
        enddo
-       if (n .lt. 5) stop ' RDCFG: a data line must hold at least five fields: PM WAVE BEAM OFFSET IMAGE [MASKIMAGE]'
 
-       read(fields(1), *) pmflag(nband)
-       read(fields(2), *) wave(nband)
-       read(fields(3), *) beams(nband)
-       read(fields(4), *) offset(nband)
-       bandfile(nband) = fields(5)
-       if (n .ge. 6) maskfile(nband) = fields(6)
-
-       if (pmflag(nband) .ne. '+' .and. pmflag(nband) .ne. '-') stop
-     &   ' RDCFG: the first column of a data line must be + or -; point the second argument at the +hires.cfg of the hires run'
-
-       name = bandfile(nband)
-       inquire ( file=name, exist=there )
-       if (.not. there) bandfile(nband) = name(1:len_trim(name))//'.fits'
-
-       if (len_trim(maskfile(nband)) .gt. 0) then
-         name = maskfile(nband)
-         inquire ( file=name, exist=there )
-         if (.not. there) maskfile(nband) = name(1:len_trim(name))//'.fits'
-       endif
-
-       goto 10
-  90   close ( 21 )
-
-       if (nband .eq. 0) stop ' RDCFG: the configuration contains no waveband.'
+       status = 0
+       call ftgiou ( unit, status )
+       call ftopen ( unit, fname, 1, block, status )
+       call ftpkyd ( unit, 'HIG0'   , g0    , 6, 'radiation field of the correction, Habing units', status )
+       call ftpkys ( unit, 'HIBANDS', bands ,    'wavebands fitted to make the image, um', status )
+       call ftpkyd ( unit, 'HITMIN' , tfloor, 8, 'T_min of the temperature relation, K', status )
+       call ftpkyd ( unit, 'HIT0'   , tsurf , 8, 'T_0 of the temperature relation, K', status )
+       call ftpkyd ( unit, 'HISSTAR', sstar , 7, 'Sigma_star of the temperature relation, cm^-2', status )
+       call ftpkyd ( unit, 'HIGAMMA', gamma , 7, 'gamma of the temperature relation', status )
+       call ftclos ( unit, status )
+       call ftfiou ( unit, status )
+       if (status .gt. 0) call printerr ( status )
 
        return
        end
