@@ -1,5 +1,10 @@
-"""hicorrect2.py -- correct the single-temperature bias of the surface density
-images produced by hires.
+"""hicorrect2.py -- correct the single-temperature bias of surface density
+images.
+
+The correction applies to any surface density image obtained by fitting one
+modified blackbody to the intensities of each pixel, whether made by hires or
+by any other method, at any resolution. It needs only the image and the list of
+wavebands that were fitted to make it.
 
 A surface density image is obtained by fitting one modified blackbody to the
 intensities of each pixel. A line of sight crossing a dense structure is not
@@ -16,14 +21,14 @@ integrated. The cumulative images satisfy
 
 so every image of the reconstruction has nearly the same fractional deficit.
 
-How the correction is applied. The factor f is evaluated, pixel by pixel, on
-the image named second on the command line (the evaluation image), and the
-amount (f - 1) times that image is added to each image named after it. To
-correct an image by multiplying it by the factor evaluated on itself, which is
-the default of the paper, name the same image twice. The default evaluation
-image is the hires image at 13.5 arcsec. The coarsest image at 36.3 arcsec is
-the conservative alternative, and its correction can then be added to every
-finer image of the same reconstruction, whose increments are not changed.
+How the correction is applied. One surface density image is corrected per run.
+The factor f is evaluated on that image, pixel by pixel, and the image is
+multiplied by it. This works for an image of any resolution; the default of the
+paper is the hires image at 13.5 arcsec. If the temperature image fitted
+together with it is given, the dust temperature implied by the corrected
+surface density is also written. That temperature image must have the same
+resolution and the same pixels as the surface density image, because the
+temperature of each pixel is recomputed with the factor of that pixel.
 
 The correction. For a line of sight of true surface density Sigma, a uniform
 structure of that surface density is taken. At every depth the effective
@@ -36,10 +41,10 @@ and of isolated cylinders,
     T(Sigma_a) = T_floor + (T_0 - T_floor) (1 + Sigma_a / S_star)^(-gamma).
 
 Integrating the emission over depth, fitting one modified blackbody to the
-result in the same wavebands that hires used, and comparing with Sigma gives
+result in the same wavebands that were fitted to make the image, and comparing with Sigma gives
 the factor by which the fitted surface density must be multiplied. The factor
 is tabulated once against the fitted surface density and interpolated onto the
-evaluation image.
+image.
 
 At low surface densities the analytic layer is replaced by a RADMC-3D model of
 a diffuse cloud: below a fitted surface density of 10^21.6 cm^-2 the factor is
@@ -51,18 +56,26 @@ attenuation cannot describe.
 
 Usage:
 
-    python3 hicorrect2.py <hires configuration file> <evaluation image> <image> ...
-                          [-temp=<fitted temperature image>] [-g0=<field>]
+    python3 hicorrect2.py <image> [-temp=<temperature image>] [-bands=<list>]
+                          [-g0=<field>]
 
-The configuration file is the one hires used; the wavebands marked '+' in it
-are the ones the relation is built for. Every argument after the evaluation
-image is an image to which the correction is added. For each of them a file
-with the suffix '.correct.fits' is written, and the image of the correction
-factors is written as <evaluation image>.cfactor.fits. If the temperature image
-that hires fitted at the resolution of the evaluation image is given with
--temp=<file>, the dust temperature implied by the corrected surface density is
-written as <file>.correct.fits. The names are the same as those of the Fortran
-version.
+<image> is the surface density image to be corrected. The file names of the
+images may be given without the extension '.fits', which is then added. The corrected image is
+written as <image>.correct.fits and the image of the correction factors as
+<image>.cfactor.fits.
+
+-temp=<temperature image> gives the dust temperature image fitted together with
+<image>. It must have the same resolution and the same pixels as <image>. The
+dust temperature implied by the corrected surface density is then written as
+<temperature image>.correct.fits.
+
+-bands=<list> gives the wavelengths in micron of the wavebands that were fitted
+to make the image, separated by commas, for example -bands=250,350,500; the
+default is 160,250,350,500. The relation is built for these wavebands, and the
+longest of them is the reference waveband.
+
+The outputs are written to the current directory, whatever directory the inputs
+come from. Their names are the same as those of the Fortran version.
 
 The relation is calibrated for the radiation field G_0 = 10 in Habing units.
 For a cloud in another field, give its field with -g0=<field>, as estimated
@@ -72,7 +85,11 @@ grid of radiation fields from G_0 = 0.98 to 482.5 and held constant outside it.
 
 The correction must be applied once. It is not idempotent: applied again to an
 image it has already corrected, it would raise the values a second time. Every
-output carries the keyword HICORR, and any input that carries it is refused.
+output carries CREATOR = 'HICORRECT' and the keyword HICORR, and any input that
+carries either of them is refused, including the outputs of the Fortran version.
+The outputs also record the radiation field of the correction (HIG0), the
+wavebands fitted (HIBANDS), and the four constants of the temperature relation
+(HITMIN, HIT0, HISSTAR, HIGAMMA), as the Fortran version does.
 
 Surface densities in H2 cm^-2, intensities in MJy/sr, temperatures in K.
 """
@@ -255,14 +272,9 @@ def attenuating_column(sigma, geometry="mean"):
     return 0.5 * (ssph + slay) * sigma / 2.0
 
 
-def read_config(path):
-    """Wavelengths in micron of the wavebands marked '+', sorted."""
-    out = []
-    for line in open(path):
-        c = line.split()
-        if c and c[0] == "+":
-            out.append(float(c[1]))
-    return sorted(out)
+def parse_bands(text):
+    """Wavelengths in micron of the fitted wavebands, from a list separated by commas, sorted."""
+    return sorted(float(w) for w in text.split(",") if w.strip())
 
 
 def build_relation(waves):
@@ -328,27 +340,40 @@ def invplanck(b, wave_um):
     return H_PLANCK * nu / (K_BOLTZ * np.log1p(pref / np.maximum(b, 1e-300)))
 
 
-def write_temperature(ftemp, f, good, wref, header, out):
+def stamp(header, g0, waves):
+    """Record in a header how the image was corrected: the radiation field, the wavebands fitted and the temperature relation."""
+    # the same CREATOR card as the Fortran version writes, which its FITS reader recognizes
+    header["CREATOR"] = ("HICORRECT", "Alexander Menshchikov, DAp IRFU CEA Saclay")
+    header["HICORR"] = (GAMMA, "index of the temperature relation applied")
+    header["HIG0"] = (g0, "radiation field of the correction, Habing units")
+    header["HIBANDS"] = (",".join("%.0f" % w for w in waves), "wavebands fitted to make the image, um")
+    header["HITMIN"] = (TFLOOR, "T_min of the temperature relation, K")
+    header["HIT0"] = (TSURF, "T_0 of the temperature relation, K")
+    header["HISSTAR"] = (SSTAR, "Sigma_star of the temperature relation, cm^-2")
+    header["HIGAMMA"] = (GAMMA, "gamma of the temperature relation")
+    return header
+
+
+def write_temperature(ftemp, f, good, wref, header, out, g0, waves):
     """Dust temperature that goes with the corrected surface density.
 
     The reconstruction derived the surface density from the reference
     waveband with the temperature it fitted at the resolution of the
-    evaluation image. With f times more material on the line of sight, the
+    image. With f times more material on the line of sight, the
     same intensity of the reference waveband is reproduced by colder dust,
     whose Planck function is that of the fitted temperature divided by f. The
-    fitted temperature image must have the resolution of the evaluation image.
+    fitted temperature image must have the resolution and the pixels of the corrected image.
     """
     t = np.nan_to_num(np.array(fits.open(ftemp)[0].data, float))
     if t.shape != f.shape:
-        print(" %s skipped: its shape does not match the evaluation image"
+        print(" %s skipped: its shape does not match the corrected image"
               % ftemp)
         return
     ok = good & (t > 0.0)
     tc = np.where(ok, invplanck(planck(np.where(ok, t, 1.0), wref)
                                 / np.where(ok, f, 1.0), wref), 0.0)
-    hh = header.copy()
+    hh = stamp(header.copy(), g0, waves)
     hh["BUNIT"] = "K"
-    hh["HICORR"] = (GAMMA, "index of the temperature relation applied")
     fits.PrimaryHDU(np.asarray(tc, np.float32), hh).writeto(out,
                                                              overwrite=True)
     print(" corrected dust temperature: median %.2f K -> %s"
@@ -361,13 +386,26 @@ def main():
     ftemp = ftemp[0] if ftemp else None
     g0 = [float(a[4:]) for a in sys.argv[1:] if a.startswith("-g0=")]
     g0 = g0[0] if g0 else 10.0
-    if len(args) < 3:
-        print(__doc__)
+    bands = [a[7:] for a in sys.argv[1:] if a.startswith("-bands=")]
+    if len(args) != 1:
+        if len(args) > 1:
+            print(" only one surface density image can be corrected in one run;"
+                  " give the temperature image with -temp=<file>")
+        else:
+            print(__doc__)
         return
-    cfg, fbase, targets = args[0], args[1], args[2:]
-    waves = read_config(cfg)
+    # the file names may be given without the extension '.fits', which is then added
+    fits_name = lambda n: n if n.endswith(".fits") else n + ".fits"
+    fbase = fits_name(args[0])
+    if ftemp is not None:
+        ftemp = fits_name(ftemp)
+    try:
+        waves = parse_bands(bands[0]) if bands else [160.0, 250.0, 350.0, 500.0]
+    except ValueError:
+        print(" cannot read the wavelengths from -bands=%s" % bands[0])
+        return
     if len(waves) < 2:
-        print(" fewer than two wavebands are marked '+' in %s" % cfg)
+        print(" at least two wavebands must be given with -bands=")
         return
     fitted, factor = build_relation(waves)
     if g0 != 10.0:
@@ -380,7 +418,7 @@ def main():
     factor = np.maximum.accumulate(factor)
 
     hdu = fits.open(fbase)[0]
-    if "HICORR" in hdu.header:
+    if "HICORR" in hdu.header or str(hdu.header.get("CREATOR", "")).startswith("HICORRECT"):
         print(" %s has already been corrected." % fbase)
         print(" The correction is not idempotent and must be applied once"
               " only.")
@@ -402,53 +440,37 @@ def main():
     print(" below 10^%.1f cm^-2 the layer is replaced by a RADMC-3D cloud,"
           " blended into the analytic relation up to 10^%.1f cm^-2" % XBLEND)
     print(" radiation field G_0 = %g (Habing units)%s" % (g0, "" if g0 != 10.0 else ", the field of the calibration"))
-    print(" evaluation image %s: %d valid pixels" % (os.path.basename(fbase),
+    print(" image %s: %d valid pixels" % (os.path.basename(fbase),
                                                int(good.sum())))
     p = np.percentile(f[good], [1, 25, 50, 75, 99])
     print(" correction factor  1%%: %.3f  25%%: %.3f  50%%: %.3f  75%%: %.3f"
           "  99%%: %.3f  max: %.3f" % (*p, f[good].max()))
-    print(" ratio of the sums of the corrected to the uncorrected evaluation image:"
+    print(" ratio of the sums of the corrected to the uncorrected image:"
           " %.4f" % ((base + delta)[good].sum() / base[good].sum()))
 
-    first = True
-    for name in targets:
-        h = fits.open(name)[0]
-        if "HICORR" in h.header:
-            print(" %s skipped: already corrected" % name)
-            continue
-        a = np.nan_to_num(np.array(h.data, float))
-        if a.shape != base.shape:
-            print(" %s skipped: shape %s against %s of the evaluation image"
-                  % (name, "x".join(str(v) for v in a.shape),
-                     "x".join(str(v) for v in base.shape)))
-            continue
-        out = np.where((a > 0.0) & good, a + delta, 0.0)
-        hh = h.header.copy()
-        hh["BUNIT"] = "H2/cm^2"
-        hh["HICORR"] = (GAMMA, "index of the temperature relation applied")
-        hh["HIG0"] = (g0, "radiation field of the correction, Habing units")
-        stem = name[:-5] if name.endswith(".fits") else name
-        fits.PrimaryHDU(np.asarray(out, np.float32), hh).writeto(
-            stem + ".correct.fits", overwrite=True)
-        gg = (a > 0.0) & good
-        print(" %-52s ratio of the sums %.4f"
-              % (os.path.basename(stem) + ".correct.fits",
-                 out[gg].sum() / a[gg].sum()))
-        if first:
-            hh2 = h.header.copy()
-            hh2["BUNIT"] = "ratio"
-            hh2["HICORR"] = (GAMMA, "index of the temperature relation")
-            fits.PrimaryHDU(np.asarray(np.where(good, f, 0.0), np.float32),
-                            hh2).writeto(
-                (fbase[:-5] if fbase.endswith(".fits") else fbase) + ".cfactor.fits", overwrite=True)
-            if ftemp is not None:
-                write_temperature(ftemp, f, good, waves[-1], hdu.header,
-                                  (ftemp[:-5] if ftemp.endswith(".fits") else ftemp) + ".correct.fits")
-            else:
-                print(" no temperature image given with -temp=<file>,"
-                      " so no temperature map is written")
-            first = False
-
+    out = np.where(good, base + delta, 0.0)
+    hh = stamp(hdu.header.copy(), g0, waves)
+    hh["BUNIT"] = "H2/cm^2"
+    # the outputs are written to the current directory, whatever directory the input comes from
+    name = os.path.basename(fbase)
+    stem = name[:-5] if name.endswith(".fits") else name
+    fits.PrimaryHDU(np.asarray(out, np.float32), hh).writeto(stem + ".correct.fits", overwrite=True)
+    print(" written %s.correct.fits" % os.path.basename(stem))
+    hh2 = stamp(hdu.header.copy(), g0, waves)
+    hh2["BUNIT"] = "ratio"
+    fits.PrimaryHDU(np.asarray(np.where(good, f, 0.0), np.float32), hh2).writeto(stem + ".cfactor.fits", overwrite=True)
+    print(" written %s.cfactor.fits" % os.path.basename(stem))
+    if ftemp is None:
+        print(" no temperature image given with -temp=<file>, so no temperature map is written")
+        return
+    th = fits.getheader(ftemp)
+    b1, b2 = hdu.header.get("BEAM", 0.0), th.get("BEAM", 0.0)
+    if b1 and b2 and abs(b2 / b1 - 1.0) > 0.01:
+        print(" ERROR: the temperature image has the resolution %.2f arcsec, the surface density image %.2f arcsec;"
+              " they must have the same resolution, so no temperature map is written" % (b2, b1))
+        return
+    write_temperature(ftemp, f, good, waves[-1], hdu.header,
+                      (os.path.basename(ftemp)[:-5] if ftemp.endswith(".fits") else os.path.basename(ftemp)) + ".correct.fits", g0, waves)
 
 if __name__ == "__main__":
     main()
