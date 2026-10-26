@@ -1339,9 +1339,14 @@ def fig_aquila(out="fig_aquila.pdf"):
     ff = g("/Users/amenshch/Astronomy/+HERSCHEL_EXTRACTIONS/+AQUILA~260pc/+Images/260625_Herschel-zoom2/+hires_cutout/+results/hi.surface.density.r%s.cfactor_G0=33.fits" % ("%.1f" % FINE).replace(".", "p"))
     tt = g("/Users/amenshch/Astronomy/+HERSCHEL_EXTRACTIONS/+AQUILA~260pc/+Images/260625_Herschel-zoom2/+hires_cutout/+results/hi.temperature.r%s.correct_G0=33.fits" % ("%.1f" % FINE).replace(".", "p"))
 
-    lo, hi = np.nanpercentile(dd[dd > 0.0], 0.5), np.nanpercentile(cc[cc > 0.0], 99.9)
+    from matplotlib.colors import PowerNorm
+
+    lo, hi = np.nanpercentile(dd[dd > 0.0], 0.0), np.nanpercentile(cc[cc > 0.0], 99.9)
     n = dd.shape[0]
     ext = [-n * PIX / 120.0, n * PIX / 120.0] * 2
+    tv = tt[np.isfinite(tt) & (tt > 0.0)]
+    tlo, thi = np.percentile(tv, [0.1, 99.5])
+    tlo = 9.0
 
     fig = plt.figure(figsize=(7.1, 6.9))
     gs = fig.add_gridspec(2, 2, wspace=0.075, hspace=0.0, left=0.010, right=0.940, bottom=0.015, top=0.955)
@@ -1349,7 +1354,8 @@ def fig_aquila(out="fig_aquila.pdf"):
     panels = [(dd, r"Surface density $\mathcal{D}$ (cm$^{-2}$)", SD_CMAP, LogNorm(vmin=lo, vmax=hi), ""),
               (cc, r"Corrected surface density $\mathcal{D}_{\rm c}$ (cm$^{-2}$)", SD_CMAP, LogNorm(vmin=lo, vmax=hi), ""),
               (ff, r"Correction factors $\mathcal{F}$", SD_CMAP, None, ""),
-              (tt, r"Corrected dust temperature $T$ (K)", SD_CMAP, None, "")]
+##              (tt, r"Corrected dust temperature $T$ (K)", SD_CMAP, None, "")]
+              (tt, r"Corrected dust temperature $T$ (K)", SD_CMAP, PowerNorm(gamma=0.5, vmin=tlo, vmax=thi), "")]
 
 #    ax.set_xticks([0.1, 0.2, 0.5, 1.0, 2.0])
 #    ax.set_xticklabels(["0.1", "0.2", "0.5", "1", "2"])
@@ -1369,7 +1375,11 @@ def fig_aquila(out="fig_aquila.pdf"):
         if k == 3: cb.set_label(unit, fontsize=FS_CB, labelpad=-4)
         cb.ax.tick_params(labelsize=7.5, pad=1.5)
         cb.ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-
+        if k == 3:
+            cb.set_ticks([9.0, 10, 12, 14, 16, 18])
+            cb.ax.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter("%g"))
+            cb.ax.yaxis.set_minor_locator(matplotlib.ticker.FixedLocator(np.arange(9.0, 20.0, 1.0)))
+                        
     fig.savefig(out)
     plt.close(fig)
     print("written %s" % out)
@@ -1890,12 +1900,12 @@ if __name__ == "__main__":
 #    fig_geometry()
 #    fig_shielding()
 #    fig_method()
-    fig_relation()
-    fig_fieldfactor()
+#    fig_relation()
+#    fig_fieldfactor()
 #    fig_grid_validation()
 #    fig_cylinders()
 #    fig_simsky6()
-#    fig_aquila()
+    fig_aquila()
 #    fig_cube3d()
 #    fig_cube()
 #    fig_superposition()

@@ -53,7 +53,7 @@ and on a simulated sky built from radiative transfer models. The correction rais
 the true mass, the linear densities of filaments from $0.60$--$0.96$ to $0.93$--$1.01$, and the total $\Sigma$ of the simulated sky
 to $0.96$. The correction includes dependence on a wide range of strengths $G_{0}$ of the interstellar radiation field, measured on
 $9$ supplementary grids of models. Applied to the molecular cloud in Aquila, the correction raises the total $\Sigma$ by a factor
-of $1.88$. For the adopted dust properties, the total uncertainties of corrected surface densities are ${\sim}30$\% in diffuse
+of $1.86$. For the adopted dust properties, the total uncertainties of corrected surface densities are ${\sim}30$\% in diffuse
 material and ${\sim}50$\% in dense structures, and those of corrected temperatures ${\sim}2$\,K.}
 
 \keywords{ISM: clouds -- ISM: structure -- Stars: formation -- Infrared: ISM -- Submillimeter: ISM -- Techniques: image processing}
@@ -522,28 +522,30 @@ field heats the dust at every attenuating column, and it changes the temperature
 a line of sight requires therefore depends on the field (Appendix~\ref{sec:field}).
 
 This dependence was measured on the grid of radiation fields (Sect.~\ref{sec:modcores}), in nine fields from $G_0 = 0.98$ to $483$.
-For each field, the logarithm of the factor that each pixel of each model required was averaged in bins of the fitted surface
-density $\Sigma_{\rm F}$. The ratio of this average to the same average at $G_0 = 10$, smoothed over $\Sigma_{\rm F}$, is the
-field factor $g(\Sigma_{\rm F}, G_0)$ (Fig.~\ref{fig:fieldfactor}). Above $1.78{\times}10^{22}$\,cm$^{-2}$, the grid contains too
-few pixels to determine it, and $g$ was held at its value there. Between the fields of the grid, $\log g$ is interpolated linearly
-in $\log G_0$. The field factor is close to unity in diffuse material and departs from it most above $10^{22}$\,cm$^{-2}$
+For each field, the factor that each pixel of each model required was averaged as a function of the fitted surface density
+$\Sigma_{\rm F}$, and the ratio of this average to the same average at $G_0 = 10$ is the field factor $g(\Sigma_{\rm F}, G_0)$
+(Fig.~\ref{fig:fieldfactor} and Appendix~\ref{app:fieldR}). Above $7.1{\times}10^{22}$\,cm$^{-2}$, the grid contains too few
+pixels to determine it, and $g$ was held at its value there. Between the fields of the grid, $\log g$ is interpolated linearly in
+$\log G_0$. The field factor is close to unity in diffuse material and departs from it most above $10^{22}$\,cm$^{-2}$. It is
+largest in fields of a few tens, and in the strongest fields it falls below unity at high surface densities
 (Appendix~\ref{app:field}).
 
 \begin{figure}
 \centering
 \includegraphics[width=0.98\columnwidth]{fig_fieldfactor.pdf}
-\caption{The field factor $g$ of Eq.~(\ref{eq:factorg0}) against the fitted surface density, for the nine radiation fields of the
-grid, from the weakest to the strongest. For the field of the calibration, $G_0 = 10$ (blue), $g = 1$. Above 
-$1.78{\times}10^{22}$\,cm$^{-2}$ (dotted line), $g$ is held constant.}
+\caption{The radiation field factor $g(\Sigma_{\rm F}, G_0)$ from Eq.~(\ref{eq:factorg0}) is plotted against the fitted surface
+density $\Sigma_{\rm F}$, for the nine field strengths $G_0$ of the model grid, from the weakest to the strongest. For the field of 
+the calibration, $G_0 = 10$ (blue), $g = 1$. Above $7.1{\times}10^{22}$\,cm$^{-2}$ (dotted line), $g$ is held constant.}
 \label{fig:fieldfactor}
 \end{figure}
 
 The factor applied to a cloud in the field $G_0$ is then
 \begin{equation}
-  f_{G_0}(\Sigma_{\rm F}) = \max_{\Sigma^{\prime} \le \Sigma_{\rm F}} \Big[ f(\Sigma^{\prime})\,g(\Sigma^{\prime}, G_0) \Big],
+  f_{G_0}(\Sigma_{\rm F}) = g(\Sigma_{\rm F}, G_0) \max_{\Sigma^{\prime} \le \Sigma_{\rm F}} f(\Sigma^{\prime}),
 \label{eq:factorg0}
 \end{equation}
-which also holds the factor at its maximum (Sect.~\ref{sec:factor}). For $G_0 = 10$, $g = 1$. The field is a single number for a
+where the maximum holds the factor of uniform bodies at its maximum (Sect.~\ref{sec:factor}). The field factor is not held at
+its maximum, because its decline in strong fields is measured on the radiative transfer models. For $G_0 = 10$, $g = 1$. The field is a single number for a
 cloud. It is the field that the models require to reproduce the observed temperatures, an effective field of the model dust, which
 can differ from the physical field. It is estimated from the temperatures of the diffuse material of the whole map, with the
 procedure of Appendix~\ref{app:fieldest}. It is not read from the temperature of each pixel, which is ambiguous
@@ -820,20 +822,20 @@ the calibration.
 %%%%% NUMBERS (2026-10-20): Sect. 6 from python/paper_numbers/aquila_numbers.py on the images of hires/Aquila_cutout_g33
 %%%%% (hicorrect2 with -g0=33); the values for G_0 = 10 are recomputed by the same script from hicorrect2.py.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-The median correction factor over the field is $1.69$. It lies between $1.21$ and $2.20$ for $98$\% of the pixels and reaches its
-maximum of $2.20$ above $3{\times}10^{22}$\,cm$^{-2}$, so the correction is significant everywhere in the field. The total surface
-density of the field increases by a factor of $1.88$. With the calibration field $G_0 = 10$, the median factor would be about
+The median correction factor over the field is $1.70$. It lies between $1.21$ and $2.10$ for $98$\% of the pixels and reaches its
+maximum of $2.10$ near $3{\times}10^{22}$\,cm$^{-2}$, so the correction is significant everywhere in the field. The total surface
+density of the field increases by a factor of $1.86$. With the calibration field $G_0 = 10$, the median factor would be about
 $1.45$ and the total would increase by a factor of about $1.61$.
 
 The distribution of surface densities changes more than the median factor suggests, because the factor rises with the surface
-density. The median surface density of the field increases from $9.7{\times}10^{21}$ to $1.6{\times}10^{22}$\,cm$^{-2}$, and its
-99th percentile from $5.6{\times}10^{22}$ to $1.2{\times}10^{23}$\,cm$^{-2}$. The numbers of pixels above $10^{22}$,
-$3{\times}10^{22}$ and $10^{23}$\,cm$^{-2}$ increase by factors of $1.8$, $5.2$ and $9.8$. This matters for any criterion based on
+density. The median surface density of the field increases from $9.7{\times}10^{21}$ to $1.7{\times}10^{22}$\,cm$^{-2}$, and its
+99th percentile from $5.6{\times}10^{22}$ to $1.1{\times}10^{23}$\,cm$^{-2}$. The numbers of pixels above $10^{22}$,
+$3{\times}10^{22}$ and $10^{23}$\,cm$^{-2}$ increase by factors of $1.8$, $5.2$ and $8.1$. This matters for any criterion based on
 a surface density threshold, such as that for star formation.
 
 The corrected surface density implies a lower dust temperature. It was defined as the temperature at which the corrected surface
 density gives the same intensity at $500${\um} as the uncorrected surface density with the fitted temperature. Its median over the
-field is $12.2$\,K, against $15.0$\,K for the fitted temperature. It is below $9.4$ and $18.6$\,K for $1$ and $99$\% of the pixels.
+field is $12.2$\,K, against $15.0$\,K for the fitted temperature. It is below $9.6$ and $18.6$\,K for $1$ and $99$\% of the pixels.
 
 \begin{figure*}
 \centering
@@ -847,8 +849,8 @@ the corrected dust temperature (Sect.~\ref{sec:aquila}). }
 Figure~\ref{fig:aquila} shows the field before and after the correction, together with $\mathcal{F}$ and the corrected dust
 temperature. The correction is not a uniform rescaling. The factor is smallest in the diffuse material between the structures and
 largest along the crests of the filaments and at the cores. The correction therefore raises the contrast of the image as well as
-its overall level. Because the factor never decreases with the surface density, the densest crests and cores receive the largest
-correction, and the corrected temperature shows no artificial dips toward them. The field is not uniform across the cloud. The warm
+its overall level. Above $3{\times}10^{22}$\,cm$^{-2}$, the factor changes by only a few percent, so the densest crests and cores receive nearly
+the largest correction, and the corrected temperature shows no artificial dips toward them. The field is not uniform across the cloud. The warm
 corner at the upper left of the temperature map is heated more strongly than the rest of the field, and there the single field of
 the cloud underestimates the true one. Appendix~\ref{sec:field} discusses the uncertainty due to the radiation field.
 
@@ -885,13 +887,13 @@ the fitted temperature are not worth their complexity, because a warm pixel may 
 
 The correction was calibrated for $G_0 = 10$. Models computed for nine fields from $G_0 = 1$ to $483$ show that, without further
 adjustment, it is too large by up to $27$\% in the weakest fields and too small by up to $20$\% in fields of a few tens. A field
-factor measured on these models, a function of the surface density and the field, reduces these errors to about $10$\%, also for
-fields left out of its construction. The field of a cloud, estimated from the temperatures of its diffuse material, ranges from
+factor measured on these models, a function of the surface density and the field, brings these errors to within $4$\% of those in the calibration field, and to within $6$\% for fields left out of its
+construction. The field of a cloud, estimated from the temperatures of its diffuse material, ranges from
 below $1$ (Taurus) to about $250$ (Cygnus~X) in nine regions. The other main uncertainty is the floor temperature $T_{\rm min}$ of
 fully shielded dust, to which $f$ is very sensitive above $10^{22}$\,cm$^{-2}$.
 
 Applied to a field of the Aquila cloud, whose diffuse material requires $G_0 \approx 33$, the correction raises the total surface
-density by a factor of $1.88$ and the number of pixels above $10^{23}$\,cm$^{-2}$ by a factor of $9.8$. The median dust
+density by a factor of $1.86$ and the number of pixels above $10^{23}$\,cm$^{-2}$ by a factor of $8.1$. The median dust
 temperature implied by the corrected surface densities is $12.2$\,K, against $15.0$\,K for the fitted one.
 
 For the adopted dust properties, the total uncertainties of corrected surface densities are about $30$\% in diffuse material and
@@ -1220,14 +1222,18 @@ therefore reproduce the errors.
 \subsection{Measuring the field factor $g$}
 \label{app:fieldR}
 
-The field factor $g(\Sigma_{\rm F}, G_0)$ of Eq.~(\ref{eq:factorg0}) was measured on the same grid. For each field, the logarithm
-of the factor that each pixel of each model required was averaged in bins of $0.05$\,dex of $\Sigma_{\rm F}$, and the same average
-at $G_0 = 10$ was subtracted. The difference was smoothed by a local linear fit within a Gaussian window $0.1$\,dex wide, with each
-bin weighted by the square root of its number of pixels. The smoothing removes variations of $5$ to $10$\% between neighboring
-bins, which reflect the discrete sampling of the grid. Above $1.78{\times}10^{22}$\,cm$^{-2}$, where some bins contain only a few
-hundred pixels, $g$ was held constant.
+The field factor $g(\Sigma_{\rm F}, G_0)$ of Eq.~(\ref{eq:factorg0}) was measured on the same grid. Most pixels of a model lie on the plateau of its
+uniform embedding cloud, and the surface densities of the embedding clouds step by a factor of $2$. Each field shifts these
+plateaus to a different $\Sigma_{\rm F}$. Above $10^{22}$\,cm$^{-2}$, bins of $\Sigma_{\rm F}$ therefore alternate between
+hundreds of thousands of pixels and a few hundred, and two fields compared in one bin hold unrelated populations. The pixels were
+therefore binned in their true surface density, in bins of $0.05$\,dex, in which the populations of all fields coincide. For each
+field, every bin gave the mean $\log\Sigma_{\rm F}$ and the mean logarithm of the factor that its pixels required. The logarithm
+of the factor was smoothed against $\log\Sigma_{\rm F}$ by a local linear fit within a Gaussian window $0.1$\,dex wide, with each
+bin weighted by the square root of its number of pixels, and the same at $G_0 = 10$ was subtracted. Above
+$7.1{\times}10^{22}$\,cm$^{-2}$, the grid contains too few pixels, and $g$ was held constant.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-%%%%% NUMBERS (2026-10-21): GTAB of hicorrect2 from python/paper_numbers/make_field_factor.py on harvest_calib3_G0=*.txt.hist.npz.
+%%%%% NUMBERS (2026-10-26): GTAB of hicorrect2 from python/paper_numbers/make_field_factor.py on harvest_calib3_G0=*.txt.hist.npz,
+%%%%% with the pixels binned in the true surface density; held above 10^22.85 cm^-2.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 Table~\ref{tab:fieldR} gives the errors of the corrected surface density, without and with the field factor, and with the field
 factor built without the field being tested.
@@ -1242,7 +1248,7 @@ factor built without the field being tested.
 \caption{Relative error of the corrected surface density, in percent, for the models of the grid of radiation fields, in four
 ranges of $\log_{10}\Sigma_{\rm F}$ (cm$^{-2}$): $21.6$--$22.0$, $22.0$--$22.4$, $22.4$--$22.8$ and $22.8$--$23.4$. Each entry is
 the median over the pixels in the range. The rows give the correction without the field factor $g$, with $g$ built from all nine
-fields, and with $g$ built without the field tested (left out). The factor was held at its maximum in all rows.}
+fields, and with $g$ built without the field tested (left out). In all rows, the factor for $G_0 = 10$ was held at its maximum and then multiplied by $g$.}
 \label{tab:fieldR}
 \centering
 \setlength{\tabcolsep}{4pt}
@@ -1253,25 +1259,24 @@ $G_0$ & Without $g$ & With $g$ & Left out \\
 \noalign{\smallskip}
 \hline
 \noalign{\smallskip}
-0.98             & $+15$ $+26$ $+19$ $+12$ & $+3$ $-6$ $-12$ $-17$ & -- \\
-2.12             & $+15$ $+21$ $+13$ $+5$  & $+2$ $-5$ $-12$ $-18$ & $+3$ $-2$ $-10$ $-16$ \\
-4.61             & $+8$ $+9$ $+3$ $-5$     & $+2$ $-3$ $-10$ $-17$ & $+3$ $-2$ $-9$ $-16$ \\
+0.98             & $+15$ $+26$ $+19$ $+12$ & $+2$ $-2$ $-9$ $-14$  & -- \\
+2.12             & $+15$ $+21$ $+13$ $+5$  & $+2$ $-1$ $-9$ $-15$  & $+3$ $0$ $-8$ $-13$ \\
+4.61             & $+8$ $+9$ $+3$ $-5$     & $+2$ $-2$ $-8$ $-15$  & $+3$ $-1$ $-7$ $-14$ \\
 10.0\phantom{0}  & $+1$ $-2$ $-8$ $-16$    & $+1$ $-2$ $-8$ $-16$  & -- \\
-21.7\phantom{0}  & $-6$ $-13$ $-14$ $-22$  & $+1$ $-2$ $-2$ $-11$  & $-1$ $-4$ $-6$ $-14$ \\
-47.1\phantom{0}  & $-9$ $-21$ $-22$ $-23$  & $+1$ $-3$ $-5$ $-6$   & $-2$ $-8$ $-10$ $-11$ \\
-102.4\phantom{0} & $-12$ $-16$ $-16$ $-14$ & $0$ $-2$ $-1$ $0$     & $-2$ $-5$ $-5$ $-4$ \\
-222.2\phantom{0} & $-6$ $-6$ $-2$ $+2$     & $0$ $-2$ $+2$ $+6$    & $-1$ $-4$ $0$ $+4$ \\
-482.5\phantom{0} & $-1$ $+2$ $+15$ $+20$   & $0$ $-4$ $+2$ $+6$    & -- \\
+21.7\phantom{0}  & $-6$ $-13$ $-14$ $-22$  & $+1$ $-2$ $-9$ $-16$  & $0$ $-4$ $-9$ $-18$ \\
+47.1\phantom{0}  & $-9$ $-21$ $-22$ $-23$  & $+2$ $-3$ $-10$ $-16$ & $-2$ $-8$ $-16$ $-20$ \\
+102.4\phantom{0} & $-12$ $-16$ $-16$ $-14$ & $0$ $-3$ $-11$ $-14$  & $-2$ $-7$ $-14$ $-17$ \\
+222.2\phantom{0} & $-6$ $-6$ $-2$ $+2$     & $0$ $-4$ $-12$ $-12$  & $0$ $-6$ $-13$ $-13$ \\
+482.5\phantom{0} & $-1$ $+2$ $+15$ $+20$   & $0$ $-5$ $-8$ $-13$   & -- \\
 \noalign{\smallskip}
 \hline
 \end{tabular}
 \end{table}
 
-With the field factor, the error depends much less on the field. In every field, it is close to the error at $G_0 = 10$, and within
-$\pm 12$\% except in the densest range. There, the underestimation is $16$\% at $G_0 = 10$, which is that at the centers of
-concentrated cores, and $17$ to $18$\% in the weakest fields, where the grid contains only a few hundred pixels per bin above
-$1.6{\times}10^{22}$\,cm$^{-2}$ and the field factor is the least certain. When a field is left out, its errors grow by a few
-percent, which measures the error of interpolating between the fields of the grid.
+With the field factor, the error hardly depends on the field. In every field and range, it is within $4$\% of the error at
+$G_0 = 10$, which is the error of the calibration itself, for example the underestimation of $16$\% at the centers of
+concentrated cores in the densest range. When a field is left out, its errors change by up to $6$\%, which measures the error of
+interpolating between the fields of the grid.
 
 \subsection{Estimating the radiation fields of clouds}
 \label{app:fieldest}
@@ -1447,7 +1452,7 @@ filament flanks in a dense cloud, relative error        & --                   &
 inclined layers, random, mean relative error            & --                   & $0$ to $+0.23$     & analytic (\ref{sec:incl}) \\
 inclined filaments, random, mean relative error         & --                   & $0$ to $+0.08$     & analytic (\ref{sec:incl}) \\
 field $G_0 = 1$ to 483 without $g$, relative error      & --                   & $-0.23$ to $+0.26$ & 9 radiation fields (\ref{sec:field}) \\
-field $G_0 = 1$ to 483 with $g$, relative error         & --                   & $-0.18$ to $+0.06$ & 9 radiation fields (\ref{sec:field}) \\
+field $G_0 = 1$ to 483 with $g$, relative error         & --                   & $-0.16$ to $+0.02$ & 9 radiation fields (\ref{sec:field}) \\
 local field wrong by a factor of 2.2, relative error    & --                   & $-0.10$ to $+0.13$ & 9 radiation fields (\ref{sec:field}) \\
 floor $T_{\rm min}$ wrong by $\pm 1$\,K, relative error & --                   & $-0.22$ to $+0.51$ & relation (\ref{sec:floor}) \\
 calibration error of 10\% at 500{\um}, $\Sigma$         & 0.16--0.18           & 0.16--0.23         & uniform bodies (\ref{sec:calerr}) \\
@@ -1483,8 +1488,8 @@ footprint and background must be added (Sect.~\ref{sec:valgrid}).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 The factor $f$ was calibrated for $G_0 = 10$. In the nine fields of the grid, from $G_0 = 0.98$ to $483$, the correction without
 the field factor $g$ errs by up to $+26$\% in weak fields and by up to $-23$\% in fields of a few tens (Appendix~\ref{app:field}).
-With $g$, the errors are within $\pm 12$\% up to $6{\times}10^{22}$\,cm$^{-2}$ and between $-18$ and $+6$\% above. With $g$ built
-without the field being tested, they are within $-16$ and $+4$\% (Table~\ref{tab:fieldR}).
+With $g$, the errors are between $-16$ and $+2$\%, within $4$\% of those at $G_0 = 10$. With $g$ built without the field being
+tested, they are within $6$\% of those at $G_0 = 10$ (Table~\ref{tab:fieldR}).
 
 The uncertainty of the field of a cloud, estimated from the spread of the temperatures of its diffuse material
 (Appendix~\ref{app:fieldest}), changes the field factor by $\pm 3$\% in Aquila. A local field that differs from the field of the
