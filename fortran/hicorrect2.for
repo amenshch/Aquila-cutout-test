@@ -8,10 +8,10 @@
 !
 ! A surface density image is built by fitting one modified blackbody to the wavebands of each line of sight and dividing the
 ! reference waveband by it. The correction applies to any such image, whether made by hires or by any other method, at any
-! resolution; it needs only the image and the list of wavebands that were fitted to make it. A real line of sight is not isothermal: its dust is warm near the surface of the cloud and cold in the
-! interior, the single fitted temperature is weighted toward the warm dust that dominates the emission, and the surface density is
-! therefore too low wherever the temperature varies along the line of sight. The deficit exceeds a factor of two in the densest
-! material.
+! resolution; it needs only the image and the list of wavebands that were fitted to make it. A real line of sight is not
+! isothermal: its dust is warm near the surface of the cloud and cold in the interior, the single fitted temperature is weighted
+! toward the warm dust that dominates the emission, and the surface density is therefore too low wherever the temperature varies
+! along the line of sight. The deficit exceeds a factor of two in the densest material.
 !
 ! Where the deficit is. The reconstruction of hires forms a base image at the coarsest resolution and adds to it one differential
 ! increment per waveband, so that the image at any resolution is
@@ -39,12 +39,12 @@
 !
 !   T(s) = tfloor + ( tsurf - tfloor ) ( 1 + s / sstar ) ** (-gamma),
 !
-! measured on radmc-3d models of Bonnor-Ebert spheres embedded in uniform clouds and of isolated cylinders. The emission of the line
-! of sight is integrated over depth in each of the wavebands that the reconstruction fitted, one modified blackbody is fitted to the
-! result exactly as the reconstruction fits it, and the surface density that the fit returns is compared with S. The ratio is the
-! factor by which the fitted surface density has to be multiplied. It is tabulated once against the fitted surface density, which
-! is the quantity the image holds, and interpolated onto the image. At low surface densities the analytic layer is replaced by a
-! radmc-3d model of a diffuse cloud, whose surface layers are warmer than the relation predicts (see below).
+! measured on radmc-3d models of Bonnor-Ebert spheres embedded in uniform clouds and of isolated cylinders. The emission of the 
+! line of sight is integrated over depth in each of the wavebands that the reconstruction fitted, one modified blackbody is fitted
+! to the result exactly as the reconstruction fits it, and the surface density that the fit returns is compared with S. The ratio
+! is the factor by which the fitted surface density has to be multiplied. It is tabulated once against the fitted surface density,
+! which is the quantity the image holds, and interpolated onto the image. At low surface densities the analytic layer is replaced
+! by a radmc-3d model of a diffuse cloud, whose surface layers are warmer than the relation predicts (see below).
 !
 ! The geometry. The sphere and the layer are the two limits of a uniform structure. Their factors differ by up to 10%, and by less
 ! than 5% outside the range from 10^21.4 to 10^22.1 cm^-2, and their average is used. The arrangement of the material along the
@@ -56,20 +56,20 @@
 ! images also record the radiation field of the correction (HIG0), the wavebands fitted (HIBANDS) with their relative calibration
 ! uncertainties (HIWGTS), and the four constants of the temperature relation (HITMIN, HIT0, HISSTAR, HIGAMMA).
 !
-! usage:  hicorrect2 <image> [-temp=<file>] [-bands=<list>] [-weights=<errs>] [-g0=<field>] [-verb{0|1|2}]
+! Usage:  hicorrect2 <image> [-temp=<file>] [-bands=<list>] [-weights=<errs>] [-g0=<field>] [-verb{0|1|2}]
 !
 !         <image>      the surface density image to be corrected; the factor is evaluated on it and it is multiplied by it
 !                      (the file names of <image> and <file> may be given without the extension '.fits', which is then added)
 !         <file>       the dust temperature image fitted together with <image>, optional; it must have the same resolution and
 !                      the same pixels as <image>
-!         <list>       the wavelengths in um of the wavebands fitted to make <image>, separated by commas, for example
-!                      -bands=250,350,500; 160,250,350,500 by default. The longest one is the reference waveband.
+!         <list>       the wavelengths in µm of the wavebands fitted to make <image>, separated by commas, for example
+!                      -bands=250,350,500; by default: 160,250,350,500. The longest one is the reference waveband.
 !         <errs>       the relative calibration uncertainties of the same wavebands, in the same order, which set their weights
 !                      in the fit that made <image>, for example -weights=0.1,0.1,0.1 for equal weights; only their ratios
-!                      matter. By default 0.2 at 160 um and shorter and 0.1 at longer wavelengths, the weights of hires. The
+!                      matter. By default 0.2 at 160 µm and shorter and 0.1 at longer wavelengths, the weights of hires. The
 !                      analytic relation is built for any wavebands and weights. The calibration on a diffuse cloud is provided
-!                      for five sets: 160-500 um with the default or equal weights, 250-500 um with equal weights, 100-500 and
-!                      70-500 um with the default weights; for other sets that of the standard set is used, with a warning. The
+!                      for five sets: 160-500 µm with the default or equal weights, 250-500 µm with equal weights, 100-500 and
+!                      70-500 µm with the default weights; for other sets that of the standard set is used, with a warning. The
 !                      field factor was measured with the standard set only; for other sets it is approximate.
 !         <field>      the radiation field of the cloud in Habing units, as estimated by g0_requirement.py; 10 by default
 !
@@ -115,6 +115,7 @@
        equivalence ( cnan, rnan )
        data          cnan / 'NaN' /
        external      planckf, rfits, wfits, interp, putima, invplanck, fieldfac, addkeys
+!__________________________________________________________________________________________________________________________________
 !
 ! The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 in Habing units, measured on the
 ! grid of radiation fields (harvest_calib3_G0=*.txt.hist.npz). The pixels are binned in the true surface density, 0.05 dex wide,
@@ -125,87 +126,42 @@
 ! fields gfld. It is interpolated linearly in log G_0 and held constant outside the table.
 !
        data          gfld  / 0.98d0, 2.12d0, 4.61d0, 10.0d0, 21.7d0, 47.1d0, 102.4d0, 222.2d0, 482.5d0 /
-!                   G_0 = 0.98
+! G_0 = 0.98
        data          gtab / 0.994d0, 0.987d0, 0.979d0, 0.971d0, 0.958d0, 0.942d0, 0.924d0, 0.905d0
      &             , 0.878d0, 0.845d0, 0.815d0, 0.793d0, 0.785d0, 0.777d0, 0.768d0, 0.763d0
      &             , 0.762d0, 0.764d0, 0.770d0, 0.769d0, 0.769d0, 0.769d0, 0.769d0, 0.769d0
-!                   G_0 = 2.12
+! G_0 = 2.12
      &             , 0.995d0, 0.992d0, 0.988d0, 0.981d0, 0.970d0, 0.957d0, 0.943d0, 0.928d0
      &             , 0.906d0, 0.877d0, 0.850d0, 0.833d0, 0.824d0, 0.817d0, 0.812d0, 0.810d0
      &             , 0.811d0, 0.810d0, 0.808d0, 0.807d0, 0.807d0, 0.807d0, 0.807d0, 0.807d0
-!                   G_0 = 4.61
+! G_0 = 4.61
      &             , 0.998d0, 0.995d0, 0.991d0, 0.987d0, 0.981d0, 0.970d0, 0.962d0, 0.955d0
      &             , 0.943d0, 0.924d0, 0.907d0, 0.899d0, 0.896d0, 0.891d0, 0.888d0, 0.882d0
      &             , 0.880d0, 0.882d0, 0.889d0, 0.891d0, 0.891d0, 0.891d0, 0.891d0, 0.891d0
-!                   G_0 = 10
+! G_0 = 10
      &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
      &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
      &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
-!                   G_0 = 21.7
+! G_0 = 21.7
      &             , 1.000d0, 1.000d0, 1.001d0, 1.004d0, 1.009d0, 1.014d0, 1.028d0, 1.051d0
      &             , 1.082d0, 1.103d0, 1.121d0, 1.134d0, 1.140d0, 1.136d0, 1.126d0, 1.101d0
      &             , 1.080d0, 1.064d0, 1.075d0, 1.085d0, 1.085d0, 1.085d0, 1.085d0, 1.085d0
-!                   G_0 = 47.1
+! G_0 = 47.1
      &             , 0.999d0, 0.999d0, 1.000d0, 1.004d0, 1.012d0, 1.022d0, 1.044d0, 1.080d0
      &             , 1.130d0, 1.175d0, 1.215d0, 1.242d0, 1.240d0, 1.223d0, 1.205d0, 1.181d0
      &             , 1.161d0, 1.132d0, 1.111d0, 1.098d0, 1.098d0, 1.098d0, 1.098d0, 1.098d0
-!                   G_0 = 102.4
+! G_0 = 102.4
      &             , 0.996d0, 0.995d0, 0.995d0, 0.996d0, 1.001d0, 1.012d0, 1.035d0, 1.074d0
      &             , 1.130d0, 1.177d0, 1.209d0, 1.223d0, 1.206d0, 1.177d0, 1.147d0, 1.114d0
      &             , 1.083d0, 1.050d0, 1.024d0, 1.005d0, 1.005d0, 1.005d0, 1.005d0, 1.005d0
-!                   G_0 = 222.2
+! G_0 = 222.2
      &             , 0.989d0, 0.989d0, 0.988d0, 0.989d0, 0.991d0, 0.995d0, 1.010d0, 1.040d0
      &             , 1.082d0, 1.113d0, 1.120d0, 1.110d0, 1.089d0, 1.052d0, 1.018d0, 0.977d0
      &             , 0.939d0, 0.908d0, 0.884d0, 0.863d0, 0.863d0, 0.863d0, 0.863d0, 0.863d0
-!                   G_0 = 482.5
+! G_0 = 482.5
      &             , 0.995d0, 0.990d0, 0.986d0, 0.984d0, 0.981d0, 0.978d0, 0.984d0, 0.999d0
      &             , 1.014d0, 1.015d0, 1.004d0, 0.973d0, 0.943d0, 0.907d0, 0.869d0, 0.835d0
      &             , 0.798d0, 0.768d0, 0.746d0, 0.723d0, 0.723d0, 0.723d0, 0.723d0, 0.723d0 /
-
-!!! The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 in Habing units, measured on the
-!!! grid of radiation fields (harvest_calib3_G0=*.txt): the pixel-weighted mean of log f in bins of 0.1 dex of the fitted surface
-!!! density, smoothed over three bins, minus the same at G_0 = 10 (make_field_factor.py). Above 10^22.6 cm^-2 the grid has too few
-!!! pixels, and the field factor is held at its value there. Rows are log10 of the fitted surface density from gx0 in steps of gdx,
-!!! columns are the fields gfld. It is interpolated linearly in log G_0 and held constant outside the table.
-!!!
-!!       data          gfld  / 0.98d0, 2.12d0, 4.61d0, 10.0d0, 21.7d0, 47.1d0, 102.4d0, 222.2d0, 482.5d0 /
-!!!                   G_0 = 0.98
-!!       data          gtab / 0.991d0, 0.986d0, 0.978d0, 0.970d0, 0.960d0, 0.944d0, 0.920d0, 0.904d0
-!!     &             , 0.904d0, 0.837d0, 0.815d0, 0.775d0, 0.756d0, 0.753d0, 0.756d0, 0.796d0
-!!     &             , 0.767d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0, 0.761d0
-!!!                   G_0 = 2.12
-!!     &             , 0.994d0, 0.991d0, 0.988d0, 0.981d0, 0.972d0, 0.958d0, 0.936d0, 0.924d0
-!!     &             , 0.929d0, 0.891d0, 0.857d0, 0.803d0, 0.790d0, 0.786d0, 0.793d0, 0.843d0
-!!     &             , 0.812d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0, 0.822d0
-!!!                   G_0 = 4.61
-!!     &             , 0.999d0, 0.995d0, 0.992d0, 0.987d0, 0.981d0, 0.973d0, 0.959d0, 0.955d0
-!!     &             , 0.967d0, 0.936d0, 0.889d0, 0.919d0, 0.909d0, 0.846d0, 0.851d0, 0.899d0
-!!     &             , 0.916d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0, 0.907d0
-!!!                   G_0 = 10
-!!     &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
-!!     &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
-!!     &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
-!!!                   G_0 = 21.7
-!!     &             , 1.001d0, 1.001d0, 1.001d0, 1.003d0, 1.007d0, 1.013d0, 1.026d0, 1.047d0
-!!     &             , 1.124d0, 1.110d0, 1.084d0, 1.102d0, 1.107d0, 1.092d0, 1.099d0, 1.186d0
-!!     &             , 1.168d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0, 1.135d0
-!!!                   G_0 = 47.1
-!!     &             , 1.000d0, 1.000d0, 1.000d0, 1.001d0, 1.008d0, 1.017d0, 1.041d0, 1.072d0
-!!     &             , 1.176d0, 1.182d0, 1.242d0, 1.179d0, 1.169d0, 1.232d0, 1.170d0, 1.220d0
-!!     &             , 1.199d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0, 1.165d0
-!!!                   G_0 = 102.4
-!!     &             , 0.997d0, 0.997d0, 0.997d0, 0.996d0, 1.001d0, 1.008d0, 1.034d0, 1.068d0
-!!     &             , 1.178d0, 1.188d0, 1.248d0, 1.209d0, 1.162d0, 1.126d0, 1.120d0, 1.120d0
-!!     &             , 1.114d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0, 1.082d0
-!!!                   G_0 = 222.2
-!!     &             , 0.990d0, 0.989d0, 0.989d0, 0.986d0, 0.989d0, 0.991d0, 1.009d0, 1.035d0
-!!     &             , 1.132d0, 1.126d0, 1.106d0, 1.092d0, 1.074d0, 1.032d0, 0.996d0, 0.996d0
-!!     &             , 0.959d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0, 0.933d0
-!!!                   G_0 = 482.5
-!!     &             , 0.994d0, 0.990d0, 0.986d0, 0.982d0, 0.982d0, 0.979d0, 0.985d0, 0.999d0
-!!     &             , 1.010d0, 1.027d0, 1.029d0, 0.991d0, 0.936d0, 0.871d0, 0.838d0, 0.865d0
-!!     &             , 0.834d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0, 0.801d0
-!!     &             /
 !__________________________________________________________________________________________________________________________________
 !
 ! The command line. The first positional argument is the image to be corrected; any further ones are images of the same
@@ -226,7 +182,7 @@
        wfit(4)  = 500.0d0
        g0       = 10.0d0
 
-       narg = iargc ( )
+       narg = iargc ()
        if (narg .lt. 1) then
          write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <image> [-temp=<file>] [-bands=<list>] [-weights=<errs>]'
      &                         //' [-g0=<field>] [-verb{0|1|2}]'
@@ -234,7 +190,7 @@
        endif
 
        do i=1,narg
-         call getarg ( i, arg )
+         call getarg (i, arg)
          la = len_trim ( arg )
          if (arg(1:5) .eq. '-verb') then
            cverbose = arg(1:6)
@@ -283,8 +239,9 @@
          write (iotty,'(/a/)') '   HICORRECT: ERROR: no surface density image to correct was given.'
          stop
        endif
-
+!
 ! The file names may be given without the extension '.fits', which is then added.
+!
        la = len_trim ( mapfile )
        if (la .lt. 5 .or. mapfile(max(la-4,1):la) .ne. '.fits') mapfile = mapfile(1:la)//'.fits'
        if (tempfile .ne. ' ') then
@@ -304,21 +261,23 @@
          write (iotty,'(a,f9.3,a)')  '   radiation field G_0 =', g0, ' (Habing units)'
        endif
        if (g0 .lt. gfld(1) .or. g0 .gt. gfld(ngf)) then
-         write (iotty,'(a,f9.3,a)')  '   HICORRECT2: WARNING: G_0 =', g0, ' lies outside the grid of radiation fields;'
+         write (iotty,'(a,f9.3,a)')  '   HICORRECT: WARNING: G_0 =', g0, ' lies outside the grid of radiation fields;'
          write (iotty,'(a)')         '   the field factor of the nearest field is used.'
        endif
 !__________________________________________________________________________________________________________________________________
 !
 ! The wavebands. The relation has to be built for the wavebands that were fitted to make the image, given with -bands= (160, 250,
-! 350 and 500 um by default), because the bias depends on which colors were used to find the single temperature. They are sorted,
+! 350 and 500 µm by default), because the bias depends on which colors were used to find the single temperature. They are sorted,
 ! and the longest of them is the reference waveband, the one the fit divides by.
 !
        if (nfit .lt. 2) then
          write (iotty,'(/a/)') '   HICORRECT: ERROR: at least two wavebands must be given with -bands=.'
          stop
        endif
-! The relative calibration uncertainties set the weights of the wavebands in the fit, as in hires: 20% at 160 um and shorter and
+!
+! The relative calibration uncertainties set the weights of the wavebands in the fit, as in hires: 20% at 160 µm and shorter and
 ! 10% at longer wavelengths by default, or the values of -weights=, given in the order of -bands= and sorted together with them.
+!
        if (nwgt .gt. 0) then
          if (nwgt .ne. nfit) then
            write (iotty,'(/a/)') '   HICORRECT: ERROR: -weights= must give one value for each waveband of -bands=.'
@@ -359,9 +318,9 @@
        enddo
 
        if (cverbose .ne. '-verb0') then
-         write (iotty,'(a,10(1x,f5.0))') '   wavebands fitted (um):', ( wfit(k), k=1,nfit )
+         write (iotty,'(a,10(1x,f5.0))') '   wavebands fitted (µm):', ( wfit(k), k=1,nfit )
          write (iotty,'(a,10(1x,f5.3))') '   relative calibration uncertainties:', ( relerr(k), k=1,nfit )
-         write (iotty,'(a,f6.0,a)')      '   reference waveband', waveref, ' um'
+         write (iotty,'(a,f6.0,a)')      '   reference waveband', waveref, ' µm'
        endif
 !__________________________________________________________________________________________________________________________________
 !
@@ -373,7 +332,7 @@
        do k=1,ntfit
          tgrid(k) = 0.98d0 * tfloor * ( 1.02d0 * tsurf / ( 0.98d0 * tfloor ) ) ** ( dble ( k - 1 ) / dble ( ntfit - 1 ) )
        enddo
-
+!
 ! The factor that diffuse material requires, measured on a radmc-3d model of a diffuse cloud whose projection is the cloud map of
 ! the simulated sky, without its enhancement: medians of the true over the fitted surface density, in bins of the fitted surface
 ! density (log10, cm^-2), for ncset sets of wavebands and relative calibration uncertainties. The set of the image is found among
@@ -384,36 +343,47 @@
        cirx = (/ 20.55d0, 20.65d0, 20.75d0, 20.85d0, 20.95d0, 21.05d0, 21.15d0, 21.25d0, 21.35d0, 21.45d0, 21.55d0, 21.65d0 /)
        cirw = 0.0d0
        cire = 0.0d0
-! 160-500 um, weights 20/10/10/10 percent (standard)
+
+! 160-500 µm, weights 20/10/10/10 percent (standard)
+
        ncirn(1) = 4
        cirw(1:4,1) = (/ 160.0d0, 250.0d0, 350.0d0, 500.0d0 /)
        cire(1:4,1) = (/ 2.0d0, 1.0d0, 1.0d0, 1.0d0 /)
        cirtab(:,1)  = (/ 1.049d0, 1.051d0, 1.053d0, 1.058d0, 1.066d0, 1.075d0,
      &                 1.101d0, 1.121d0, 1.146d0, 1.180d0, 1.225d0, 1.251d0 /)
-! 160-500 um, equal weights
+
+! 160-500 µm, equal weights
+
        ncirn(2) = 4
        cirw(1:4,2) = (/ 160.0d0, 250.0d0, 350.0d0, 500.0d0 /)
        cire(1:4,2) = (/ 1.0d0, 1.0d0, 1.0d0, 1.0d0 /)
        cirtab(:,2)  = (/ 1.057d0, 1.058d0, 1.060d0, 1.067d0, 1.076d0, 1.086d0,
      &                 1.120d0, 1.139d0, 1.171d0, 1.214d0, 1.267d0, 1.294d0 /)
-! 250-500 um, equal weights
+
+! 250-500 µm, equal weights
+
        ncirn(3) = 3
        cirw(1:3,3) = (/ 250.0d0, 350.0d0, 500.0d0 /)
        cire(1:3,3) = (/ 1.0d0, 1.0d0, 1.0d0 /)
        cirtab(:,3)  = (/ 1.032d0, 1.034d0, 1.035d0, 1.039d0, 1.043d0, 1.049d0,
      &                 1.065d0, 1.076d0, 1.091d0, 1.110d0, 1.140d0, 1.160d0 /)
-! 100-500 um, weights 20/20/10/10/10 percent
+
+! 100-500 µm, weights 20/20/10/10/10 percent
+
        ncirn(4) = 5
        cirw(1:5,4) = (/ 100.0d0, 160.0d0, 250.0d0, 350.0d0, 500.0d0 /)
        cire(1:5,4) = (/ 2.0d0, 2.0d0, 1.0d0, 1.0d0, 1.0d0 /)
        cirtab(:,4)  = (/ 1.088d0, 1.090d0, 1.094d0, 1.104d0, 1.120d0, 1.141d0,
      &                 1.194d0, 1.231d0, 1.282d0, 1.364d0, 1.430d0, 1.430d0 /)
-! 70-500 um, weights 20/20/20/10/10/10 percent
+
+! 70-500 µm, weights 20/20/20/10/10/10 percent
+
        ncirn(5) = 6
        cirw(1:6,5) = (/ 70.0d0, 100.0d0, 160.0d0, 250.0d0, 350.0d0, 500.0d0 /)
        cire(1:6,5) = (/ 2.0d0, 2.0d0, 2.0d0, 1.0d0, 1.0d0, 1.0d0 /)
        cirtab(:,5)  = (/ 1.126d0, 1.128d0, 1.136d0, 1.150d0, 1.175d0, 1.216d0,
      &                 1.282d0, 1.341d0, 1.421d0, 1.536d0, 1.600d0, 1.600d0 /)
+
        emin = minval ( relerr(1:nfit) )
        icset = 0
        do ic=1,ncset
@@ -428,15 +398,15 @@
          endif
        enddo
        if (icset .eq. 0) then
-         write (iotty,'(a)') '   HICORRECT2: WARNING: no calibration on the diffuse cloud for these wavebands and weights;'
-         write (iotty,'(a)') '   that of 160-500 um with the standard weights is used, and diffuse material may be corrected'
+         write (iotty,'(a)') '   HICORRECT: WARNING: no calibration on the diffuse cloud for these wavebands and weights;'
+         write (iotty,'(a)') '   that of 160-500 µm with the standard weights is used, and diffuse material may be corrected'
          write (iotty,'(a)') '   by several percent too much or too little.'
          cirf = cirtab(:,1)
        else
          cirf = cirtab(:,icset)
        endif
        if (g0 .ne. 10.0d0 .and. icset .ne. 1) then
-         write (iotty,'(a)') '   HICORRECT2: WARNING: the field factor was measured with 160-500 um and the standard weights;'
+         write (iotty,'(a)') '   HICORRECT: WARNING: the field factor was measured with 160-500 µm and the standard weights;'
          write (iotty,'(a)') '   for other wavebands or weights it is approximate.'
        endif
        xb0 = 21.6d0
@@ -445,7 +415,7 @@
        do igeo=1,2                                      !<~ 1: sphere and layer averaged; 2: sphere alone
        do i=1,ntab
          sig = smin * ( smax / smin ) ** ( dble ( i - 1 ) / dble ( ntab - 1 ) )
-
+!
 ! The effective attenuating column at each depth, averaged between a uniform sphere sampled along a diameter and a uniform
 ! plane-parallel layer sampled along its normal. In both the average is over nang directions and t0 is the optical depth of the
 ! half thickness at the wavelengths that heat the dust.
@@ -800,7 +770,7 @@
      &          ( b, wave, hplanck, kboltz, speedolight )
 !__________________________________________________________________________________________________________________________________
 !
-! The temperature whose Planck function equals b at the wavelength wave in um. The inverse of the function below.
+! The temperature whose Planck function equals b at the wavelength wave in µm. The inverse of the function below.
 !__________________________________________________________________________________________________________________________________
 !
        implicit      none
@@ -898,11 +868,11 @@
        status = 0
        call ftgiou ( unit, status )
        call ftopen ( unit, fname, 1, block, status )
-       call ftpkyd ( unit, 'HIG0'   , g0    , 6, 'radiation field of the correction, Habing units', status )
-       call ftpkys ( unit, 'HIBANDS', bands ,    'wavebands fitted to make the image, um', status )
+       call ftpkyd ( unit, 'HIG0'   , g0    , 6, 'radiation field of the correction (Habing units)', status )
+       call ftpkys ( unit, 'HIBANDS', bands ,    'wavebands fitted to make the image (µm)', status )
        call ftpkys ( unit, 'HIWGTS' , wgts  ,    'relative calibration errors of HIBANDS', status )
-       call ftpkyd ( unit, 'HITMIN' , tfloor, 8, 'T_min of the temperature relation, K', status )
-       call ftpkyd ( unit, 'HIT0'   , tsurf , 8, 'T_max of the temperature relation, K', status )
+       call ftpkyd ( unit, 'HITMIN' , tfloor, 8, 'T_min of the temperature relation (K)', status )
+       call ftpkyd ( unit, 'HIT0'   , tsurf , 8, 'T_max of the temperature relation (K)', status )
        call ftpkyd ( unit, 'HISSTAR', sstar , 7, 'Sigma_star of the temperature relation, cm^-2', status )
        call ftpkyd ( unit, 'HIGAMMA', gamma , 7, 'gamma of the temperature relation', status )
        call ftclos ( unit, status )
