@@ -94,9 +94,10 @@ respectively. If a cold core's temperature is overestimated by only $1$\,K, the 
 $24$\% and the one derived at $160${\um} is underestimated by a factor of $2.3$.
 
 The bias cannot be absorbed into the assumed dust opacity, because it is not a constant factor. It grows with the surface density
-of the surrounding cloud, because denser clouds produce larger temperature contrasts along the line of sight. The bias also grows
-with the concentration of a structure, because a more concentrated core is better shielded. Two structures with the same true
-$\Sigma$ in different environments are therefore recovered with different derived values.
+of the surrounding cloud, because denser clouds produce larger temperature contrasts along the line of sight, that is, larger
+ratios of the temperatures of the warmest and the coldest dust on it. The bias also grows with the concentration of a structure,
+because a more concentrated core is better shielded. Two structures with the same true $\Sigma$ in different environments are
+therefore recovered with different derived values.
 
 The bias has been studied with radiative transfer models of clouds, cores, and filaments \citep{Shetty+2009b, Malinen+2011,
 Juvela+Ysard2012, Juvela+2013}. These studies found that single-temperature fits underestimate the surface density toward the
@@ -516,19 +517,25 @@ too little in the median (Sects.~\ref{sec:valgrid} and \ref{sec:sim}).
 \subsection{Adaptation to different radiation fields}
 \label{sec:g0corr}
 
-The relation of Eq.~(\ref{eq:law}) and the factor $f$ were calibrated for $G_0 = 10$. Clouds are heated by very different fields.
-The diffuse material of the regions listed in Appendix~\ref{app:fieldest} requires fields from below $1$ to about $250$. A stronger
-field heats the dust at every attenuating column, and it changes the temperature contrast along the line of sight. The factor that
-a line of sight requires therefore depends on the field (Appendix~\ref{sec:field}).
+The relation of Eq.~(\ref{eq:law}) and the correction factor $f$ were calibrated for $G_0 = 10$. However, different clouds are
+heated by radiation of very different strengths. The diffuse material of the molecular clouds listed in Appendix~\ref{app:fieldest}
+requires fields from $G_0 \lesssim 1$ to ${\sim}250$. A stronger field heats the dust at every attenuating column, and it changes
+the temperature contrast along the line of sight, measured by the ratio $T_0/T_{\rm min}$. The factor that a line of sight requires
+therefore depends on the field (Appendix~\ref{sec:field}).
 
 This dependence was measured on the grid of radiation fields (Sect.~\ref{sec:modcores}), in nine fields from $G_0 = 0.98$ to $483$.
 For each field, the factor that each pixel of each model required was averaged as a function of the fitted surface density
 $\Sigma_{\rm F}$, and the ratio of this average to the same average at $G_0 = 10$ is the field factor $g(\Sigma_{\rm F}, G_0)$
-(Fig.~\ref{fig:fieldfactor} and Appendix~\ref{app:fieldR}). Above $7.1{\times}10^{22}$\,cm$^{-2}$, the grid contains too few
-pixels to determine it, and $g$ was held at its value there. Between the fields of the grid, $\log g$ is interpolated linearly in
-$\log G_0$. The field factor is close to unity in diffuse material and departs from it most above $10^{22}$\,cm$^{-2}$. It is
-largest in fields of a few tens, and in the strongest fields it falls below unity at high surface densities
-(Appendix~\ref{app:field}).
+(Fig.~\ref{fig:fieldfactor} and Appendix~\ref{app:fieldR}). Above $7.1{\times}10^{22}$\,cm$^{-2}$, the grid contains too few pixels
+to determine it, and $g$ was held at its value there. Between the fields of the grid, $\log g$ is interpolated linearly in $\log
+G_0$. The field factor is close to unity in diffuse material and departs from it most above $10^{22}$\,cm$^{-2}$. It is largest in
+fields of a few tens, and in the strongest fields it falls below unity at high surface densities (Appendix~\ref{app:field}). 
+
+The non-monotonic dependence on the field follows from how the relation of Eq.~(\ref{eq:law}) changes with it
+(Appendix~\ref{app:fieldR}). In fields up to a few tens, a stronger field warms the unattenuated dust much more than the shielded
+dust, and the larger temperature contrast along a line of sight increases the bias. In stronger fields, the shielded dust is warmed
+too, which reduces the contrast, and warmer dust makes the Planck function at the wavelengths of the fit less sensitive to the
+temperature, which reduces the bias of any contrast.
 
 \begin{figure}
 \centering
@@ -544,11 +551,11 @@ The factor applied to a cloud in the field $G_0$ is then
   f_{G_0}(\Sigma_{\rm F}) = g(\Sigma_{\rm F}, G_0) \max_{\Sigma^{\prime} \le \Sigma_{\rm F}} f(\Sigma^{\prime}),
 \label{eq:factorg0}
 \end{equation}
-where the maximum holds the factor of uniform bodies at its maximum (Sect.~\ref{sec:factor}). The field factor is not held at
-its maximum, because its decline in strong fields is measured on the radiative transfer models. For $G_0 = 10$, $g = 1$. The field is a single number for a
-cloud. It is the field that the models require to reproduce the observed temperatures, an effective field of the model dust, which
-can differ from the physical field. It is estimated from the temperatures of the diffuse material of the whole map, with the
-procedure of Appendix~\ref{app:fieldest}. It is not read from the temperature of each pixel, which is ambiguous
+where the maximum holds the factor of uniform bodies at its maximum (Sect.~\ref{sec:factor}). The field factor is not held at its
+maximum, because its decline in strong fields is measured on the radiative transfer models. For $G_0 = 10$, $g = 1$. The field is a
+single number for a cloud. It is the field that the models require to reproduce the observed temperatures, an effective field of
+the model dust, which can differ from the physical field. It is estimated from the temperatures of the diffuse material of the
+whole map, with the procedure of Appendix~\ref{app:fieldest}. It is not read from the temperature of each pixel, which is ambiguous
 (Appendix~\ref{app:tcorr}). The correction therefore still depends on the surface density alone, and the field is an input of the
 calculation, like the wavebands.
 
@@ -561,20 +568,22 @@ An image is corrected by multiplying it by the image of the correction factors e
 \label{eq:correction}
 \end{equation}
 where $f_{G_0}$ of Eq.~(\ref{eq:factorg0}) is evaluated pixel by pixel. Without an estimate of the field, $G_0 = 10$ is used.
-Nothing in Eqs.~(\ref{eq:seff}) to (\ref{eq:factor}) refers to the multi-resolution reconstruction. The factor depends only on the
-surface density that a single modified blackbody fit returns at the resolution of the longest waveband. The base image of
-\emph{hires} is exactly this fit: a fit to the same wavebands with the same weights reproduced it to better than $1$\% for every
-model of the grid. The correction therefore applies to a conventional surface density map, which is simply multiplied by $f$. 
+%%Nothing in Eqs.~(\ref{eq:seff}) to (\ref{eq:factor}) refers to the multi-resolution reconstruction. 
+The factor depends only on the
+surface density that a single modified blackbody fit returns at the poorest resolution of the longest waveband. 
+%The base image of
+%\emph{hires} is exactly this fit: a fit to the same wavebands with the same weights reproduced it to better than $1$\% for every
+%model of the grid. The correction therefore applies to a conventional surface density map, which is simply multiplied by $f$. 
 
 The \emph{hires} images at higher resolutions $O$ are also surface density images, and the factor applies to them. Evaluated on the
 image at $13.5{\arcsec}$, it gives sharper images, core masses $5$\% higher than evaluated at $36.3{\arcsec}$ and closer to the
 truth, and a smaller underestimation at the centers (Table~\ref{tab:valgrid}). On the cloud of the simulated sky, the two agree to
 $0.5$\%. The factor was therefore evaluated on the image that is corrected. What \emph{hires} adds, and no correction can replace,
 is the information on scales finer than the beam of the longest waveband. The intermediate images of \emph{hires} cannot be
-corrected before the reconstruction, because they are fitted to fewer wavebands. The correction must be applied only once. The
-correction must be applied only once. It is implemented in Fortran and distributed as part of \emph{getsf} on its home
-page\footnote{\url{http://irfu.cea.fr/Pisp/alexander.menshchikov/}}, and it marks its output and refuses an input that has already
-been corrected.
+corrected before the reconstruction, because they are fitted to fewer wavebands. The correction must be applied only once. It is
+implemented in Fortran and distributed as part of \emph{getsf} on its home
+page\footnote{\url{http://irfu.cea.fr/Pisp/alexander.menshchikov/}}.
+%%, and it marks its output and refuses an input that has already been corrected.
 
 \subsection{Requirements and robustness of the correction}
 \label{sec:needs}
@@ -1277,6 +1286,54 @@ With the field factor, the error hardly depends on the field. In every field and
 $G_0 = 10$, which is the error of the calibration itself, for example the underestimation of $16$\% at the centers of
 concentrated cores in the densest range. When a field is left out, its errors change by up to $6$\%, which measures the error of
 interpolating between the fields of the grid.
+
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+%%%%% NUMBERS (2026-10-27): Table tab:lawG0 from python/paper_numbers/refit.py on hires/attenuation_law_G0=*.txt (the tables of
+%%%%% fit_attenuation_law.py, refitted with wide limits); the decomposition from analytic_g.py and scale_test.py with hicorrect2.py.
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+The shape of $g$ follows from how the relation of Eq.~(\ref{eq:law}) changes with the field. The relation was refitted on the
+models of each field (Table~\ref{tab:lawG0}). For $G_0 = 10$, its constants differ from those of Eq.~(\ref{eq:law}), which was
+fitted to the main grid and the filaments, and only their changes with the field are used here. With increasing $G_0$, $T_0$ rises
+steadily, whereas $T_{\rm min}$ stays near $6$--$7$\,K up to $G_0 \approx 20$ and then rises, as the shielded dust is heated by the
+infrared emission of the warmer dust around it. The contrast $T_0/T_{\rm min}$ therefore increases from $2.8$ to about $4$ near
+$G_0 \approx 50$--$100$ and then decreases slightly. The analytic calculation of Sect.~\ref{sec:factor}, with the relation of each
+field, reproduces the main features of the measured $g$: its rise in fields of a few tens, largest near $10^{22}$\,cm$^{-2}$, and
+its fall below unity at high surface densities in the strongest fields. The amplitudes differ, because uniform bodies lack the
+concentration of the models.
+
+Replacing the constants of the relation for $G_0 = 10$ one at a time by those of a stronger field separates the effects. A higher
+$T_0$ increases the bias, and so does the steeper decline of $T(\Sigma_{\rm A})$, which concentrates the change from warm to cold
+material near $10^{22}$\,cm$^{-2}$. A higher $T_{\rm min}$ reduces the contrast in the densest material, and the bias with it.
+Scaling $T_{\rm min}$ and $T_0$ by the same factor, which keeps the contrast, also reduces the bias: a relation $30$\% warmer lowers
+the factor by $28$\% at $4{\times}10^{22}$\,cm$^{-2}$, because the Planck function at $160$--$500${\um} becomes less sensitive to
+the temperature (Eq.~\ref{eq:sensitivity}). The first two effects dominate in fields up to a few tens, and the last two in the
+strongest fields.
+
+\begin{table}[ht!]
+\caption{The relation of Eq.~(\ref{eq:law}) refitted on the models of each field of the grid: the floor temperature, the
+temperature of unattenuated dust, their ratio, and the constants of the decline.}
+\label{tab:lawG0}
+\centering
+\begin{tabular}{rccccc}
+\hline\hline
+\noalign{\smallskip}
+$G_0$ & $T_{\rm min}$ (K) & $T_0$ (K) & $T_0/T_{\rm min}$ & $\Sigma_\star$ ($10^{21}$\,cm$^{-2}$) & $\gamma$ \\
+\noalign{\smallskip}
+\hline
+\noalign{\smallskip}
+0.98\phantom{0}  & 6.14  & 17.2 & 2.80 & 3.27 & 1.25 \\
+2.12\phantom{0}  & 6.07  & 18.3 & 3.02 & 2.38 & 1.10 \\
+4.61\phantom{0}  & 6.09  & 20.2 & 3.31 & 1.79 & 1.03 \\
+10.0\phantom{0}  & 6.31  & 22.7 & 3.59 & 1.64 & 1.11 \\
+21.7\phantom{0}  & 6.73  & 25.7 & 3.81 & 1.85 & 1.35 \\
+47.1\phantom{0}  & 7.36  & 29.1 & 3.95 & 2.40 & 1.75 \\
+102.4\phantom{0} & 8.27  & 33.0 & 3.99 & 3.23 & 2.31 \\
+222.2\phantom{0} & 9.50  & 37.5 & 3.95 & 3.98 & 2.83 \\
+482.5\phantom{0} & 11.07 & 42.9 & 3.87 & 4.34 & 3.14 \\
+\noalign{\smallskip}
+\hline
+\end{tabular}
+\end{table}
 
 \subsection{Estimating the radiation fields of clouds}
 \label{app:fieldest}
