@@ -521,7 +521,8 @@ too little in the median (Sects.~\ref{sec:valgrid} and \ref{sec:sim}).
 The relation of Eq.~(\ref{eq:law}) and the correction factor $f$ were calibrated for $G_0 = 10$. However, different clouds are
 heated by radiation of very different strengths. The diffuse material of the molecular clouds listed in Appendix~\ref{app:fieldest}
 requires fields from $G_0 \lesssim 1$ to ${\sim}250$. A stronger field heats the dust at every attenuating column, and it changes
-the temperature contrast $T_{\rm max}/T_{\rm min}$ in the column. The factor that a line of sight requires therefore depends on the
+the temperature contrast along the line of sight, of which $T_{\rm max}/T_{\rm min}$ is the largest value.
+The factor that a line of sight requires therefore depends on the
 field (Appendix~\ref{sec:field}).
 
 This dependence was measured on the model grid of embedded cores (Sect.~\ref{sec:modcores}) for nine radiation fields from $G_0 =
@@ -564,28 +565,26 @@ is an input of the method, like the wavebands.
 \subsection{Correcting surface density images}
 \label{sec:apply}
 
-An image is corrected by multiplying it by the image of the correction factors evaluated on the image itself,
+An observed surface density image is corrected by multiplying it by the image of the correction factors computed from the image
+itself,
 \begin{equation}
-  \Dimc = \mathcal{F}\,\Dim, \quad \mathcal{F} \equiv f_{G_0\!}\left(\Dim\right),
+\Dimc = \mathcal{F}\,\Dim\, \quad \mathcal{F} \equiv f_{G_0\!}\left(\Dim\right),
 \label{eq:correction}
 \end{equation}
-where $f_{G_0}$ of Eq.~(\ref{eq:factorg0}) is evaluated pixel by pixel. Without an estimate of the field, $G_0 = 10$ is used.
-%%Nothing in Eqs.~(\ref{eq:seff}) to (\ref{eq:factor}) refers to the multi-resolution reconstruction. 
-The factor depends only on the
-surface density that a single modified blackbody fit returns at the poorest resolution of the longest waveband. 
-%The base image of
-%\emph{hires} is exactly this fit: a fit to the same wavebands with the same weights reproduced it to better than $1$\% for every
-%model of the grid. The correction therefore applies to a conventional surface density map, which is simply multiplied by $f$. 
+where $f_{G_0\!}$ of Eq.~(\ref{eq:factorg0}) is evaluated pixel by pixel. By design, the correction factor is a function of only two
+quantities, the surface density of a pixel and the radiation field strength $G_0$. It was calibrated for the surface density that a
+single modified blackbody fit returns at the resolution of the longest waveband. When no estimate of $G_0$ is supplied, the default
+$G_0 = 10$ is used.
 
-The \emph{hires} images at higher resolutions $O$ are also surface density images, and the factor applies to them. Evaluated on the
-image at $13.5{\arcsec}$, it gives sharper images, core masses $5$\% higher than evaluated at $36.3{\arcsec}$ and closer to the
-truth, and a smaller underestimation at the centers (Table~\ref{tab:valgrid}). On the cloud of the simulated sky, the two agree to
-$0.5$\%. The factor was therefore evaluated on the image that is corrected. What \emph{hires} adds, and no correction can replace,
-is the information on scales finer than the beam of the longest waveband. The intermediate images of \emph{hires} cannot be
-corrected before the reconstruction, because they are fitted to fewer wavebands. The correction must be applied only once. It is
-implemented in Fortran and distributed as part of \emph{getsf} on its home
-page\footnote{\url{http://irfu.cea.fr/Pisp/alexander.menshchikov/}}.
-%%, and it marks its output and refuses an input that has already been corrected.
+The correction method also applies to higher-resolution surface density images (with $O<36.3${\arcsec}). Evaluated on the much
+sharper \emph{hires} images at $13.5{\arcsec}$, the correction factor $f_{G_0\!}(\Dim)$ gives core masses $5$\% higher, and closer
+to the truth, than when it is evaluated at $36.3${\arcsec} and a smaller underestimation at the core centers
+(Table~\ref{tab:valgrid}). On the cloud of the simulated sky, the two agree to $0.5$\%. The factor is therefore evaluated on the
+image that is corrected. What \emph{hires} adds, and no correction can replace, is the information on scales finer than the beam of
+the longest waveband. Only the final images produced by \emph{hires} can be corrected, not the intermediate ones, because the
+latter are fitted to fewer wavebands. The correction method is implemented as a \emph{Fortran} utility \emph{hicorrect} of the
+source and filament extraction method \emph{getsf} and is available on its
+webpage\footnote{\url{http://irfu.cea.fr/Pisp/alexander.menshchikov/}}.
 
 \subsection{Requirements and robustness of the correction}
 \label{sec:needs}
@@ -897,7 +896,8 @@ radius ($-15$ to $+8$\%). A correction that depends on the surface density alone
 the fitted temperature are not worth their complexity, because a warm pixel may need either more or less correction.
 
 The correction was calibrated for $G_0 = 10$. Models computed for nine fields from $G_0 = 1$ to $483$ show that, without further
-adjustment, it is too large by up to $27$\% in the weakest fields and too small by up to $20$\% in fields up to $G_0 \approx 50$. A
+adjustment, it is too large by up to $27$\% in the weakest fields and too small by up to $20$\%
+in fields of $G_0 \approx 20$--$100$. A
 field factor measured on these models, a function of the surface density and the field, brings these errors to within $4$\% of
 those in the calibration field, and to within $6$\% for fields left out of its construction. The field of a cloud, estimated from
 the temperatures of its diffuse material, ranges from below $1$ (Taurus) to about $250$ (Cygnus~X) in nine regions. The other main
@@ -1226,7 +1226,7 @@ attenuating column, and this changes the underestimation of $\Sigma$ by the fit.
 on the grid of radiation fields of Appendix~\ref{sec:grid}, comparing for every pixel the factor that restores its true surface
 density with the factor that the correction applies. The first column of Table~\ref{tab:fieldR} gives the relative error of the
 corrected surface density without the field factor. The error changes sign twice: the correction is too large in the weakest
-fields, too small in fields of a few tens, and again too large at the highest surface densities in the strongest fields. The
+fields, too small for $G_0 \approx 20$--$100$, and again too large at the highest surface densities in the strongest fields. The
 underestimation of $\Sigma$ by a single-temperature fit depends on how the temperature varies along the line of sight, and a
 stronger field changes this variation differently at different depths. No simple rescaling of Eq.~(\ref{eq:law}) with the field can
 therefore reproduce the errors.
@@ -1263,7 +1263,7 @@ the median over the pixels in the range. The rows give the correction without th
 fields, and with $g$ built without the field tested (left out). In all rows, the factor for $G_0 = 10$ was held at its maximum and then multiplied by $g$.}
 \label{tab:fieldR}
 \centering
-\setlength{\tabcolsep}{4pt}
+\setlength{\tabcolsep}{3.5pt}
 \begin{tabular}{rccc}
 \hline\hline
 \noalign{\smallskip}
@@ -1300,22 +1300,23 @@ fitted to the main grid and the filaments, and only their changes with the field
 max}$ rises steadily, whereas $T_{\rm min}$ stays near $6$--$7$\,K up to $G_0 \approx 20$ and then rises, as the shielded dust is
 heated by the infrared emission of the warmer dust around it. The contrast $T_{\rm max}/T_{\rm min}$ therefore increases from $2.8$
 to about $4$ near $G_0 \approx 50$--$100$ and then decreases slightly. The analytic calculation of Sect.~\ref{sec:factor}, with the
-relation of each field, reproduces the main features of the measured $g$: its rise in fields of a few tens, largest near
+relation of each field, reproduces the main features of the measured $g$: its rise toward $G_0 \approx 50$, largest near
 $10^{22}$\,cm$^{-2}$, and its fall below unity at high surface densities in the strongest fields. The amplitudes differ, because
 uniform bodies lack the concentration of the models.
-
-A relation with constants that depend on $G_0$ would be a natural alternative to the field factor. However, the factor computed
-from the relation of each field with uniform bodies (Sect.~\ref{sec:factor}) reproduces the measured $g$ only qualitatively and
-differs from it by up to $25$\%. The measured ratio $g$ transfers only the change with the field and keeps the calibration at $G_0
-= 10$.
 
 Replacing the constants of the relation for $G_0 = 10$ one at a time by those of a stronger field separates the effects. A higher
 $T_{\rm max}$ increases the bias, and so does the steeper decline of $T(\Sigma_{\rm A})$, which concentrates the change from warm
 to cold material near $10^{22}$\,cm$^{-2}$. A higher $T_{\rm min}$ reduces the contrast in the densest material, and the bias with
 it. Scaling $T_{\rm min}$ and $T_{\rm max}$ by the same factor, which keeps the contrast, also reduces the bias: a relation $30$\%
 warmer lowers the factor by $28$\% at $4{\times}10^{22}$\,cm$^{-2}$, because the Planck function at $160$--$500${\um} becomes less
-sensitive to the temperature (Eq.~\ref{eq:sensitivity}). The first two effects dominate in fields up to a few tens, and the last
+sensitive to the temperature (Eq.~\ref{eq:sensitivity}). The first two effects dominate in fields up to
+$G_0 \approx 50$, and the last
 two in the strongest fields.
+
+A relation with constants that depend on $G_0$ would be a natural alternative to the field factor. However, the factor computed
+from the relation of each field with uniform bodies (Sect.~\ref{sec:factor}) reproduces the measured $g$ only qualitatively and
+differs from it by up to $25$\%. The measured ratio $g$ transfers only the change with the field and keeps the calibration at $G_0
+= 10$.
 
 \begin{table}[ht!]
 \caption{The relation of Eq.~(\ref{eq:law}) refitted on the models of each radiation field strength $G_0$: the floor temperature
@@ -1553,7 +1554,7 @@ footprint and background must be added (Sect.~\ref{sec:valgrid}).
 %%%%% NUMBERS (2026-10-20): from Table tab:fieldR (see the comment there).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 The factor $f$ was calibrated for $G_0 = 10$. In the nine fields of the grid, from $G_0 = 0.98$ to $483$, the correction without
-the field factor $g$ errs by up to $+26$\% in weak fields and by up to $-23$\% in fields of a few tens (Appendix~\ref{app:field}).
+the field factor $g$ errs by up to $+26$\% in weak fields and by up to $-23$\% for $G_0 \approx 20$--$100$ (Appendix~\ref{app:field}).
 With $g$, the errors are between $-16$ and $+2$\%, within $4$\% of those at $G_0 = 10$. With $g$ built without the field being
 tested, they are within $6$\% of those at $G_0 = 10$ (Table~\ref{tab:fieldR}).
 
