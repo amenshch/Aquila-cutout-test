@@ -57,7 +57,7 @@ attenuation cannot describe.
 Usage:
 
     python3 hicorrect2.py <image> [-temp=<temperature image>] [-bands=<list>]
-                          [-g0=<field>]
+                          [-weights=<list>] [-g0=<field>]
 
 <image> is the surface density image to be corrected. The file names of the
 images may be given without the extension '.fits', which is then added. The corrected image is
@@ -74,6 +74,17 @@ to make the image, separated by commas, for example -bands=250,350,500; the
 default is 160,250,350,500. The relation is built for these wavebands, and the
 longest of them is the reference waveband.
 
+-weights=<list> gives the relative calibration uncertainties of the same
+wavebands, in the same order, which set their weights in the fit that made the
+image, for example -weights=0.1,0.1,0.1 for equal weights. Only their ratios
+matter. The default is 0.2 at 160 um and shorter and 0.1 at longer wavelengths,
+the weights of hires. The analytic relation is built for any wavebands and
+weights. The calibration on a diffuse cloud is provided for five sets: 160-500
+um with the default or equal weights, 250-500 um with equal weights, 100-500 and
+70-500 um with the default weights. For other sets, the calibration of the
+standard set is used, and a warning is printed. The field factor of -g0= was
+measured with the standard set only; for other sets it is approximate.
+
 The outputs are written to the current directory, whatever directory the inputs
 come from. Their names are the same as those of the Fortran version.
 
@@ -88,8 +99,9 @@ image it has already corrected, it would raise the values a second time. Every
 output carries CREATOR = 'HICORRECT' and the keyword HICORR, and any input that
 carries either of them is refused, including the outputs of the Fortran version.
 The outputs also record the radiation field of the correction (HIG0), the
-wavebands fitted (HIBANDS), and the four constants of the temperature relation
-(HITMIN, HIT0, HISSTAR, HIGAMMA), as the Fortran version does.
+wavebands fitted (HIBANDS) with their relative calibration uncertainties
+(HIWGTS), and the four constants of the temperature relation (HITMIN, HIT0,
+HISSTAR, HIGAMMA), as the Fortran version does.
 
 Surface densities in H2 cm^-2, intensities in MJy/sr, temperatures in K.
 """
@@ -128,12 +140,30 @@ C_LIGHT = 2.99792458e10
 NDEPTH = 512         # layers used for the integral over depth
 
 # The factor that diffuse material requires, measured on a RADMC-3D model of a diffuse cloud: a 3D cube of 7.2 x 7.2 x 2 pc in cells
-# of 12 arcsec whose projection is the cloud map of the simulated sky (make_cirrus3d.py, compare_cirrus3d.py). Each column of the
-# cube was fitted with one modified blackbody in the bands 160 to 500 um; these are the medians of the true over the fitted surface
-# density in bins of the fitted surface density (log10, cm^-2). The surface layers of the cloud are heated by unattenuated
-# ultraviolet light and are warmer than the relation T(Sigma_a) predicts, so even thin columns need about 5 percent.
+# of 12 arcsec whose projection is the cloud map of the simulated sky, without its enhancement (make_cirrus3d.py). Each column
+# of the cube was fitted with one modified blackbody, and these are the medians of the true over the fitted surface density in
+# bins of the fitted surface density (log10, cm^-2), for several sets of wavebands and relative weights (cloud_tables.py). The
+# surface layers of the cloud are heated by unattenuated ultraviolet light and are warmer than the relation T(Sigma_a) predicts,
+# so even thin columns need about 5 percent. A bin with too few pixels repeats the one below it. The keys are the wavebands (um) and the relative calibration uncertainties.
 CIRRUS_LOGX = np.array([20.55, 20.65, 20.75, 20.85, 20.95, 21.05, 21.15, 21.25, 21.35, 21.45, 21.55, 21.65])
-CIRRUS_F = np.array([1.049, 1.051, 1.053, 1.058, 1.066, 1.075, 1.101, 1.121, 1.146, 1.180, 1.225, 1.251])
+CLOUD_TABLES = {
+    # 160-500 um, weights 20/10/10/10 percent (standard)
+    ((160.0, 250.0, 350.0, 500.0), (2.0, 1.0, 1.0, 1.0)):
+        np.array([1.049, 1.051, 1.053, 1.058, 1.066, 1.075, 1.101, 1.121, 1.146, 1.180, 1.225, 1.251]),
+    # 160-500 um, equal weights
+    ((160.0, 250.0, 350.0, 500.0), (1.0, 1.0, 1.0, 1.0)):
+        np.array([1.057, 1.058, 1.060, 1.067, 1.076, 1.086, 1.120, 1.139, 1.171, 1.214, 1.267, 1.294]),
+    # 250-500 um, equal weights
+    ((250.0, 350.0, 500.0), (1.0, 1.0, 1.0)):
+        np.array([1.032, 1.034, 1.035, 1.039, 1.043, 1.049, 1.065, 1.076, 1.091, 1.110, 1.140, 1.160]),
+    # 100-500 um, weights 20/20/10/10/10 percent
+    ((100.0, 160.0, 250.0, 350.0, 500.0), (2.0, 2.0, 1.0, 1.0, 1.0)):
+        np.array([1.088, 1.090, 1.094, 1.104, 1.120, 1.141, 1.194, 1.231, 1.282, 1.364, 1.430, 1.430]),
+    # 70-500 um, weights 20/20/20/10/10/10 percent
+    ((70.0, 100.0, 160.0, 250.0, 350.0, 500.0), (2.0, 2.0, 2.0, 1.0, 1.0, 1.0)):
+        np.array([1.126, 1.128, 1.136, 1.150, 1.175, 1.216, 1.282, 1.341, 1.421, 1.536, 1.600, 1.600]),
+}
+CIRRUS_F = CLOUD_TABLES[((160.0, 250.0, 350.0, 500.0), (2.0, 1.0, 1.0, 1.0))]     # the table in use, set in main()
 XBLEND = (21.6, 22.0)  # log10 of the fitted surface density over which the cloud calibration gives way to the analytic one
 NTABLE = 80          # points of the tabulated relation
 NTFIT = 2600         # points of the temperature grid of the fit
@@ -142,38 +172,39 @@ CAL_ERR = {70.0: 0.20, 100.0: 0.20, 160.0: 0.20, 250.0: 0.10, 350.0: 0.10, 500.0
 SMIN, SMAX = 1.0e20, 1.0e24      # range of the tabulated relation, cm^-2
 
 # The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 (Habing units), measured on the
-# grid of radiation fields (harvest_calib3_G0=*.txt.hist.npz): the pixel mean of ln f in bins of 0.05 dex of the fitted surface
-# density, minus the same at G_0 = 10, smoothed by a local linear fit with Gaussian weights 0.1 dex wide times the square root of
-# the number of pixels (make_field_factor.py). Above 10^22.3 cm^-2 the grid has too few pixels, and the field factor is held at its
-# value at 10^22.25 cm^-2. Rows are log10 of the fitted surface density, from GX0 in steps of GDX; columns are the fields GFIELD.
-# It is interpolated linearly in log G_0 and held constant outside the table.
+# grid of radiation fields (harvest_calib3_G0=*.txt.hist.npz). The pixels are binned in the true surface density, 0.05 dex wide,
+# where the populations of all fields coincide; each bin gives the mean log10 of the fitted surface density and the mean ln f, and
+# ln f is smoothed against the former by a local linear fit with Gaussian weights 0.1 dex wide times the square root of the number
+# of pixels; the same at G_0 = 10 is subtracted (make_field_factor.py). Above 10^22.85 cm^-2 the grid has too few pixels, and the
+# field factor is held at its value there. Rows are log10 of the fitted surface density, from GX0 in steps of GDX; columns are the
+# fields GFIELD. It is interpolated linearly in log G_0 and held constant outside the table.
 GFIELD = np.array([0.98, 2.12, 4.61, 10.0, 21.7, 47.1, 102.4, 222.2, 482.5])
 GX0, GDX = 20.95, 0.1
 GTAB = np.array([
-    [0.996, 0.994, 0.998, 1.000, 1.000, 0.999, 0.997, 0.987, 0.995],  # 20.95
-    [0.987, 0.991, 0.995, 1.000, 1.000, 0.999, 0.995, 0.988, 0.989],  # 21.05
-    [0.979, 0.988, 0.991, 1.000, 1.001, 1.000, 0.995, 0.988, 0.985],  # 21.15
-    [0.971, 0.981, 0.988, 1.000, 1.003, 1.003, 0.997, 0.988, 0.983],  # 21.25
-    [0.960, 0.971, 0.983, 1.000, 1.009, 1.011, 1.002, 0.991, 0.982],  # 21.35
-    [0.945, 0.959, 0.976, 1.000, 1.016, 1.023, 1.013, 0.997, 0.982],  # 21.45
-    [0.927, 0.944, 0.966, 1.000, 1.028, 1.042, 1.034, 1.010, 0.986],  # 21.55
-    [0.907, 0.928, 0.959, 1.000, 1.046, 1.072, 1.068, 1.036, 0.999],  # 21.65
-    [0.885, 0.910, 0.948, 1.000, 1.070, 1.117, 1.117, 1.072, 1.013],  # 21.75
-    [0.856, 0.886, 0.931, 1.000, 1.094, 1.165, 1.168, 1.103, 1.018],  # 21.85
-    [0.828, 0.861, 0.916, 1.000, 1.111, 1.204, 1.205, 1.117, 1.013],  # 21.95
-    [0.799, 0.834, 0.904, 1.000, 1.123, 1.227, 1.212, 1.103, 0.987],  # 22.05
-    [0.774, 0.811, 0.896, 1.000, 1.137, 1.240, 1.204, 1.076, 0.952],  # 22.15
-    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.25
-    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.35
-    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.45
-    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.55
-    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.65
-    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.75
-    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.85
-    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 22.95
-    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 23.05
-    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 23.15
-    [0.741, 0.780, 0.869, 1.000, 1.144, 1.219, 1.172, 1.044, 0.887],  # 23.25
+    [0.994, 0.995, 0.998, 1.000, 1.000, 0.999, 0.996, 0.989, 0.995],  # 20.95
+    [0.987, 0.992, 0.995, 1.000, 1.000, 0.999, 0.995, 0.989, 0.990],  # 21.05
+    [0.979, 0.988, 0.991, 1.000, 1.001, 1.000, 0.995, 0.988, 0.986],  # 21.15
+    [0.971, 0.981, 0.987, 1.000, 1.004, 1.004, 0.996, 0.989, 0.984],  # 21.25
+    [0.958, 0.970, 0.981, 1.000, 1.009, 1.012, 1.001, 0.991, 0.981],  # 21.35
+    [0.942, 0.957, 0.970, 1.000, 1.014, 1.022, 1.012, 0.995, 0.978],  # 21.45
+    [0.924, 0.943, 0.962, 1.000, 1.028, 1.044, 1.035, 1.010, 0.984],  # 21.55
+    [0.905, 0.928, 0.955, 1.000, 1.051, 1.080, 1.074, 1.040, 0.999],  # 21.65
+    [0.878, 0.906, 0.943, 1.000, 1.082, 1.130, 1.130, 1.082, 1.014],  # 21.75
+    [0.845, 0.877, 0.924, 1.000, 1.103, 1.175, 1.177, 1.113, 1.015],  # 21.85
+    [0.815, 0.850, 0.907, 1.000, 1.121, 1.215, 1.209, 1.120, 1.004],  # 21.95
+    [0.793, 0.833, 0.899, 1.000, 1.134, 1.242, 1.223, 1.110, 0.973],  # 22.05
+    [0.785, 0.824, 0.896, 1.000, 1.140, 1.240, 1.206, 1.089, 0.943],  # 22.15
+    [0.777, 0.817, 0.891, 1.000, 1.136, 1.223, 1.177, 1.052, 0.907],  # 22.25
+    [0.768, 0.812, 0.888, 1.000, 1.126, 1.205, 1.147, 1.018, 0.869],  # 22.35
+    [0.763, 0.810, 0.882, 1.000, 1.101, 1.181, 1.114, 0.977, 0.835],  # 22.45
+    [0.762, 0.811, 0.880, 1.000, 1.080, 1.161, 1.083, 0.939, 0.798],  # 22.55
+    [0.764, 0.810, 0.882, 1.000, 1.064, 1.132, 1.050, 0.908, 0.768],  # 22.65
+    [0.770, 0.808, 0.889, 1.000, 1.075, 1.111, 1.024, 0.884, 0.746],  # 22.75
+    [0.769, 0.807, 0.891, 1.000, 1.085, 1.098, 1.005, 0.863, 0.723],  # 22.85
+    [0.769, 0.807, 0.891, 1.000, 1.085, 1.098, 1.005, 0.863, 0.723],  # 22.95
+    [0.769, 0.807, 0.891, 1.000, 1.085, 1.098, 1.005, 0.863, 0.723],  # 23.05
+    [0.769, 0.807, 0.891, 1.000, 1.085, 1.098, 1.005, 0.863, 0.723],  # 23.15
+    [0.769, 0.807, 0.891, 1.000, 1.085, 1.098, 1.005, 0.863, 0.723],  # 23.25
 ])
 
 ### The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 (Habing units), measured on the
@@ -277,6 +308,15 @@ def parse_bands(text):
     return sorted(float(w) for w in text.split(",") if w.strip())
 
 
+def cloud_key(waves, errs):
+    """The key of CLOUD_TABLES for the wavebands and their relative calibration uncertainties (only the ratios matter)."""
+    e = np.array(errs, float) / min(errs)
+    return tuple(float(w) for w in waves), tuple(float(np.round(v, 3)) for v in e)
+
+
+STANDARD_KEY = ((160.0, 250.0, 350.0, 500.0), (2.0, 1.0, 1.0, 1.0))
+
+
 def build_relation(waves):
     """Fitted surface density and the factor that restores the true one.
 
@@ -347,8 +387,9 @@ def stamp(header, g0, waves):
     header["HICORR"] = (GAMMA, "index of the temperature relation applied")
     header["HIG0"] = (g0, "radiation field of the correction, Habing units")
     header["HIBANDS"] = (",".join("%.0f" % w for w in waves), "wavebands fitted to make the image, um")
+    header["HIWGTS"] = (",".join("%g" % CAL_ERR.get(w, 0.20) for w in waves), "relative calibration errors of HIBANDS")
     header["HITMIN"] = (TFLOOR, "T_min of the temperature relation, K")
-    header["HIT0"] = (TSURF, "T_0 of the temperature relation, K")
+    header["HIT0"] = (TSURF, "T_max of the temperature relation, K")
     header["HISSTAR"] = (SSTAR, "Sigma_star of the temperature relation, cm^-2")
     header["HIGAMMA"] = (GAMMA, "gamma of the temperature relation")
     return header
@@ -387,6 +428,7 @@ def main():
     g0 = [float(a[4:]) for a in sys.argv[1:] if a.startswith("-g0=")]
     g0 = g0[0] if g0 else 10.0
     bands = [a[7:] for a in sys.argv[1:] if a.startswith("-bands=")]
+    weights = [a[9:] for a in sys.argv[1:] if a.startswith("-weights=")]
     if len(args) != 1:
         if len(args) > 1:
             print(" only one surface density image can be corrected in one run;"
@@ -400,22 +442,50 @@ def main():
     if ftemp is not None:
         ftemp = fits_name(ftemp)
     try:
-        waves = parse_bands(bands[0]) if bands else [160.0, 250.0, 350.0, 500.0]
+        given = [float(w) for w in bands[0].split(",") if w.strip()] if bands else [160.0, 250.0, 350.0, 500.0]
     except ValueError:
         print(" cannot read the wavelengths from -bands=%s" % bands[0])
         return
-    if len(waves) < 2:
+    if len(given) < 2:
         print(" at least two wavebands must be given with -bands=")
         return
+    if weights:
+        try:
+            errs = [float(e) for e in weights[0].split(",") if e.strip()]
+        except ValueError:
+            print(" cannot read the calibration uncertainties from -weights=%s" % weights[0])
+            return
+        if len(errs) != len(given) or min(errs) <= 0.0:
+            print(" -weights= must give one positive value for each waveband of -bands=, in the same order")
+            return
+    else:
+        errs = [0.20 if w <= 160.5 else 0.10 for w in given]
+    order = np.argsort(given)
+    waves = [given[i] for i in order]
+    errs = [errs[i] for i in order]
+    global CIRRUS_F, CAL_ERR
+    CAL_ERR = dict(zip(waves, errs))
+    key = cloud_key(waves, errs)
+    if key in CLOUD_TABLES:
+        CIRRUS_F = CLOUD_TABLES[key]
+    else:
+        CIRRUS_F = CLOUD_TABLES[STANDARD_KEY]
+        print(" WARNING: no calibration on the diffuse cloud for these wavebands and weights; that of 160-500 um with the"
+              " standard weights is used, and diffuse material may be corrected by several percent too much or too little")
+    if g0 != 10.0 and key != STANDARD_KEY:
+        print(" WARNING: the field factor was measured with 160-500 um and the standard weights; for other wavebands or"
+              " weights it is approximate")
     fitted, factor = build_relation(waves)
+    # The relation of uniform bodies declines above about 3e22 cm^-2, where such a body is nearly isothermal at the floor
+    # temperature; the radiative transfer models of concentrated cores do not, so the factor is held at its maximum there. The hold
+    # applies to the factor of G_0 = 10 only: the field factor, measured on the radiative transfer models, declines in strong
+    # fields, and that decline is real.
+    factor = np.maximum.accumulate(factor)
     if g0 != 10.0:
         if g0 < GFIELD[0] or g0 > GFIELD[-1]:
             print(" WARNING: G_0 = %g lies outside the grid of radiation fields (%g to %g);"
                   " the field factor of the nearest field is used" % (g0, GFIELD[0], GFIELD[-1]))
         factor = factor * field_factor(np.log10(fitted), g0)
-    # The relation of uniform bodies declines above about 3e22 cm^-2, where such a body is nearly isothermal at the floor
-    # temperature; the radiative transfer models of concentrated cores do not, so the factor is held at its maximum there.
-    factor = np.maximum.accumulate(factor)
 
     hdu = fits.open(fbase)[0]
     if "HICORR" in hdu.header or str(hdu.header.get("CREATOR", "")).startswith("HICORRECT"):
@@ -431,8 +501,8 @@ def main():
 
     delta = np.where(good, (f - 1.0) * base, 0.0)
 
-    print(" wavebands used: %s micron; reference %.0f micron"
-          % (", ".join("%.0f" % w for w in waves), waves[-1]))
+    print(" wavebands used: %s micron; reference %.0f micron; relative calibration uncertainties %s"
+          % (", ".join("%.0f" % w for w in waves), waves[-1], ", ".join("%g" % CAL_ERR[w] for w in waves)))
     print(" T(Sigma_a) = %.4f + (%.4f - %.4f) (1 + Sigma_a / %.4e)^-%.5f K"
           % (TFLOOR, TSURF, TFLOOR, SSTAR, GAMMA))
     print(" effective attenuating column from an angular average over %d"
