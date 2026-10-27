@@ -53,10 +53,10 @@
 !
 ! The correction must be applied once. It is not idempotent: applied to an image it has already corrected it would raise the values
 ! again. Every output image is stamped with CREATOR = 'HICORRECT', and the program refuses any input that carries it. The output
-! images also record the radiation field of the correction (HIG0), the wavebands fitted (HIBANDS), and the four constants of the
-! temperature relation (HITMIN, HIT0, HISSTAR, HIGAMMA).
+! images also record the radiation field of the correction (HIG0), the wavebands fitted (HIBANDS) with their relative calibration
+! uncertainties (HIWGTS), and the four constants of the temperature relation (HITMIN, HIT0, HISSTAR, HIGAMMA).
 !
-! usage:  hicorrect2 <image> [-temp=<file>] [-bands=<list>] [-g0=<field>] [-verb{0|1|2}]
+! usage:  hicorrect2 <image> [-temp=<file>] [-bands=<list>] [-weights=<errs>] [-g0=<field>] [-verb{0|1|2}]
 !
 !         <image>      the surface density image to be corrected; the factor is evaluated on it and it is multiplied by it
 !                      (the file names of <image> and <file> may be given without the extension '.fits', which is then added)
@@ -64,6 +64,13 @@
 !                      the same pixels as <image>
 !         <list>       the wavelengths in um of the wavebands fitted to make <image>, separated by commas, for example
 !                      -bands=250,350,500; 160,250,350,500 by default. The longest one is the reference waveband.
+!         <errs>       the relative calibration uncertainties of the same wavebands, in the same order, which set their weights
+!                      in the fit that made <image>, for example -weights=0.1,0.1,0.1 for equal weights; only their ratios
+!                      matter. By default 0.2 at 160 um and shorter and 0.1 at longer wavelengths, the weights of hires. The
+!                      analytic relation is built for any wavebands and weights. The calibration on a diffuse cloud is provided
+!                      for five sets: 160-500 um with the default or equal weights, 250-500 um with equal weights, 100-500 and
+!                      70-500 um with the default weights; for other sets that of the standard set is used, with a warning. The
+!                      field factor was measured with the standard set only; for other sets it is approximate.
 !         <field>      the radiation field of the cloud in Habing units, as estimated by g0_requirement.py; 10 by default
 !
 ! output: written to the current directory, whatever directory the inputs come from
@@ -73,8 +80,9 @@
 !__________________________________________________________________________________________________________________________________
 !
        implicit      none
-       integer       iotty, iolog, mband, ntab, ndep, ntfit, nang
-       parameter   ( iotty = 6, iolog = 0, mband = 10, ntab = 200, ndep = 512, ntfit = 3000, nang = 160 )
+       integer       iotty, iolog, mband, ntab, ndep, ntfit, nang, ncset
+       parameter   ( iotty = 6, iolog = 0, mband = 10, ntab = 200, ndep = 512, ntfit = 3000, nang = 160, ncset = 5 )
+       integer       nwgt, ncirn(ncset), icset, ic, lm
        integer       ngx, ngf, lt
        parameter   ( ngx = 24, ngf = 9 )
        real*8        gtab(ngx,ngf), gfld(ngf), gx0, gdx, g0, fieldfac
@@ -94,6 +102,7 @@
      &             , tfloor, tsurf, sstar, gamma, kappa0, nu0, betap, dtg, muh2, amu, hplanck, kboltz, speedolight, kapheat, pi
      &             , smin, smax, sgrid(ntab), ffit(ntab), fcor(ntab), tgrid(ntfit), seff(ndep), relerr(mband)
      &             , ffits(ntab), fcors(ntab), xg, fsx, fcx, dd, d0, xb0, xb1, wb, ddx(ntab), cirx(12), cirf(12)
+     &             , relin(mband), cirtab(12,ncset), cirw(mband,ncset), cire(mband,ncset), emin
      &             , cnu(mband), obs(mband), model(mband), wgt(mband), amp, chi2, chibest, tbest, sig, tt, ss, f, planckf
      &             , t0, zz, psi, wps, wsum, jsph, jlay, lsph, dlay, xmu, ssph, slay
        parameter   ( tfloor = 7.049531d0, tsurf = 22.866783d0, sstar = 2.389668d+21, gamma = 1.596874d0, kappa0 = 10.0d0
@@ -108,49 +117,50 @@
        external      planckf, rfits, wfits, interp, putima, invplanck, fieldfac, addkeys
 !
 ! The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 in Habing units, measured on the
-! grid of radiation fields (harvest_calib3_G0=*.txt.hist.npz): the pixel mean of ln f in bins of 0.05 dex of the fitted surface
-! density, minus the same at G_0 = 10, smoothed by a local linear fit with Gaussian weights 0.1 dex wide times the square root of
-! the number of pixels (make_field_factor.py). Above 10^22.3 cm^-2 the grid has too few pixels, and the field factor is held at its
-! value at 10^22.25 cm^-2. Rows are log10 of the fitted surface density from gx0 in steps of gdx, columns are the fields gfld. It is
-! interpolated linearly in log G_0 and held constant outside the table.
+! grid of radiation fields (harvest_calib3_G0=*.txt.hist.npz). The pixels are binned in the true surface density, 0.05 dex wide,
+! where the populations of all fields coincide; each bin gives the mean log10 of the fitted surface density and the mean ln f, and
+! ln f is smoothed against the former by a local linear fit with Gaussian weights 0.1 dex wide times the square root of the number
+! of pixels; the same at G_0 = 10 is subtracted (make_field_factor.py). Above 10^22.85 cm^-2 the grid has too few pixels, and the
+! field factor is held at its value there. Rows are log10 of the fitted surface density, from gx0 in steps of gdx; columns are the
+! fields gfld. It is interpolated linearly in log G_0 and held constant outside the table.
 !
        data          gfld  / 0.98d0, 2.12d0, 4.61d0, 10.0d0, 21.7d0, 47.1d0, 102.4d0, 222.2d0, 482.5d0 /
 !                   G_0 = 0.98
-       data          gtab / 0.996d0, 0.987d0, 0.979d0, 0.971d0, 0.960d0, 0.945d0, 0.927d0, 0.907d0
-     &             , 0.885d0, 0.856d0, 0.828d0, 0.799d0, 0.774d0, 0.741d0, 0.741d0, 0.741d0
-     &             , 0.741d0, 0.741d0, 0.741d0, 0.741d0, 0.741d0, 0.741d0, 0.741d0, 0.741d0
+       data          gtab / 0.994d0, 0.987d0, 0.979d0, 0.971d0, 0.958d0, 0.942d0, 0.924d0, 0.905d0
+     &             , 0.878d0, 0.845d0, 0.815d0, 0.793d0, 0.785d0, 0.777d0, 0.768d0, 0.763d0
+     &             , 0.762d0, 0.764d0, 0.770d0, 0.769d0, 0.769d0, 0.769d0, 0.769d0, 0.769d0
 !                   G_0 = 2.12
-     &             , 0.994d0, 0.991d0, 0.988d0, 0.981d0, 0.971d0, 0.959d0, 0.944d0, 0.928d0
-     &             , 0.910d0, 0.886d0, 0.861d0, 0.834d0, 0.811d0, 0.780d0, 0.780d0, 0.780d0
-     &             , 0.780d0, 0.780d0, 0.780d0, 0.780d0, 0.780d0, 0.780d0, 0.780d0, 0.780d0
+     &             , 0.995d0, 0.992d0, 0.988d0, 0.981d0, 0.970d0, 0.957d0, 0.943d0, 0.928d0
+     &             , 0.906d0, 0.877d0, 0.850d0, 0.833d0, 0.824d0, 0.817d0, 0.812d0, 0.810d0
+     &             , 0.811d0, 0.810d0, 0.808d0, 0.807d0, 0.807d0, 0.807d0, 0.807d0, 0.807d0
 !                   G_0 = 4.61
-     &             , 0.998d0, 0.995d0, 0.991d0, 0.988d0, 0.983d0, 0.976d0, 0.966d0, 0.959d0
-     &             , 0.948d0, 0.931d0, 0.916d0, 0.904d0, 0.896d0, 0.869d0, 0.869d0, 0.869d0
-     &             , 0.869d0, 0.869d0, 0.869d0, 0.869d0, 0.869d0, 0.869d0, 0.869d0, 0.869d0
+     &             , 0.998d0, 0.995d0, 0.991d0, 0.987d0, 0.981d0, 0.970d0, 0.962d0, 0.955d0
+     &             , 0.943d0, 0.924d0, 0.907d0, 0.899d0, 0.896d0, 0.891d0, 0.888d0, 0.882d0
+     &             , 0.880d0, 0.882d0, 0.889d0, 0.891d0, 0.891d0, 0.891d0, 0.891d0, 0.891d0
 !                   G_0 = 10
      &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
      &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
      &             , 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0, 1.000d0
 !                   G_0 = 21.7
-     &             , 1.000d0, 1.000d0, 1.001d0, 1.003d0, 1.009d0, 1.016d0, 1.028d0, 1.046d0
-     &             , 1.070d0, 1.094d0, 1.111d0, 1.123d0, 1.137d0, 1.144d0, 1.144d0, 1.144d0
-     &             , 1.144d0, 1.144d0, 1.144d0, 1.144d0, 1.144d0, 1.144d0, 1.144d0, 1.144d0
+     &             , 1.000d0, 1.000d0, 1.001d0, 1.004d0, 1.009d0, 1.014d0, 1.028d0, 1.051d0
+     &             , 1.082d0, 1.103d0, 1.121d0, 1.134d0, 1.140d0, 1.136d0, 1.126d0, 1.101d0
+     &             , 1.080d0, 1.064d0, 1.075d0, 1.085d0, 1.085d0, 1.085d0, 1.085d0, 1.085d0
 !                   G_0 = 47.1
-     &             , 0.999d0, 0.999d0, 1.000d0, 1.003d0, 1.011d0, 1.023d0, 1.042d0, 1.072d0
-     &             , 1.117d0, 1.165d0, 1.204d0, 1.227d0, 1.240d0, 1.219d0, 1.219d0, 1.219d0
-     &             , 1.219d0, 1.219d0, 1.219d0, 1.219d0, 1.219d0, 1.219d0, 1.219d0, 1.219d0
+     &             , 0.999d0, 0.999d0, 1.000d0, 1.004d0, 1.012d0, 1.022d0, 1.044d0, 1.080d0
+     &             , 1.130d0, 1.175d0, 1.215d0, 1.242d0, 1.240d0, 1.223d0, 1.205d0, 1.181d0
+     &             , 1.161d0, 1.132d0, 1.111d0, 1.098d0, 1.098d0, 1.098d0, 1.098d0, 1.098d0
 !                   G_0 = 102.4
-     &             , 0.997d0, 0.995d0, 0.995d0, 0.997d0, 1.002d0, 1.013d0, 1.034d0, 1.068d0
-     &             , 1.117d0, 1.168d0, 1.205d0, 1.212d0, 1.204d0, 1.172d0, 1.172d0, 1.172d0
-     &             , 1.172d0, 1.172d0, 1.172d0, 1.172d0, 1.172d0, 1.172d0, 1.172d0, 1.172d0
+     &             , 0.996d0, 0.995d0, 0.995d0, 0.996d0, 1.001d0, 1.012d0, 1.035d0, 1.074d0
+     &             , 1.130d0, 1.177d0, 1.209d0, 1.223d0, 1.206d0, 1.177d0, 1.147d0, 1.114d0
+     &             , 1.083d0, 1.050d0, 1.024d0, 1.005d0, 1.005d0, 1.005d0, 1.005d0, 1.005d0
 !                   G_0 = 222.2
-     &             , 0.987d0, 0.988d0, 0.988d0, 0.988d0, 0.991d0, 0.997d0, 1.010d0, 1.036d0
-     &             , 1.072d0, 1.103d0, 1.117d0, 1.103d0, 1.076d0, 1.044d0, 1.044d0, 1.044d0
-     &             , 1.044d0, 1.044d0, 1.044d0, 1.044d0, 1.044d0, 1.044d0, 1.044d0, 1.044d0
+     &             , 0.989d0, 0.989d0, 0.988d0, 0.989d0, 0.991d0, 0.995d0, 1.010d0, 1.040d0
+     &             , 1.082d0, 1.113d0, 1.120d0, 1.110d0, 1.089d0, 1.052d0, 1.018d0, 0.977d0
+     &             , 0.939d0, 0.908d0, 0.884d0, 0.863d0, 0.863d0, 0.863d0, 0.863d0, 0.863d0
 !                   G_0 = 482.5
-     &             , 0.995d0, 0.989d0, 0.985d0, 0.983d0, 0.982d0, 0.982d0, 0.986d0, 0.999d0
-     &             , 1.013d0, 1.018d0, 1.013d0, 0.987d0, 0.952d0, 0.887d0, 0.887d0, 0.887d0
-     &             , 0.887d0, 0.887d0, 0.887d0, 0.887d0, 0.887d0, 0.887d0, 0.887d0, 0.887d0 /
+     &             , 0.995d0, 0.990d0, 0.986d0, 0.984d0, 0.981d0, 0.978d0, 0.984d0, 0.999d0
+     &             , 1.014d0, 1.015d0, 1.004d0, 0.973d0, 0.943d0, 0.907d0, 0.869d0, 0.835d0
+     &             , 0.798d0, 0.768d0, 0.746d0, 0.723d0, 0.723d0, 0.723d0, 0.723d0, 0.723d0 /
 
 !!! The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 in Habing units, measured on the
 !!! grid of radiation fields (harvest_calib3_G0=*.txt): the pixel-weighted mean of log f in bins of 0.1 dex of the fitted surface
@@ -209,6 +219,7 @@
        mapfile  = ' '
        tempfile = ' '
        nfit     = 4
+       nwgt     = 0
        wfit(1)  = 160.0d0
        wfit(2)  = 250.0d0
        wfit(3)  = 350.0d0
@@ -217,8 +228,8 @@
 
        narg = iargc ( )
        if (narg .lt. 1) then
-         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <image> [-temp=<file>] [-bands=<list>] [-g0=<field>]'
-     &                         //' [-verb{0|1|2}]'
+         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <image> [-temp=<file>] [-bands=<list>] [-weights=<errs>]'
+     &                         //' [-g0=<field>] [-verb{0|1|2}]'
          stop
        endif
 
@@ -243,6 +254,20 @@
            read (arg(8:la),*,iostat=ios) ( wfit(k), k=1,nfit )
            if (ios .ne. 0) then
              write (iotty,'(/a,a/)') '   HICORRECT: ERROR: cannot read the wavelengths from ', arg(1:la)
+             stop
+           endif
+         elseif (arg(1:9) .eq. '-weights=') then
+           nwgt = 1
+           do k=10,la
+             if (arg(k:k) .eq. ',') nwgt = nwgt + 1
+           enddo
+           if (nwgt .gt. mband) then
+             write (iotty,'(/a,i3,a/)') '   HICORRECT: ERROR: at most', mband, ' values can be given with -weights=.'
+             stop
+           endif
+           read (arg(10:la),*,iostat=ios) ( relin(k), k=1,nwgt )
+           if (ios .ne. 0) then
+             write (iotty,'(/a,a/)') '   HICORRECT: ERROR: cannot read the calibration uncertainties from ', arg(1:la)
              stop
            endif
          elseif (mapfile .eq. ' ') then
@@ -292,12 +317,38 @@
          write (iotty,'(/a/)') '   HICORRECT: ERROR: at least two wavebands must be given with -bands=.'
          stop
        endif
+! The relative calibration uncertainties set the weights of the wavebands in the fit, as in hires: 20% at 160 um and shorter and
+! 10% at longer wavelengths by default, or the values of -weights=, given in the order of -bands= and sorted together with them.
+       if (nwgt .gt. 0) then
+         if (nwgt .ne. nfit) then
+           write (iotty,'(/a/)') '   HICORRECT: ERROR: -weights= must give one value for each waveband of -bands=.'
+           stop
+         endif
+         do k=1,nfit
+           if (relin(k) .le. 0.0d0) then
+             write (iotty,'(/a/)') '   HICORRECT: ERROR: the values of -weights= must be positive.'
+             stop
+           endif
+           relerr(k) = relin(k)
+         enddo
+       else
+         do k=1,nfit
+           if (wfit(k) .le. 160.5d0) then
+             relerr(k) = 0.20d0
+           else
+             relerr(k) = 0.10d0
+           endif
+         enddo
+       endif
        do k=2,nfit
          do ib=nfit,k,-1
            if (wfit(ib-1) .gt. wfit(ib)) then
              bb          = wfit(ib)
              wfit(ib)    = wfit(ib-1)
              wfit(ib-1)  = bb
+             bb          = relerr(ib)
+             relerr(ib)  = relerr(ib-1)
+             relerr(ib-1)= bb
            endif
          enddo
        enddo
@@ -305,15 +356,11 @@
 
        do k=1,nfit
          cnu(k) = 1.0d17 * kappa0 * ( speedolight / ( wfit(k) * 1.0d-4 ) / nu0 ) ** betap * dtg * muh2 * amu
-         if (wfit(k) .le. 160.5d0) then
-           relerr(k) = 0.20d0
-         else
-           relerr(k) = 0.10d0
-         endif
        enddo
 
        if (cverbose .ne. '-verb0') then
          write (iotty,'(a,10(1x,f5.0))') '   wavebands fitted (um):', ( wfit(k), k=1,nfit )
+         write (iotty,'(a,10(1x,f5.3))') '   relative calibration uncertainties:', ( relerr(k), k=1,nfit )
          write (iotty,'(a,f6.0,a)')      '   reference waveband', waveref, ' um'
        endif
 !__________________________________________________________________________________________________________________________________
@@ -328,12 +375,70 @@
        enddo
 
 ! The factor that diffuse material requires, measured on a radmc-3d model of a diffuse cloud whose projection is the cloud map of
-! the simulated sky: medians of the true over the fitted surface density, in bins of the fitted surface density (log10, cm^-2).
-! Below 10^xb0 the factor is the average of the analytic sphere and this cloud, which replaces the analytic layer; the difference
-! from the analytic average of sphere and layer is reduced smoothly to zero at 10^xb1.
+! the simulated sky, without its enhancement: medians of the true over the fitted surface density, in bins of the fitted surface
+! density (log10, cm^-2), for ncset sets of wavebands and relative calibration uncertainties. The set of the image is found among
+! them, the uncertainties compared after division by their minimum, because only their ratios matter; for other sets the table
+! of the standard set (the first) is used. Below 10^xb0 the factor is the average of the analytic sphere and this cloud, which
+! replaces the analytic layer; the difference from the analytic average of sphere and layer is reduced smoothly to zero at 10^xb1.
 !
        cirx = (/ 20.55d0, 20.65d0, 20.75d0, 20.85d0, 20.95d0, 21.05d0, 21.15d0, 21.25d0, 21.35d0, 21.45d0, 21.55d0, 21.65d0 /)
-       cirf = (/ 1.049d0, 1.051d0, 1.053d0, 1.058d0, 1.066d0, 1.075d0, 1.101d0, 1.121d0, 1.146d0, 1.180d0, 1.225d0, 1.251d0 /)
+       cirw = 0.0d0
+       cire = 0.0d0
+! 160-500 um, weights 20/10/10/10 percent (standard)
+       ncirn(1) = 4
+       cirw(1:4,1) = (/ 160.0d0, 250.0d0, 350.0d0, 500.0d0 /)
+       cire(1:4,1) = (/ 2.0d0, 1.0d0, 1.0d0, 1.0d0 /)
+       cirtab(:,1)  = (/ 1.049d0, 1.051d0, 1.053d0, 1.058d0, 1.066d0, 1.075d0,
+     &                 1.101d0, 1.121d0, 1.146d0, 1.180d0, 1.225d0, 1.251d0 /)
+! 160-500 um, equal weights
+       ncirn(2) = 4
+       cirw(1:4,2) = (/ 160.0d0, 250.0d0, 350.0d0, 500.0d0 /)
+       cire(1:4,2) = (/ 1.0d0, 1.0d0, 1.0d0, 1.0d0 /)
+       cirtab(:,2)  = (/ 1.057d0, 1.058d0, 1.060d0, 1.067d0, 1.076d0, 1.086d0,
+     &                 1.120d0, 1.139d0, 1.171d0, 1.214d0, 1.267d0, 1.294d0 /)
+! 250-500 um, equal weights
+       ncirn(3) = 3
+       cirw(1:3,3) = (/ 250.0d0, 350.0d0, 500.0d0 /)
+       cire(1:3,3) = (/ 1.0d0, 1.0d0, 1.0d0 /)
+       cirtab(:,3)  = (/ 1.032d0, 1.034d0, 1.035d0, 1.039d0, 1.043d0, 1.049d0,
+     &                 1.065d0, 1.076d0, 1.091d0, 1.110d0, 1.140d0, 1.160d0 /)
+! 100-500 um, weights 20/20/10/10/10 percent
+       ncirn(4) = 5
+       cirw(1:5,4) = (/ 100.0d0, 160.0d0, 250.0d0, 350.0d0, 500.0d0 /)
+       cire(1:5,4) = (/ 2.0d0, 2.0d0, 1.0d0, 1.0d0, 1.0d0 /)
+       cirtab(:,4)  = (/ 1.088d0, 1.090d0, 1.094d0, 1.104d0, 1.120d0, 1.141d0,
+     &                 1.194d0, 1.231d0, 1.282d0, 1.364d0, 1.430d0, 1.430d0 /)
+! 70-500 um, weights 20/20/20/10/10/10 percent
+       ncirn(5) = 6
+       cirw(1:6,5) = (/ 70.0d0, 100.0d0, 160.0d0, 250.0d0, 350.0d0, 500.0d0 /)
+       cire(1:6,5) = (/ 2.0d0, 2.0d0, 2.0d0, 1.0d0, 1.0d0, 1.0d0 /)
+       cirtab(:,5)  = (/ 1.126d0, 1.128d0, 1.136d0, 1.150d0, 1.175d0, 1.216d0,
+     &                 1.282d0, 1.341d0, 1.421d0, 1.536d0, 1.600d0, 1.600d0 /)
+       emin = minval ( relerr(1:nfit) )
+       icset = 0
+       do ic=1,ncset
+         if (ncirn(ic) .ne. nfit) cycle
+         lm = 0
+         do k=1,nfit
+           if (abs ( wfit(k) - cirw(k,ic) ) .gt. 0.5d0 .or. abs ( relerr(k) / emin - cire(k,ic) ) .gt. 1.0d-3) lm = 1
+         enddo
+         if (lm .eq. 0) then
+           icset = ic
+           exit
+         endif
+       enddo
+       if (icset .eq. 0) then
+         write (iotty,'(a)') '   HICORRECT2: WARNING: no calibration on the diffuse cloud for these wavebands and weights;'
+         write (iotty,'(a)') '   that of 160-500 um with the standard weights is used, and diffuse material may be corrected'
+         write (iotty,'(a)') '   by several percent too much or too little.'
+         cirf = cirtab(:,1)
+       else
+         cirf = cirtab(:,icset)
+       endif
+       if (g0 .ne. 10.0d0 .and. icset .ne. 1) then
+         write (iotty,'(a)') '   HICORRECT2: WARNING: the field factor was measured with 160-500 um and the standard weights;'
+         write (iotty,'(a)') '   for other wavebands or weights it is approximate.'
+       endif
        xb0 = 21.6d0
        xb1 = 22.0d0
 
@@ -454,14 +559,19 @@
          fcor(i) = fcor(i) + wb * dd
        enddo
 
-! The field of the cloud, and the factor made non-decreasing with the fitted surface density. Above about 3 x 10^22 cm^-2 the
+! The factor made non-decreasing with the fitted surface density, and the field of the cloud. Above about 3 x 10^22 cm^-2 the
 ! relation of uniform bodies declines, because such a body is nearly isothermal at the floor temperature. The radiative transfer
-! models of concentrated cores do not decline, so the factor is held at its maximum there.
+! models of concentrated cores do not decline, so the factor is held at its maximum there. The hold applies to the factor of
+! G_0 = 10 only: the field factor, measured on the radiative transfer models, declines in strong fields, and that decline is real.
 !
-       do i=1,ntab
-         if (g0 .ne. 10.0d0) fcor(i) = fcor(i) * fieldfac ( log10 ( ffit(i) ), g0, gtab, gfld, ngx, ngf, gx0, gdx )
-         if (i .gt. 1) fcor(i) = max ( fcor(i), fcor(i-1) )
+       do i=2,ntab
+         fcor(i) = max ( fcor(i), fcor(i-1) )
        enddo
+       if (g0 .ne. 10.0d0) then
+         do i=1,ntab
+           fcor(i) = fcor(i) * fieldfac ( log10 ( ffit(i) ), g0, gtab, gfld, ngx, ngf, gx0, gdx )
+         enddo
+       endif
 
        if (cverbose .eq. '-verb2') then
          write (iotty,'(/a)') '   the tabulated relation, fitted surface density and the factor that restores the true one:'
@@ -584,7 +694,7 @@
 
        call putima ( iotty, cverbose, cfitsversion, nx, ny, corr, valid, rnan, fname, 'ratio', rhead, chead, blank, cdate, ctime )
 
-       call addkeys ( fname, g0, nfit, wfit, tfloor, tsurf, sstar, gamma )
+       call addkeys ( fname, g0, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
 
        if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
 
@@ -597,7 +707,7 @@
 
        call putima ( iotty, cverbose, cfitsversion, nx, ny, work, valid, rnan, fname, bunit, rhead, chead, blank, cdate, ctime )
 
-       call addkeys ( fname, g0, nfit, wfit, tfloor, tsurf, sstar, gamma )
+       call addkeys ( fname, g0, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
 
        if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
 !__________________________________________________________________________________________________________________________________
@@ -644,7 +754,7 @@
 
            call putima ( iotty, cverbose, cfitsversion, nx, ny, work, valid, rnan, fname, 'K', rhead, chead, blank, cdate, ctime )
 
-           call addkeys ( fname, g0, nfit, wfit, tfloor, tsurf, sstar, gamma )
+           call addkeys ( fname, g0, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
 
            if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
          else
@@ -749,24 +859,33 @@
 
        subroutine addkeys
          
-     &          ( fname, g0, nfit, wfit, tfloor, tsurf, sstar, gamma )
+     &          ( fname, g0, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
 !__________________________________________________________________________________________________________________________________
 !
-! Add to the header of an output image the radiation field of the correction, the wavebands fitted to make the image, and the four
-! constants of the temperature relation, so that every output records how it was corrected.
+! Add to the header of an output image the radiation field of the correction, the wavebands fitted to make the image with their
+! relative calibration uncertainties, and the four constants of the temperature relation, so that every output records how it
+! was corrected.
 !__________________________________________________________________________________________________________________________________
 !
        implicit      none
        character*(*) fname
        integer       nfit, k, unit, status, block, la
-       real*8        g0, wfit(nfit), tfloor, tsurf, sstar, gamma
-       character*80  bands
+       real*8        g0, wfit(nfit), relerr(nfit), tfloor, tsurf, sstar, gamma
+       character*80  bands, wgts
        character*8   cw
        external      ftgiou, ftopen, ftpkyd, ftpkys, ftclos, ftfiou, printerr
 !__________________________________________________________________________________________________________________________________
 !
        bands = ' '
+       wgts  = ' '
        do k=1,nfit
+         write (cw,'(f5.3)') relerr(k)
+         la = len_trim ( wgts )
+         if (la .eq. 0) then
+           wgts = adjustl ( cw )
+         else
+           wgts = wgts(1:la)//','//adjustl ( cw )
+         endif
          write (cw,'(i0)') nint ( wfit(k) )
          la = len_trim ( bands )
          if (la .eq. 0) then
@@ -781,8 +900,9 @@
        call ftopen ( unit, fname, 1, block, status )
        call ftpkyd ( unit, 'HIG0'   , g0    , 6, 'radiation field of the correction, Habing units', status )
        call ftpkys ( unit, 'HIBANDS', bands ,    'wavebands fitted to make the image, um', status )
+       call ftpkys ( unit, 'HIWGTS' , wgts  ,    'relative calibration errors of HIBANDS', status )
        call ftpkyd ( unit, 'HITMIN' , tfloor, 8, 'T_min of the temperature relation, K', status )
-       call ftpkyd ( unit, 'HIT0'   , tsurf , 8, 'T_0 of the temperature relation, K', status )
+       call ftpkyd ( unit, 'HIT0'   , tsurf , 8, 'T_max of the temperature relation, K', status )
        call ftpkyd ( unit, 'HISSTAR', sstar , 7, 'Sigma_star of the temperature relation, cm^-2', status )
        call ftpkyd ( unit, 'HIGAMMA', gamma , 7, 'gamma of the temperature relation', status )
        call ftclos ( unit, status )
