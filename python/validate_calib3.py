@@ -41,6 +41,11 @@ resolution in three forms.
   within 3 arcsec, and their difference is positive where the correction leaves a donut. Its median and percentiles over the nodes
   are reported, with the fraction of nodes where it exceeds 0.1.
 
+  The same quantities for every node are written to a second file, <output file>.nodes.txt, one line per node: the node, the true
+  peak surface density, the half radius r_h, the equivalent radius of the mask, and for each correction the central residual
+  (within 3 arcsec), the ring residual (between 0.5 and 1.5 r_h) and the largest residual of the radial profile within 3 r_h. They
+  allow the results to be split by the size of the core.
+
 Requires hicorrect2.py and hicorrect3.py in the same directory, and the harvested calibration table.
 
 Usage:
@@ -178,6 +183,7 @@ def main():
     integ, rings, cmass = [], [], []
     shifted = {k: [] for k in FOOTSHIFT}
     rfoot = []
+    pernode = []
     used = 0
     for nd in nodes:
         info = resolve(nd)
@@ -218,6 +224,15 @@ def main():
         mr = good & (rr >= 0.5 * rh) & (rr < 1.5 * rh) if np.isfinite(rh) else np.zeros_like(good)
         if mc.sum() >= 1 and mr.sum() >= 8:
             rings.append([np.median(cur[k][mr] / tr[mr]) - np.median(cur[k][mc] / tr[mc]) for k in KEYS])
+        rmid = 0.5 * (REDGE[:-1] + REDGE[1:])
+        cols = []
+        for k in KEYS:
+            cen = np.median(cur[k][mc] / tr[mc]) - 1.0 if mc.sum() >= 1 else np.nan
+            rng = np.median(cur[k][mr] / tr[mr]) - 1.0 if mr.sum() >= 8 else np.nan
+            within = np.array(rows[k])[rmid <= 3.0 * rh] if np.isfinite(rh) else np.array([])
+            peak = np.nanmax(within) if np.isfinite(within).any() else np.nan
+            cols += [cen, rng, peak]
+        pernode.append((os.path.relpath(nd, root), float(tr[iy, ix]), rh, np.sqrt(inmask.sum() / np.pi) * PIX, cols))
         integ.append([cur[k][good].sum() / tr[good].sum() for k in KEYS])
         ring = ndimage.binary_dilation(inmask, iterations=BGWIDTH) & ~inmask & valid
         if ring.sum() >= 20:
@@ -243,6 +258,13 @@ def main():
     for k in prof:
         prof[k] = np.array(prof[k])
     integ, rings, cmass = np.array(integ), np.array(rings), np.array(cmass)
+    with open(out + ".nodes.txt", "w") as fh:
+        fh.write("! validate_calib3.py -- per node: true peak surface density (cm^-2), half radius r_h and equivalent radius of the\n")
+        fh.write("! mask (arcsec), then for each correction the residual (corrected / true - 1) at the center (within 3 arcsec), in\n")
+        fh.write("! the ring between 0.5 and 1.5 r_h, and the largest residual of the radial profile within 3 r_h\n")
+        fh.write("! node  sigma_peak  r_h  r_mask" + "".join("  %s_center %s_ring %s_max" % (k, k, k) for k in KEYS) + "\n")
+        for name, speak, rh, rm, cols in pernode:
+            fh.write("%s %.4e %.1f %.1f" % (name, speak, rh, rm) + "".join(" %+.4f" % v for v in cols) + "\n")
     with open(out, "w") as fh:
         fh.write("! validate_calib3.py -- the corrections measured on the models\n!\n")
         fh.write("! %d nodes, table %s\n" % (used, os.path.basename(table)))
