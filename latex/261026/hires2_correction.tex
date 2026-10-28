@@ -403,9 +403,11 @@ where $\kappa_\lambda$ is the dust opacity per unit mass of dust, $\eta = 0.01$ 
 mean molecular weight per hydrogen molecule, and $\mH$ is the mass of a hydrogen atom.
 
 (4) A single modified blackbody was fitted to these intensities exactly as \emph{hires} fits the observed images: in the same
-wavebands, from $160$ to $500${\um}, and with the same weights. The fit gave a temperature $T_{\rm F}$, and the surface density
-$\Sigma_{\rm F}$ for this line of sight was derived from the intensity $I_{\rm ref}$ at the reference wavelength $\lambda_{\rm
-ref\!}=500${\um}, at which $\Sigma_{\rm F}$ is least sensitive to the temperature (cf. Eq.~(\ref{eq:sensitivity})):
+wavebands, from $160$ to $500${\um}, and with the same weights, inversely proportional to the squares of the calibration
+uncertainties, $20$\% at $160${\um} and $10$\% at $250$ to $500${\um} \citep{Konyves+2015}. The fit gave a temperature $T_{\rm F}$,
+and the surface density $\Sigma_{\rm F}$ for this line of sight was derived from the intensity $I_{\rm ref}$ at the reference
+wavelength $\lambda_{\rm ref\!}=500${\um}, at which $\Sigma_{\rm F}$ is least sensitive to the temperature (cf.
+Eq.~(\ref{eq:sensitivity})):
 \begin{equation}
    \Sigma_{\rm F}(\Sigma) = \frac{I_{\rm ref}(\Sigma)} {\kappa_{\rm ref}\,\eta\,\muH\,\mH\,B_{\rm ref}(\Teff)}.
 \label{eq:fitted}
@@ -568,7 +570,7 @@ is an input of the method, like the wavebands.
 An observed surface density image is corrected by multiplying it by the image of the correction factors computed from the image
 itself,
 \begin{equation}
-\Dimc = \mathcal{F}\,\Dim\, \quad \mathcal{F} \equiv f_{G_0\!}\left(\Dim\right),
+  \Dimc = \mathcal{F}\,\Dim, \quad \mathcal{F} \equiv f_{G_0\!}\left(\Dim\right),
 \label{eq:correction}
 \end{equation}
 where $f_{G_0\!}$ of Eq.~(\ref{eq:factorg0}) is evaluated pixel by pixel. By design, the correction factor is a function of only two
@@ -578,64 +580,68 @@ $G_0 = 10$ is used.
 
 The correction method also applies to higher-resolution surface density images (with $O<36.3${\arcsec}). Evaluated on the much
 sharper \emph{hires} images at $13.5{\arcsec}$, the correction factor $f_{G_0\!}(\Dim)$ gives core masses $5$\% higher, and closer
-to the truth, than when it is evaluated at $36.3${\arcsec} and a smaller underestimation at the core centers
+to the truth, than when it is evaluated at $36.3${\arcsec}, and a smaller underestimation at the core centers
 (Table~\ref{tab:valgrid}). On the cloud of the simulated sky, the two agree to $0.5$\%. The factor is therefore evaluated on the
 image that is corrected. What \emph{hires} adds, and no correction can replace, is the information on scales finer than the beam of
 the longest waveband. Only the final images produced by \emph{hires} can be corrected, not the intermediate ones, because the
-latter are fitted to fewer wavebands. The correction method is implemented as a \emph{Fortran} utility \emph{hicorrect} of the
-source and filament extraction method \emph{getsf} and is available on its
+latter are fitted to fewer wavebands. The correction method is a \emph{Fortran} utility \emph{hicorrect} belonging to the source
+and filament extraction method \emph{getsf} and is available on its
 webpage\footnote{\url{http://irfu.cea.fr/Pisp/alexander.menshchikov/}}.
 
-\subsection{Requirements and robustness of the correction}
+\subsection{Requirements of the correction method}
 \label{sec:needs}
 
-The order of the operations matters when an image is decomposed into components. A dust grain is shielded by the whole column along
-its line of sight. The factor must therefore be evaluated on the total surface density, not on a component of it. The image must be
-corrected first, and the background of a structure subtracted afterwards. If the background is subtracted first, the factor is
-evaluated at a surface density that the material does not have, and the structure is corrected much too little. For the same
-reason, the correction must never be applied to an image that is already corrected, or to a true surface density.
+The order of operations matters when an image is separated into its structural components, such as sources, filaments, and their
+backgrounds \citep[e.g., with \emph{getsf},][]{Menshchikov2021method}. A dust grain is shielded by the whole column along its line
+of sight, so the correction factor must be evaluated on the total surface density, not on a component of it. The image must
+therefore be corrected first, and the components separated afterwards. If a background is subtracted first, the factor is evaluated
+at a surface density that the material does not have, and the structure is corrected much too little. For the same reason, the
+correction must never be applied to an image that is already corrected, or to a true surface density.
 
-One condition applies when the correction is used outside \emph{hires}. The table of $f$ is built for a particular set of wavebands
-and a particular weighting of them, because $\Sigma_{\rm F}$ depends on both. The table must be rebuilt if a map was made from
-other wavebands or with other weights. The table cannot be replaced by anything derived from the photometry itself. The mixing of
-temperatures along a line of sight broadens its spectral shape only slightly. At the centers of the cores
-(Sect.~\ref{sec:modcores}), a single modified blackbody fits the four intensities to within $1$--$6$\%, while the fit loses
-$9$--$38$\% of $\Sigma$. A method that derived the underestimation from these small residuals would amplify the photometric errors
-by factors of $7$ to $9$, far beyond the calibration accuracy of \emph{Herschel} (Appendix~\ref{app:colors}). The correction must
-therefore come from models in which the answer is known.
+One condition applies when the correction is used outside \emph{hires}. The correction factor $f$ of Eq.~(\ref{eq:factor}) is built
+for the wavebands and the weights of the fit (Sect.~\ref{sec:factor}), because $\Sigma_{\rm F}$ depends on both. For uniform
+bodies, a map fitted with equal weights is under-corrected by $6$--$15$\% above $10^{22}$\,cm$^{-2}$, one fitted without $160${\um}
+is over-corrected by $12$--$24$\%, and one whose fit includes $70$ or $100${\um} is under-corrected by up to $40$\%. The relation
+cannot be replaced by anything derived from the photometry itself, because the mixing of temperatures along a line of sight changes
+the spectral shape by only a few percent (Appendix~\ref{app:colors}).
 
-Two more properties follow from the construction. First, the correction is insensitive to noise, because it evaluates a smooth
-function of an image and fits nothing. Second, it does not amplify the calibration errors of the wavebands much, because the
-underestimation is not derived from the colors. An error of $10$\% at $500${\um}, the reference waveband, changes the uncorrected
-surface density by $16$ to $18$\% and the corrected one by $16$ to $23$\% (Appendix~\ref{sec:calerr}).
+Surface density images are sometimes derived from other sets of wavebands or with other weights, for example from the
+$250$--$500${\um} wavebands alone or with $70$ and $100${\um} included. To correct such images, the code computes the correction
+factor of the uniform sphere and layer (Sect.~\ref{sec:factor}) for the wavebands and weights given, and at low surface densities
+it combines that factor with a calibration on the cloud model (Sect.~\ref{sec:diffuse}) computed for the same set:
+$160$--$500${\um} with the standard or equal weights, $250$--$500${\um}, $100$--$500${\um} and $70$--$500${\um}. The field factor
+was measured with the standard set only. For $160$--$500$ and $250$--$500${\um} it is accurate to within $5$\% in fields $G_0
+\lesssim 50$ and to within $16$\% in the strongest fields. For sets that include $70$ or $100${\um}, the error reaches $17$\%. The
+effects of noise and of calibration errors are discussed in Appendix~\ref{sec:calerr}.
 
 % =====================================================================
 
 \section{Validation of the method}
 \label{sec:valid}
 
-A correction can be tested only where the true surface density is known. The correction was tested in three settings, all computed
-with radiative transfer. The first is a grid of models of cores, each in its own uniform cloud. The second is a set of isolated
-filaments. The third is a simulated sky, in which a cloud, filaments and cores overlap along the lines of sight. All of them were
-computed for $G_0 = 10$, so $g = 1$ in Eq.~(\ref{eq:factorg0}). Holding the factor at its maximum changes it only above
-$4.0{\times}10^{22}$\,cm$^{-2}$. Within the surface densities of these models, the change is at most $2$\%, and the results below
-are given without it. The correction for other fields was tested separately (Appendix~\ref{sec:field}).
+The method can be tested only on images whose true surface density is known. The correction was tested in three settings, all
+computed with radiative transfer. The first is a grid of models of cores, each embedded in its own uniform cloud. The second is a
+set of isolated filaments. The third is a simulated sky, in which a cloud, filaments and cores overlap along the lines of sight.
+All of them were computed for $G_0 = 10$, hence $g = 1$ in Eq.~(\ref{eq:factorg0}). Holding the factor $f$ at its maximum changes
+it only above $4.0{\times}10^{22}$\,cm$^{-2}$. Within the surface densities of these models, the change is at most $2$\%, and the
+results below are given without it. The correction for other fields was tested separately (Appendix~\ref{sec:field}).
 
 \subsection{Models of cores}
 \label{sec:valgrid}
 
-The correction was tested on the $1815$ models of the subdivision grid (Sect.~\ref{sec:modcores}), which were not used to fit the
-relation of Eq.~(\ref{eq:law}). The image at $13.5{\arcsec}$ was corrected with the factor evaluated on that image and, for
-comparison, with the factor evaluated on the image at $36.3{\arcsec}$. The corrected images were compared with the true surface
-density of the model at the same resolution in three ways. Table~\ref{tab:valgrid} gives the results.
+The correction was tested on the $1815$ models from the subdivision grid (Sect.~\ref{sec:modcores}), which were not used to fit the
+relation of Eq.~(\ref{eq:law}). The image $\Dim_{13.5}$ of each embedded core at $13.5{\arcsec}$ was corrected with the factors
+$\mathcal{F}_{13.5}$ evaluated on that image and, for comparison, with the factors $\mathcal{F}_{36.3}$ evaluated on
+$\Dim_{36.3}$ at $36.3{\arcsec}$. The corrected images were compared with the true surface density of the model at the same
+resolution in three ways. Table~\ref{tab:valgrid} presents the results.
 
-The first measure is the accuracy ratio of the total surface density within the footprint of the model, that is, the total in the
-corrected image divided by the same total in the true image. The footprint is the area where the model stands above its
-surroundings in the true image at $13.5{\arcsec}$. The second measure is the mass $M$ of the core. It is the same total with the
-background subtracted, divided by the same quantity in the true image. The background is the median surface density in a ring
-$15{\arcsec}$ wide just outside the footprint. The mass could be measured for $1750$ of the models (Appendix~\ref{sec:grid}). The
-third measure is the radial profile of the relative residual. The residual is the corrected minus the true surface density, divided
-by the true surface density, as a function of the distance from the center of the core.
+The first measure in Table~\ref{tab:valgrid} is the accuracy ratio of the integrated surface density within the footprint of the
+model, that is, the total in the corrected image divided by the total in the true image. The footprint is the true model footprint,
+defined at $1$\% of the peak of the core in the true image at $13.5{\arcsec}$. The second measure is the mass $M$ of the core. It
+is the same total with the background subtracted, divided by the same quantity in the true image. The background is the median
+surface density in a ring $15{\arcsec}$ wide just outside the footprint. The mass could be measured for $1750$ of the models
+(Appendix~\ref{sec:grid}). The third measure is the radial profile of the relative residual. The residual is the corrected minus
+the true surface density, divided by the true surface density, as a function of the distance from the center of the core.
 
 \begin{table}
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
@@ -643,27 +649,32 @@ by the true surface density, as a function of the distance from the center of th
 %%%%% validate_calib3.py on the subdivision grid: rows 'hicorrect2, fine' (factor at 13.5 arcsec) and 'hicorrect2, coarse' (36.3);
 %%%%% Center and 21 arcsec from the radial table at 3 and 21 arcsec; the footprint errors from the table of the misjudged footprint.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-\caption{Validation on $1815$ radiative transfer models that were not used to fit the relation of Eq.~(\ref{eq:law}). Total: the
-accuracy ratio of the surface density summed over the footprint of the model. Core mass: the accuracy ratio of the same sum less
-the background, for the $1750$ models in which the mass can be measured. Center and $21{\arcsec}$: the relative residual of the
-surface density at $3$ and $21{\arcsec}$ from the center of the core. The rows give the image before the correction and after it,
-with the factor evaluated on the image at $36.3{\arcsec}$ or at $13.5{\arcsec}$. The first two columns give the median over the
-models, with the 16th and 84th percentiles in parentheses; the last two give medians.}
+\caption{Validation of the corrections on $1815$ radiative transfer models of embedded cores that were not used to fit the relation of
+Eq.~(\ref{eq:law}).}
 \label{tab:valgrid}
 \centering
-\begin{tabular}{lcccc}
+\begin{tabular}{@{}l@{\hspace{6pt}}c@{\hspace{6pt}}c@{\hspace{6pt}}c@{\hspace{6pt}}c@{}}
 \hline\hline
 \noalign{\smallskip}
-\!\!\! Image & \!\!\!\! Total & \!\!\!\! Core mass & \!\!\!\!\! Center & $21{\arcsec}$\!\!\\
+Image\tablefootmark{a} & Total\tablefootmark{b} & Core mass\tablefootmark{c} & Center\tablefootmark{d} & $21{\arcsec}$\tablefootmark{d} \\
 \noalign{\smallskip}
 \hline
 \noalign{\smallskip}
-\!\!\! uncorr.                & \!\!\!\!\! 0.78 (0.56--0.93) & \!\!\!\!\! 0.63 (0.46--0.86) & \!\!\!\!\!\!\! $-0.44$ & \!\!\!\!\!\!\! $-0.21$\!\!\\
-\!\!\! $f$ at $36.3{\arcsec}$ & \!\!\!\!\! 0.98 (0.90--1.02) & \!\!\!\!\! 0.93 (0.70--1.08) & \!\!\!\!\!\!\! $-0.16$ & \!\!\!\!\!\!\! $+0.01$\!\!\\
-\!\!\! $f$ at $13.5{\arcsec}$ & \!\!\!\!\! 0.99 (0.92--1.03) & \!\!\!\!\! 0.98 (0.75--1.11) & \!\!\!\!\!\!\! $-0.13$ & \!\!\!\!\!\!\! $+0.02$\!\!\\
+$\Dim_{13.5}$                     & 0.78 (0.56--0.93) & 0.63 (0.46--0.86) &\!\! $-0.44$ & $-0.21$ \\
+$\mathcal{F}_{13.5\,}\Dim_{13.5}$ & 0.99 (0.92--1.03) & 0.98 (0.75--1.11) &\!\! $-0.13$ & $+0.02$ \\
+$\mathcal{F}_{36.3\,}\Dim_{13.5}$ & 0.98 (0.90--1.02) & 0.93 (0.70--1.08) &\!\! $-0.16$ & $+0.01$ \\
 \noalign{\smallskip}
 \hline
 \end{tabular}
+\tablefoot{
+\tablefoottext{a}{The images before the correction and after it, with the factors evaluated on the image at $13.5{\arcsec}$ or at 
+$36.3{\arcsec}$ (Sect.~\ref{sec:valgrid}).}
+\tablefoottext{b}{The accuracy ratio of the surface density summed over the model footprint; the median over the models, with the 
+16th and 84th percentiles in parentheses.}
+\tablefoottext{c}{The accuracy ratio of the same sum after the background subtraction, for the $1750$ models in which the mass can 
+be measured; the median and percentiles as in (b).}
+\tablefoottext{d}{The median relative residual of the surface density at $3$ and $21{\arcsec}$ from the center of the core.}
+}
 \end{table}
 
 \begin{figure*}
@@ -1594,8 +1605,9 @@ would substantially lower the factor at the highest surface densities. The geome
 \subsection{Noise and calibration errors}
 \label{sec:calerr}
 
-Gaussian noise of $1.5$, $0.50$, $0.30$, and $0.15$\,MJy\,sr$^{-1}$ at $160$, $250$, $350$, and $500${\um} was added to the models.
-The total corrected surface density changed by less than $0.5$\%. The amplification of the photometric errors by $7$ to $9$ found
+The correction is insensitive to noise, because it evaluates a smooth function of an image and fits nothing. Gaussian noise of
+$1.5$, $0.50$, $0.30$, and $0.15$\,MJy\,sr$^{-1}$ at $160$, $250$, $350$, and $500${\um} was added to the models, and the total
+corrected surface density changed by less than $0.5$\%. The amplification of the photometric errors by $7$ to $9$ found
 in Appendix~\ref{app:colors} does not apply to the correction, because the underestimation is not derived from the colors. A
 calibration error changes the fitted surface density $\Sigma_{\rm F}$, and the corrected surface density $f(\Sigma_{\rm
 F})\,\Sigma_{\rm F}$ follows. The effect of an error of $10$\% in each waveband was computed for uniform lines of sight of
