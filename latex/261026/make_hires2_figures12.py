@@ -582,6 +582,7 @@ def fig_geometry(out="fig_geometry.pdf"):
     b1.tick_params(labelsize=7.8)
     b1.set_xlabel(r"Fractional depth $u$ along line of sight", fontsize=7.8)
     b1.set_ylabel(r"Effective attenuating column $\Sigma_{\rm A}$ (cm$^{-2}$)", fontsize=7.8, labelpad=1.5)
+
     hs, ls = b1.get_legend_handles_labels()
     b2.legend(hs[:3], ls[:3], fontsize=7, loc="center", bbox_to_anchor=(0.5, 0.42), ncol=1, handlelength=1.6,
               labelspacing=0.25, frameon=True, facecolor="white", edgecolor="none", framealpha=1.0)                 # the surface densities, in the empty middle of the temperature panel
@@ -624,7 +625,7 @@ def fig_method(out="fig_method.pdf"):
         (mcolors.to_rgb(CCURVE[0]), [
             "Compute grids of radiative transfer models of dense cores and filaments",
             r"Compute the attenuating column $\Sigma_{\rm A}$ of every model shell with the dust temperature $T$, Eq. (4)",
-            r"Fit the model shell data with $T\,(\Sigma_{\rm A}) = T_{\rm min} + (T_0 - T_{\rm min})\,(1 + \Sigma_{\rm A}\,/\,\Sigma_{\bigstar})^{-\gamma}$, "
+            r"Fit the model shell data with $T\,(\Sigma_{\rm A}) = T_{\rm min} + (T_{\rm max} - T_{\rm min})\,(1 + \Sigma_{\rm A}\,/\,\Sigma_{\bigstar})^{-\gamma}$, "
             "Eq. (5)"]),
         (mcolors.to_rgb(CCURVE[1]), [
             r"Define lines of sight through a uniform sphere and layer for a grid of true $\Sigma = 10^{20}{-}10^{24}$ cm$^{-2}$",
@@ -634,7 +635,7 @@ def fig_method(out="fig_method.pdf"):
             r"Fit one modified blackbody to the intensities $I_\lambda(\Sigma)$ to derive the observable $\Sigma_{\rm F}$, Eq. (7)",
             r"Tabulate correction factors $f\,(\Sigma_{\rm F}) = \Sigma\,/\,\Sigma_{\rm F}$ over the grid of true $\Sigma$ as a function of $\Sigma_{\rm F}$, Eq. (8)",
             r"Replace the layer by a radiative transfer cloud below $4{\times}10^{21}$ cm$^{-2}$, blending to $10^{22}$, Sect. 4.3",
-            r"Multiply $f\,(\Sigma_{\rm F})$ by the field factor $g\,(\Sigma_{\rm F}, G_0)$ of the cloud, holding $f_{G_0}(\Sigma_{\rm F})$ at its maximum, Eq. (9)"]),
+            r"Hold $f\,(\Sigma_{\rm F})$ at its maximum and multiply it by the field factor $g\,(\Sigma_{\rm F}, G_0)$ of the cloud, Eq. (9)"]),
         (mcolors.to_rgb(CCURVE[2]), [
             r"Interpolate $f_{G_0}(\Sigma_{\rm F})$ for every pixel of the original image $\mathcal{D}$ to create the image $\mathcal{F}$ of factors",
             r"Multiply the original surface density $\mathcal{D}$ by the correction factors: $\mathcal{F}\cdot\mathcal{D}$, Eq. (10)"])]
@@ -1421,7 +1422,7 @@ def fig_grid_validation(table="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260
 
     """The correction measured on the radiative transfer models, and how much a misjudged footprint costs.
 
-    Left: the relative residual of the reconstruction at 13.5 arcsec against the distance from the center of the core, the median
+    Left: the relative errors of the reconstruction at 13.5 arcsec against the distance from the center of the core, the median
     over the 1815 nodes of the subdivision grid, before the correction and after it with the base image at 36.3 and at 13.5
     arcsec. Right: the core mass, measured over the footprint of the core less the background just outside it, divided by the true
     mass measured the same way with the correct footprint, against the error of the footprint in units of its equivalent radius.
@@ -1429,7 +1430,11 @@ def fig_grid_validation(table="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260
     base. Both panels are read from the output of validate_calib3.py.
     """
 
-    names = {"uncorrected": "uncorrected", "hicorrect2, coarse": "corrected, $f$ at 36.3″", "hicorrect2, fine": "corrected, $f$ at 13.5″"}
+#    names = {"uncorrected": "uncorrected", "hicorrect2, coarse": "corrected, $f$ at 36.3″", "hicorrect2, fine": "corrected, $f$ at 13.5″"}
+    names = {"uncorrected": r"$\mathcal{D}_{13.5}$", "hicorrect2, coarse": r"$\mathcal{F}_{36.3}\,\mathcal{D}_{13.5}$",
+             "hicorrect2, fine": r"$\mathcal{F}_{13.5}\,\mathcal{D}_{13.5}$"}
+    order = [0, 2, 1]
+    leg = dict(LEG)
     cols = {"uncorrected": CCURVE[2], "hicorrect2, coarse": CCURVE[1], "hicorrect2, fine": CCURVE[0]}
     lines = open(table).read().splitlines()
     mass0, foot, prof = {}, {}, []
@@ -1475,8 +1480,7 @@ def fig_grid_validation(table="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260
     ax[0].set_xlabel("Distance from center (″)", fontsize=7.7, labelpad=1.5)
     ax[0].set_ylabel(r"Relative error of $\Sigma(r\,)$", fontsize=7.7, labelpad=1.5)
     ax[0].text(0.5 * FINE + 3.0, 0.06, "Radial profiles (1815 models)", fontsize=7.3)
-    ax[0].legend(loc="lower right", **LEG)
-
+#    ax[0].legend(loc="lower center", **LEG)
     s = np.array(svals[:2] + [0.0] + svals[2:])
 
     for key in names:
@@ -1494,13 +1498,19 @@ def fig_grid_validation(table="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260
     ax[1].set_xlim(-0.55, 1.05)
     ax[1].set_ylim(0.2, 2.0)
     ax[1].tick_params(labelsize=7.7)
-    ax[1].set_xlabel("Footprint error (equivalent radii)", fontsize=7.7, labelpad=1.5)
+    ax[1].set_xlabel(r"Footprint error $\Delta R\,/R$", fontsize=7.7, labelpad=1.5)
     ax[1].set_ylabel("Accuracy ratio of core mass", fontsize=7.7, labelpad=1.5)
     ax[1].text(-0.42, 1.806, "Core masses (1750 models)", fontsize=7.3)
-    ax[1].legend(loc="lower right", **LEG)
+    ax[1].legend(loc="lower center", **LEG)
 
     for a in ax:
         a.set_box_aspect(1.0 / 1.25)
+
+    h, l = ax[0].get_legend_handles_labels()
+    ax[0].legend([h[i] for i in order], [l[i] for i in order], loc="upper left", bbox_to_anchor=(0.15, 0.76), **leg)
+
+    h, l = ax[1].get_legend_handles_labels()
+    ax[1].legend([h[i] for i in order], [l[i] for i in order], loc="upper left", bbox_to_anchor=(0.05, 0.76), **leg)
 
     fig.tight_layout(pad=0.0, w_pad=2)
     fig.savefig(out)
@@ -1902,10 +1912,10 @@ if __name__ == "__main__":
 #    fig_method()
 #    fig_relation()
 #    fig_fieldfactor()
-#    fig_grid_validation()
+    fig_grid_validation()
 #    fig_cylinders()
 #    fig_simsky6()
-    fig_aquila()
+#    fig_aquila()
 #    fig_cube3d()
 #    fig_cube()
 #    fig_superposition()

@@ -626,7 +626,7 @@ All of them were computed for $G_0 = 10$, hence $g = 1$ in Eq.~(\ref{eq:factorg0
 it only above $4.0{\times}10^{22}$\,cm$^{-2}$. Within the surface densities of these models, the change is at most $2$\%, and the
 results below are given without it. The correction for other fields was tested separately (Appendix~\ref{sec:field}).
 
-\subsection{Models of cores}
+\subsection{Models of embedded cores}
 \label{sec:valgrid}
 
 The correction was tested on the $1815$ models from the subdivision grid (Sect.~\ref{sec:modcores}), which were not used to fit the
@@ -635,13 +635,12 @@ $\mathcal{F}_{13.5}$ evaluated on that image and, for comparison, with the facto
 $\Dim_{36.3}$ at $36.3{\arcsec}$. The corrected images were compared with the true surface density of the model at the same
 resolution in three ways. Table~\ref{tab:valgrid} presents the results.
 
-The first measure in Table~\ref{tab:valgrid} is the accuracy ratio of the integrated surface density within the footprint of the
-model, that is, the total in the corrected image divided by the total in the true image. The footprint is the true model footprint,
-defined at $1$\% of the peak of the core in the true image at $13.5{\arcsec}$. The second measure is the mass $M$ of the core. It
-is the same total with the background subtracted, divided by the same quantity in the true image. The background is the median
-surface density in a ring $15{\arcsec}$ wide just outside the footprint. The mass could be measured for $1750$ of the models
-(Appendix~\ref{sec:grid}). The third measure is the radial profile of the relative residual. The residual is the corrected minus
-the true surface density, divided by the true surface density, as a function of the distance from the center of the core.
+In Table~\ref{tab:valgrid}, the total is the surface density summed over the true model footprint, the area within the contour at
+$1$\% of the peak of the core in the true image at $13.5{\arcsec}$. The core mass $M$ is the same sum less the background, the
+median surface density in a ring $15{\arcsec}$ wide just outside the footprint. It could be measured for $1750$ of the models
+(Appendix~\ref{sec:grid}). Both are given as accuracy ratios, the corrected value divided by the true one. The relative error is
+the corrected minus the true surface density, divided by the true surface density, as a function of the distance from the center
+of the core (Fig.~\ref{fig:valgrid}).
 
 \begin{table}
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
@@ -656,7 +655,7 @@ Eq.~(\ref{eq:law}).}
 \begin{tabular}{@{}l@{\hspace{6pt}}c@{\hspace{6pt}}c@{\hspace{6pt}}c@{\hspace{6pt}}c@{}}
 \hline\hline
 \noalign{\smallskip}
-Image\tablefootmark{a} & Total\tablefootmark{b} & Core mass\tablefootmark{c} & Center\tablefootmark{d} & $21{\arcsec}$\tablefootmark{d} \\
+Image\tablefootmark{a} & Total\tablefootmark{b} & Core mass\tablefootmark{c} & Center\tablefootmark{d} & $21{\arcsec}$\tablefootmark{e} \\
 \noalign{\smallskip}
 \hline
 \noalign{\smallskip}
@@ -667,13 +666,13 @@ $\mathcal{F}_{36.3\,}\Dim_{13.5}$ & 0.98 (0.90--1.02) & 0.93 (0.70--1.08) &\!\! 
 \hline
 \end{tabular}
 \tablefoot{
-\tablefoottext{a}{The images before the correction and after it, with the factors evaluated on the image at $13.5{\arcsec}$ or at 
-$36.3{\arcsec}$ (Sect.~\ref{sec:valgrid}).}
-\tablefoottext{b}{The accuracy ratio of the surface density summed over the model footprint; the median over the models, with the 
-16th and 84th percentiles in parentheses.}
-\tablefoottext{c}{The accuracy ratio of the same sum after the background subtraction, for the $1750$ models in which the mass can 
-be measured; the median and percentiles as in (b).}
-\tablefoottext{d}{The median relative residual of the surface density at $3$ and $21{\arcsec}$ from the center of the core.}
+\tablefoottext{a}{The images before the correction and after it, with the factors evaluated at $13.5$ or $36.3{\arcsec}$.}
+\tablefoottext{b}{The accuracy ratio of the total surface density over the true model footprint: the median over the models, with
+the 16th and 84th percentiles in parentheses.}
+\tablefoottext{c}{The accuracy ratio of the core mass, for the $1750$ models in which it can be measured: the median and
+percentiles as in (b).}
+\tablefoottext{d}{The median relative error of the surface density at $3{\arcsec}$ from the center of the core.}
+\tablefoottext{e}{The same at $21{\arcsec}$ from the center.}
 }
 \end{table}
 
@@ -681,35 +680,36 @@ be measured; the median and percentiles as in (b).}
 \centering
 \includegraphics[width=0.96\textwidth]{fig_grid_validation.pdf}
 \caption{The correction tested on $1815$ radiative transfer models that were not used to fit the relation of Eq.~(\ref{eq:law}).
-\emph{Left}: the relative residual of the surface density, the reconstructed minus the true value divided by the true value,
-against the distance from the center of the core, as the median over the models. The dashed line marks half the beam of
-$13.5{\arcsec}$. \emph{Right}: the accuracy ratio of the core mass, for the $1750$ models in which it can be measured, when the
-footprint within which it is measured is too small (negative abscissa) or too large (positive abscissa) by the given fraction of
-its equivalent radius. The background is always taken in a ring just outside the footprint used. The lines are medians over the
-models, and the band marks the 16th to 84th percentiles for the factor evaluated at $36.3{\arcsec}$.}
+\emph{Left}: the relative error of the corrected surface density (Sect.~\ref{sec:valgrid}), against the distance from the center of
+the core, as the median over the models. The dashed line marks half the beam of $13.5{\arcsec}$. \emph{Right}: the accuracy ratio
+of the core mass, for the $1750$ models in which it can be measured, when the estimated radius $R$ of the core, and hence of its
+footprint, is too small ($\Delta R < 0$) or too large ($\Delta R > 0$). The background is always taken in a ring just outside the
+footprint used. The lines are medians over the models, and the band marks the 16th to 84th percentiles for
+$\mathcal{F}_{36.3\,}\mathcal{D}_{13.5}$.}
 \label{fig:valgrid}
 \end{figure*}
 
-Without the correction, the reconstruction contains $78$\% of the true surface density and $63$\% of the core mass. The
-underestimation is largest at the center of the core, where it reaches $44$\%. The correction restores the total to $99$\% and the
-core mass to $98$\% in the median. Beyond $15{\arcsec}$ from the center, the corrected surface density is about $2$\% too high
+The uncorrected image $\Dim_{13.5}$ contains $78$\% of the true surface density and $63$\% of the core mass. The underestimation is
+largest at the center of the core, where it reaches $44$\%. The correction restores the median total to $99$\% and the median core
+mass to $98$\%. Beyond $15{\arcsec}$ from the center, the corrected surface density is about $2$\% too high
 (Fig.~\ref{fig:valgrid}, left). This is the uniform cloud around the core, which the calibration of Sect.~\ref{sec:diffuse}
-corrects slightly too much. An underestimation of $13$\% remains at the center of the core, at $3{\arcsec}$. No correction that
+corrects slightly too much. An underestimation of $13$\% remains at $3{\arcsec}$ from the center of the cores. No correction that
 depends on the surface density alone can remove it. The center of a core is colder than the center of a uniform structure with the
 same surface density, and the surface density does not reveal this. The factor evaluated at $36.3{\arcsec}$ gives almost the same
 totals but a larger underestimation at the center (Sect.~\ref{sec:apply}).
 
-The spread over the models is larger than these medians. For one core in six, the corrected mass is more than $25$\% too low. For
-another one in six, it is more than $11$\% too high. A correction that depends on the surface density alone cannot remove this
-spread. Models with the same surface density can differ in how their temperature varies along the line of sight.
+The errors of individual models are larger than the median errors. For $16$\% of the cores, the corrected mass is more than $25$\%
+too low, and for another $16$\%, it is more than $11$\% too high. A correction that depends on the surface density alone cannot
+remove this spread. Models with the same surface density differ in how their temperature varies along the line of sight.
 
-In a real image, the footprint of a core is not known. It must be estimated, together with the background beneath the core. The
-right panel of Fig.~\ref{fig:valgrid} shows how an error in the footprint changes the measured mass. A footprint that is too small
-by a quarter of its radius lowers the median corrected mass from $0.98$ to $0.83$ of the true mass. A footprint that is too small
-by half its radius lowers it to $0.52$, because part of the core is then counted as background. A footprint that is too large by a
-quarter or a half of its radius raises the median mass to $1.06$ or $1.11$, and the spread over the models widens sharply. These
-errors are lower limits, because the models lie in uniform clouds, whereas a real core is surrounded by filaments and other cores
-that enter the background ring.
+In real images, the footprints of cores are not known. An extraction estimates the radius of each core, together with its
+background, and an error in that radius is an error in the footprint. To test its effect, the radius $R$ of the footprint was
+decreased or increased by $\Delta R$. The right panel of Fig.~\ref{fig:valgrid} shows how the measured mass changes. A footprint
+too small by $\Delta R/R = 0.25$ lowers the median corrected mass from $0.98$ to $0.83$ of the true mass, and one too small by
+$0.5$ lowers it to $0.52$, because part of the core is then counted as background. A footprint too large by $0.25$ or $0.5$ raises
+the median mass to $1.06$ or $1.11$, and the spread over the models widens sharply. These errors are lower limits, because the
+models are embedded in uniform clouds, whereas real cores overlap with filaments, background fluctuations, and other cores, which
+make the background harder to estimate.
 
 \subsection{Models of filaments}
 \label{sec:cyl}
@@ -754,9 +754,9 @@ $3{\times}10^{22}$, $H=80{\arcsec}$ & 0.53 $\rightarrow$ 0.88 & 0.71 $\rightarro
 \centering
 \includegraphics[width=0.97\textwidth]{fig_cylinders.pdf}
 \caption{The isolated radiative transfer cylinders reconstructed by \emph{hires} at $13.5{\arcsec}$ and corrected. \emph{Left}: the
-profile across the cylinder with $3{\times}10^{22}$\,cm$^{-2}$ on its axis, true (convolved to the beam), uncorrected and corrected.
-\emph{Right}: relative error of the corrected surface density across all seven cylinders, labeled by their surface density on the
-axis. Each profile is the median over the middle part of the cylinder.}
+profile across the cylinder with $3{\times}10^{22}$\,cm$^{-2}$ on its axis, true (convolved to the beam), uncorrected and
+corrected. \emph{Right}: relative error of the corrected surface density across all seven cylinders, labeled by their surface
+density on the axis. Each profile is the median over the middle part of the cylinder.}
 \label{fig:cylinders}
 \end{figure*}
 
