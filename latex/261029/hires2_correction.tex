@@ -632,10 +632,10 @@ $2$\%, and the results below are given without it. The correction for other fiel
 \subsection{Models of embedded cores}
 \label{sec:valgrid}
 
-The correction was validated on the $1815$ spherical models from the subdivision grid (Sect.~\ref{sec:modcores}), which were not
-used to fit the relation of Eq.~(\ref{eq:law}). The image $\Dim_{13.5}$ of each embedded core was corrected with
-the factors $\mathcal{F}_{13.5}$ evaluated on that image and, for comparison, with the factors $\mathcal{F}_{36.3}$ evaluated on
-$\Dim_{36.3}$. The corrected images were compared with the true surface density at the same resolution.
+The correction was validated on the subdivision grid (Sect.~\ref{sec:modcores}) of $1815$ radiative transfer models of embedded
+spherical cores, which were not used to fit the relation of Eq.~(\ref{eq:law}). The image $\Dim_{13.5}$ of each embedded core was
+corrected with the factors $\mathcal{F}_{13.5}$ evaluated on that image and, for comparison, with the factors $\mathcal{F}_{36.3}$
+evaluated on $\Dim_{36.3}$. The corrected images were compared with the true surface density at the same resolution.
 
 Table~\ref{tab:valgrid} presents four quantities. The total surface density was integrated over the true model footprint, defined
 as the area within the contour at $1$\% of the peak of the core in its true image at $O = 13.5{\arcsec}$. The core mass $M$ was
@@ -650,7 +650,7 @@ from the center of the core, and its radial profile is shown in Fig.~\ref{fig:va
 %%%%% validate_calib3.py on the subdivision grid: rows 'hicorrect2, fine' (factor at 13.5 arcsec) and 'hicorrect2, coarse' (36.3);
 %%%%% Center and 21 arcsec from the radial table at 3 and 21 arcsec; the footprint errors from the table of the misjudged footprint.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-\caption{Validation of the surface density correction method on $1815$ radiative transfer models of embedded spherical cores.}
+\caption{Validation of the correction method on the radiative transfer models of embedded spherical cores.}
 \label{tab:valgrid}
 \centering
 \begin{tabular}{@{}l@{\hspace{6pt}}c@{\hspace{6pt}}c@{\hspace{6pt}}c@{\hspace{6pt}}c@{}}
@@ -667,7 +667,7 @@ from the center of the core, and its radial profile is shown in Fig.~\ref{fig:va
 \noalign{\smallskip}
 \hline
 \end{tabular}
-\tablefoot{These extra models were not used to fit the relation of Eq.~(\ref{eq:law}).
+\tablefoot{These $1815$ models were not used to fit the relation of Eq.~(\ref{eq:law}).
 \tablefoottext{a}{The images before the correction and after it, with $\mathcal{F}_{13.5}$ or $\mathcal{F}_{36.3}$.}
 \tablefoottext{b}{The accuracy ratio of the total surface density over the true model footprint: the median over the models, with
 the 16th and 84th percentiles in parentheses.}
@@ -681,13 +681,12 @@ percentiles as in (b).}
 \begin{figure*}
 \centering
 \includegraphics[width=0.96\textwidth]{fig_grid_validation.pdf}
-\caption{The correction tested on $1815$ radiative transfer models that were not used to fit the relation of Eq.~(\ref{eq:law}).
-\emph{Left}: The relative error of the corrected surface density (Sect.~\ref{sec:valgrid}), against the distance from the center of
-the core, as the median over the models. The dashed line marks $O/2$ for $O = 13.5{\arcsec}$. \emph{Right}: The accuracy ratio
-of the core mass, for the $1750$ models in which it can be measured, when the estimated radius $R$ of the core, and hence of its
-footprint, is too small ($\Delta R < 0$) or too large ($\Delta R > 0$). The background is always taken in a ring just outside the
-footprint used. The lines are medians over the models, and the band marks the 16th to 84th percentiles for
-$\mathcal{F}_{36.3\,}\mathcal{D}_{13.5}$.}
+\caption{Testing the correction method on the radiative transfer models of embedded spherical models. \emph{Left}: The relative
+error of the corrected surface density (Sect.~\ref{sec:valgrid}), against the distance from the center of the core, as the median
+over the models. The dashed line marks $O/2$ for $O = 13.5{\arcsec}$. \emph{Right}: The accuracy ratio of the core mass, for the
+$1750$ models in which it can be measured, when the estimated radius $R$ of the core, and hence of its footprint, is too small
+($\Delta R < 0$) or too large ($\Delta R > 0$). The background is always taken in a ring just outside the footprint used. The lines
+are medians over the models, and the band marks the 16th to 84th percentiles for $\mathcal{F}_{36.3\,}\mathcal{D}_{13.5}$.}
 \label{fig:valgrid}
 \end{figure*}
 
@@ -719,11 +718,11 @@ fluctuations, and other cores, which make the background harder to estimate.
 \subsection{Models of filaments}
 \label{sec:cyl}
 
-The correction was also validated on the seven cylindrical filaments of Sect.~\ref{sec:modfil}. Their surface density images
-$\Dim_{13.5}$, derived with \emph{hires} from the simulated emission, were corrected with the factors $\mathcal{F}_{13.5}$
-evaluated on them and compared with the true surface density at the same resolution. They are isolated, so their profiles are not
-confused by any background. Table~\ref{tab:cyl} and Fig.~\ref{fig:cylinders} give the results, measured on the median profile
-over the middle part of each cylinder.
+The correction method was also validated on the seven radiative transfer models of isolated cylindrical filaments of
+Sect.~\ref{sec:modfil}. Their surface density images $\Dim_{13.5}$, derived with \emph{hires} from the simulated emission, were
+corrected with the factors $\mathcal{F}_{13.5}$ evaluated on them and compared with the true surface density at the same
+resolution. They are isolated, so their profiles are not confused by any background. Table~\ref{tab:cyl} and
+Fig.~\ref{fig:cylinders} give the results, measured on the median profile over the middle part of each cylinder.
 
 \begin{table*}
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
@@ -731,7 +730,7 @@ over the middle part of each cylinder.
 %%%%% *_isolated directories (mc.surfdens.fits and hi.surface.density.r13p5.fits; the factor is applied to the median profile,
 %%%%% as in fig_cylinders).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-\caption{Validation of the surface density correction method on the isolated radiative transfer cylinders.}
+\caption{Validation of the correction method on the radiative transfer models of isolated cylindrical filaments.}
 \label{tab:cyl}
 \centering
 \begin{tabular}{@{}l@{\hspace{5pt}}cc@{\hspace{20pt}}cc@{\hspace{20pt}}ccc@{\hspace{20pt}}ccc@{}}
@@ -739,7 +738,8 @@ over the middle part of each cylinder.
 \noalign{\smallskip}
 \,\,$\Sigma_0$ (cm$^{-2}$)\tablefootmark{a} & \multicolumn{2}{c}{\!\!\!\!\!\!\!\!\!Crest\tablefootmark{b}} 
  & \multicolumn{2}{c}{\!\!\!\!\!\!\!\!$\Lambda$\tablefootmark{c}}
- & \multicolumn{3}{c}{\!\!\!\!\!\!\!\!$H_{13.5}$ (${\arcsec}$)\tablefootmark{d}} & \multicolumn{3}{c}{$\alpha_{13.5}$\tablefootmark{e}}\,\,\\
+ & \multicolumn{3}{c}{\!\!\!\!\!\!\!\!$H_{13.5}$ (${\arcsec}$)\tablefootmark{d}}
+ & \multicolumn{3}{c}{$\alpha_{13.5}$\tablefootmark{e}}\,\,\\
 \noalign{\smallskip}
 \cline{2-3}\cline{4-5}\cline{6-8}\cline{9-11}
 \noalign{\smallskip}
@@ -757,8 +757,8 @@ over the middle part of each cylinder.
 \noalign{\smallskip}
 \hline
 \end{tabular}
-\tablefoot{The filaments have $p = 1.75$ and intrinsic $H = 40{\arcsec}$, except where noted (cf. Table~\ref{tab:cylpar}), and were
-convolved to $O = 13.5{\arcsec}$.
+\tablefoot{The seven filaments have $p = 1.75$ and intrinsic $H = 40{\arcsec}$, except where noted (cf. Table~\ref{tab:cylpar}),
+and were convolved to $O = 13.5{\arcsec}$.
 \tablefoottext{a}{The true surface density on the axis; }
 \tablefoottext{b}{The accuracy ratio of the surface density on the axis, before and after the correction.}
 \tablefoottext{c}{The accuracy ratio of the linear density within $\pm300{\arcsec}$, before and after the correction.}
@@ -768,13 +768,13 @@ profiles.}
 }
 \end{table*}
 
-\begin{figure*}
+ \begin{figure*}
 \centering
-\includegraphics[width=0.97\textwidth]{fig_cylinders.pdf}
-\caption{The isolated radiative transfer cylinders reconstructed by \emph{hires} at $O = 13.5{\arcsec}$ and corrected. \emph{Left}:
-the profile across the cylinder with $3{\times}10^{22}$\,cm$^{-2}$ on its axis, true (convolved to the beam), uncorrected and
-corrected. \emph{Right}: relative error of the corrected surface density across all seven cylinders, labeled by their surface
-density $\Sigma_{0}$ on the axis. Each profile is the median over the middle part of the cylinder.}
+\includegraphics[width=\textwidth]{fig_cylinders.pdf}
+\caption{The isolated radiative transfer cylinders reconstructed by \emph{hires} at $O = 13.5{\arcsec}$ and then corrected.
+\emph{Left}: The profile across the cylinder with $3{\times}10^{22}$\,cm$^{-2}$ on its axis, true (convolved to the beam),
+uncorrected and corrected. \emph{Right}: Relative error of the corrected surface density across all seven cylinders, labeled by
+their surface density $\Sigma_{0}$ on the axis. Each profile is the median over the middle part of the cylinder.}
 \label{fig:cylinders}
 \end{figure*}
 
@@ -813,22 +813,22 @@ are masked in the profiles. The dashed curve is the cloud alone at the same posi
 %%%%% (0.955).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 Figure~\ref{fig:simsky6} shows the relative error of the corrected surface density over the region, for the cloud alone, and across
-the filaments. The cloud alone, in a region without filaments and cores, is corrected from $0.76$ to $0.89$ of the truth in the
-median. It is $6$\% too low at $\Sigma_{0} = 10^{21}$\,cm$^{-2}$ and $14$\% too low at $\Sigma_{0} = 10^{22}$\,cm$^{-2}$. The
-remaining underestimation of $\Sigma$ in the cloud is the price of the average of Sect.~\ref{sec:diffuse}, which gives half the
-weight to the sphere.
+the filaments. For the cloud alone, the correction raises the median accuracy ratio of $\Sigma$ from $0.76$ to $0.89$. It is $6$\%
+too low at $\Sigma = 10^{21}$\,cm$^{-2}$ and $14$\% too low at $\Sigma = 10^{22}$\,cm$^{-2}$. The remaining underestimation of
+$\Sigma$ in the cloud is the price of the average of Sect.~\ref{sec:diffuse}, which gives half the weight to the sphere.
 
 In the outer parts of the simulated region, the cloud has $\Sigma \approx 2$--$5{\times}10^{21}$\,cm$^{-2}$. There the crests of
 the filaments are corrected to within $4$ to $17$\%, and their flanks to within $5$\%. Their outer wings are corrected too little,
 by $6$ to $9$\%, as much as the cloud around them. In the center, the cloud reaches $\Sigma \approx
 2$--$3{\times}10^{22}$\,cm$^{-2}$. There the flanks of the dense filaments are corrected too much, by $10$ to $16$\%, while the
-cloud alone at the same positions is corrected too little. Both effects come from the superposition of two structures, which a
-correction based on the surface density alone treats as one. They have the signs predicted in Appendix~\ref{app:arrange}: a
-structure in a weak cloud is under-corrected, and a structure in a dense cloud is over-corrected. The central cloud of the
-simulated star-forming region is two to three times denser than the background of the filaments in Aquila, which \emph{getsf}
-determines to be $6{\times}10^{21}$ to $10^{22}$\,cm$^{-2}$ at most. In a region like Aquila, the over-correction of the filament
-flanks should therefore be about $10$\%. Over the whole simulated star-forming region, with the cores masked, the corrected surface
-density is $0.96$ of the truth.
+cloud alone at the same positions is corrected too little. 
+
+Both effects come from the superposition of two structures, which a correction based on the surface density alone treats as one.
+They have the signs predicted in Appendix~\ref{app:arrange}: a structure in a weak cloud is under-corrected, and a structure in a
+dense cloud is over-corrected. The central cloud of the simulated star-forming region is two to three times denser than the
+background of the filaments in Aquila, which \emph{getsf} determines to be $6{\times}10^{21}$ to $10^{22}$\,cm$^{-2}$ at most. In a
+region like Aquila, the over-correction of the filament flanks should therefore be about $10$\%. Over the whole simulated
+star-forming region, with the cores masked, the corrected surface density is $0.96$ of the truth.
 
 \subsection{Remaining errors}
 \label{sec:base}
@@ -839,12 +839,12 @@ density is $0.96$ of the truth.
 %%%%% of the largest residual of the radial profile within 3 r_h.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 Two kinds of structure are not corrected well by any correction that depends on the surface density alone. The centers of
-concentrated structures, the centers of cores and the crests of filaments, remain $6$ to $22$\% too low. Cores narrower than $2\,O$,
-half of the models of the grid, remain $27$\% too low at their centers in the median and more than $56$\% too low for $16$\% of them.
-They are surrounded by a ring that is over-corrected by $5$\% in the median and, for $16$\% of them, by more than $16$\%, because
-the beam spreads their cold centers over an area of lower surface density. Superposed structures of very different temperatures are
-corrected too little or too much, by $10$ to $20$\% (Sect.~\ref{sec:sim}). Corrections that also read the fitted temperature do not
-help (Appendix~\ref{app:tcorr}).
+concentrated structures and the centers of cores and crests of filaments remain $6$ to $22$\% too low. Cores with widths $H < 2O$,
+representing half of the models of the grid, remain $27$\% too low at their centers in the median and more than $56$\% too low for
+one-sixths of them. They are surrounded by a ring that is over-corrected by $5$\% in the median and, for one-sixths of them, by
+more than $16$\%, because the beam spreads their cold centers over an area of lower surface density. Superposed structures of very
+different temperatures are corrected too little or too much, by $10$ to $20$\% (Sect.~\ref{sec:sim}). Corrections that also read
+the fitted temperature do not help (Appendix~\ref{app:tcorr}).
 
 % =====================================================================
 
