@@ -774,7 +774,7 @@ profiles.}
 \caption{The isolated radiative transfer cylinders reconstructed by \emph{hires} at $O = 13.5{\arcsec}$ and corrected. \emph{Left}:
 the profile across the cylinder with $3{\times}10^{22}$\,cm$^{-2}$ on its axis, true (convolved to the beam), uncorrected and
 corrected. \emph{Right}: relative error of the corrected surface density across all seven cylinders, labeled by their surface
-density on the axis. Each profile is the median over the middle part of the cylinder.}
+density $\Sigma_{0}$ on the axis. Each profile is the median over the middle part of the cylinder.}
 \label{fig:cylinders}
 \end{figure*}
 
@@ -790,7 +790,9 @@ the crest, the corrected profiles are within $8$\% of the truth (Fig.~\ref{fig:c
 \label{sec:sim}
 
 The cores and filaments model a single structure, in contrast to the observed molecular clouds. The simulated star-forming region
-of Sect.~\ref{sec:modcloud} contains a cloud, seven filaments and $96$ cores, which overlap along the lines of sight.
+of Sect.~\ref{sec:modcloud} contains a cloud, seven filaments and $96$ cores, which overlap along the lines of sight. Its image
+$\Dim_{13.5}$ was corrected with the factors $\mathcal{F}_{13.5}$ and compared with the true surface density at the same
+resolution, as was the image of the same region with the cloud alone.
 
 \begin{figure*}
 \centering
@@ -799,8 +801,8 @@ of Sect.~\ref{sec:modcloud} contains a cloud, seven filaments and $96$ cores, wh
 \emph{Upper left}: the true surface density at $O = 13.5{\arcsec}$. \emph{Upper middle}: the relative error of the corrected
 surface density, (corrected $-$ true) / true. \emph{Upper right}: the same for a region that contains the cloud alone. \emph{Lower
 panels}: the relative error across each filament, as the median over the outer rows of the field, where the cloud is weak, and over
-its central rows, where the cloud is dense. The filaments are labeled by their surface density on the axis. The cores are masked in
-the profiles. The dashed curve is the cloud alone at the same positions.}
+its central rows, where the cloud is dense. The filaments are labeled by their surface density $\Sigma_{0}$ on the axis. The cores
+are masked in the profiles. The dashed curve is the cloud alone at the same positions.}
 \label{fig:simsky6}
 \end{figure*}
 
@@ -810,20 +812,22 @@ the profiles. The dashed curve is the cloud alone at the same positions.}
 %%%%% read from the profiles at 0, 15-45 and 240 arcsec; the total of 0.96 is the median accuracy ratio with the cores masked
 %%%%% (0.955).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-Figure~\ref{fig:simsky6} shows the result for each component. The cloud alone, in a region without filaments and cores, is
-corrected from $0.76$ to $0.89$ of the truth in the median. It is $6$\% too low at $10^{21}$\,cm$^{-2}$ and $14$\% too low at
-$10^{22}$\,cm$^{-2}$. The remaining underestimation of $\Sigma$ in the cloud is the price of the average of
-Sect.~\ref{sec:diffuse}, which gives half the weight to the sphere.
+Figure~\ref{fig:simsky6} shows the relative error of the corrected surface density over the region, for the cloud alone, and across
+the filaments. The cloud alone, in a region without filaments and cores, is corrected from $0.76$ to $0.89$ of the truth in the
+median. It is $6$\% too low at $\Sigma_{0} = 10^{21}$\,cm$^{-2}$ and $14$\% too low at $\Sigma_{0} = 10^{22}$\,cm$^{-2}$. The
+remaining underestimation of $\Sigma$ in the cloud is the price of the average of Sect.~\ref{sec:diffuse}, which gives half the
+weight to the sphere.
 
-In the outer parts of the field, the cloud is a few $10^{21}$\,cm$^{-2}$. There the crests of the filaments are corrected to within
-$4$ to $17$\%, and their flanks to within $5$\%. Their outer wings are corrected too little, by $6$ to $9$\%, as much as the cloud
-around them. In the center of the field, the cloud reaches $2$ to $3\times10^{22}$\,cm$^{-2}$. There the flanks of the dense
-filaments are corrected too much, by $10$ to $16$\%, while the cloud alone at the same positions is corrected too little. Both
-effects come from the superposition of two structures, which a correction based on the surface density alone treats as one. They
-have the signs predicted in Appendix~\ref{app:arrange}: a structure in a weak cloud is under-corrected, and a structure in a dense
-cloud is over-corrected. The central cloud of the simulated star-forming region is two to three times denser than the background of
-the filaments in Aquila, which \emph{getsf} finds to be $6$ to $10\times10^{21}$\,cm$^{-2}$ at most. In a field like Aquila, the
-over-correction of the flanks should therefore be about $10$\%. Over the whole field, with the cores masked, the corrected surface
+In the outer parts of the simulated region, the cloud has $\Sigma \approx 2$--$5{\times}10^{21}$\,cm$^{-2}$. There the crests of
+the filaments are corrected to within $4$ to $17$\%, and their flanks to within $5$\%. Their outer wings are corrected too little,
+by $6$ to $9$\%, as much as the cloud around them. In the center, the cloud reaches $\Sigma \approx
+2$--$3{\times}10^{22}$\,cm$^{-2}$. There the flanks of the dense filaments are corrected too much, by $10$ to $16$\%, while the
+cloud alone at the same positions is corrected too little. Both effects come from the superposition of two structures, which a
+correction based on the surface density alone treats as one. They have the signs predicted in Appendix~\ref{app:arrange}: a
+structure in a weak cloud is under-corrected, and a structure in a dense cloud is over-corrected. The central cloud of the
+simulated star-forming region is two to three times denser than the background of the filaments in Aquila, which \emph{getsf}
+determines to be $6{\times}10^{21}$ to $10^{22}$\,cm$^{-2}$ at most. In a region like Aquila, the over-correction of the filament
+flanks should therefore be about $10$\%. Over the whole simulated star-forming region, with the cores masked, the corrected surface
 density is $0.96$ of the truth.
 
 \subsection{Remaining errors}
