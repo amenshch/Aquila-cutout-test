@@ -1352,11 +1352,11 @@ def fig_aquila(out="fig_aquila.pdf"):
     fig = plt.figure(figsize=(7.1, 6.9))
     gs = fig.add_gridspec(2, 2, wspace=0.075, hspace=0.0, left=0.010, right=0.940, bottom=0.015, top=0.955)
 
-    panels = [(dd, r"Surface density $\mathcal{D}$ (cm$^{-2}$)", SD_CMAP, LogNorm(vmin=lo, vmax=hi), ""),
-              (cc, r"Corrected surface density $\mathcal{D}_{\rm c}$ (cm$^{-2}$)", SD_CMAP, LogNorm(vmin=lo, vmax=hi), ""),
-              (ff, r"Correction factors $\mathcal{F}$", SD_CMAP, None, ""),
+    panels = [(dd, r"Surface density $\mathcal{D}_{13.5}$ (cm$^{-2}$)", SD_CMAP, LogNorm(vmin=lo, vmax=hi), ""),
+              (cc, r"Corrected surface density $\mathcal{D}_{13.5\,\rm C}$ (cm$^{-2}$)", SD_CMAP, LogNorm(vmin=lo, vmax=hi), ""),
+              (ff, r"Correction factors $\mathcal{F}_{13.5}$", SD_CMAP, None, ""),
 ##              (tt, r"Corrected dust temperature $T$ (K)", SD_CMAP, None, "")]
-              (tt, r"Corrected dust temperature $T$ (K)", SD_CMAP, PowerNorm(gamma=0.5, vmin=tlo, vmax=thi), "")]
+              (tt, r"Corrected dust temperature $\mathcal{T}_{13.5\,C}$ (K)", SD_CMAP, PowerNorm(gamma=0.5, vmin=tlo, vmax=thi), "")]
 
 #    ax.set_xticks([0.1, 0.2, 0.5, 1.0, 2.0])
 #    ax.set_xticklabels(["0.1", "0.2", "0.5", "1", "2"])
@@ -1507,10 +1507,10 @@ def fig_grid_validation(table="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260
         a.set_box_aspect(1.0 / 1.25)
 
     h, l = ax[0].get_legend_handles_labels()
-    ax[0].legend([h[i] for i in order], [l[i] for i in order], loc="upper left", bbox_to_anchor=(0.15, 0.76), **leg)
+    ax[0].legend([h[i] for i in order], [l[i] for i in order], loc="upper left", bbox_to_anchor=(0.13, 0.76), fontsize=7.5) ## **leg
 
     h, l = ax[1].get_legend_handles_labels()
-    ax[1].legend([h[i] for i in order], [l[i] for i in order], loc="upper left", bbox_to_anchor=(0.05, 0.76), **leg)
+    ax[1].legend([h[i] for i in order], [l[i] for i in order], loc="upper left", bbox_to_anchor=(0.03, 0.76), fontsize=7.5) ## **leg
 
     fig.tight_layout(pad=0.0, w_pad=2)
     fig.savefig(out)
@@ -1621,7 +1621,7 @@ def fig_cylinders(dirs=None, out="fig_cylinders.pdf"):
     ax[0].tick_params(labelsize=7.0)
     ax[0].set_xlabel("Offset from crest (″)", fontsize=7.0, labelpad=1.5)
     ax[0].set_ylabel(r"Surface density $\Sigma$ (cm$^{-2}$)", fontsize=7.0, labelpad=1.5)
-    ax[0].legend(loc="upper left", fontsize=6.2)  # **LEG
+    ax[0].legend(loc="lower left", fontsize=6.5, bbox_to_anchor=(0.33, 0.03))  # **LEG
 
     ax[1].axhline(1.0, **REF)
     ax[1].set_xlim(-249, 249)
@@ -1629,7 +1629,7 @@ def fig_cylinders(dirs=None, out="fig_cylinders.pdf"):
     ax[1].tick_params(labelsize=7.0)
     ax[1].set_xlabel("Offset from crest (″)", fontsize=7.0, labelpad=1.5)
     ax[1].set_ylabel(r"Relative error of $\Sigma$", fontsize=7.0, labelpad=1.5)
-    ax[1].legend(loc="lower left", ncol=1, fontsize=6.2)  #**LEG
+    ax[1].legend(loc="lower left", ncol=1, fontsize=6.5, bbox_to_anchor=(0.62, 0.03))  #**LEG
 
     for a in ax:
         a.set_box_aspect(1.0 / 1.25)
@@ -1677,22 +1677,23 @@ def fig_simsky6(sky="simsky6_RT_enh_nocrater", cirrus="simsky6_RT_enh_cirronly",
     ext = [-n * PIX / 120.0, n * PIX / 120.0] * 2
     maps = []
     a = fig.add_subplot(gs[0, 0])
-    im = a.imshow(np.log10(T), origin="lower", extent=ext, cmap=SD_CMAP, vmin=20.99, vmax=23.0)
+    im = a.imshow(np.log10(T), origin="lower", extent=ext, cmap=SD_CMAP, vmin=21.0, vmax=23.0)
     maps.append(a)
-    a.set_title(r"True $\log_{10}\mathcal{D}$ (cm$^{-2}$)", fontsize=7.0, pad=5)
-    cb = colorbar_beside(fig, a, im)
-    cb.ax.tick_params(labelsize=7.0, pad=2)
+    a.set_title(r"True $\log_{10}\mathcal{D}_{13.5}$ (cm$^{-2}$)", fontsize=6.8, pad=5)
+    cb = colorbar_beside(fig, a, im, "4%")
+    cb.ax.set_yticks([21.0, 21.5, 22.0, 22.5, 23.0])
+    cb.ax.tick_params(labelsize=6.8, pad=2)
     cb.ax.tick_params(which='major', length=3.5)
     cb.ax.tick_params(which='minor', length=2.3)
 
-    for k, (x, lab) in enumerate(((R, r"Relative errors of $\mathcal{D}_{\rm C}$"), 
-                                  (Rc, r"Relative errors of $\mathcal{D}_{\rm C}$ (cloud)"))):
+    for k, (x, lab) in enumerate(((R, r"Relative errors of $\mathcal{D}_{13.5\,\rm C}$"), 
+                                  (Rc, r"Relative errors of $\mathcal{D}_{13.5\,\rm C}$ (cloud)"))):
         a = fig.add_subplot(gs[0, k + 1])
         im = a.imshow(x, origin="lower", extent=ext, cmap=SD_CMAP, vmin=-0.25, vmax=0.25)
         maps.append(a)
-        a.set_title(lab, fontsize=7.0, pad=4)
+        a.set_title(lab, fontsize=6.8, pad=4)
         cb = colorbar_beside(fig, a, im, "4%")
-        cb.ax.tick_params(labelsize=7.0, pad=2)
+        cb.ax.tick_params(labelsize=6.8, pad=2)
         cb.ax.tick_params(which='major', length=3.5)
         cb.ax.tick_params(which='minor', length=2.3)
 
@@ -1720,14 +1721,14 @@ def fig_simsky6(sky="simsky6_RT_enh_nocrater", cirrus="simsky6_RT_enh_cirronly",
         b.axhline(0.0, **REF)
         b.set_xlim(-300, 300)
         b.set_ylim(-0.199, 0.199)
-        b.set_title(title, fontsize=7.0, pad=4)
-        b.tick_params(labeltop=False, labelright=False, labelsize=7.0)
-        b.set_xlabel("Offset from crest (″)", labelpad=1.5, fontsize=7.0)
-        if k == 0: b.set_ylabel("Relative error of corrected $\\Sigma$", labelpad=1, fontsize=7.0)
-        if k == 1: b.tick_params(labelright=True, labelsize=7.0)
+        b.set_title(title, fontsize=6.8, pad=4)
+        b.tick_params(labeltop=False, labelright=False, labelsize=6.8)
+        b.set_xlabel("Offset from crest (″)", labelpad=1.5, fontsize=6.8)
+        if k == 0: b.set_ylabel("Relative error of corrected $\\Sigma$", labelpad=1, fontsize=6.8)
+        if k == 1: b.tick_params(labelright=True, labelsize=6.8)
         b.set_box_aspect(1.0 / 1.25)
 
-    b.legend(loc="upper left", bbox_to_anchor=(1.17, 1.06), **LEG)
+    b.legend(loc="upper left", bbox_to_anchor=(1.17, 1.06), fontsize=6.4) ##, **LEG
 
 #    fig.tight_layout(pad=0.0, w_pad=0.7)
     fig.savefig(out)
@@ -1912,9 +1913,9 @@ if __name__ == "__main__":
 #    fig_method()
 #    fig_relation()
 #    fig_fieldfactor()
-    fig_grid_validation()
+#    fig_grid_validation()
 #    fig_cylinders()
-#    fig_simsky6()
+    fig_simsky6()
 #    fig_aquila()
 #    fig_cube3d()
 #    fig_cube()
