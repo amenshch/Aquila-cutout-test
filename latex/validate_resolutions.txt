@@ -1,0 +1,14 @@
+! validate_resolutions.py -- the correction of the hires images at each resolution O, 1815 nodes
+! the true image convolved here to 13.5 arcsec, against nc.surfdens.r13p5x0.rs3p0as.fits, over pixels above 1e-3 of its peak in 1815
+! nodes: largest relative difference 5.89e-01, median over the nodes of the median difference 1.38e-06, largest
+! within the footprint 2.84e-02
+! true images read from nc.surfdens.r<O>x0.rs3p0as.fits instead of convolved here, nodes per O: 8.4: 0, 9.4: 0, 13.5: 1815, 18.2: 0, 24.9: 0, 36.3: 0
+! total and core mass: accuracy ratios, median (16th-84th percentiles) over the nodes; center (within 3
+! arcsec of the peak) and outer (1.55 O from it): median relative errors; u: uncorrected, c: corrected
+!     O  nodes   total_u                total_c                mass_u                 mass_c                  center_u center_c  outer_u  outer_c
+    8.4   1815    0.778 (0.553-0.922)  0.996 (0.910-1.033)  0.657 (0.493-0.866)  1.021 (0.762-1.160)   -0.469   -0.165   -0.269   +0.009
+    9.4   1815    0.778 (0.554-0.923)  0.990 (0.910-1.030)  0.638 (0.487-0.866)  1.009 (0.750-1.145)   -0.462   -0.164   -0.244   +0.018
+   13.5   1815    0.784 (0.556-0.929)  0.987 (0.916-1.026)  0.629 (0.458-0.860)  0.977 (0.745-1.107)   -0.442   -0.129   -0.210   +0.021
+   18.2   1815    0.794 (0.556-0.934)  0.987 (0.920-1.022)  0.626 (0.443-0.852)  0.949 (0.731-1.077)   -0.398   -0.094   -0.204   +0.020
+   24.9   1815    0.823 (0.560-0.941)  0.989 (0.934-1.021)  0.632 (0.433-0.859)  0.940 (0.724-1.053)   -0.361   -0.060   -0.181   +0.014
+   36.3   1815    0.851 (0.563-0.948)  0.993 (0.946-1.021)  0.653 (0.428-0.881)  0.937 (0.708-1.044)   -0.318   -0.035   -0.140   +0.012
