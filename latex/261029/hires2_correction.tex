@@ -106,9 +106,9 @@ Juvela+Ysard2012, Juvela+2013}. These studies found that single-temperature fits
 densest structures, by up to a factor of $3$ \citep{Juvela+2013}. Several ways to recover the temperature structure were proposed.
 The observed profiles of a core can be inverted under the assumption of spherical symmetry \citep{Roy+2014}. The emission of each
 line of sight can be described by several temperature components and fitted in many wavebands at once \citep{Marsh+2015}. Radiative
-transfer models can be fitted to the observed images of a whole field \citep{Juvela+2013}, and empirical models can be used to
+transfer models can be fitted to the observed images of a whole region \citep{Juvela+2013}, and empirical models can be used to
 combine the wavebands of different resolutions \citep{Juvela+Montillaud2013}. These methods need either an assumed geometry of a
-particular structure or a model of the whole field, whereas the correction presented here needs neither. It is calibrated once on
+particular structure or a model of the whole region, whereas the correction presented here needs neither. It is calibrated once on
 radiative transfer models and then applied to any surface density image, with a factor that depends only on the value of each pixel.
 
 Section~\ref{sec:models} describes the radiative transfer models used to calibrate and test the correction. Section~\ref{sec:law}
@@ -205,14 +205,14 @@ The dotted line marks the floor temperature $T_{\rm min}$.}
 
 Most of the observed area of a molecular cloud is covered by extended diffuse material, referred to here as the diffuse cloud, or
 simply the cloud. It was modeled as a rectangular box of $6.8{\times}6.8$\,pc with a $2$\,pc depth along the line of sight, whose
-projection was a map with scale-free fluctuations, rising toward the center of the field. The map was derived from the same
+projection was a map with scale-free fluctuations, rising toward the center of the map. The map was derived from the same
 scale-free background used previously in \citet{Menshchikov_etal2012,Menshchikov2021method,Menshchikov2021bench}. The volume
 density was constructed to fluctuate along every line of sight with the same power spectrum as across the sky
 (Appendix~\ref{app:rtmodels}). Its surface densities ranged from $3{\times}10^{20}$ to $3{\times}10^{22}$\,cm$^{-2}$, with a median
 of $5{\times}10^{21}$\,cm$^{-2}$.
 
-The simulated star-forming region combined this cloud with seven filaments and $96$ cores in a $1793{\times}1793$ field with
-$3{\arcsec}$ pixels. Every structural component was computed with the radiative transfer code, so that its emission and its surface
+The simulated star-forming region combined this cloud with seven filaments and $96$ cores in an image of $1793{\times}1793$ pixels of
+$3{\arcsec}$. Every structural component was computed with the radiative transfer code, so that its emission and its surface
 density were consistent. The filaments were those embedded in the envelopes of Sect.~\ref{sec:modfil}, with the emission of the
 envelopes subtracted, and they lay in the middle depth of the cloud (Appendix~\ref{app:embfil}). The cores were the grid models
 inside embedding spherical clouds whose surface density matched its surroundings in the cloud.
@@ -809,7 +809,7 @@ resolution, as was the image of the same region with the cloud alone.
 \caption{The simulated star-forming region, built from radiative transfer models of a cloud, seven filaments and $96$ cores.
 \emph{Upper left}: the true surface density at $O = 13.5{\arcsec}$. \emph{Upper middle}: the relative error of the corrected
 surface density, (corrected $-$ true) / true. \emph{Upper right}: the same for a region that contains the cloud alone. \emph{Lower
-panels}: the relative error across each filament, as the median over the outer rows of the field, where the cloud is weak, and over
+panels}: the relative error across each filament, as the median over the outer rows of the region, where the cloud is weak, and over
 its central rows, where the cloud is dense. The filaments are labeled by their surface density $\Sigma_{0}$ on the axis. The cores
 are masked in the profiles. The dashed curve is the cloud alone at the same positions.}
 \label{fig:simsky6}
@@ -901,8 +901,8 @@ C}$. The median for $\mathcal{T}_{13.5\,\rm C}$ is $12.2$\,K, against $15.0$\,K 
 and 99th percentiles are $9.6$ and $18.6$\,K. The correction is not a uniform rescaling. The factor is smallest in the diffuse
 material between the structures and largest along the crests of the filaments and at the cores. The correction therefore raises the
 contrast of the image as well as its overall level. Above $\Sigma = 3{\times}10^{22}$\,cm$^{-2}$, the factor decreases slightly
-from $2.10$ to $2.03$, so the densest crests and cores receive nearly the largest correction. The field is not uniform across the
-cloud. The warm corner in the upper left of $\mathcal{T}_{13.5\,\rm C}$ is heated more strongly than the rest of the field, and
+from $2.10$ to $2.03$, so the densest crests and cores receive nearly the largest correction. The radiation field is not uniform across the
+cloud. The warm corner in the upper left of $\mathcal{T}_{13.5\,\rm C}$ is heated more strongly than the rest of the sub-region, and
 there the single radiation field strength $G_{0} = 33$ adopted for the cloud underestimates the true one. Appendix~\ref{sec:field}
 discusses the uncertainties due to the radiation field.
 
@@ -960,8 +960,8 @@ factor of $8.1$. The median dust temperature implied by the corrected surface de
 fitted temperature.
 
 For the adopted dust properties, the total uncertainties of corrected surface densities are about $30$\% in diffuse material and
-$50$\% in dense structures, and those of corrected temperatures about $2$\,K (Appendix~\ref{sec:accuracy}). The dust opacity adds a
-factor of about $1.5$ to $2$ to the uncertainties.
+$50$\% in dense structures, and those of corrected temperatures about $2$\,K (Appendix~\ref{sec:accuracy}). The uncertainty of the
+dust opacity adds a factor of about $1.5$ to $2$, which scales all surface densities together.
 
 \begin{acknowledgements}
 The images of the molecular clouds used in this work were downloaded from the \textit{Herschel} Science
@@ -1070,7 +1070,7 @@ the full grid agreed with a one-dimensional calculation to $0.15$\,K.
 
 The filaments of the simulated star-forming region were the cylinders of Sect.~\ref{sec:modfil}, each computed again inside a
 cylindrical envelope that stood for the cloud around it. The envelope was uniform in radius between $R = 0.5$\,pc and $1$\,pc, and
-the cylinder was $10.3$\,pc long, longer than the field, so that its ends lay outside the images. The surface density of the
+the cylinder was $10.3$\,pc long, longer than the region, so that its ends lay outside the images. The surface density of the
 envelope through the axis followed the cloud of the region along the filament, row by row. A cylindrical envelope shields the axis
 less than a cloud layer of the same surface density, because the layer also blocks the directions close to its plane. The envelope
 was therefore made $1.3$ to $1.6$ times denser than the cloud, so that the mean intensity at the axis was the same as in the middle
@@ -1088,11 +1088,11 @@ cloud. A surface density map does not determine the density along the line of si
 that project to the map. The map had scale-free fluctuations, with a power spectrum $P(k) \propto k^{-3.0}$, a median surface
 density of about $3{\times}10^{21}$\,cm$^{-2}$, and no large-scale gradient. Real clouds such as Aquila have an extended background
 that rises toward their centers. The map was therefore multiplied by $1 + 5\,[1 + (r/600{\arcsec})^2]^{-0.75}$, where $r$ is the
-distance from the center of the field. This factor is $6$ at the center, nearly constant within $600{\arcsec}$, and declines as
+distance from the center of the map. This factor is $6$ at the center, nearly constant within $600{\arcsec}$, and declines as
 $r^{-1.5}$ beyond, toward unity far from the center, while the fine structure of the map is kept. The same enhanced map was used
 for the cloud of the simulated region and for the envelopes of the embedded filaments. The map was averaged into cells of
 $12{\arcsec}$ and extended on every side by margins of $2$\,pc, by mirror reflection. The margins kept the heating through the
-sides of the box away from the field.
+sides of the box away from the region.
 
 The volume density was built in three steps. First, a Gaussian random field $G$ of unit variance, with the same power spectrum
 $P(k) \propto k^{-3.0}$ in three dimensions, filled a box with the area of the extended map and a depth of $2$\,pc. Second, its
@@ -1104,7 +1104,7 @@ exactly the map, while the density varies along every line of sight as it does a
 photon packets, cells of $24{\arcsec}$, or a box without fluctuations along the line of sight gave the same correction factors to
 $0.1$\%.
 
-Figure~\ref{fig:cube} shows a slice through it, along one row of the field and
+Figure~\ref{fig:cube} shows a slice through it, along one row of the map and
 the line of sight, and compares it with the analytic slab of the same surface density. The surface layers are up to $3$\,K warmer
 than the slab, because they are heated by the unattenuated ultraviolet radiation from half the sky, which the gray relation of
 Eq.~(\ref{eq:law}) does not describe. Thin columns between dense regions are up to $2$\,K colder than the slab, because their dense
@@ -1113,7 +1113,7 @@ neighbors shield them from the side.
 \begin{figure*}[ht!]
 \centering
 \includegraphics[width=0.9\textwidth]{fig_cube.pdf}
-\caption{A slice through the radiative transfer model of the cloud, along the middle row of the field (vertical axis) and the line
+\caption{A slice through the radiative transfer model of the cloud, along the middle row of the map (vertical axis) and the line
 of sight (horizontal axis). The depth along the line of sight is horizontal in all four panels. \emph{Left three panels}: the H$_2$
 number density, the dust temperature, and the difference between the dust temperature and that of the analytic slab with the same
 surface density in each column. \emph{Right panel}: the dust temperature against the depth for three columns of different surface
@@ -1527,7 +1527,7 @@ for the calibration contain only the first case, and the simulated star-forming 
 the temperature is therefore right in one case and wrong in the other. The fitted temperature of a single pixel cannot distinguish
 the two cases. The radiation field varies over parsecs, and the warmth of a flank varies over the width of a filament. The field is
 therefore estimated from the temperature of the diffuse material of the whole map, as one number for a cloud
-(Appendix~\ref{app:fieldest}). In a small field, such as the Aquila field of Sect.~\ref{sec:aquila}, only $12$\% of the pixels are
+(Appendix~\ref{app:fieldest}). In a small region, such as the Aquila sub-region of Sect.~\ref{sec:aquila}, only $12$\% of the pixels are
 diffuse enough, and most of them lie in one corner, so the field must be taken from the larger map. None of these corrections
 changed the core mass by more than the error due to the background (Sect.~\ref{sec:valgrid}), so the simplest one was adopted.
 
