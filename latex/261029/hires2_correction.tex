@@ -133,18 +133,17 @@ $\Dim_{13.5}$ for a surface density image at $O = 13.5{\arcsec}$ and $H_{13.5}$ 
 The surface density correction method is based on accurate radiative transfer models of spherical cores, cylindrical filaments, and
 a diffuse cloud, in which the true surface density is known. All models were computed with the Monte Carlo dust continuum
 radiative-transfer code \emph{radmc-3d}\footnote{\url{http://www.ita.uni-heidelberg.de/~dullemond/software/radmc-3d}}
-\citep{Dullemond+2012} to obtain their one-, two-, or three-dimensional dust temperature structure and images of their surface
-density and emergent surface brightness in the \emph{Herschel} photometric bands ($70$, $100$, $160$, $250$, $350$, and
-$500$\,$\mu$m).
+\citep{Dullemond+2012} to obtain their one-, two-, or three-dimensional temperature structure and images of their surface density
+and emergent surface brightness in the \emph{Herschel} photometric bands ($70$, $100$, $160$, $250$, $350$, and $500$\,$\mu$m).
 
-The models were heated from outside by the isotropic interstellar radiation field \citep{Black1994}, of strength $G_0=0.98$ in
-\citet{Habing1968} units, to which a hot blackbody component of $2.2{\times}10^4$\,K was added to obtain stronger fields.
+The models were heated from outside by the isotropic interstellar radiation field \citep{Black1994} that has strength $G_0=0.98$
+(in \citet{Habing1968} units) to which a hot blackbody component of $2.2{\times}10^4$\,K was added to obtain stronger fields.
 Integrated over its far-ultraviolet part, the adopted fiducial field has $G_0 \approx 10$. The dust opacity was that tabulated by
 \citet{Ossenkopf+Henning1994} for grains with thin ice mantles, corresponding to coagulation time of $10^{5}$\,yr and hydrogen atom
 number density of $10^{6}$\,cm$^{-3}$. The opacities were scaled by a factor of $1.0746$ to match the analytic approximation
 $\kappa_\lambda = 10\,(300\,\mu{\rm m}/\lambda)^2\,{\rm cm^2\,g^{-1}}$ commonly used in observational studies. The adopted fiducial
 distance of $260$\,pc corresponds to the value previously used for the Aquila cloud \citep{Konyves+2015}. Details are given in
-Appendices~\ref{sec:grid} and \ref{app:rtmodels}.
+Appendix \ref{app:rtmodels}.
 
 \subsection{Cores}
 \label{sec:modcores}
@@ -177,10 +176,11 @@ profile
 \end{equation}
 truncated at the radius $R = 0.5$\,pc, where $h$ is the half-maximum width of the volume density profile and the factor
 $(2^{2/p}-1)$ makes $h$ independent of the slope $p$ \citep{Menshchikov2021method}. The surface density profile of the cylinder has
-the half-maximum width $H\approx 2h$ for the slopes $p = 2$ and $1.75$ of the models. Only the middle section of
-each cylinder was used, where the radiation entering through its ends is negligible and the temperature depends only on the
-distance $r$ from the axis. The parameters of the eight filaments are given in Table~\ref{tab:cylpar}. The densest one had an
-optical depth of $0.84$ at $100${\um} through its axis and was not used, like the three optically thick cores.
+the half-maximum width $H$ of $1.7$ to $2$ times $h$ for the slopes $p = 2$ and $1.75$ and the extents $R/h \approx 9$ to $20$ of
+the models \citep{Menshchikov+Zhang2026}. Only the middle section of each cylinder was used, where the radiation entering through
+its ends is negligible and the temperature depends only on the distance $r$ from the axis. The parameters of the eight filaments
+are given in Table~\ref{tab:cylpar}. The densest one had an optical depth of $0.84$ at $100${\um} through its axis and was not
+used, like the three optically thick cores.
 
 \begin{figure*}
 \centering
@@ -638,7 +638,7 @@ lines of sight. All of them were computed for $G_0 = 10$, hence $g = 1$ in Eq.~(
 maximum changes it only above $4.0{\times}10^{22}$\,cm$^{-2}$. Within the surface densities of these models, the change is at most
 $2$\%, and the results below are given without it. The correction for other fields was tested separately (Appendix~\ref{sec:field}).
 
-\subsection{Models of embedded cores}
+\subsection{Tests on the models of cores}
 \label{sec:valgrid}
 
 The correction was validated on the subdivision grid (Sect.~\ref{sec:modcores}) of $1815$ radiative transfer models of embedded
@@ -687,17 +687,14 @@ percentiles as in (b).}
 }
 \end{table}
 
-\begin{figure*}
+\begin{figure}
 \centering
-\includegraphics[width=0.96\textwidth]{fig_grid_validation.pdf}
-\caption{Testing the correction method on the radiative transfer models of embedded spherical models. \emph{Left}: The relative
-error of the corrected surface density (Sect.~\ref{sec:valgrid}), against the distance from the center of the core, as the median
-over the models. The dashed line marks $O/2$ for $O = 13.5{\arcsec}$. \emph{Right}: The accuracy ratio of the core mass, for the
-$1750$ models in which it can be measured, when the estimated radius $R$ of the core, and hence of its footprint, is too small
-($\Delta R < 0$) or too large ($\Delta R > 0$). The background is always taken in a ring just outside the footprint used. The lines
-are medians over the models, and the band marks the 16th to 84th percentiles for $\mathcal{F}_{36.3\,}\mathcal{D}_{13.5}$.}
+\includegraphics[width=0.98\columnwidth]{fig_grid_validation.pdf}
+\caption{Testing the correction method on the radiative transfer models of embedded cores. The relative error of the corrected
+surface density (Sect.~\ref{sec:valgrid}) is shown against the distance from the center of the core, as the median over the
+$1815$ models. The dashed line marks $O/2$ for $O = 13.5{\arcsec}$.}
 \label{fig:valgrid}
-\end{figure*}
+\end{figure}
 
 The uncorrected image $\Dim_{13.5}$ contains $78$\% of the true surface density and $63$\% of the core mass. The largest
 underestimation, $44$\%, is at the core center. The correction restores the median total to $99$\% and the median core mass to
@@ -708,23 +705,16 @@ depends on the surface density alone can remove it. The center of a core is cold
 same surface density, and the surface density does not reveal this. The factor evaluated at $36.3{\arcsec}$ gives almost the same
 integrated values but a larger underestimation at the center (Sect.~\ref{sec:apply}).
 
-The errors of individual models are larger than the median errors. The corrected mass is more than $25$\% too
-low for one-sixth of the cores and more than $11$\% too high for one-sixth (Table~\ref{tab:valgrid}). The errors depend on the contrast of a
-core, the ratio of its peak to the background. Cores with contrasts above $10$ dominate their lines of sight, and their cold
-interiors leave the surface density at their centers underestimated by $45$\% and their masses by $16$\%. Cores with contrasts
-below $1.5$ are nearly uniform and are corrected to within $4$\%. No correction that depends on the surface density alone can
-remove this spread, because cores with the same surface density differ in how their temperature varies along the line of sight.
+The errors of individual models are larger than the median errors. The corrected mass is more than $25$\% too low for one-sixth of
+the cores and more than $11$\% too high for one-sixth (Table~\ref{tab:valgrid}). The errors depend on the contrast of a core, the
+ratio of its peak to the background. Cores with contrasts above $10$ dominate their lines of sight, and their cold interiors leave
+the surface density at their centers underestimated by $45$\% and their masses by $16$\%. Cores with contrasts below $1.5$ are
+nearly uniform and are corrected to within $4$\%. No correction that depends on the surface density alone can remove this spread,
+because cores with the same surface density differ in how their temperature varies along the line of sight. A footprint wrong by a
+quarter of its radius changes the median mass by $-15$ to $+8$\%, much more than the correction leaves
+(Appendix~\ref{app:footprint}).
 
-In observed images, the footprints of cores are estimated by source extraction and can be wrong. To test the effect of such errors,
-the radius $R$ of the footprint was decreased or increased by $\Delta R$ (Fig.~\ref{fig:valgrid}). A footprint too small by $\Delta
-R/R$ of $0.25$ or $0.5$ lowers the median corrected mass from $0.98$ to $0.83$ or $0.52$, because part of the core is then
-considered as background. A footprint too large by $0.25$ or $0.5$ raises it to $1.06$ or $1.11$, and the spread widens sharply for
-cores of low contrast, whose mass is small compared with the background within the footprint. For contrasts below $1.5$, a
-footprint too large by $\Delta R/R = 1$ triples the median mass, whereas for contrasts above $10$ it lowers it by $12$\%. These
-errors are lower limits, because the models are embedded in uniform clouds, whereas real cores overlap with filaments, background
-fluctuations, and other cores, which make the background harder to estimate.
-
-\subsection{Models of filaments}
+\subsection{Tests on the models of filaments}
 \label{sec:cyl}
 
 The correction method was also validated on the seven radiative transfer models of isolated cylindrical filaments of
@@ -795,7 +785,7 @@ $H_{13.5} = 48{\arcsec}$ (intrinsic $H = 40{\arcsec}$) are $15$ to $31$\% too la
 center of a core, is colder than the middle of a uniform structure with the same surface density. Beyond about $20{\arcsec}$ from
 the crest, the corrected profiles are within $8$\% of the truth (Fig.~\ref{fig:cylinders}).
 
-\subsection{Simulated star-forming region}
+\subsection{Tests on the simulated star-forming region}
 \label{sec:sim}
 
 The cores and filaments model a single structure, in contrast to the observed molecular clouds. The simulated star-forming region
@@ -849,11 +839,11 @@ star-forming region, with the cores masked, the corrected surface density is $0.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 Two kinds of structure are not corrected well by any correction that depends on the surface density alone. The centers of
 concentrated structures, such as the centers of cores and the crests of filaments, remain $6$ to $22$\% too low. Cores with
-$H_{13.5} < 2 O$, representing half of the models of the grid, remain $27$\% too low at their centers in the median and more than
-$56$\% too low for one-sixth of them. They are surrounded by a ring that is over-corrected by $5$\% in the median and, for
-one-sixth of them, by more than $16$\%, because the beam spreads their cold centers over an area of lower surface density.
-Superposed structures of very different temperatures are corrected too little or too much, by $10$ to $20$\% (Sect.~\ref{sec:sim}).
-Corrections that also read the fitted temperature do not help (Appendix~\ref{app:tcorr}).
+$H_{13.5} < 2\,O$ \citep[cf.][]{Menshchikov+Zhang2026}, representing half of the models of the grid, remain $27$\% too low at their
+centers in the median and more than $56$\% too low for one-sixth of them. They are surrounded by a ring that is over-corrected by
+$5$\% in the median and, for one-sixth of them, by more than $16$\%, because the beam spreads their cold centers over an area of
+lower surface density. Superposed structures of very different temperatures are corrected too little or too much, by $10$ to $20$\%
+(Sect.~\ref{sec:sim}). Corrections that also read the fitted temperature do not help (Appendix~\ref{app:tcorr}).
 
 % =====================================================================
 
@@ -984,23 +974,24 @@ Projects jointly carried out by SPIRE Specialist Astronomy Group 3 (SAG3), scien
 \section{Details of the radiative transfer models}
 \label{app:rtmodels}
 
-\subsection{Grids of core models}
+\subsection{Embedded spherical cores}
 \label{sec:grid}
 
-All models of cores were Bonnor--Ebert spheres embedded in a uniform spherical cloud, heated from outside by the interstellar
-radiation field and computed with \emph{radmc-3d} for the dust of Sect.~\ref{sec:models}. Three grids were used: the main grid for
-the relation of Eq.~(\ref{eq:law}), the subdivision grid for the validation of Sect.~\ref{sec:valgrid}, and the grid of radiation
-fields for Appendix~\ref{app:field}.
+Each core was modeled as a Bonnor--Ebert sphere embedded in a uniform spherical cloud, heated from outside by the interstellar
+radiation field and computed with \emph{radmc-3d} for the dust opacity given in Sect.~\ref{sec:models}. Three sets of models were
+computed: the main grid of $2089$ models, of which the $2086$ optically thin ones were used to fit the relation of
+Eq.~(\ref{eq:law}); the subdivision grid of $1815$ models, used in the tests of Sect.~\ref{sec:valgrid}; and nine grids that
+repeated $339$ models of the main grid in different radiation fields (Appendix~\ref{app:field}).
 
 The main grid varied three parameters: the surface density $\Sigma_{\rm emb}$ of the embedding cloud, from $3.75\times10^{20}$ to
-$9.6\times10^{22}$\,cm$^{-2}$ in $9$ steps of a factor of $2$; the mass of the Bonnor--Ebert sphere, from $1.6{\times}10^{-3}$ to
-$31\,M_{\odot}$ in $26$ steps of $0.17$\,dex; and the half-maximum width of its volume density profile, from $0.003$ to $0.25$\,pc
-in $19$ steps of $0.11$\,dex. Only the models whose peak surface density exceeded that of the embedding cloud by at least $5$\%
-were computed, and one of them, the most extended one, was not completed because it required too much memory. The central-to-edge
-density ratios $\rho_{\rm C}/\rho_{\rm e}$ of the $2086$ computed models ranged from $1.04$ to $2.1{\times}10^{3}$. Three more
-models extended the grid to $\Sigma_{\rm emb}$ of $1.9$ to $7.9\times10^{23}$\,cm$^{-2}$. They were optically thick in the far
-infrared and were not used in the calibration (Sect.~\ref{sec:modcores}). The temperature of each model, tabulated shell by shell,
-entered the relation of Eq.~(\ref{eq:law}).
+$9.6\times10^{22}$\,cm$^{-2}$ in $9$ steps of a factor of $2$; the mass $M_{\rm BE}$ of the Bonnor--Ebert sphere, from
+$1.6{\times}10^{-3}$ to $31\,M_{\odot}$ in $26$ steps of $0.17$\,dex; and the half-maximum width $h$ of its volume density profile,
+from $0.003$ to $0.25$\,pc in $19$ steps of $0.11$\,dex. Only the models whose peak surface density exceeded that of the embedding
+cloud by at least $5$\% were computed, and one of them, the most extended one, was not completed because it required too much
+memory. The central-to-edge density ratios $\rho_{\rm C}/\rho_{\rm e}$ of the $2086$ computed models ranged from $1.04$ to
+$2.1{\times}10^{3}$. Three more models extended the grid to $\Sigma_{\rm emb}$ of $1.9$ to $7.9\times10^{23}$\,cm$^{-2}$. They were
+optically thick in the far infrared and were not used in the calibration (Sect.~\ref{sec:modcores}). The temperature of each model,
+tabulated shell by shell, entered the relation of Eq.~(\ref{eq:law}).
 
 The attenuating columns of Eq.~(\ref{eq:seff}) were computed by integrating the density along rays. For the spherical shells of the
 cores, a direction is defined by its angle $\psi$ to the outward radial direction, and $240$ values of $\psi$ were used, weighted
@@ -1027,7 +1018,7 @@ steps of a factor of $2.17$. The lowest field is the field of \citet{Black1994} 
 field is possible in this implementation. About five models per field were not computed, because they required the largest images.
 They do not affect the results of Appendix~\ref{app:field}.
 
-\subsection{Computing the isolated cylinders}
+\subsection{Isolated cylindrical filaments}
 
 The cylinders were computed with \emph{radmc-3d} on an axisymmetric spherical grid of $400$ cells in radius and $480$ cells in the
 polar angle, which covered both sides of the equatorial plane. The grid was refined toward the axis and toward the equatorial
@@ -1065,7 +1056,7 @@ $3{\times}10^{22}$ & $1.75$ & $42.5$ & $80$ \\
 The mirror symmetry of \emph{radmc-3d} was not used. On a test sphere, it made the temperatures $0.6$ to $1.1$\,K too low, whereas
 the full grid agreed with a one-dimensional calculation to $0.15$\,K.
 
-\subsection{Cylindrical envelopes for the simulated region}
+\subsection{Embedded cylindrical filaments}
 \label{app:embfil}
 
 The filaments of the simulated star-forming region were the cylinders of Sect.~\ref{sec:modfil}, each computed again inside a
@@ -1081,7 +1072,7 @@ added to the cloud of the region, which was assumed to extend far in front of an
 computed with $10^9$ photon packets. Runs with $8\times10^9$ packets gave the same temperatures to $0.02$\,K and the same emission
 to $0.3$\%.
 
-\subsection{Three-dimensional model of the diffuse cloud}
+\subsection{Diffuse three-dimensional cloud}
 
 The cloud of the simulated star-forming region was a three-dimensional radiative transfer model whose projection is the map of the
 cloud. A surface density map does not determine the density along the line of sight, and the model is one of the many distributions
@@ -1529,7 +1520,7 @@ the two cases. The radiation field varies over parsecs, and the warmth of a flan
 therefore estimated from the temperature of the diffuse material of the whole map, as one number for a cloud
 (Appendix~\ref{app:fieldest}). In a small region, such as the Aquila sub-region of Sect.~\ref{sec:aquila}, only $12$\% of the pixels are
 diffuse enough, and most of them lie in one corner, so the field must be taken from the larger map. None of these corrections
-changed the core mass by more than the error due to the background (Sect.~\ref{sec:valgrid}), so the simplest one was adopted.
+changed the core mass by more than the error due to the footprint and the background (Appendix~\ref{app:footprint}), so the simplest one was adopted.
 
 \section{Uncertainties and limitations}
 \label{sec:limits}
@@ -1598,7 +1589,29 @@ Eq.~(\ref{eq:sensitivity}), an error of $30$ to $50$\% in $\Sigma$ corresponds t
 temperatures, in contrast, are too high by $1$ to $4$\,K in dense structures. These estimates hold for fields within the grid of
 models and for lines of sight without internal heating. Inclined layers and filaments can be over-corrected by a further $10$ to
 $25$\% between $3.2{\times}10^{21}$ and $10^{22}$\,cm$^{-2}$ (Appendix~\ref{sec:incl}). For the mass of a core, the errors of its
-footprint and background must be added (Sect.~\ref{sec:valgrid}).
+footprint and background must be added (Appendix~\ref{app:footprint}).
+
+\subsection{Errors of core footprints}
+\label{app:footprint}
+
+In observed images, the footprints of cores are estimated by source extraction and can be wrong. To test the effect of such errors,
+the radius $R$ of the footprint was decreased or increased by $\Delta R$ (Fig.~\ref{fig:footprint}). A footprint too small by $\Delta
+R/R$ of $0.25$ or $0.5$ lowers the median corrected mass from $0.98$ to $0.83$ or $0.52$, because part of the core is then
+considered as background. A footprint too large by $0.25$ or $0.5$ raises it to $1.06$ or $1.11$, and the spread widens sharply for
+cores of low contrast (Sect.~\ref{sec:valgrid}), whose mass is small compared with the background within the footprint. For contrasts below $1.5$, a
+footprint too large by $\Delta R/R = 1$ triples the median mass, whereas for contrasts above $10$ it lowers it by $12$\%. These
+errors are lower limits, because the models are embedded in uniform clouds, whereas real cores overlap with filaments, background
+fluctuations, and other cores, which make the background harder to estimate.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.98\columnwidth]{fig_footprint.pdf}
+\caption{The accuracy ratio of the core mass for the $1750$ models of the subdivision grid in which it can be measured, when the
+estimated radius $R$ of the core, and hence of its footprint, is too small ($\Delta R < 0$) or too large ($\Delta R > 0$). The
+background is always taken in a ring just outside the footprint used. The lines are medians over the models, and the band marks
+the 16th to 84th percentiles for $\mathcal{F}_{36.3\,}\mathcal{D}_{13.5}$.}
+\label{fig:footprint}
+\end{figure}
 
 \subsection{Uncertainty of the radiation field}
 \label{sec:field}
