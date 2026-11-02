@@ -1737,16 +1737,16 @@ def fig_simsky6(sky="simsky6_RT_enh_nocrater", cirrus="simsky6_RT_enh_cirronly",
 
 
 def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT_cirrus3d_12_enh_8e10/cirrus3d_slice_row224.npz", out="fig_cube.pdf"):
-  
-    """A vertical slice through the RADMC-3D diffuse cloud, compared with the analytic slab.
 
-    The slice contains one row of the field (horizontal) and the line of sight (vertical). Upper panels: the H2 number density, the
-    dust temperature of the radiative transfer model, and its difference from the analytic slab with the same surface density, in
-    which each layer is shielded by the angular average of the column toward both faces and has the temperature of Eq. (7). Lower
-    panel: the temperature against the depth for three columns of different surface density, radiative transfer (solid) and
-    analytic slab (dashed).
+    """A vertical slice through the RADMC-3D diffuse cloud, compared with the analytic slab, in one column.
+
+    The slice contains one row of the field (horizontal) and the line of sight (vertical, the depth increasing upward). Upper
+    three panels: the H2 number density, the dust temperature of the radiative transfer model, and its difference from the analytic
+    slab with the same surface density, in which each layer is shielded by the angular average of the column toward both faces and
+    has the temperature of Eq. (7). Lower panel: the temperature against the depth for three columns of different surface density,
+    radiative transfer (solid) and analytic slab (dashed).
     """
-  
+
     import make_simsky5 as S5
     import hicorrect2 as h2
 
@@ -1757,34 +1757,31 @@ def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT
     col = n * cell * 3.0856775814913673e18
     zz = (np.cumsum(col, axis=0) - 0.5 * col) / sig[None, :] * 2.0 - 1.0          # column position of each cell, -1 to +1
     Ta = S5.T_of_shielding(S5.slab_seff(zz, S5.KAPHEAT * sig[None, :] / 2.0) * sig[None, :] / 2.0)
-    ext = [0.0, nx * cell, 0.0, nz * cell]
 
-    # all four panels have the depth along the line of sight on the horizontal axis
-
-    fig = plt.figure(figsize=(7.1, 4.6))
-    gs = fig.add_gridspec(2, 5, width_ratios=[1.0, 1.0, 1.0, 0.2, 2.6], height_ratios=[0.05, 2.0], hspace=0.02, wspace=0.1,
-                          left=0.065, right=0.99, bottom=0.09, top=0.90)
+    # the three slices lie on their long sides, one above the other, with the depth increasing upward and the color bars at the
+    # right; the profiles against the depth are below them
+    fig = plt.figure(figsize=(3.5, 5.55))
+    gs = fig.add_gridspec(5, 2, width_ratios=[1.0, 0.035], height_ratios=[1.0, 1.0, 1.0, 0.42, 2.75], hspace=0.12, wspace=0.04,
+                          left=0.12, right=0.835, bottom=0.075, top=0.99)
     panels = ((np.log10(n), r"$\log_{10} n_{\rm H_2}$ (cm$^{-3}$)", None, None),
               (T, r"$T_{\rm RT}$ (K)", None, None),
               (T - Ta, r"$T_{\rm RT} - T_{\rm slab}$ (K)", -3.0, 3.0))
-    extr = [0.0, nz * cell, 0.0, nx * cell]
+    ext = [0.0, nx * cell, 0.0, nz * cell]
 
     for k, (img, lab, vmin, vmax) in enumerate(panels):
-        a = fig.add_subplot(gs[1, k])
-        im = a.imshow(img.T, origin="lower", extent=extr, aspect="auto", cmap=SD_CMAP, vmin=vmin, vmax=vmax)
-        a.tick_params(labeltop=False, labelright=False, labelleft=(k == 0), labelsize=7.5)
-        a.set_xticks([0.0, 1.0, 2.0])
-        a.set_xlabel("Depth (pc)", labelpad=1.5, fontsize=8.0)
-        if k == 0:
-            a.set_ylabel("Position along the row (pc)", labelpad=1.5, fontsize=8.0)
-        cax = fig.add_subplot(gs[0, k])
-        cb = fig.colorbar(im, cax=cax, orientation="horizontal")
-        cax.xaxis.set_ticks_position("top")
-        cax.xaxis.set_label_position("top")
-        cb.ax.tick_params(labelsize=7.3, pad=1)
-        cb.set_label(lab, fontsize=8.0, labelpad=3)
+        a = fig.add_subplot(gs[k, 0])
+        im = a.imshow(img, origin="lower", extent=ext, aspect="auto", cmap=SD_CMAP, vmin=vmin, vmax=vmax)
+        a.tick_params(labeltop=False, labelright=False, labelbottom=(k == 2), labelsize=7.0)
+        a.set_yticks([0.0, 1.0, 2.0])
+        a.set_ylabel("Depth (pc)", labelpad=1.5, fontsize=6.5)
+        if k == 2:
+            a.set_xlabel("Position along the row (pc)", labelpad=1.5, fontsize=6.5)
+        cax = fig.add_subplot(gs[k, 1])
+        cb = fig.colorbar(im, cax=cax, orientation="vertical")
+        cb.ax.tick_params(labelsize=6.5, pad=2)
+        cb.set_label(lab, fontsize=6.5, labelpad=3)
 
-    b = fig.add_subplot(gs[1, 4])
+    b = fig.add_subplot(gs[4, :])
     order = np.argsort(sig)
     picks = [order[int(q * (nx - 1))] for q in (0.1, 0.5, 0.97)]
     depth = (np.arange(nz) + 0.5) * cell
@@ -1795,19 +1792,13 @@ def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT
         b.plot(depth, T[:, col_i], "-", color=c, lw=1.0, label=r"$%.1f{\times}10^{%d}$ cm$^{-2}$, RT" % (sig[col_i] / 10 ** e, e))
         b.plot(depth, Ta[:, col_i], "--", color=c, lw=1.0, label="the same, slab")
 
-    b.tick_params(labeltop=True, labelleft=True, labelright=True, labelsize=7.5)
-##    b.yaxis.set_label_position("right")
+    b.tick_params(labeltop=True, labelleft=True, labelright=True, labelsize=6.5)
     b.set_xlim(0.0, nz * cell + 0.004)
     b.set_ylim(np.nanmin(T[:, picks]) - 0.75, np.nanmax(T[:, picks]) + 0.3)
-    b.set_xlabel("Depth (pc)", labelpad=1.5, fontsize=8.0)
-    b.set_ylabel(r"Temperature $T$ (K)", labelpad=1.5, fontsize=8.0)
-    b.legend(loc="upper center", ncol=1, fontsize=7.3, frameon=False, handlelength=1.6, labelspacing=0.3)
+    b.set_xlabel("Depth (pc)", labelpad=1.5, fontsize=6.5)
+    b.set_ylabel(r"Temperature $T$ (K)", labelpad=1.5, fontsize=6.5)
+    b.legend(loc="upper center", ncol=1, fontsize=6.1, frameon=False, handlelength=1.6, labelspacing=0.3)
 
-    pos = b.get_position()
-    ratio = (pos.height * fig.get_figheight()) / (pos.width * fig.get_figwidth())   # current height / width
-    b.set_box_aspect(0.8)
-    b.set_anchor("S")        # keep the bottom edge aligned with the three image panels
-    
     fig.savefig(out)
     plt.close(fig)
     print("written %s" % out)
@@ -1915,10 +1906,10 @@ if __name__ == "__main__":
 #    fig_fieldfactor()
 #    fig_grid_validation()
 #    fig_cylinders()
-    fig_simsky6()
+#    fig_simsky6()
 #    fig_aquila()
+    fig_cube()
 #    fig_cube3d()
-#    fig_cube()
 #    fig_superposition()
 #    fig_mixing()
 #    fig_angular()
