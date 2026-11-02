@@ -1376,6 +1376,8 @@ def fig_aquila(out="fig_aquila.pdf"):
         if k == 3: cb.set_label(unit, fontsize=FS_CB, labelpad=-4)
         cb.ax.tick_params(labelsize=7.5, pad=1.5)
         cb.ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
+        cb.ax.tick_params(which='major', length=4.0)
+        cb.ax.tick_params(which='minor', length=2.8)
         if k == 3:
             cb.set_ticks([9.0, 10, 12, 14, 16, 18])
             cb.ax.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter("%g"))
@@ -1761,7 +1763,7 @@ def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT
     # the three slices lie on their long sides, one above the other, with the depth increasing upward and the color bars at the
     # right; the profiles against the depth are below them
     fig = plt.figure(figsize=(3.5, 5.55))
-    gs = fig.add_gridspec(5, 2, width_ratios=[1.0, 0.035], height_ratios=[1.0, 1.0, 1.0, 0.42, 2.75], hspace=0.12, wspace=0.04,
+    gs = fig.add_gridspec(5, 2, width_ratios=[1.0, 0.035], height_ratios=[1.0, 1.0, 1.0, 0.42, 2.75], hspace=0.08, wspace=0.04,
                           left=0.12, right=0.835, bottom=0.075, top=0.99)
     panels = ((np.log10(n), r"$\log_{10} n_{\rm H_2}$ (cm$^{-3}$)", None, None),
               (T, r"$T_{\rm RT}$ (K)", None, None),
@@ -1773,12 +1775,15 @@ def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT
         im = a.imshow(img, origin="lower", extent=ext, aspect="auto", cmap=SD_CMAP, vmin=vmin, vmax=vmax)
         a.tick_params(labeltop=False, labelright=False, labelbottom=(k == 2), labelsize=7.0)
         a.set_yticks([0.0, 1.0, 2.0])
-        a.set_ylabel("Depth (pc)", labelpad=1.5, fontsize=6.5)
+        if k == 1:
+            a.set_ylabel("Depth (pc)", labelpad=1.5, fontsize=6.5)
         if k == 2:
             a.set_xlabel("Position along the row (pc)", labelpad=1.5, fontsize=6.5)
         cax = fig.add_subplot(gs[k, 1])
         cb = fig.colorbar(im, cax=cax, orientation="vertical")
         cb.ax.tick_params(labelsize=6.5, pad=2)
+        cb.ax.tick_params(which='major', length=3.5)
+        cb.ax.tick_params(which='minor', length=2.3)
         cb.set_label(lab, fontsize=6.5, labelpad=3)
 
     b = fig.add_subplot(gs[4, :])
@@ -1860,9 +1865,9 @@ def fig_cube3d(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_
                                        ((0, D, Z1), (X1, D, Z1)), ((X1, 0, 0), (X1, D, 0)), ((X1, D, 0), (X1, D, Z1))]:
         ax.plot([a0, a1], [b0, b1], [c0, c1], color="0.2", lw=0.6)
 
-    ax.text(0.47 * X1, 0.0, -0.15, "%.1f pc" % X1, fontsize=7.5, ha="center", va="top")
-    ax.text(-0.08, 0.0, 0.5 * Z1, "%.1f pc" % Z1, fontsize=7.5, ha="right", va="center")
-    ax.text(X1 + 0.1, 0.46 * D, 0.1, "%.0f pc" % D, fontsize=7.5, ha="left", va="top")
+    ax.text(0.47 * X1, 0.0, -0.15, "%.1f pc" % X1, fontsize=7.9, ha="center", va="top")
+    ax.text(-0.08, 0.0, 0.5 * Z1, "%.1f pc" % Z1, fontsize=7.9, ha="right", va="center")
+    ax.text(X1 + 0.1, 0.46 * D, 0.1, "%.0f pc" % D, fontsize=7.9, ha="left", va="top")
     ax.set_box_aspect((X1, D, Z1), zoom=1.12)
     ax.view_init(elev=32, azim=-64)
     ax.set_axis_off()
@@ -1875,7 +1880,7 @@ def fig_cube3d(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_
     ax.annotate("", xy=(-0.015, fy - 0.625), xytext=(0.0855, fy - 0.522), xycoords=ax.transAxes, textcoords=ax.transAxes,
                    annotation_clip=False, arrowprops=dict(arrowstyle="-|>", color="black", lw=0.5))
 ##    fig.text(fx, fy, "$\\odot$", fontsize=13, ha="center", va="center", color="black")
-    fig.text(fx + 0.008, fy - 0.52, "to observer", rotation=0, fontsize=7.5, ha="right", va="center")
+    fig.text(fx + 0.008, fy - 0.52, "to observer", rotation=0, fontsize=7.9, ha="right", va="center")
 
     bars = [(r"Front face: $\log_{10}\Sigma$ (cm$^{-2}$)", slim), (r"Upper face: $T$ (K)", tlim)]
 
@@ -1886,12 +1891,12 @@ def fig_cube3d(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_
     for k, (lab, lim) in enumerate(bars):
         cax = fig.add_axes([0.23 + k * w * 0.64, 0.18, w - 0.11, 0.022])
         cb = fig.colorbar(mpl.cm.ScalarMappable(norm=mpl.colors.Normalize(*lim), cmap=SD_CMAP), cax=cax, orientation="horizontal")
-        cax.tick_params(labelsize=7.5, pad=1.5, top=False, labeltop=False)
-        cax.tick_params(which='major', length=3.5)
-        cax.tick_params(which='minor', length=2.3)
+        cax.tick_params(labelsize=7.9, pad=1.5, top=False, labeltop=False)
+        cax.tick_params(which='major', length=4.2)
+        cax.tick_params(which='minor', length=3.0)
         if k == 0: 
-          cb.set_label(lab, fontsize=7.5, labelpad=1)
-        else: cb.set_label(lab, fontsize=7.5, labelpad=2)
+          cb.set_label(lab, fontsize=7.9, labelpad=1)
+        else: cb.set_label(lab, fontsize=7.9, labelpad=2)
 
     fig.savefig(out, dpi=300, bbox_inches="tight", pad_inches=0.0)
     plt.close(fig)
@@ -1908,8 +1913,8 @@ if __name__ == "__main__":
 #    fig_cylinders()
 #    fig_simsky6()
 #    fig_aquila()
-    fig_cube()
-#    fig_cube3d()
+#    fig_cube()
+    fig_cube3d()
 #    fig_superposition()
 #    fig_mixing()
 #    fig_angular()
