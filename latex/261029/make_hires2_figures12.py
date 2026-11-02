@@ -1419,24 +1419,11 @@ def fig_simsky(stem="simsky4.w40", out="fig_simsky.pdf"):
     print("written %s" % out)
 
 
-def fig_grid_validation(table="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260910_RT_BES_radmc3d_subdivision/validate3_finRTlaw.txt", 
-                        out="fig_grid_validation.pdf"):
+def read_grid_validation(table):
+    """The radial profiles and the core masses with misjudged footprints, read from the output of validate_calib3.py."""
 
-    """The correction measured on the radiative transfer models, and how much a misjudged footprint costs.
-
-    Left: the relative errors of the reconstruction at 13.5 arcsec against the distance from the center of the core, the median
-    over the 1815 nodes of the subdivision grid, before the correction and after it with the base image at 36.3 and at 13.5
-    arcsec. Right: the core mass, measured over the footprint of the core less the background just outside it, divided by the true
-    mass measured the same way with the correct footprint, against the error of the footprint in units of its equivalent radius.
-    The lines are the medians over the nodes and the band the 16th to 84th percentiles for the correction with the 36.3 arcsec
-    base. Both panels are read from the output of validate_calib3.py.
-    """
-
-#    names = {"uncorrected": "uncorrected", "hicorrect2, coarse": "corrected, $f$ at 36.3″", "hicorrect2, fine": "corrected, $f$ at 13.5″"}
     names = {"uncorrected": r"$\mathcal{D}_{13.5}$", "hicorrect2, coarse": r"$\mathcal{F}_{36.3}\,\mathcal{D}_{13.5}$",
              "hicorrect2, fine": r"$\mathcal{F}_{13.5}\,\mathcal{D}_{13.5}$"}
-    order = [0, 2, 1]
-    leg = dict(LEG)
     cols = {"uncorrected": CCURVE[2], "hicorrect2, coarse": CCURVE[1], "hicorrect2, fine": CCURVE[0]}
     lines = open(table).read().splitlines()
     mass0, foot, prof = {}, {}, []
@@ -1449,7 +1436,7 @@ def fig_grid_validation(table="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260
             sect = "mass"
         elif t.startswith("the same core mass with the footprint"):
             sect = "foot"
-        elif t.startswith("ring minus center"):
+        elif t.startswith("ring minus center") or t.startswith("the same, in five bins"):
             sect = None
         elif t.startswith("s ") and sect == "foot":
             svals = [float(v) for v in t.split()[1:]]
@@ -1465,56 +1452,82 @@ def fig_grid_validation(table="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260
                         v = [float(x.strip("[]")) for x in rest]
                         foot[key] = np.array(v).reshape(-1, 3)
 
-    prof = np.array(prof)
+    return names, cols, np.array(prof), np.array(svals[:2] + [0.0] + svals[2:]), mass0, foot
 
-    fig, ax = plt.subplots(1, 2, figsize=(7.0, 2.8))
-    fig.subplots_adjust(left=0.085, right=0.985, bottom=0.165, top=0.915, wspace=0.26)
 
+def fig_grid_validation(table="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260910_RT_BES_radmc3d_subdivision/validate3_finRTlaw.txt",
+                        out="fig_grid_validation.pdf"):
+
+    """The correction measured on the radiative transfer models of the subdivision grid.
+
+    The relative error of the reconstruction at 13.5 arcsec against the distance from the center of the core, the median over the
+    1815 nodes, before the correction and after it with the factors evaluated at 13.5 and at 36.3 arcsec. Read from the output of
+    validate_calib3.py.
+    """
+
+    names, cols, prof, s, mass0, foot = read_grid_validation(table)
+    order = [0, 2, 1]                     # legend order as in Table 1; the columns of the profiles follow the order of names
+
+    fig, ax = plt.subplots(1, 1, figsize=(3.5, 2.8))
     for k, key in enumerate(names):
-        ax[0].plot(prof[:, 0], prof[:, 1 + k], "-", color=cols[key], label=names[key])
+        ax.plot(prof[:, 0], prof[:, 1 + k], "-", color=cols[key], label=names[key])
 
-    ax[0].axhline(0.0, **REF)
-    ax[0].axvline(0.5 * FINE, ls="--", lw=0.5, color="0.3")
-    ax[0].text(0.5 * FINE + 2.0, 0.09, "%.1f″ beam" % FINE, fontsize=7, color="black", va="top", transform=ax[0].get_xaxis_transform())
-    ax[0].set_xlim(0.0, 124.0)
-    ax[0].set_ylim(-0.45, 0.12)
-    ax[0].tick_params(labelsize=7.7)
-    ax[0].set_xlabel("Distance from center (″)", fontsize=7.7, labelpad=1.5)
-    ax[0].set_ylabel(r"Relative error of $\Sigma(r\,)$", fontsize=7.7, labelpad=1.5)
-    ax[0].text(0.5 * FINE + 3.0, 0.06, "Radial profiles (1815 models)", fontsize=7.3)
-#    ax[0].legend(loc="lower center", **LEG)
-    s = np.array(svals[:2] + [0.0] + svals[2:])
+    ax.axhline(0.0, **REF)
+    ax.axvline(0.5 * FINE, ls="--", lw=0.5, color="0.3")
+    ax.text(0.5 * FINE + 2.0, 0.09, "%.1f″ beam" % FINE, fontsize=7, color="black", va="top", transform=ax.get_xaxis_transform())
+    ax.set_xlim(0.0, 124.0)
+    ax.set_ylim(-0.45, 0.12)
+    ax.tick_params(labelsize=7.7)
+    ax.set_xlabel("Distance from center (″)", fontsize=7.7, labelpad=1.5)
+    ax.set_ylabel(r"Relative error of $\Sigma(r\,)$", fontsize=7.7, labelpad=1.5)
+    ax.text(0.5 * FINE + 3.0, 0.06, "Radial profiles (1815 models)", fontsize=7.3)
+    h, l = ax.get_legend_handles_labels()
+    ax.legend([h[i] for i in order], [l[i] for i in order], loc="upper left", bbox_to_anchor=(0.13, 0.76), fontsize=7.5)
+    ax.set_box_aspect(1.0 / 1.25)
 
+    fig.tight_layout(pad=0.0)
+    fig.savefig(out)
+    plt.close(fig)
+    print("written %s" % out)
+
+
+def fig_footprint(table="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260910_RT_BES_radmc3d_subdivision/validate3_finRTlaw.txt",
+                  out="fig_footprint.pdf"):
+
+    """How much a misjudged footprint costs on the models of the subdivision grid.
+
+    The core mass, measured over the footprint of the core less the background just outside it, divided by the true mass measured
+    the same way with the correct footprint, against the error Delta R / R of the radius of the footprint. The lines are the
+    medians over the nodes and the band the 16th to 84th percentiles for the factors evaluated at 36.3 arcsec. Read from the output
+    of validate_calib3.py.
+    """
+
+    names, cols, prof, s, mass0, foot = read_grid_validation(table)
+    order = [0, 2, 1]
+
+    fig, ax = plt.subplots(1, 1, figsize=(3.5, 2.8))
     for key in names:
         f = foot[key]
         med = np.concatenate([f[:2, 0], [mass0[key][0]], f[2:, 0]])
         lo = np.concatenate([f[:2, 1], [mass0[key][1]], f[2:, 1]])
         hi = np.concatenate([f[:2, 2], [mass0[key][2]], f[2:, 2]])
-        ax[1].plot(s, med, "o-", ms=3.0, mfc="none", mew=0.7, color=cols[key], label=names[key])
-
+        ax.plot(s, med, "o-", ms=3.0, mfc="none", mew=0.7, color=cols[key], label=names[key])
         if key == "hicorrect2, coarse":
-            ax[1].fill_between(s, lo, hi, color=cols[key], alpha=0.2, lw=0.0)
+            ax.fill_between(s, lo, hi, color=cols[key], alpha=0.2, lw=0.0)
 
-    ax[1].axhline(1.0, **REF)
-    ax[1].axvline(0.0, ls="--", lw=0.5, color="black")
-    ax[1].set_xlim(-0.55, 1.05)
-    ax[1].set_ylim(0.2, 2.0)
-    ax[1].tick_params(labelsize=7.7)
-    ax[1].set_xlabel(r"Footprint error $\Delta R\,/R$", fontsize=7.7, labelpad=1.5)
-    ax[1].set_ylabel("Accuracy ratio of core mass", fontsize=7.7, labelpad=1.5)
-    ax[1].text(-0.42, 1.806, "Core masses (1750 models)", fontsize=7.3)
-    ax[1].legend(loc="lower center", **LEG)
+    ax.axhline(1.0, **REF)
+    ax.axvline(0.0, ls="--", lw=0.5, color="black")
+    ax.set_xlim(-0.55, 1.05)
+    ax.set_ylim(0.2, 2.0)
+    ax.tick_params(labelsize=7.7)
+    ax.set_xlabel(r"Footprint error $\Delta R\,/R$", fontsize=7.7, labelpad=1.5)
+    ax.set_ylabel("Accuracy ratio of core mass", fontsize=7.7, labelpad=1.5)
+    ax.text(-0.42, 1.806, "Core masses (1750 models)", fontsize=7.3)
+    h, l = ax.get_legend_handles_labels()
+    ax.legend([h[i] for i in order], [l[i] for i in order], loc="upper left", bbox_to_anchor=(0.03, 0.76), fontsize=7.5)
+    ax.set_box_aspect(1.0 / 1.25)
 
-    for a in ax:
-        a.set_box_aspect(1.0 / 1.25)
-
-    h, l = ax[0].get_legend_handles_labels()
-    ax[0].legend([h[i] for i in order], [l[i] for i in order], loc="upper left", bbox_to_anchor=(0.13, 0.76), fontsize=7.5) ## **leg
-
-    h, l = ax[1].get_legend_handles_labels()
-    ax[1].legend([h[i] for i in order], [l[i] for i in order], loc="upper left", bbox_to_anchor=(0.03, 0.76), fontsize=7.5) ## **leg
-
-    fig.tight_layout(pad=0.0, w_pad=2)
+    fig.tight_layout(pad=0.0)
     fig.savefig(out)
     plt.close(fig)
     print("written %s" % out)
@@ -1878,9 +1891,9 @@ def fig_cube3d(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_
     px, py, _ = proj3d.proj_transform(-0.2, 1.7, Z1 - 0.1, ax.get_proj())
     fx, fy = fig.transFigure.inverted().transform(ax.transData.transform((px, py)))
     ax.annotate("", xy=(-0.015, fy - 0.625), xytext=(0.0855, fy - 0.522), xycoords=ax.transAxes, textcoords=ax.transAxes,
-                   annotation_clip=False, arrowprops=dict(arrowstyle="-|>", color="black", lw=0.5))
+                   annotation_clip=False, arrowprops=dict(arrowstyle="-|>", color="black", lw=0.75))
 ##    fig.text(fx, fy, "$\\odot$", fontsize=13, ha="center", va="center", color="black")
-    fig.text(fx + 0.008, fy - 0.52, "to observer", rotation=0, fontsize=7.9, ha="right", va="center")
+    fig.text(fx + 0.01, fy - 0.52, "to observer", rotation=0, fontsize=7.9, ha="right", va="center")
 
     bars = [(r"Front face: $\log_{10}\Sigma$ (cm$^{-2}$)", slim), (r"Upper face: $T$ (K)", tlim)]
 
@@ -1898,9 +1911,26 @@ def fig_cube3d(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_
           cb.set_label(lab, fontsize=7.9, labelpad=1)
         else: cb.set_label(lab, fontsize=7.9, labelpad=2)
 
-    fig.savefig(out, dpi=300, bbox_inches="tight", pad_inches=0.0)
+    # bbox_inches="tight" keeps the empty space that the invisible 3D axes reserve above the brick, so the figure is cropped to
+    # what is actually drawn, found on a raster image of the figure
+##    fig.savefig(out, dpi=300, bbox_inches="tight", pad_inches=0.0)
+    save_cropped(fig, out, dpi=300, pad=0.0)
     plt.close(fig)
     print("written %s" % out)
+
+
+def save_cropped(fig, out, dpi=300, pad=0.02):
+    """Save the figure cropped to its non-white content, with a margin of pad inches."""
+    from matplotlib.transforms import Bbox
+    fig.canvas.draw()
+    img = np.asarray(fig.canvas.buffer_rgba())[:, :, :3]
+    ink = np.nonzero((img < 250).any(axis=2))
+    h, w = img.shape[:2]
+    fdpi = fig.dpi
+    y0, y1 = ink[0].min(), ink[0].max()
+    x0, x1 = ink[1].min(), ink[1].max()
+    box = Bbox([[x0 / fdpi - pad, (h - y1) / fdpi - pad], [(x1 + 1) / fdpi + pad, (h - y0 + 1) / fdpi + pad]])
+    fig.savefig(out, dpi=dpi, bbox_inches=box)
 
 if __name__ == "__main__":
 
@@ -1910,6 +1940,7 @@ if __name__ == "__main__":
 #    fig_relation()
 #    fig_fieldfactor()
 #    fig_grid_validation()
+#    fig_footprint()
 #    fig_cylinders()
 #    fig_simsky6()
 #    fig_aquila()

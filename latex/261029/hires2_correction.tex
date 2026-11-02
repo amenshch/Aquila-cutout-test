@@ -1109,10 +1109,22 @@ along every line of sight as it does across the sky. With the margins, the box h
 ($10.8{\times}10.8{\times}2.0$\,pc) and was computed with $8{\times}10^{10}$ photon packets. Fewer photon packets, cells of
 $24{\arcsec}$, or a density uniform along each line of sight gave the same correction factors to $0.1$\%.
 
-Figure~\ref{fig:cube} shows a slice through the model, along one row of the map and the line of sight, and compares it with the
-analytic slab of the same surface density. The surface layers are up to $3$\,K warmer than the slab, because they are heated by the
-unattenuated ultraviolet radiation from half the sky, which the gray relation of Eq.~(\ref{eq:law}) does not describe. Thin columns
-between dense regions are up to $2$\,K colder than the slab, because their dense neighbors shield them from the side.
+Figure~\ref{fig:cube3d} shows a segment of the model, the lower half of the imaged area, in three dimensions, with its surface
+density on the front face and the dust temperature on two cuts through it. Figure~\ref{fig:cube} shows a slice through it, along
+one row of the map and the line of sight, and compares it with the analytic slab of the same surface density. The surface layers
+are up to $3$\,K warmer than the slab, because they are heated by the unattenuated ultraviolet radiation from half the sky, which
+the gray relation of Eq.~(\ref{eq:law}) does not describe. Columns of low surface density between dense regions are up to $2$\,K
+colder than the slab, because their dense neighbors shield them from the side.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=\columnwidth]{fig_cube3d.pdf}
+\caption{A cut-away view of the radiative transfer model of the cloud, seen from the side of the observer. The front face is the
+surface density map of the lower half of the imaged area, oriented as in Fig.~\ref{fig:simsky6}; the depth runs along the line of
+sight. The upper face is a cut through the middle row of the map, and the right face a cut along its last column. Both show the
+dust temperature in the plane of the cut.}
+\label{fig:cube3d}
+\end{figure}
 
 \begin{figure}[ht!]
 \centering
@@ -1124,17 +1136,6 @@ temperature against the depth for three columns of different surface density, in
 analytic slab (dashed).}
 \label{fig:cube}
 \end{figure}
-
-%\begin{figure*}[ht!]
-%\centering
-%\includegraphics[width=0.9\textwidth]{fig_cube.pdf}
-%\caption{A slice through the radiative transfer model of the cloud, along the middle row of the map (vertical axis) and the line
-%of sight (horizontal axis). The depth along the line of sight is horizontal in all four panels. \emph{Left three panels}: the H$_2$
-%number density, the dust temperature, and the difference between the dust temperature and that of the analytic slab with the same
-%surface density in each column. \emph{Right panel}: the dust temperature against the depth for three columns of different surface
-%density, in the radiative transfer model (solid) and in the analytic slab (dashed).}
-%\label{fig:cube}
-%\end{figure*}
 
 As a result, the emission of the radiative transfer model at $160${\um} is up to $1.5$ times that of the analytic slab with the
 same surface density. In the simulated star-forming region, the emission of the analytic slab was multiplied in each band by the
