@@ -343,7 +343,7 @@ def fig_superposition(out="fig_superposition.pdf"):
         for tot, ls in ((2.0e22, "-"), (5.0e22, "--")):
             req = np.array([sup.two_component(tot, scir, v) for v in qq])
             axq.plot(qq, fmeth(tot / req) / req - 1.0, ls, color=col)
-        axq.plot([], [], "-", color=col, label=r"$\Sigma_{\rm C} = %s$" % {1.0e21: r"1{\times}10^{21}", 3.0e21: r"3{\times}10^{21}",
+        axq.plot([], [], "-", color=col, label=r"$\Sigma_{\rm L} = %s$" % {1.0e21: r"1{\times}10^{21}", 3.0e21: r"3{\times}10^{21}",
                                                                            1.0e22: r"1{\times}10^{22}"}[scir])
     axq.axhline(0.0, **REF)
     axq.plot([], [], "-", color="1", label=r"solid: $\Sigma = 2{\times}10^{22}$")
