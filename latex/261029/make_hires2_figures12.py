@@ -259,7 +259,7 @@ def fig_superposition(out="fig_superposition.pdf"):
     # ---- the temperature along the line of sight, against the surface density measured from the observer's side
     u = (np.arange(400) + 0.5) / 400.0
     sc = 1.0e22
-    ax[0].plot(u * sig / sc, law(attenuating_column(sig, "mean", 400)), "-", color=one, label="one uniform body")
+    ax[0].plot(u * sig / sc, law(attenuating_column(sig, "mean", 400)), "-", color=one, label="one uniform cloud")
     tc = sup.layer_temperatures(sig_c)
     ts = sup.sphere_temperatures(sig_s, sig_c, q)
     nc = len(tc) // 2
@@ -270,7 +270,7 @@ def fig_superposition(out="fig_superposition.pdf"):
     ax[0].plot(xs / sc, ts[::-1], "-", color=sep)
     ax[0].plot(xc2 / sc, tc[nc:], "-", color=sep)
     ax[0].axvspan(q * sig_c / sc, (q * sig_c + sig_s) / sc, color="0.90", zorder=0)
-    ax[0].text((q * sig_c + 0.5 * sig_s) / sc, 14.0, "Sphere", fontsize=7.75, color="black", ha="center")
+    ax[0].text((q * sig_c + 0.5 * sig_s) / sc, 14.0, "sphere", fontsize=7.75, color="black", ha="center")
     ax[0].set_xlim(0.0, sig / sc + 0.001)
     ax[0].set_ylim(7.5, 19.0)
     ax[0].tick_params(labelsize=7.7)
@@ -280,16 +280,17 @@ def fig_superposition(out="fig_superposition.pdf"):
     ax[0].annotate("", xy=(0.02, 0.9), xytext=(0.15, 0.9), xycoords=ax[0].transAxes, textcoords=ax[0].transAxes,
                    annotation_clip=False, arrowprops=dict(arrowstyle="-|>", color="black", lw=0.5))
     ax[0].text(0.16, 0.9, "to observer", fontsize=7.5, color="black", va="center", transform=ax[0].transAxes)
+    ax[0].text(1.0, 12.0, r"$\Sigma = 2{\times}10^{22}$ cm$^{-2}$", fontsize=7.75, color="black", ha="center")
 
     # ---- the emission each produces, and what one blackbody fitted to it returns
     wl = np.geomspace(130.0, 620.0, 200)
-    for label, temps, wgts, col in (("one uniform body", law(attenuating_column(sig, "mean", 400)), np.full(400, sig / 400.0), one),
+    for label, temps, wgts, col in (("one uniform cloud", law(attenuating_column(sig, "mean", 400)), np.full(400, sig / 400.0), one),
                                     ("cloud and sphere", np.concatenate([tc, ts]), np.concatenate([np.full(len(tc), sig_c / len(tc)),
                                                                                                     np.full(len(ts), sig_s / len(ts))]), sep)):
         obs = np.array([cnu(w) * np.sum(wgts * planck(temps, w)) for w in BANDS])
         sf = sup.fitted_column(obs)
         ax[1].plot(wl, [cnu(w) * np.sum(wgts * planck(temps, w)) for w in wl], "-", color=col,
-                   label=r"%s, fitted $\Sigma_{\rm f} = %.2f{\times}10^{22}$ cm$^{-2}$" % (label, sf / 1.0e22))
+                   label=r"%s, fitted $\Sigma_{\rm F} = %.2f{\times}10^{22}$ cm$^{-2}$" % (label, sf / 1.0e22))
         ax[1].plot(BANDS, obs, "o", ms=3.0, mfc="none", mec=col, mew=0.7)
 
     ax[1].set_xscale("log")
@@ -304,7 +305,7 @@ def fig_superposition(out="fig_superposition.pdf"):
     ax[1].set_ylabel(r"Intensity $I_\nu$ (MJy sr$^{-1}$)", fontsize=7.7, labelpad=1.5)
     clean_log(ax[1], "y")
     ax[1].legend(loc="lower center", **LEG)
-    ax[1].text(280.0, 60.0, r"Total $\Sigma = 2{\times}10^{22}$ cm$^{-2}$", fontsize=7.75, color="black", ha="center")
+    ax[1].text(280.0, 69.0, r"$\Sigma = 2{\times}10^{22}$ cm$^{-2}$", fontsize=7.75, color="black", ha="center")
 
     # ---- the factor the method applies, and the factor each arrangement requires, both against the observed (fitted) surface
     # density: the method sees only the fitted surface density of a pixel, so the two must be compared at the same fitted value
@@ -332,7 +333,7 @@ def fig_superposition(out="fig_superposition.pdf"):
     clean_log(ax[2], "x")
     ax[2].set_ylim(1.0, 2.2)
     ax[2].tick_params(labelsize=7.7)
-    ax[2].set_xlabel(r"Uncorrected $\Sigma$ (cm$^{-2}$)", fontsize=7.7, labelpad=0.5)
+    ax[2].set_xlabel(r"Uncorrected $\Sigma_{\rm F}$ (cm$^{-2}$)", fontsize=7.7, labelpad=0.5)
     ax[2].set_ylabel(r"Correction factor $f$", fontsize=7.7, labelpad=1.5)
     ax[2].legend(loc="lower right", **LEG)
 
@@ -342,7 +343,7 @@ def fig_superposition(out="fig_superposition.pdf"):
         for tot, ls in ((2.0e22, "-"), (5.0e22, "--")):
             req = np.array([sup.two_component(tot, scir, v) for v in qq])
             axq.plot(qq, fmeth(tot / req) / req - 1.0, ls, color=col)
-        axq.plot([], [], "-", color=col, label=r"$\Sigma_{\rm c} = %s$" % {1.0e21: r"1{\times}10^{21}", 3.0e21: r"3{\times}10^{21}",
+        axq.plot([], [], "-", color=col, label=r"$\Sigma_{\rm C} = %s$" % {1.0e21: r"1{\times}10^{21}", 3.0e21: r"3{\times}10^{21}",
                                                                            1.0e22: r"1{\times}10^{22}"}[scir])
     axq.axhline(0.0, **REF)
     axq.plot([], [], "-", color="1", label=r"solid: $\Sigma = 2{\times}10^{22}$")
@@ -351,7 +352,7 @@ def fig_superposition(out="fig_superposition.pdf"):
     axq.set_ylim(-0.13, 0.23)
     axq.tick_params(labelsize=7.7)
     axq.set_xlabel(r"Fraction $q$ of the cloud in front of sphere", fontsize=7.7, labelpad=2)
-    axq.set_ylabel(r"Relative error of the corrected $\Sigma$", fontsize=7.7, labelpad=1.5)
+    axq.set_ylabel(r"Relative error of $\Sigma_{\rm C}$", fontsize=7.7, labelpad=1.5)
     axq.legend(loc="upper center", columnspacing=0.8, **LEG)
 
     fig.savefig(out)
@@ -1959,6 +1960,6 @@ if __name__ == "__main__":
 #    fig_aquila()
 #    fig_cube3d()
 #    fig_cube()
-    fig_angular()
-#    fig_superposition()
+#    fig_angular()
+    fig_superposition()
 #    fig_mixing()
