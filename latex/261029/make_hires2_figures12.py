@@ -675,8 +675,8 @@ def fig_angular(out="fig_angular.pdf"):
 
     Left: the fraction of the heating radiation that survives the journey inward, against the cosine of the angle to the normal,
     for a parcel at mid-depth of a plane-parallel layer of three total surface densities. The dashed lines are the angular means
-    of the curves, the mean intensity of Eq. (5), and the single column that gives the same mean intensity is the effective
-    attenuating column of Eq. (4). Right: that column at mid-depth against the total surface density of the line of sight, for
+    of the curves, the mean intensity of Eq. (5), labeled with the single column that gives the same mean intensity, the
+    effective attenuating column of Eq. (4). Right: that column at mid-depth against the total surface density of the line of sight, for
     the two limiting shapes and their adopted average, with the shortest path for comparison.
     """
 
@@ -685,17 +685,24 @@ def fig_angular(out="fig_angular.pdf"):
     
     mu = np.linspace(0.005, 1.0, 400)
 
-    for sig, col, lab in ((3.0e20, CCURVE[0], r"3\times10^{20}"), (1.0e21, CCURVE[1], "10^{21}"),
-                          (3.0e21, CCURVE[2], r"3\times10^{21}")):
+    for sig, col, lab, below in ((3.0e20, CCURVE[0], r"3{\times}10^{20}", False), (1.0e21, CCURVE[1], r"1{\times}10^{21}", False),
+                                 (3.0e21, CCURVE[2], r"3{\times}10^{21}", False)):
         tr = np.exp(-KAPHEAT * 0.5 * sig / mu)
         ax[0].plot(mu, tr, "-", color=col, label=r"$\Sigma = %s$ cm$^{-2}$" % lab)
-        ax[0].axhline(np.trapezoid(tr, mu), ls="--", lw=0.5, color=col)
+        jm = np.trapezoid(tr, mu)
+        ax[0].axhline(jm, ls="--", lw=0.5, color=col)
+        # each dashed line is labeled with the effective attenuating column that gives the same mean intensity, Eq. (4)
+        sa = -np.log(jm) / KAPHEAT
+        e = int(np.floor(np.log10(sa)))
+        # at the right end, above the line, or below it where the curve itself runs just above the line
+        ax[0].text(0.985, jm - 0.012 if below else jm + 0.012, r"$\Sigma_{\rm A} = %.1f{\times}10^{%d}$" % (sa / 10 ** e, e),
+                   color="black", fontsize=7.0, ha="right", va="top" if below else "bottom")
 
     ax[0].set_xlim(0.0, 1.0)
     ax[0].set_ylim(0.01, 1.0)
     ax[0].tick_params(labelsize=7.7)
     ax[0].set_xlabel(r"Direction of incidence $\cos i$", fontsize=7.7, labelpad=3.5)
-    ax[0].set_ylabel(r"Transmitted fraction $\exp(-\sigma\,\Sigma(\hat n))$", fontsize=7.7, labelpad=1.5)
+    ax[0].set_ylabel(r"Transmitted fraction $\exp\left(-\sigma\,\Sigma(\hat n)\right)$", fontsize=7.7, labelpad=1.5)
     ax[0].legend(loc="upper left", **LEG)    ##, bbox_to_anchor=(0.02, 0.98)
 
     sg = np.geomspace(1.0e20, 1.0e24, 60)
@@ -911,7 +918,7 @@ def fig_relation(out="fig_relation.pdf"):
     # the adopted factor never decreases with the surface density (held at its maximum), Eq. (9) with g = 1
     ax.plot(fit, np.maximum.accumulate(f), "-", color=CCURVE[3], lw=1.5, label=r"adopted, $G_0 = 10$")
     # the adopted factor for two other fields, with the field factor g of Eq. (9)
-    for g0, ls in ((5.0, (0, (5, 2))), (33.0, (0, (1, 1.5)))):
+    for g0, ls in ((5.0, (0, (5, 2))), (33.0, (0, (2.5, 2)))):
         fg = np.maximum.accumulate(f) * h2.field_factor(np.log10(fit), g0)
         ax.plot(fit, fg, linestyle=ls, color=CCURVE[3], lw=1.1, label=r"adopted, $G_0 = %g$" % g0)
     ax.set_xscale("log")
@@ -1753,13 +1760,13 @@ def fig_simsky6(sky="simsky6_RT_enh_nocrater", cirrus="simsky6_RT_enh_cirronly",
 
 def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT_cirrus3d_12_enh_8e10/cirrus3d_slice_row224.npz", out="fig_cube.pdf"):
 
-    """A vertical slice through the RADMC-3D diffuse cloud, compared with the analytic slab, in one column.
+    """A vertical slice through the RADMC-3D diffuse cloud, compared with the uniform layer, in one column.
 
     The slice contains one row of the field (horizontal) and the line of sight (vertical, the depth increasing upward). Upper
     three panels: the H2 number density, the dust temperature of the radiative transfer model, and its difference from the analytic
-    slab with the same surface density, in which each layer is shielded by the angular average of the column toward both faces and
+    layer with the same surface density, in which each depth is shielded by the angular average of the column toward both faces and
     has the temperature of Eq. (7). Lower panel: the temperature against the depth for three columns of different surface density,
-    radiative transfer (solid) and analytic slab (dashed).
+    radiative transfer (solid) and uniform layer (dashed).
     """
 
     import make_simsky5 as S5
@@ -1780,7 +1787,7 @@ def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT
                           left=0.12, right=0.835, bottom=0.075, top=0.99)
     panels = ((np.log10(n), r"$\log_{10} n_{\rm H_2}$ (cm$^{-3}$)", None, None),
               (T, r"$T_{\rm RT}$ (K)", None, None),
-              (T - Ta, r"$T_{\rm RT} - T_{\rm slab}$ (K)", -3.0, 3.0))
+              (T - Ta, r"$T_{\rm RT} - T_{\rm layer}$ (K)", -3.0, 3.0))
     ext = [0.0, nx * cell, 0.0, nz * cell]
 
     for k, (img, lab, vmin, vmax) in enumerate(panels):
@@ -1802,20 +1809,26 @@ def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT
     b = fig.add_subplot(gs[4, :])
     order = np.argsort(sig)
     picks = [order[int(q * (nx - 1))] for q in (0.1, 0.5, 0.97)]
-    depth = (np.arange(nz) + 0.5) * cell
+    depth = (np.arange(nz) + 0.9) * cell
 
     for j, col_i in zip((0, 1, 2), picks):
         c = CCURVE[j]
         e = int(np.floor(np.log10(sig[col_i])))
-        b.plot(depth, T[:, col_i], "-", color=c, lw=1.0, label=r"$%.1f{\times}10^{%d}$ cm$^{-2}$, RT" % (sig[col_i] / 10 ** e, e))
-        b.plot(depth, Ta[:, col_i], "--", color=c, lw=1.0, label="the same, slab")
+        if j == 0:
+            fig.text(0.398, 0.406, r"$%.1f{\times}10^{%d}$ cm$^{-2}$" % (sig[col_i] / 10 ** e, e), rotation=0, fontsize=5.9, ha="right", va="center")
+        if j == 1:
+            fig.text(0.398, 0.364, r"$%.1f{\times}10^{%d}$ cm$^{-2}$" % (sig[col_i] / 10 ** e, e), rotation=0, fontsize=5.9, ha="right", va="center")
+        if j == 2:
+            fig.text(0.398, 0.322, r"$%.1f{\times}10^{%d}$ cm$^{-2}$" % (sig[col_i] / 10 ** e, e), rotation=0, fontsize=5.9, ha="right", va="center")
+        b.plot(depth, T[:, col_i], "-", color=c, lw=1.0, label="radiative transfer")
+        b.plot(depth, Ta[:, col_i], "--", color=c, lw=1.0, label="analytic estimate")
 
     b.tick_params(labeltop=True, labelleft=True, labelright=True, labelsize=6.5)
     b.set_xlim(0.0, nz * cell + 0.004)
     b.set_ylim(np.nanmin(T[:, picks]) - 0.75, np.nanmax(T[:, picks]) + 0.3)
     b.set_xlabel("Depth (pc)", labelpad=1.5, fontsize=6.5)
     b.set_ylabel(r"Temperature $T$ (K)", labelpad=1.5, fontsize=6.5)
-    b.legend(loc="upper center", ncol=1, fontsize=6.1, frameon=False, handlelength=1.6, labelspacing=0.3)
+    b.legend(loc="upper center", ncol=1, fontsize=5.9, frameon=False, bbox_to_anchor=(0.57, 0.95), handlelength=1.6, labelspacing=0.5)
 
     fig.savefig(out)
     plt.close(fig)
@@ -1944,8 +1957,8 @@ if __name__ == "__main__":
 #    fig_cylinders()
 #    fig_simsky6()
 #    fig_aquila()
+#    fig_cube3d()
 #    fig_cube()
-    fig_cube3d()
+    fig_angular()
 #    fig_superposition()
 #    fig_mixing()
-#    fig_angular()
