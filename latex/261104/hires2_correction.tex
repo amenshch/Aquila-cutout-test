@@ -545,13 +545,13 @@ The factor that a line of sight requires therefore depends on the
 field (Appendix~\ref{sec:field}).
 
 This dependence was measured on the model grid of embedded cores (Sect.~\ref{sec:modcores}) for nine radiation fields from $G_0 =
-0.98$ to $483$. For each field, the factors that the pixels of all its models required were averaged over the pixels with similar
-fitted surface densities, which gives the mean factor as a function of $\Sigma_{\rm F}$. The ratio of this mean to the same mean at
-$G_0 = 10$ is the field factor $g(\Sigma_{\rm F}, G_0)$ (Fig.~\ref{fig:fieldfactor} and Appendix~\ref{app:fieldR}). Above
-$7.1{\times}10^{22}$\,cm$^{-2}$, the grid contains too few pixels to determine it, and $g$ was held at its value there. Between the
-radiation fields, $\log g$ is interpolated linearly in $\log G_0$. The field factor is close to unity in diffuse material and
-departs from it most above ${\sim}10^{22}$\,cm$^{-2}$. It is largest for $G_0 \approx 50$, and in the strongest fields it falls
-below unity at high surface densities (Appendix~\ref{app:field}).
+0.98$ to $483$. For each field, the pixels of all its models were binned in their true surface density, and the mean logarithm of
+the factor that each bin required gives, with the mean $\log\Sigma_{\rm F}$ of the bin, the mean factor as a function of
+$\Sigma_{\rm F}$ (Appendix~\ref{app:fieldR}). The ratio of this mean to the same mean at $G_0 = 10$ defines the field factor
+$g(\Sigma_{\rm F}, G_0)$ (Fig.~\ref{fig:fieldfactor}). Above $7.1{\times}10^{22}$\,cm$^{-2}$, the grid contains too few pixels to
+determine it, and $g$ was held at its value there. Between the radiation fields, $\log g$ is interpolated linearly in $\log G_0$.
+The field factor is close to unity in diffuse material and departs from it most above ${\sim}10^{22}$\,cm$^{-2}$. It is largest for
+$G_0 \approx 50$, and in the strongest fields it falls below unity at high surface densities (Appendix~\ref{app:field}).
 
 The non-monotonic dependence on the field strength follows from how the relation of Eq.~(\ref{eq:law}) changes with it
 (Appendix~\ref{app:fieldR}). In fields up to $G_0 \approx 50$, a stronger field warms the unattenuated dust much more than the
@@ -1309,102 +1309,55 @@ in its dense central areas too much.
 \section{Calibration for different radiation fields}
 \label{app:field}
 
-The relation of Eq.~(\ref{eq:law}) was measured for a single radiation field with $G_{0} = 10$. A stronger field can heat the dust
-at every attenuating column, and this changes the underestimation of $\Sigma$. To measure the effect, the correction was tested on
-the grid of models with different radiation fields (Appendix~\ref{sec:grid}), comparing for every pixel the factor that the
-correction method applies with the factor that restores its true surface density. The first column of Table~\ref{tab:fieldR} gives
-the relative error of the corrected surface density without the field factor. The error changes sign twice: the correction is too
-large in the weakest fields, too small for $G_0 \approx 20$--$100$, and again too large at the highest surface densities in the
-strongest fields. The underestimation of $\Sigma$ by a single-temperature fit depends on how the temperature varies along the line
-of sight, and a stronger field changes this variation differently at different depths. No simple rescaling of Eq.~(\ref{eq:law})
-with the field can therefore reproduce the errors.
+The correction was tested on the grid of models in nine radiation fields (Appendix~\ref{sec:grid}), comparing for every pixel the
+factor that the correction applies with the factor that restores its true surface density. Without the field factor, the errors
+range from $-23$ to $+26$\% (Fig.~\ref{fig:fielderr}). They change sign twice: the correction is too large in the weakest fields,
+too small for $G_0 \approx 20$--$100$, and again too large at the highest surface densities in the strongest fields.
 
-\subsection{Measuring the field factor $g$}
+\subsection{Deriving the field factor $g$}
 \label{app:fieldR}
 
-The field factor $g(\Sigma_{\rm F}, G_0)$ of Eq.~(\ref{eq:factorg0}) was measured on the same grid. Most pixels of a model lie on the plateau of its
-uniform embedding cloud, and the surface densities of the embedding clouds step by a factor of $2$. Each field shifts these
-plateaus to a different $\Sigma_{\rm F}$. Above $10^{22}$\,cm$^{-2}$, bins of $\Sigma_{\rm F}$ therefore alternate between
-hundreds of thousands of pixels and a few hundred, and two fields compared in one bin hold unrelated populations. The pixels were
-therefore binned in their true surface density, in bins of $0.05$\,dex, in which the populations of all fields coincide. For each
-field, every bin gave the mean $\log\Sigma_{\rm F}$ and the mean logarithm of the factor that its pixels required. The logarithm
-of the factor was smoothed against $\log\Sigma_{\rm F}$ by a local linear fit within a Gaussian window $0.1$\,dex wide, with each
-bin weighted by the square root of its number of pixels, and the same at $G_0 = 10$ was subtracted. Above
-$7.1{\times}10^{22}$\,cm$^{-2}$, the grid contains too few pixels, and $g$ was held constant.
+\begin{figure}
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-%%%%% NUMBERS (2026-10-26): GTAB of hicorrect2 from python/paper_numbers/make_field_factor.py on harvest_calib3_G0=*.txt.hist.npz,
-%%%%% with the pixels binned in the true surface density; held above 10^22.85 cm^-2.
-%%%%% -----------------------------------------------------------------------------------------------------------------------------
-Table~\ref{tab:fieldR} gives the errors of the corrected surface density, without and with the field factor, and with the field
-factor built without the field being tested.
-
-\begin{table}[ht!]
-%%%%% -----------------------------------------------------------------------------------------------------------------------------
-%%%%% NUMBERS (2026-10-20): Table tab:fieldR from python/paper_numbers/field_factor_errors.py on the histograms
-%%%%% harvest_calib3_G0=*.txt.hist.npz written by harvest_calib3.py (binned, so accurate to about 1 percent).
+%%%%% NUMBERS (2026-11-05): Figure fig:fielderr from python/paper_numbers/field_factor_errors.py on the histograms
+%%%%% harvest_calib3_G0=*.txt.hist.npz written by harvest_calib3.py (binned, so accurate to about 1 percent); the
+%%%%% unrounded values are in field_factor_errors.txt, plotted by fig_field_errors in make_hires2_figures12.py.
 %%%%% The errors for a local field that differs by a factor of 2.2 or 4.7 (Sect. 7) are the differences of the
-%%%%% 'without g' entries of the fields one or two steps from G_0 = 10 from the G_0 = 10 row.
+%%%%% 'without g' values of the fields one or two steps from G_0 = 10 from those at G_0 = 10.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-\caption{Relative error of the corrected surface density, in percent, for the models of the grid of radiation fields, in four
-ranges of $\log_{10}\Sigma_{\rm F}$ (cm$^{-2}$): $21.6$--$22.0$, $22.0$--$22.4$, $22.4$--$22.8$ and $22.8$--$23.4$. Each entry is
-the median over the pixels in the range. The rows give the correction without the field factor $g$, with $g$ built from all nine
-fields, and with $g$ built without the field tested (left out). In all rows, the factor for $G_0 = 10$ was held at its maximum and then multiplied by $g$.}
-\label{tab:fieldR}
 \centering
-\setlength{\tabcolsep}{3.5pt}
-\begin{tabular}{rccc}
-\hline\hline
-\noalign{\smallskip}
-$G_0$ & Without $g$ & With $g$ & Left out \\
-\noalign{\smallskip}
-\hline
-\noalign{\smallskip}
-0.98             & $+15$ $+26$ $+19$ $+12$ & $+2$ $-2$ $-9$ $-14$  & -- \\
-2.12             & $+15$ $+21$ $+13$ $+5$  & $+2$ $-1$ $-9$ $-15$  & $+3$ $0$ $-8$ $-13$ \\
-4.61             & $+8$ $+9$ $+3$ $-5$     & $+2$ $-2$ $-8$ $-15$  & $+3$ $-1$ $-7$ $-14$ \\
-10.0\phantom{0}  & $+1$ $-2$ $-8$ $-16$    & $+1$ $-2$ $-8$ $-16$  & -- \\
-21.7\phantom{0}  & $-6$ $-13$ $-14$ $-22$  & $+1$ $-2$ $-9$ $-16$  & $0$ $-4$ $-9$ $-18$ \\
-47.1\phantom{0}  & $-9$ $-21$ $-22$ $-23$  & $+2$ $-3$ $-10$ $-16$ & $-2$ $-8$ $-16$ $-20$ \\
-102.4\phantom{0} & $-12$ $-16$ $-16$ $-14$ & $0$ $-3$ $-11$ $-14$  & $-2$ $-7$ $-14$ $-17$ \\
-222.2\phantom{0} & $-6$ $-6$ $-2$ $+2$     & $0$ $-4$ $-12$ $-12$  & $0$ $-6$ $-13$ $-13$ \\
-482.5\phantom{0} & $-1$ $+2$ $+15$ $+20$   & $0$ $-5$ $-8$ $-13$   & -- \\
-\noalign{\smallskip}
-\hline
-\end{tabular}
-\end{table}
+\includegraphics[width=0.98\columnwidth]{fig_field_errors.pdf}
+\caption{Relative errors of the corrected surface density for the models of the grid of radiation fields are plotted against the
+field strength $G_0$, in four ranges of the fitted surface density $\Sigma_{\rm F}$. Each point is the median over the pixels in
+its range. The correction without the field factor $g$ (dotted lines) is compared with that with $g$ of all nine fields
+(Sect.~\ref{sec:g0corr}, solid lines). Each circle on the dashed lines is a separate test of a field $G_0$ with $g$ interpolated in
+$\log G_0$ between its two neighboring values, the field itself being left out. Such a test is not possible for the weakest and
+strongest fields and for the field $G_0 = 10$ of the calibration (vertical dotted line). In all cases, the correction factor
+$f_{G_0}$ is that of Eq.~(\ref{eq:factorg0}), with $g = 1$ for the dotted lines.}
+\label{fig:fielderr}
+\end{figure}
 
-With the field factor, the error hardly depends on the field. In every field and range, it is within $4$\% of the error at
-$G_0 = 10$, which is the error of the calibration itself, for example the underestimation of $16$\% at the centers of
-concentrated cores in the densest range. When a field is left out, its errors change by up to $6$\%, which measures the error of
-interpolating between the fields of the grid.
+Most pixels of a model lie on the plateau of its embedding cloud, and each field shifts these plateaus to a different $\Sigma_{\rm
+F}$. Bins of $\Sigma_{\rm F}$ would therefore compare unrelated populations of pixels in different fields. The pixels were instead
+binned in their true surface density, in bins of $0.05$\,dex, in which the populations of all fields coincide. Each bin gave the
+mean $\log\Sigma_{\rm F}$ and the mean logarithm of the required factor $\Sigma/\Sigma_{\rm F}$, which was smoothed against
+$\log\Sigma_{\rm F}$ and divided by the same at $G_0 = 10$. Above $7.1{\times}10^{22}$\,cm$^{-2}$, the grid contains too few
+pixels, and $g$ was held constant (Fig.~\ref{fig:fieldfactor}).
 
-%%%%% -----------------------------------------------------------------------------------------------------------------------------
-%%%%% NUMBERS (2026-10-27): Table tab:lawG0 from python/paper_numbers/refit.py on hires/attenuation_law_G0=*.txt (the tables of
-%%%%% fit_attenuation_law.py, refitted with wide limits); the decomposition from analytic_g.py and scale_test.py with hicorrect2.py.
-%%%%% -----------------------------------------------------------------------------------------------------------------------------
-The shape of $g$ follows from how the relation of Eq.~(\ref{eq:law}) changes with the field. The relation was refitted on the
-models of each field (Table~\ref{tab:lawG0}). For $G_0 = 10$, its constants differ from those of Eq.~(\ref{eq:law}), which was
-fitted to the main grid and the filaments, and only their changes with the field are used here. With increasing $G_0$, $T_{\rm
+With the field factor $g$, the errors are within $4$\% of those at $G_0 = 10$ (the errors of the calibration itself) in every field
+and range of $\Sigma_{\rm F}$ (Fig.~\ref{fig:fielderr}). When a field is left out of the calculation of $g$, its errors change by
+up to $6$\% from those with $g$, which measures the error of interpolating between the fields of the model grid.
+
+The shape of $g(\Sigma_{\rm F}, G_0)$ follows from the changes of the relation of Eq.~(\ref{eq:law}) with the field, refitted on
+the models of each field (Table~\ref{tab:lawG0}). For $G_0 = 10$, its constants differ from those of Eq.~(\ref{eq:law}), which was
+fitted to the main grid and the filaments, so only their trends with the field are discussed here. With increasing $G_0$, $T_{\rm
 max}$ rises steadily, whereas $T_{\rm min}$ stays near $6$--$7$\,K up to $G_0 \approx 20$ and then rises, as the shielded dust is
 heated by the infrared emission of the warmer dust around it. The contrast $T_{\rm max}/T_{\rm min}$ therefore increases from $2.8$
-to about $4$ near $G_0 \approx 50$--$100$ and then decreases slightly. The analytic calculation of Sect.~\ref{sec:factor}, with the
-relation of each field, reproduces the main features of the measured $g$: its rise toward $G_0 \approx 50$, largest near
-$10^{22}$\,cm$^{-2}$, and its fall below unity at high surface densities in the strongest fields. The amplitudes differ, because
-uniform bodies lack the concentration of the models.
-
-Replacing the constants of the relation for $G_0 = 10$ one at a time by those of a stronger field separates the effects. A higher
-$T_{\rm max}$ increases the bias, and so does the steeper decline of $T(\Sigma_{\rm A})$, which concentrates the change from warm
-to cold material near $10^{22}$\,cm$^{-2}$. A higher $T_{\rm min}$ reduces the contrast in the densest material, and the bias with
-it. Scaling $T_{\rm min}$ and $T_{\rm max}$ by the same factor, which keeps the contrast, also reduces the bias: a relation $30$\%
-warmer lowers the factor by $28$\% at $4{\times}10^{22}$\,cm$^{-2}$, because the Planck function at $160$--$500${\um} becomes less
-sensitive to the temperature (Eq.~\ref{eq:sensitivity}). The first two effects dominate in fields up to
-$G_0 \approx 50$, and the last
-two in the strongest fields.
-
-A relation with constants that depend on $G_0$ would be a natural alternative to the field factor. However, the factor computed
-from the relation of each field with uniform bodies (Sect.~\ref{sec:factor}) reproduces the measured $g$ only qualitatively and
-differs from it by up to $25$\%. The measured ratio $g$ transfers only the change with the field and keeps the calibration at $G_0
-= 10$.
+to about $4$ near $G_0 \approx 50$--$100$ and then decreases slightly. The higher $T_{\rm max}$ and the steeper decline of
+$T(\Sigma_{\rm A})$ increase the bias and dominate up to $G_0 \approx 50$. The higher $T_{\rm min}$ and the overall warming reduce
+it in the strongest fields. The analytic calculation of Sect.~\ref{sec:factor} with the relation of each field reproduces these
+features only qualitatively, within $25$\%, because uniform bodies lack the concentration of the models. The measured $g$ was
+therefore adopted. It transfers only the change with the field and keeps the calibration at $G_0 = 10$.
 
 \begin{table}[ht!]
 \caption{The relation of Eq.~(\ref{eq:law}) refitted on the models of each radiation field strength $G_0$: the floor temperature
@@ -1463,7 +1416,7 @@ fields span more than two orders of magnitude, from below $1$ in Taurus and abou
 Cygnus~X. Only Scorpius and Orion~A are close to the field $G_0 = 10$ of the calibration. In Taurus, the diffuse dust ($13.6$ to
 $14.4$\,K between $10^{21}$ and $2.5{\times}10^{21}$\,cm$^{-2}$) is colder than the models in the weakest field of the grid
 ($14.9$\,K), and the procedure gives only an upper limit. The correction then uses the field factor of $G_0 = 0.98$. Between $G_0 =
-0.98$ and $2.12$, the errors of the correction without $g$ change by only $0$ to $7$\% (Table~\ref{tab:fieldR}), so this
+0.98$ and $2.12$, the errors of the correction without $g$ change by only $0$ to $7$\% (Fig.~\ref{fig:fielderr}), so this
 approximation changes the corrected $\Sigma$ by a few percent at most. Taurus is heated by about the local interstellar field, of
 order unity in Habing units, so the estimated fields are not physical field strengths. They would all change if the real dust
 emitted more or less efficiently than the dust of the models. The correction is consistent nevertheless, because $g$ was measured
@@ -1662,17 +1615,17 @@ the 16th to 84th percentiles for $\mathcal{F}_{36.3\,}\mathcal{D}_{13.5}$.}
 \label{sec:field}
 
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-%%%%% NUMBERS (2026-10-20): from Table tab:fieldR (see the comment there).
+%%%%% NUMBERS (2026-11-05): from Figure fig:fielderr (see the comment there).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 The factor $f$ was calibrated for $G_0 = 10$. In the nine fields of the grid, from $G_0 = 0.98$ to $483$, the correction without
 the field factor $g$ errs by up to $+26$\% in weak fields and by up to $-23$\% for $G_0 \approx 20$--$100$ (Appendix~\ref{app:field}).
 With $g$, the errors are between $-16$ and $+2$\%, within $4$\% of those at $G_0 = 10$. With $g$ built without the field being
-tested, they are within $6$\% of those at $G_0 = 10$ (Table~\ref{tab:fieldR}).
+tested, they are within $8$\% of those at $G_0 = 10$ (Fig.~\ref{fig:fielderr}).
 
 The uncertainty of the field of a cloud, estimated from the spread of the temperatures of its diffuse material
 (Appendix~\ref{app:fieldest}), changes the field factor by $\pm 3$\% in Aquila. A local field that differs from the field of the
 cloud by a factor of $2.2$, one step of the grid, changes the corrected $\Sigma$ by $-11$ to $+11$\%, and a factor of $4.7$ by
-$-19$ to $+23$\% (Table~\ref{tab:fieldR}, first column).
+$-19$ to $+23$\% (Fig.~\ref{fig:fielderr}, dotted lines).
 
 \subsection{Inclined layers and filaments}
 \label{sec:incl}

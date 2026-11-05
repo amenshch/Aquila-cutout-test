@@ -938,6 +938,56 @@ def fig_relation(out="fig_relation.pdf"):
     print("written %s" % out)
 
 
+def fig_field_errors(table="field_factor_errors.txt", out="fig_field_errors.pdf"):
+
+    """The errors of the correction on the grid of radiation fields, with and without the field factor (replaces Table C.1).
+
+    The median relative error of the corrected surface density over the pixels of the models of each field, against G_0, in four
+    ranges of log10 Sigma_F (colors): without the field factor g (dotted), with g built from all nine fields (solid), and with g
+    built without the field tested (dashed, open circles; the end fields and G_0 = 10 cannot be left out). Read from the output of
+    field_factor_errors.py.
+    """
+
+    d = np.loadtxt(table)
+    g0 = d[:, 0]
+    # the ranges 21.6-22.0, 22.0-22.4, 22.4-22.8, and 22.8-23.4 of log10 Sigma_F, in units of 1e22 cm^-2
+    ranges = ("0.4\u20131.0", "1.0\u20132.5", "2.5\u20136.3", "6.3\u201325.0")
+    cols = ("red", "green", "blue", "magenta")
+
+    fig, ax = plt.subplots(1, 1, figsize=(3.5, 2.8))
+    ax.axhline(0.0, **REF)
+    ax.axvline(10.0, **REF)
+    for j, (rng, col) in enumerate(zip(ranges, cols)):
+        ax.plot(g0, d[:, 1 + j], ":", color=col, lw=1.0)
+        ax.plot(g0, d[:, 5 + j], "-", color=col, lw=1.0)
+        ok = np.isfinite(d[:, 9 + j])
+        ax.plot(g0[ok], d[ok, 9 + j], "--", color=col, lw=0.8, marker="o", ms=3.0, mfc="none", mew=0.7)
+
+    ax.set_xscale("log")
+    ax.set_xlim(0.8, 700.0)
+    ax.set_ylim(-26.0, 40.0)
+    ax.tick_params(labelsize=7.7)
+    ax.set_xlabel(r"Radiation field $G_0$", fontsize=7.7, labelpad=1.5)
+    ax.set_ylabel(r"Relative error of the corrected $\Sigma$ (%)", fontsize=7.7, labelpad=1.5)
+
+    # two legends: the ranges of the fitted surface density (colors) and the three variants (line styles)
+    from matplotlib.lines import Line2D
+    hr = [Line2D([], [], color=c, lw=1.0, label=r"%s" % r) for r, c in zip(ranges, cols)]
+    hv = [Line2D([], [], color="0.3", ls=":", lw=1.0, label=r"without $g$"),
+          Line2D([], [], color="0.3", ls="-", lw=1.0, label=r"with $g$"),
+          Line2D([], [], color="0.3", ls="--", lw=0.8, marker="o", ms=3.0, mfc="none", mew=0.7, label=r"$g$ left out")]
+    leg = ax.legend(handles=hr, loc="upper right", fontsize=6.8, frameon=False, handlelength=1.8, labelspacing=0.3,
+                    title=r"$\Sigma_{\rm F}$ ($10^{22}$ cm$^{-2}$)", title_fontsize=6.8)
+    ax.add_artist(leg)
+    ax.legend(handles=hv, loc="upper center", fontsize=6.8, frameon=False, handlelength=2.2, labelspacing=0.3)
+    ax.set_box_aspect(1.0 / 1.25)
+
+    fig.tight_layout(pad=0.0)
+    fig.savefig(out)
+    plt.close(fig)
+    print("written %s" % out)
+
+
 def fig_fieldfactor(out="fig_fieldfactor.pdf"):
 
     """The field factor g of Eq. (9) against the fitted surface density, for the nine radiation fields of the grid.
@@ -1961,5 +2011,6 @@ if __name__ == "__main__":
 #    fig_cube3d()
 #    fig_cube()
 #    fig_angular()
-    fig_superposition()
+#    fig_superposition()
+   fig_field_errors()
 #    fig_mixing()
