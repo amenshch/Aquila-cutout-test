@@ -903,10 +903,10 @@ C}$. The median for $\mathcal{T}_{13.5\,\rm C}$ is $12.2$\,K, against $15.0$\,K 
 and 99th percentiles are $9.6$ and $18.6$\,K. The correction is not a uniform rescaling. The factor is smallest in the diffuse
 material between the structures and largest along the crests of the filaments and at the cores. The correction therefore raises the
 contrast of the image as well as its overall level. Above $\Sigma = 3{\times}10^{22}$\,cm$^{-2}$, the factor decreases slightly
-from $2.10$ to $2.03$, so the densest crests and cores receive nearly the largest correction. The radiation field is not uniform across the
-cloud. The warm corner in the upper left of $\mathcal{T}_{13.5\,\rm C}$ is heated more strongly than the rest of the sub-region, and
-there the single radiation field strength $G_{0} = 33$ adopted for the cloud underestimates the true one. Appendix~\ref{sec:field}
-discusses the uncertainties due to the radiation field.
+from $2.10$ to $2.03$, so the densest crests and cores receive nearly the largest correction. The radiation field is not uniform
+across the cloud. The warm corner in the upper left of $\mathcal{T}_{13.5\,\rm C}$ is heated more strongly than the rest of the
+sub-region, and there the single radiation field strength $G_{0} = 33$ adopted for the cloud underestimates the true one.
+Appendix~\ref{sec:field} discusses the uncertainties due to the radiation field.
 
 \section{Conclusions}
 \label{sec:conclusions}
@@ -920,15 +920,15 @@ line of sight. The underestimation, which exceeds a factor of two in the densest
 colors, because its signature of $1$ to $6$\% of the intensities would amplify the photometric errors $7$ to $9$ times. The
 correction method is therefore based on radiative transfer models.
 
-Radiative transfer provides a single relation, Eq.~(\ref{eq:law}), between the dust temperature and the effective column
-$\Sigma_{\rm A}$ that shields the dust. It reproduces the dust temperatures of $2086$ models of embedded Bonnor--Ebert spheres and
-$7$ models of filaments, with a scatter of $2.4$\%. A sphere, a cylinder, and a plane-parallel layer of the same surface density
-need correction factors within $10$\% of each other. The relation gives the correction factor $f$ of Eq.~(\ref{eq:factor}) as an
-explicit function of the fitted surface density $\Sigma_{\rm F}$ of Eq.~(\ref{eq:fitted}). At low surface densities, the factor was
-calibrated on a radiative transfer model of an extended cloud, whose surface layers are warmer than the relation predicts. The
-relation and the factor $f$, together with the field factor $g$ of Eq.~(\ref{eq:factorg0}), are available as tables at the CDS, and
-they may also be useful beyond the correction of images, wherever the temperature of externally heated dust in clouds and their
-structures is needed.
+Radiative transfer provides a single relation $T(\Sigma_{\rm A})$, Eq.~(\ref{eq:law}), between the temperature and the effective
+column $\Sigma_{\rm A}$ that shields the dust. It reproduces the dust temperatures of $2086$ models of embedded Bonnor--Ebert
+spheres and $7$ models of filaments, with a scatter of $2.4$\%. A sphere, a cylinder, and a plane-parallel layer of the same
+surface density need corrections within $10$\% of each other. The relation gives the correction factor $f(\Sigma_{\rm F})$ of
+Eq.~(\ref{eq:factor}) as an explicit function of the fitted surface density $\Sigma_{\rm F}$ of Eq.~(\ref{eq:fitted}). At low
+surface densities, the factor was improved by calibration on a radiative transfer model of an extended cloud, whose surface layers
+are warmer than the relation predicts. The relation and the factor $f(\Sigma_{\rm F})$, together with the radiation field factor
+$g(\Sigma_{\rm F}, G_{0})$ of Eq.~(\ref{eq:factorg0}), are available as tables at the CDS, and they may also be useful beyond the
+correction of surface densities, wherever the temperature of externally heated dust in clouds and their structures is needed.
 
 The correction applies to surface density images at any angular resolution. Each of the \emph{hires} images at $O = 8.4$ to
 $36.3{\arcsec}$, corrected with its own factors, recovers $0.99$--$1.00$ of the median total surface density of the models and
@@ -1298,26 +1298,26 @@ $2.4{\times}10^{22}$\,cm$^{-2}$, $21$\% too high.
 
 The lower panels of Fig.~\ref{fig:superposition} give the general picture. The factors that the composite lines of sight require
 form a band around the factor that the method applies, and the error of the corrected surface density ranges from $-13$ to $+21$\%.
-Its sign depends on the cloud. A tenuous cloud ($\Sigma_{\rm L} = 10^{21}$\,cm$^{-2}$) leaves the sphere nearly isolated. The sphere
-needs more correction than the average of a sphere and a layer, so the correction is too small by $8$ to $13$\%, at any depth. A
-dense cloud ($\Sigma_{\rm L} = 10^{22}$\,cm$^{-2}$) with the sphere at one of its sides makes the line of sight warmer than a
-single body, and the correction is then too large, by up to $21$\%. When the sphere lies near the middle of a dense cloud, the
-error is only a few percent. The simulated star-forming region of Sect.~\ref{sec:sim}, built entirely from radiative transfer
-models, shows both regimes: the wings of filaments in its tenuous outer cloud are corrected too little, and the flanks of filaments in
-its dense central cloud too much.
+Its sign depends on the cloud. A tenuous cloud ($\Sigma_{\rm L} = 10^{21}$\,cm$^{-2}$) leaves the sphere nearly isolated. The
+sphere needs more correction than the average of a sphere and a layer, so the correction is too small by $8$ to $13$\%, at any
+depth. A dense cloud ($\Sigma_{\rm L} = 10^{22}$\,cm$^{-2}$) with the sphere at one of its sides makes the line of sight warmer
+than a single body, and the correction is then too large, by up to $21$\%. When the sphere lies near the middle of a dense cloud,
+the error is only a few percent. The simulated star-forming region of Sect.~\ref{sec:sim}, built entirely from radiative transfer
+models, shows both regimes: the wings of filaments in its tenuous outer areas are corrected too little, and the flanks of filaments
+in its dense central areas too much.
 
 \section{Calibration for different radiation fields}
 \label{app:field}
 
-The relation of Eq.~(\ref{eq:law}) was measured for a single field, $G_0 = 10$. A stronger field heats the dust at every
-attenuating column, and this changes the underestimation of $\Sigma$ by the fit. To measure the effect, the correction was tested
-on the grid of radiation fields of Appendix~\ref{sec:grid}, comparing for every pixel the factor that restores its true surface
-density with the factor that the correction applies. The first column of Table~\ref{tab:fieldR} gives the relative error of the
-corrected surface density without the field factor. The error changes sign twice: the correction is too large in the weakest
-fields, too small for $G_0 \approx 20$--$100$, and again too large at the highest surface densities in the strongest fields. The
-underestimation of $\Sigma$ by a single-temperature fit depends on how the temperature varies along the line of sight, and a
-stronger field changes this variation differently at different depths. No simple rescaling of Eq.~(\ref{eq:law}) with the field can
-therefore reproduce the errors.
+The relation of Eq.~(\ref{eq:law}) was measured for a single radiation field with $G_{0} = 10$. A stronger field can heat the dust
+at every attenuating column, and this changes the underestimation of $\Sigma$. To measure the effect, the correction was tested on
+the grid of models with different radiation fields (Appendix~\ref{sec:grid}), comparing for every pixel the factor that the
+correction method applies with the factor that restores its true surface density. The first column of Table~\ref{tab:fieldR} gives
+the relative error of the corrected surface density without the field factor. The error changes sign twice: the correction is too
+large in the weakest fields, too small for $G_0 \approx 20$--$100$, and again too large at the highest surface densities in the
+strongest fields. The underestimation of $\Sigma$ by a single-temperature fit depends on how the temperature varies along the line
+of sight, and a stronger field changes this variation differently at different depths. No simple rescaling of Eq.~(\ref{eq:law})
+with the field can therefore reproduce the errors.
 
 \subsection{Measuring the field factor $g$}
 \label{app:fieldR}
