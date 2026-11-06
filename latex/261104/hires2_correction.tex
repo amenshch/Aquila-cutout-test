@@ -870,10 +870,10 @@ surface density image $\Dim_{13.5}$ with $625{\times}625$ pixels of $3{\arcsec}$
 images at wavelengths of $160$, $250$, $350$, and $500${\um}. The correction factor was evaluated on $\Dim_{13.5}$ and applied to
 every pixel, including those toward protostars (Appendix~\ref{sec:notdo}).
 
-The interstellar radiation field for the cloud was estimated with the procedure of Appendix~\ref{app:fieldest}, from the diffuse
-material of the entire Aquila region, which contains $2.9{\times}10^{7}$ pixels. The observations require a field strength $G_0
-\approx 33$, with $G_0 = 25$ and $41$ from the 16th and 84th percentiles of the fitted temperature. Therefore, the correction
-method used $G_0 = 33$ in Eq.~(\ref{eq:factorg0}), about three times the field adopted in the calibration of the method.
+The interstellar radiation field for the cloud was estimated by \emph{hicorrect} with the procedure of Appendix~\ref{app:fieldest},
+from the diffuse material of the entire Aquila region, which contains $2.9{\times}10^{7}$ pixels. The observations require a field
+strength $G_0 \approx 33$, with $G_0 = 25$ and $41$ from the 16th and 84th percentiles of the fitted temperature. Therefore, the
+correction method used $G_0 = 33$ in Eq.~(\ref{eq:factorg0}), about three times the field adopted in the calibration of the method.
 
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 %%%%% NUMBERS (2026-10-20): Sect. 6 from python/paper_numbers/aquila_numbers.py on the images of hires/Aquila_cutout_g33
@@ -1249,13 +1249,13 @@ never over-corrects it.
 \label{app:twocomp}
 
 A line of sight can cross a cloud with a denser structure embedded in it at an unknown depth. This case was modeled as a
-plane-parallel cloud of surface density $\Sigma_{\rm L}$ with an embedded uniform sphere of central surface density
-$\Sigma_{\rm S}$. A direction is defined by its angle $\psi$ to the line of sight, measured from the direction toward the observer.
-The material at the column depth $x$ in the cloud is shielded by the angular average of $x/|\cos\psi|$ toward the observer and of
-$(\Sigma_{\rm L} - x)/|\cos\psi|$ away from the observer. A fraction $q$ of the cloud lies in front of every point of the sphere and the rest behind it, so that the sphere lies between
-two layers of the cloud, in front of it for $q = 0$ and behind it for $q = 1$. A dust grain at
-the position $z$ along the diameter of the sphere, from $-1$ to $1$ in units of its radius and positive toward the observer, is
-shielded by the sphere over the path
+plane-parallel cloud of surface density $\Sigma_{\rm L}$ with an embedded uniform sphere of central surface density $\Sigma_{\rm
+S}$. A direction is defined by its angle $\psi$ to the line of sight, measured from the direction toward the observer. The material
+at the column depth $x$ in the cloud is shielded by the angular average of $x/|\cos\psi|$ toward the observer and of $(\Sigma_{\rm
+L} - x)/|\cos\psi|$ away from the observer. A fraction $q$ of the cloud lies in front of every point of the sphere and the rest
+behind it, so that the sphere lies between two layers of the cloud, in front of it for $q = 0$ and behind it for $q = 1$. A dust
+grain at the position $z$ along the diameter of the sphere, from $-1$ to $1$ in units of its radius and positive toward the
+observer, is shielded by the sphere over the path
 \begin{equation}
    p(z,\psi) = -z\cos\psi + \left(1 - z^2\sin^2\psi\right)^{1/2},
 \label{eq:lsphere}
@@ -1375,7 +1375,8 @@ of the cloud and from the simulated images of the models in the grid of radiatio
 $G_0$ of the grid, the median temperature of the model pixels was tabulated in bins of $0.2$\,dex of the fitted surface density. At
 a fixed surface density, this temperature rises monotonically with $G_0$. The temperature in each pixel of the image
 $\mathcal{T}_{13.5}$ of a cloud is therefore converted into a field strength, by interpolating $\log G_0$ against the median
-temperature of the models in the same bin of surface density.
+temperature of the models in the same bin of surface density. The procedure is built into \emph{hicorrect}, which applies it
+whenever the temperature image is given and the field strength is not specified.
 
 The field strength was not estimated from the simple scaling relation $T \propto G_0^{1/6}$ for dust with
 $\kappa_{\lambda}\propto \lambda^{-2}$ \citep{IvezicElitzur1997, Tielens2005}, because it holds only for dust that is optically
@@ -1383,58 +1384,57 @@ thin to the heating radiation. At a fixed surface density, the models give $T_{\
 the shielded dust is heated by an attenuated and redder field. The scaling relation would therefore place a cloud at a field
 several times too weak.
 
-The field is taken from the diffuse material only, below $6.31{\times}10^{21}$\,cm$^{-2}$. In denser bins, the fields that the
-procedure gives rise steadily with the surface density in every cloud. In Aquila, for example, the median field rises from about
-$20$--$40$ in the diffuse bins to more than $100$ in the densest ones. The rise is found even in Scorpius, which contains no strong
-heating source. It is therefore a bias, not a real increase of the field. A dense structure seen through warm diffuse material has
-a higher fitted temperature than an isolated core of the same surface density, and the procedure attributes the extra warmth to the
-field. Pixels warmer than the strongest field of the grid allows are counted separately. They are heated internally, by protostars,
-or by nearby massive stars beyond the range of the grid.
+The parameter $G_0$ is estimated from the diffuse material only, between $10^{21}$ and $6.31{\times}10^{21}$\,cm$^{-2}$. In denser
+bins, the $G_0$ values that the procedure gives rise steadily with the surface density in every observed cloud. In Aquila, for
+example, the median $G_0$ rises from about $20$--$40$ in the diffuse bins to more than $100$ in the densest ones. The rise of $G_0$
+is found even in Scorpius, which contains no strong heating source. It is therefore not a real increase of the field strength but a
+bias. Indeed, a dense structure seen through warm diffuse material has a higher fitted temperature than an isolated core of the
+same surface density, and the procedure attributes the extra warmth to the field. Pixels warmer than the models in the strongest
+field of the grid are counted separately. They are heated either internally by protostars or externally by nearby massive stars,
+beyond the range of the grid.
 
-The field of a cloud is the median, weighted by the number of pixels, of the fields of its diffuse bins. The fields at the 16th and
-84th percentiles of the temperature give its spread. Table~\ref{tab:g0regions} lists the result for nine regions. Their diffuse
-fields span more than two orders of magnitude, from below $1$ in Taurus and about $5$ in California and Perseus to about $250$ in
-Cygnus~X. Only Scorpius and Orion~A are close to the field $G_0 = 10$ of the calibration. In Taurus, the diffuse dust ($13.6$ to
-$14.4$\,K between $10^{21}$ and $2.5{\times}10^{21}$\,cm$^{-2}$) is colder than the models in the weakest field of the grid
-($14.9$\,K), and the procedure gives only an upper limit. The correction then uses the field factor of $G_0 = 0.98$. Between $G_0 =
-0.98$ and $2.12$, the errors of the correction without $g$ change by only $0$ to $7$\% (Fig.~\ref{fig:fielderr}), so this
-approximation changes the corrected $\Sigma$ by a few percent at most. Taurus is heated by about the local interstellar field, of
-order unity in Habing units, so the estimated fields are not physical field strengths. They would all change if the real dust
-emitted more or less efficiently than the dust of the models. The correction is consistent nevertheless, because $g$ was measured
-on the same dust. \draftnote{References for the images of all regions.}
+The resulting field strength $G_0$ of a cloud is defined as the median of the $G_0$ values of its diffuse bins, weighted by the
+number of pixels. The fields at the 16th and 84th percentiles of the temperature give its spread. Table~\ref{tab:g0regions} lists
+the results for nine observed regions. Only Scorpius and Orion~A are close to the value $G_0 = 10$ of the calibration. In Taurus,
+the diffuse dust ($13.6$ to $14.4$\,K between $10^{21}$ and $2.5{\times}10^{21}$\,cm$^{-2}$) is colder than the models in the
+weakest field of the grid ($14.9$\,K), and the procedure gives only an upper limit. The correction then uses $G_0 = 0.98$, which
+changes the corrected $\Sigma$ by a few percent at most (Fig.~\ref{fig:fielderr}). 
 
 \begin{table}[ht!]
-\caption{The fields of nine regions, from the diffuse material below $6.31{\times}10^{21}$\,cm$^{-2}$
-(Appendix~\ref{app:fieldest}). $G_0$: the fields that reproduce the 16th, 50th and 84th percentiles of the fitted temperature, as
-medians over the diffuse bins weighted by their pixels. The field below the weakest one is marked with $^{<}0.98$. Too warm: the
-percentage of all pixels of the map warmer than the strongest field of the grid allows.}
+\caption{Estimates of $G_0$ for nine regions observed with \emph{Herschel}.}
 \label{tab:g0regions}
 \centering
-\begin{tabular}{lcc}
+\begin{tabular}{lcccc}
 \hline\hline
 \noalign{\smallskip}
-Cloud & $G_0$ &\,\, \% \\
+Cloud & $G_{0,16}$\tablefootmark{a} & $G_{0,50}$\tablefootmark{a} & $G_{0,84}$\tablefootmark{a} & Too warm\tablefootmark{b} \\
 \noalign{\smallskip}
 \hline
 \noalign{\smallskip}
-Taurus        & $^<$0.98          &\phantom{0}0.0\\
-California    & 3.6\,\,5.4\,\,6.9 &\phantom{0}0.1\\
-Perseus       & 3.2\,\,4.7\,\,6.1 &\phantom{0}0.1\\
-Scorpius      & 6.2\,\,7.9\,\,10  &\phantom{0}0.0\\
-Orion~A       & 5.9\,\,8.9\,\,28  &\phantom{0}2.0\\
-Ophiuchus     & 14\,\,31\,\,55    &\phantom{0}0.7\\
-Aquila        & 25\,\,33\,\,41    &\phantom{0}0.4\\
-W3 W4 W5      & 54\,\,62\,\,73    &\phantom{0}1.3\\
-Cygnus~X      & 200\,\,250\,\,320 & 21.8\\
+Taurus      &\phantom{0}$^<$0.98             &\phantom{0} $^<$0.98 &\phantom{0} $^<$0.98 & \phantom{0}0.0 \\
+California  &\phantom{0} 3.6                &\phantom{0} 5.4     &\phantom{0} 6.9     & \phantom{0}0.1 \\
+Perseus     &\phantom{0} 3.2                &\phantom{0} 4.7     &\phantom{0} 6.1     & \phantom{0}0.1 \\
+Scorpius    &\phantom{0} 6.2                &\phantom{0} 7.9     &\phantom{0} 10      & \phantom{0}0.0 \\
+Orion~A     &\phantom{0} 5.9                &\phantom{0} 8.9     &\phantom{0} 28      & \phantom{0}2.0 \\
+Ophiuchus   & 14\phantom{0}                 & 31\phantom{0}      & 55\phantom{0}      & \phantom{0}0.7 \\
+Aquila      & 25\phantom{0}                 & 33\phantom{0}      & 41\phantom{0}      & \phantom{0}0.4 \\
+W3 W4 W5    & 54\phantom{0}                 & 62\phantom{0}      & 73\phantom{0}      & \phantom{0}1.3 \\
+Cygnus~X    & 200\phantom{0}\phantom{0}     & 250\phantom{0}\phantom{0}     & 320\phantom{0}\phantom{0}     & 21.8           \\
 \noalign{\smallskip}
 \hline
 \end{tabular}
+\tablefoot{
+\tablefoottext{a}{Fields that reproduce the 16th, 50th, and 84th percentiles of the fitted temperature, as medians over the diffuse
+bins between $10^{21}$ and $6.31{\times}10^{21}$\,cm$^{-2}$ weighted by their pixels (Appendix~\ref{app:fieldest}); $G_{0,50}$ is
+taken as the field of the region. The values preceded by "$^<$" are upper limits, below the weakest field of the grid.}
+\tablefoottext{b}{Percentage of all pixels of the map warmer than the models in the strongest field of the grid.}
+}
 \end{table}
 
-A single field per cloud is an approximation. In Orion~A and Ophiuchus, the fields at the 16th and 84th percentiles differ by a
-factor of four or five, because parts of these clouds are lit by nearby OB stars. For such clouds, the map can be divided into
-regions with their own fields. In Cygnus~X, a fifth of the pixels are warmer than the strongest field of the grid allows, and the
-correction is not calibrated for them.
+A single $G_0$ value per cloud is an approximation. In Orion~A and Ophiuchus, the fields at the 16th and 84th percentiles differ by
+a factor of $4$--$5$, because parts of these regions are exposed to radiation from nearby OB stars. For such clouds, the map can be
+divided into regions with their own $G_0$ values. In Cygnus~X, a fifth of the pixels are warmer than the models in the strongest
+field, and the correction factor $f_{G_0}$ is not calibrated for them.
 
 \section{Inadequacy of the observed colors and temperatures}
 \label{app:onlysigma}
