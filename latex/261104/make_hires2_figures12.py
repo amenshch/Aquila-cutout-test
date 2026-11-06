@@ -266,6 +266,7 @@ def fig_superposition(out="fig_superposition.pdf"):
     xc1 = (np.arange(nc) + 0.5) / nc * q * sig_c
     xs = q * sig_c + (np.arange(len(ts)) + 0.5) / len(ts) * sig_s
     xc2 = q * sig_c + sig_s + (np.arange(nc) + 0.5) / nc * (1.0 - q) * sig_c
+
     ax[0].plot(xc1 / sc, tc[:nc], "-", color=sep, label="cloud and sphere")
     ax[0].plot(xs / sc, ts[::-1], "-", color=sep)
     ax[0].plot(xc2 / sc, tc[nc:], "-", color=sep)
@@ -276,7 +277,7 @@ def fig_superposition(out="fig_superposition.pdf"):
     ax[0].tick_params(labelsize=7.7)
     ax[0].set_xlabel(r"Surface density from the near side ($10^{22}$ cm$^{-2}$)", fontsize=7.7, labelpad=1.5)
     ax[0].set_ylabel(r"Temperature $T$ (K)", fontsize=7.7, labelpad=1.5)
-    ax[0].legend(loc="upper right", **LEG)
+    ax[0].legend(loc="upper right", **LEG, bbox_to_anchor=(0.97, 0.98))
     ax[0].annotate("", xy=(0.02, 0.9), xytext=(0.15, 0.9), xycoords=ax[0].transAxes, textcoords=ax[0].transAxes,
                    annotation_clip=False, arrowprops=dict(arrowstyle="-|>", color="black", lw=0.5))
     ax[0].text(0.16, 0.9, "to observer", fontsize=7.5, color="black", va="center", transform=ax[0].transAxes)
@@ -304,7 +305,7 @@ def fig_superposition(out="fig_superposition.pdf"):
     ax[1].set_xlabel(r"Wavelength ($\mu$m)", fontsize=7.7, labelpad=1.5)
     ax[1].set_ylabel(r"Intensity $I_\nu$ (MJy sr$^{-1}$)", fontsize=7.7, labelpad=1.5)
     clean_log(ax[1], "y")
-    ax[1].legend(loc="lower center", **LEG)
+    ax[1].legend(loc="lower center", **LEG, bbox_to_anchor=(0.5, 0.02))
     ax[1].text(280.0, 69.0, r"$\Sigma = 2{\times}10^{22}$ cm$^{-2}$", fontsize=7.75, color="black", ha="center")
 
     # ---- the factor the method applies, and the factor each arrangement requires, both against the observed (fitted) surface
@@ -335,7 +336,7 @@ def fig_superposition(out="fig_superposition.pdf"):
     ax[2].tick_params(labelsize=7.7)
     ax[2].set_xlabel(r"Fitted surface density $\Sigma_{\rm F}$ (cm$^{-2}$)", fontsize=7.7, labelpad=0.5)
     ax[2].set_ylabel(r"Correction factor $f$", fontsize=7.7, labelpad=1.5)
-    ax[2].legend(loc="lower right", **LEG)
+    ax[2].legend(loc="lower right", **LEG, bbox_to_anchor=(0.81, 0.02))
 
     # ---- the error of the corrected surface density against where the structure sits in the cirrus
     qq = np.linspace(0.0, 1.0, 21)
@@ -353,7 +354,7 @@ def fig_superposition(out="fig_superposition.pdf"):
     axq.tick_params(labelsize=7.7)
     axq.set_xlabel(r"Fraction $q$ of the cloud in front of the sphere", fontsize=7.7, labelpad=2)
     axq.set_ylabel(r"Relative error of the corrected $\Sigma$", fontsize=7.7, labelpad=1.5)
-    axq.legend(loc="upper center", columnspacing=0.8, **LEG)
+    axq.legend(loc="upper center", columnspacing=0.8, **LEG, bbox_to_anchor=(0.5, 0.98))
 
     fig.savefig(out)
     plt.close(fig)
@@ -938,51 +939,154 @@ def fig_relation(out="fig_relation.pdf"):
     print("written %s" % out)
 
 
-def fig_field_errors(table="field_factor_errors.txt", out="fig_field_errors.pdf"):
+def fig_field_errors_tall(table="field_factor_errors.txt", laws="laws_refit.txt", out="fig_field_errors.pdf"):
 
-    """The errors of the correction on the grid of radiation fields, with and without the field factor (replaces Table C.1).
+    """The temperature relations and the errors of the correction on the grid of radiation fields (Fig. C.1, one column).
 
-    The median relative error of the corrected surface density over the pixels of the models of each field, against G_0, in four
-    ranges of log10 Sigma_F (colors): without the field factor g (dotted), with g built from all nine fields (solid), and with g
-    built without the field tested (dashed, open circles; the end fields and G_0 = 10 cannot be left out). Read from the output of
-    field_factor_errors.py.
+    Upper: the relation T(Sigma_A) of Eq. (5) refitted on the models of each of the nine fields (laws_refit.txt from refit.py, the
+    constants of table 3 at the CDS), in the colors of fig_fieldfactor, with the adopted relation for G_0 = 10 (dashed). Lower: the
+    median relative error of the corrected surface density over the pixels of the models of each field, against G_0, in four
+    ranges of Sigma_F (shades of gray, to keep the colors for the fields): without the field factor g (dotted), with g built from
+    all nine fields (solid), and with g interpolated between the two neighboring fields, the field tested being left out (dashed,
+    open circles; the end fields and G_0 = 10 cannot be left out). Read from the output of field_factor_errors.py.
     """
 
+    from matplotlib.lines import Line2D
+
+    fig, (a1, a2) = plt.subplots(2, 1, figsize=(3.5, 5.55))
+
+    # left: the refitted relations T(Sigma_A) of the nine fields
+    colors = ("black", "red", "green", "blue", "cyan", "brown", "orange", "gold", "magenta")
+    p = np.loadtxt(laws)
+    sx = np.geomspace(1.0e19, 1.0e24, 400)
+
+    for k, (g0, tmin, tmax, sstar, gam) in enumerate(p[:, :5]):
+        a1.plot(sx, tmin + (tmax - tmin) * (1.0 + sx / sstar) ** (-gam), "-", color=colors[k], lw=1.0, label=r"$G_0 = %g$" % g0)
+
+    a1.plot(sx, law(sx), "--", color="0.5", lw=1.0, label=r"Eq. (5)")
+    a1.set_xscale("log")
+    a1.set_xlim(1.0e19, 1.0e24)
+    a1.set_ylim(4.0, 46.0)
+    a1.tick_params(labelsize=7.7)
+    a1.set_xlabel(r"Effective attenuating column $\Sigma_{\rm A}$ (cm$^{-2}$)", fontsize=7.7, labelpad=1.5)
+    a1.set_ylabel(r"Dust temperature $T$ (K)", fontsize=7.7, labelpad=1.5)
+    a1.legend(loc="upper right", **dict(LEG, labelspacing=0.3, fontsize=6.8))
+    a1.set_box_aspect(1.0 / 1.25)
+
+    # right: the errors of the correction in four ranges of Sigma_F
+    d = np.loadtxt(table)
+    g0 = d[:, 0]
+    # the ranges 21.6-22.0, 22.0-22.4, 22.4-22.8, and 22.8-23.4 of log10 Sigma_F, in units of 1e22 cm^-2
+    ranges = ("0.4\u20131.0", "1.0\u20132.5", "2.5\u20136.3", "6.3\u201325.0")
+    cols = ("0.72", "0.50", "0.27", "0.0")
+    a2.axhline(0.0, **REF)
+    a2.axvline(10.0, **REF)
+
+    for j, col in enumerate(cols):
+        a2.plot(g0, d[:, 1 + j], ":", color=col, lw=1.1)
+        a2.plot(g0, d[:, 5 + j], "-", color=col, lw=1.1)
+        ok = np.isfinite(d[:, 9 + j])
+        a2.plot(g0[ok], d[ok, 9 + j], "--", color=col, lw=0.9, marker="o", ms=3.0, mfc="none", mew=0.8)
+
+    a2.set_xscale("log")
+    a2.set_xlim(0.8, 700.0)
+    a2.set_ylim(-26.0, 40.0)
+    a2.tick_params(labelsize=7.7)
+    a2.set_xlabel(r"Radiation field $G_0$", fontsize=7.7, labelpad=1.5)
+    a2.set_ylabel(r"Relative error of the corrected $\Sigma$ (%)", fontsize=7.7, labelpad=1.5)
+
+    # two legends: the ranges of the fitted surface density (shades) and the three variants (line styles)
+    hr = [Line2D([], [], color=c, lw=1.1, label=r) for r, c in zip(ranges, cols)]
+    hv = [Line2D([], [], color="black", ls=":", lw=1.1, label=r"without $g$"),
+          Line2D([], [], color="black", ls="-", lw=1.1, label=r"with $g$"),
+          Line2D([], [], color="black", ls="--", lw=0.9, marker="o", ms=3.0, mfc="none", mew=0.8, label=r"$g$ left out")]
+
+    leg = a2.legend(handles=hr, loc="upper right", fontsize=6.8, frameon=False, handlelength=1.8, labelspacing=0.3,
+                    title=r"$\Sigma_{\rm F}$ ($10^{22}$ cm$^{-2}$)", title_fontsize=6.8)
+
+    a2.add_artist(leg)
+    a2.legend(handles=hv, loc="upper left", fontsize=6.8, frameon=False, handlelength=2.2, labelspacing=0.3)
+    a2.set_box_aspect(1.0 / 1.25)
+
+    fig.tight_layout(pad=0.0, h_pad=0.0)
+    fig.savefig(out)
+    plt.close(fig)
+    print("written %s" % out)
+
+
+def fig_field_errors(table="field_factor_errors.txt", laws="laws_refit.txt", out="fig_field_errors.pdf"):
+
+    """The temperature relations and the errors of the correction on the grid of radiation fields (Fig. C.1, full width).
+
+    Left: the relation T(Sigma_A) of Eq. (5) refitted on the models of each of the nine fields (laws_refit.txt from refit.py, the
+    constants of table 3 at the CDS), in the colors of fig_fieldfactor, with the adopted relation for G_0 = 10 (dashed). Right: the
+    median relative error of the corrected surface density over the pixels of the models of each field, against G_0, in four
+    ranges of Sigma_F (shades of gray, to keep the colors for the fields): without the field factor g (dotted), with g built from
+    all nine fields (solid), and with g interpolated between the two neighboring fields, the field tested being left out (dashed,
+    open circles; the end fields and G_0 = 10 cannot be left out). Read from the output of field_factor_errors.py.
+    """
+
+    from matplotlib.lines import Line2D
+
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.2, 2.9))
+    fig.subplots_adjust(wspace=-0.4)
+
+    # left: the refitted relations T(Sigma_A) of the nine fields
+    colors = ("black", "red", "green", "blue", "cyan", "brown", "orange", "gold", "magenta")
+    p = np.loadtxt(laws)
+    sx = np.geomspace(1.0e19, 1.0e24, 400)
+
+    for k, (g0, tmin, tmax, sstar, gam) in enumerate(p[:, :5]):
+        a1.plot(sx, tmin + (tmax - tmin) * (1.0 + sx / sstar) ** (-gam), "-", color=colors[k], lw=1.0, label=r"$%g$" % g0)
+
+    a1.plot(sx, law(sx), "--", color="black", lw=1.0, label=r"Eq. (5)")
+    a1.set_xscale("log")
+    a1.set_xlim(2.0e19, 4.0e23)
+    a1.set_ylim(4.0, 45.0)
+    a1.tick_params(labelsize=7.7)
+    a1.set_xlabel(r"Effective attenuating column $\Sigma_{\rm A}$ (cm$^{-2}$)", fontsize=7.7, labelpad=0.5)
+    a1.set_ylabel(r"Dust temperature $T$ (K)", fontsize=7.7, labelpad=1.5)
+    a1.legend(loc="upper right", **dict(labelspacing=0.35, fontsize=6.8), bbox_to_anchor=(0.985, 0.98), handlelength=1.8, 
+              title=r"field $G_{0}$", title_fontsize=6.8)
+    a1.set_box_aspect(1.0 / 1.25)
+
+    # right: the errors of the correction in four ranges of Sigma_F
     d = np.loadtxt(table)
     g0 = d[:, 0]
     # the ranges 21.6-22.0, 22.0-22.4, 22.4-22.8, and 22.8-23.4 of log10 Sigma_F, in units of 1e22 cm^-2
     ranges = ("0.4\u20131.0", "1.0\u20132.5", "2.5\u20136.3", "6.3\u201325.0")
     cols = ("red", "green", "blue", "magenta")
 
-    fig, ax = plt.subplots(1, 1, figsize=(3.5, 2.8))
-    ax.axhline(0.0, **REF)
-    ax.axvline(10.0, **REF)
-    for j, (rng, col) in enumerate(zip(ranges, cols)):
-        ax.plot(g0, d[:, 1 + j], ":", color=col, lw=1.0)
-        ax.plot(g0, d[:, 5 + j], "-", color=col, lw=1.0)
+    a2.axhline(0.0, **REF)
+    a2.axvline(10.0, **REF)
+
+    for j, col in enumerate(cols):
+        a2.plot(g0, d[:, 1 + j], ":", color=col, lw=1.1)
+        a2.plot(g0, d[:, 5 + j], "-", color=col, lw=1.1)
         ok = np.isfinite(d[:, 9 + j])
-        ax.plot(g0[ok], d[ok, 9 + j], "--", color=col, lw=0.8, marker="o", ms=3.0, mfc="none", mew=0.7)
+        a2.plot(g0[ok], d[ok, 9 + j], "--", color=col, lw=0.9, marker="o", ms=3.0, mfc="none", mew=0.8)
 
-    ax.set_xscale("log")
-    ax.set_xlim(0.8, 700.0)
-    ax.set_ylim(-26.0, 40.0)
-    ax.tick_params(labelsize=7.7)
-    ax.set_xlabel(r"Radiation field $G_0$", fontsize=7.7, labelpad=1.5)
-    ax.set_ylabel(r"Relative error of the corrected $\Sigma$ (%)", fontsize=7.7, labelpad=1.5)
+    a2.set_xscale("log")
+    a2.set_xlim(0.8, 700.0)
+    a2.set_ylim(-26.0, 35.0)
+    a2.tick_params(labelsize=7.7)
+    a2.set_xlabel(r"Radiation field $G_0$", fontsize=7.7, labelpad=1.5)
+    a2.set_ylabel(r"Relative error of the corrected $\Sigma$ (%)", fontsize=7.7, labelpad=1.5)
 
-    # two legends: the ranges of the fitted surface density (colors) and the three variants (line styles)
-    from matplotlib.lines import Line2D
-    hr = [Line2D([], [], color=c, lw=1.0, label=r"%s" % r) for r, c in zip(ranges, cols)]
-    hv = [Line2D([], [], color="0.3", ls=":", lw=1.0, label=r"without $g$"),
-          Line2D([], [], color="0.3", ls="-", lw=1.0, label=r"with $g$"),
-          Line2D([], [], color="0.3", ls="--", lw=0.8, marker="o", ms=3.0, mfc="none", mew=0.7, label=r"$g$ left out")]
-    leg = ax.legend(handles=hr, loc="upper right", fontsize=6.8, frameon=False, handlelength=1.8, labelspacing=0.3,
-                    title=r"$\Sigma_{\rm F}$ ($10^{22}$ cm$^{-2}$)", title_fontsize=6.8)
-    ax.add_artist(leg)
-    ax.legend(handles=hv, loc="upper center", fontsize=6.8, frameon=False, handlelength=2.2, labelspacing=0.3)
-    ax.set_box_aspect(1.0 / 1.25)
+    # two legends: the ranges of the fitted surface density (shades) and the three variants (line styles)
+    hr = [Line2D([], [], color=c, lw=1.1, label=r) for r, c in zip(ranges, cols)]
+    hv = [Line2D([], [], color="black", ls=":", lw=1.1, label=r"without $g$"),
+          Line2D([], [], color="black", ls="-", lw=1.1, label=r"with $g$"),
+          Line2D([], [], color="black", ls="--", lw=0.9, marker="o", ms=3.0, mfc="none", mew=0.8, label=r"$g$ left out")]
 
-    fig.tight_layout(pad=0.0)
+    leg = a2.legend(handles=hr, loc="upper right", fontsize=6.8, frameon=False, handlelength=1.8, labelspacing=0.35,
+                    title=r"$\Sigma_{\rm F}$ ($10^{22}$ cm$^{-2}$)", title_fontsize=6.8, bbox_to_anchor=(0.67, 0.79))
+
+    a2.add_artist(leg)
+    a2.legend(handles=hv, loc="upper center", fontsize=6.8, frameon=False, handlelength=2.2, labelspacing=0.35, bbox_to_anchor=(0.54, 0.98))
+    a2.set_box_aspect(1.0 / 1.25)
+
+    fig.tight_layout(pad=0.0, w_pad=2.0)
     fig.savefig(out)
     plt.close(fig)
     print("written %s" % out)
@@ -2011,6 +2115,6 @@ if __name__ == "__main__":
 #    fig_cube3d()
 #    fig_cube()
 #    fig_angular()
-#    fig_superposition()
-   fig_field_errors()
+    fig_superposition()
+#    fig_field_errors()  #   fig_field_errors_tall()
 #    fig_mixing()

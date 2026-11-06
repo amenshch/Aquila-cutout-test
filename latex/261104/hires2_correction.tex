@@ -415,6 +415,8 @@ Eq.~(\ref{eq:sensitivity})):
    \Sigma_{\rm F}(\Sigma) = \frac{I_{\rm ref}(\Sigma)} {\kappa_{\rm ref}\,\eta\,\muH\,\mH\,B_{\rm ref}(\Teff)}.
 \label{eq:fitted}
 \end{equation}
+Below, $T_{\rm F}$ and $\Sigma_{\rm F}$ are called the fitted temperature and the fitted surface density, the values that a 
+single-temperature fit returns.
 
 (5) The correction factor is the ratio of the true and fitted surface densities. An observed image contains $\Sigma_{\rm F}$, not
 $\Sigma$, so the factor was tabulated against $\Sigma_{\rm F}$:
@@ -444,8 +446,8 @@ largest when a line of sight contains both a warm surface layer, which dominates
 of the mass. The surface layer has a nearly fixed surface density of a few $10^{21}$\,cm$^{-2}$, set by the depth to which the
 heating radiation penetrates. Up to about $4{\times}10^{22}$\,cm$^{-2}$, the cold interior grows with $\Sigma$, and so does the
 bias of the fit. At higher surface densities, most of the material of a uniform body has reached the temperature floor $T_{\rm
-min}$. The cold interior then dominates the emission as well as the mass, the fitted temperature approaches $T_{\rm min}$, and the
-line of sight becomes nearly isothermal again, so the factor declines toward unity.
+min}$. The cold interior then dominates the emission as well as the mass, $T_{\rm F}$ approaches $T_{\rm min}$, and the line of
+sight becomes nearly isothermal again, so the factor declines toward unity.
 
 Real dense structures are not uniform. A concentrated core has a cold center inside a warmer envelope, and its temperature still
 varies along the line of sight. The radiative transfer models confirm this: the factor that they require stays between $2.0$ and
@@ -1143,16 +1145,16 @@ dust temperature in the plane of the cut.}
 \label{fig:cube3d}
 \end{figure}
 
-\begin{figure}[ht!]
+\begin{figure*}[ht!]
 \centering
-\includegraphics[width=\columnwidth]{fig_cube.pdf}
+\includegraphics[width=\textwidth]{fig_cube.pdf}
 \caption{A slice through the radiative transfer model of the cloud, along the middle row of the map (horizontal axis) and the line
-of sight (vertical axis). \emph{Upper three panels}: the H$_2$ number density, the dust temperature, and the difference between the
-dust temperature and that of the uniform layer with the same surface density in each column. \emph{Lower panel}: the dust
+of sight (vertical axis). \emph{Left images}: The H$_2$ number density, the dust temperature, and the difference between the
+dust temperature and that of the uniform layer with the same surface density in each column. \emph{Right panel}: The dust
 temperature against the depth for three columns of different surface density, in the radiative transfer model (solid) and in the
 analytic uniform layer (dashed).}
 \label{fig:cube}
-\end{figure}
+\end{figure*}
 
 As a result, the emission of the radiative transfer model at $160${\um} is up to $1.5$ times that of the uniform layer with the
 same surface density. The model has cells of $12{\arcsec}$, limited by the available memory, whereas the image of the simulated
@@ -1264,13 +1266,13 @@ columns entered the angular average of Eq.~(\ref{eq:seff}), computed over $\psi$
 solid angle of the directions at that angle. The temperature of every grain along the line of sight was determined from
 Eq.~(\ref{eq:law}). The emissions of the cloud and of the sphere, given by Eq.~(\ref{eq:emission}) with $\Sigma_{\rm L}$ and
 $\Sigma_{\rm S}$ and the temperatures of their grains, were added, and one modified blackbody was fitted to the sum, exactly as for
-the uniform bodies of Sect.~\ref{sec:factor}. This gave the fitted surface density $\Sigma_{\rm F}$ of the composite line of sight,
-whose true value is $\Sigma = \Sigma_{\rm L} + \Sigma_{\rm S}$, and the corrected value $f(\Sigma_{\rm F})\,\Sigma_{\rm F}$, with
-$f$ of Eq.~(\ref{eq:factor}).
+the uniform bodies of Sect.~\ref{sec:factor}. This gave $\Sigma_{\rm F}$ of the composite line of sight, whose true value is
+$\Sigma = \Sigma_{\rm L} + \Sigma_{\rm S}$, and the corrected value $f(\Sigma_{\rm F})\,\Sigma_{\rm F}$, with $f$ of
+Eq.~(\ref{eq:factor}).
 
 \begin{figure*}[ht!]
 \centering
-\includegraphics[width=0.95\textwidth]{fig_superposition.pdf}
+\includegraphics[width=0.97\textwidth]{fig_superposition.pdf}
 \caption{Superposition of a cloud and a sphere (total $\Sigma = 2{\times}10^{22}$\,cm$^{-2}$). \emph{Upper left}: The dust
 temperature along a line of sight through the uniform cloud that the method assumes (blue) and through the same surface density
 divided equally between the cloud and a uniform sphere outside it, touching its near side (red, $q = 0$). \emph{Upper right}: The
@@ -1314,28 +1316,32 @@ factor that the correction applies with the factor that restores its true surfac
 range from $-23$ to $+26$\% (Fig.~\ref{fig:fielderr}). They change sign twice: the correction is too large in the weakest fields,
 too small for $G_0 \approx 20$--$100$, and again too large at the highest surface densities in the strongest fields.
 
-\subsection{Deriving the field factor $g$}
-\label{app:fieldR}
-
-\begin{figure}
+\begin{figure*}[ht!]
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-%%%%% NUMBERS (2026-11-05): Figure fig:fielderr from python/paper_numbers/field_factor_errors.py on the histograms
-%%%%% harvest_calib3_G0=*.txt.hist.npz written by harvest_calib3.py (binned, so accurate to about 1 percent); the
-%%%%% unrounded values are in field_factor_errors.txt, plotted by fig_field_errors in make_hires2_figures12.py.
-%%%%% The errors for a local field that differs by a factor of 2.2 or 4.7 (Sect. 7) are the differences of the
-%%%%% 'without g' values of the fields one or two steps from G_0 = 10 from those at G_0 = 10.
+%%%%% NUMBERS (2026-11-05): Figure fig:fielderr, upper: Eq. (5) with the constants of python/paper_numbers/laws_refit.txt (refit.py
+%%%%% on hires/attenuation_law_G0=*.txt, the tables of fit_attenuation_law.py, refitted with wide limits; table3.dat at the CDS).
+%%%%% Lower: python/paper_numbers/field_factor_errors.py on the histograms harvest_calib3_G0=*.txt.hist.npz written by
+%%%%% harvest_calib3.py (binned, so accurate to about 1 percent); the unrounded values are in field_factor_errors.txt. Both panels
+%%%%% are plotted by fig_field_errors in make_hires2_figures12.py. The errors for a local field that differs by a factor of 2.2 or
+%%%%% 4.7 (Sect. 7) are the differences of the 'without g' values of the fields one or two steps from G_0 = 10 from those at
+%%%%% G_0 = 10. The decomposition of g is from analytic_g.py and scale_test.py with hicorrect2.py.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 \centering
-\includegraphics[width=0.98\columnwidth]{fig_field_errors.pdf}
-\caption{Relative errors of the corrected surface density for the models of the grid of radiation fields are plotted against the
-field strength $G_0$, in four ranges of the fitted surface density $\Sigma_{\rm F}$. Each point is the median over the pixels in
-its range. The correction without the field factor $g$ (dotted lines) is compared with that with $g$ of all nine fields
-(Sect.~\ref{sec:g0corr}, solid lines). Each circle on the dashed lines is a separate test of a field $G_0$ with $g$ interpolated in
-$\log G_0$ between its two neighboring values, the field itself being left out. Such a test is not possible for the weakest and
-strongest fields and for the field $G_0 = 10$ of the calibration (vertical dotted line). In all cases, the correction factor
-$f_{G_0}$ is that of Eq.~(\ref{eq:factorg0}), with $g = 1$ for the dotted lines.}
+\includegraphics[width=0.99\textwidth]{fig_field_errors.pdf}
+\caption{Temperature relations and errors of the correction for the grid of radiation fields. \emph{Left}: The relation
+$T(\Sigma_{\rm A})$ of Eq.~(\ref{eq:law}) refitted on the models of each field strength $G_0$ is compared with the adopted relation
+for $G_0 = 10$ (dashed line). \emph{Right}: Relative errors of the corrected surface density are plotted against $G_0$, in four
+ranges of the fitted surface density $\Sigma_{\rm F}$. Each point is the median over the pixels in its range. The correction
+without the field factor $g$ (dotted lines) is compared with that with $g$ of all nine fields (Sect.~\ref{sec:g0corr}, solid
+lines). Each circle on the dashed lines is a separate test of a field $G_0$ with $g$ interpolated in $\log G_0$ between its two
+neighboring values, the field itself being left out. Such a test is not possible for the weakest and strongest fields and for the
+field $G_0 = 10$ of the calibration (vertical dotted line). In all cases, the correction factor $f_{G_0}$ is that of
+Eq.~(\ref{eq:factorg0}), with $g = 1$ for the dotted lines.}
 \label{fig:fielderr}
-\end{figure}
+\end{figure*}
+
+\subsection{Deriving the field factor $g$}
+\label{app:fieldR}
 
 Most pixels of a model lie on the plateau of its embedding cloud, and each field shifts these plateaus to a different $\Sigma_{\rm
 F}$. Bins of $\Sigma_{\rm F}$ would therefore compare unrelated populations of pixels in different fields. The pixels were instead
@@ -1349,58 +1355,33 @@ and range of $\Sigma_{\rm F}$ (Fig.~\ref{fig:fielderr}). When a field is left ou
 up to $6$\% from those with $g$, which measures the error of interpolating between the fields of the model grid.
 
 The shape of $g(\Sigma_{\rm F}, G_0)$ follows from the changes of the relation of Eq.~(\ref{eq:law}) with the field, refitted on
-the models of each field (Table~\ref{tab:lawG0}). For $G_0 = 10$, its constants differ from those of Eq.~(\ref{eq:law}), which was
-fitted to the main grid and the filaments, so only their trends with the field are discussed here. With increasing $G_0$, $T_{\rm
-max}$ rises steadily, whereas $T_{\rm min}$ stays near $6$--$7$\,K up to $G_0 \approx 20$ and then rises, as the shielded dust is
-heated by the infrared emission of the warmer dust around it. The contrast $T_{\rm max}/T_{\rm min}$ therefore increases from $2.8$
-to about $4$ near $G_0 \approx 50$--$100$ and then decreases slightly. The higher $T_{\rm max}$ and the steeper decline of
-$T(\Sigma_{\rm A})$ increase the bias and dominate up to $G_0 \approx 50$. The higher $T_{\rm min}$ and the overall warming reduce
-it in the strongest fields. The analytic calculation of Sect.~\ref{sec:factor} with the relation of each field reproduces these
-features only qualitatively, within $25$\%, because uniform bodies lack the concentration of the models. The measured $g$ was
-therefore adopted. It transfers only the change with the field and keeps the calibration at $G_0 = 10$.
-
-\begin{table}[ht!]
-\caption{The relation of Eq.~(\ref{eq:law}) refitted on the models of each radiation field strength $G_0$: the floor temperature
-$T_{\rm min}$, the temperature of unattenuated dust $T_{\rm max}$, their ratio, and the parameters $\Sigma_{\star\!}$ and $\gamma$.}
-\label{tab:lawG0}
-\centering
-\begin{tabular}{rccccc}
-\hline\hline
-\noalign{\smallskip}
-$G_0\,\,\,$ &\!\!\!\! $T_{\rm min\!}$ (K) &\!\!\!\! $T_{\rm max\!}$ (K) &\!\!\!\! $T_{\rm max}/T_{\rm min\!}$ &
-\!\!\!\! $\Sigma_{\star\!}$ ($10^{21}$\,cm$^{-2}$) &\!\!\!\! $\gamma$ \\
-\noalign{\smallskip}
-\hline
-\noalign{\smallskip}
-\!\!\!0.98             &\!\!\!\! 6.14  &\!\!\!\! 17.2 &\!\!\!\! 2.80 &\!\!\!\! 3.27 &\!\!\!\! 1.25 \\
-\!\!\!2.12             &\!\!\!\! 6.07  &\!\!\!\! 18.3 &\!\!\!\! 3.02 &\!\!\!\! 2.38 &\!\!\!\! 1.10 \\
-\!\!\!4.61             &\!\!\!\! 6.09  &\!\!\!\! 20.2 &\!\!\!\! 3.31 &\!\!\!\! 1.79 &\!\!\!\! 1.03 \\
-\!\!\!10.0\phantom{0}  &\!\!\!\! 6.31  &\!\!\!\! 22.7 &\!\!\!\! 3.59 &\!\!\!\! 1.64 &\!\!\!\! 1.11 \\
-\!\!\!21.7\phantom{0}  &\!\!\!\! 6.73  &\!\!\!\! 25.7 &\!\!\!\! 3.81 &\!\!\!\! 1.85 &\!\!\!\! 1.35 \\
-\!\!\!47.1\phantom{0}  &\!\!\!\! 7.36  &\!\!\!\! 29.1 &\!\!\!\! 3.95 &\!\!\!\! 2.40 &\!\!\!\! 1.75 \\
-\!\!\!102.4\phantom{0} &\!\!\!\! 8.27  &\!\!\!\! 33.0 &\!\!\!\! 3.99 &\!\!\!\! 3.23 &\!\!\!\! 2.31 \\
-\!\!\!222.2\phantom{0} &\!\!\!\! 9.50  &\!\!\!\! 37.5 &\!\!\!\! 3.95 &\!\!\!\! 3.98 &\!\!\!\! 2.83 \\
-\!\!\!482.5\phantom{0} &\!\!\!\! 11.07 &\!\!\!\! 42.9 &\!\!\!\! 3.87 &\!\!\!\! 4.34 &\!\!\!\! 3.14 \\
-\noalign{\smallskip}
-\hline
-\end{tabular}
-\end{table}
+the models of each field (Fig.~\ref{fig:fielderr}), whose constants are available at the CDS. For $G_0 = 10$, they differ from
+those of Eq.~(\ref{eq:law}), which was fitted to the main grid and the filaments, so only their trends with the field are discussed
+here. $T_{\rm max}$ rises steadily with increasing $G_0$, whereas $T_{\rm min}$ stays near $6$--$7$\,K up to $G_0 \approx 20$ and
+then rises, while the shielded dust is heated by the infrared emission of the warmer dust around it. The contrast $T_{\rm
+max}/T_{\rm min}$ therefore increases from $2.8$ to about $4$ near $G_0 \approx 50$--$100$ and then decreases slightly. The higher
+$T_{\rm max}$ and the steeper decline of $T(\Sigma_{\rm A})$ increase the bias and dominate up to $G_0 \approx 50$. The higher
+$T_{\rm min}$ and the overall warming reduce the underestimation of $\Sigma$ in the strongest fields. The analytic calculation of
+Sect.~\ref{sec:factor} with the refitted relations reproduces these features only qualitatively, within $25$\%, because the density
+in the bodies of the calculation is uniform, whereas the models are centrally concentrated. The derived $g$, which describes only
+the change with the field and leaves the calibration at $G_0 = 10$ unchanged, was therefore adopted.
 
 \subsection{Estimating the radiation fields of clouds}
 \label{app:fieldest}
 
-The field of a cloud is estimated from the temperatures that the reconstruction fits, by comparing them with those of the models at
-the same surface density. For each field of the grid, the median fitted temperature of the models is tabulated in bins of
-$0.2$\,dex of the fitted surface density. At a fixed surface density, this temperature rises monotonically with the field. An
-observed temperature is therefore converted into the field that the models need to reach it, by interpolating $\log G_0$ against
-the median temperature. The procedure uses only the images $\Dim_{13.5}$ and $\mathcal{T}_{13.5}$, at the resolution of the
-harvested models.
-%%, and it is carried out by the script %\texttt{g0_requirement.py}.
+The field strength of a cloud is estimated by comparing its fitted temperatures with those of the models at the same surface
+density. Both come from the images $\Dim_{13.5}$ and $\mathcal{T}_{13.5}$ that \emph{hires} derived from the \emph{Herschel} images
+of the cloud and from the simulated images of the models in the grid of radiation fields (Appendix~\ref{sec:grid}). For each field
+$G_0$ of the grid, the median temperature of the model pixels was tabulated in bins of $0.2$\,dex of the fitted surface density. At
+a fixed surface density, this temperature rises monotonically with $G_0$. The temperature in each pixel of the image
+$\mathcal{T}_{13.5}$ of a cloud is therefore converted into a field strength, by interpolating $\log G_0$ against the median
+temperature of the models in the same bin of surface density.
 
-The simple scaling $T \propto G_0^{1/6}$ for dust with $\kappa_{\lambda}\propto \lambda^{-2}$ \citep{IvezicElitzur1997,
-Tielens2005} holds only for dust that is optically thin to the heating radiation. At a fixed surface density, the fitted
-temperature of the models rises only as $G_0^{0.09}$ to $G_0^{0.13}$, because the shielded dust is heated by an attenuated and
-redder field, and the simple scaling would place a cloud at a field several times too weak.
+The field strength was not estimated from the simple scaling relation $T \propto G_0^{1/6}$ for dust with
+$\kappa_{\lambda}\propto \lambda^{-2}$ \citep{IvezicElitzur1997, Tielens2005}, because it holds only for dust that is optically
+thin to the heating radiation. At a fixed surface density, the models give $T_{\rm F} \propto G_0^{\,0.09\text{--}0.13}$, because
+the shielded dust is heated by an attenuated and redder field. The scaling relation would therefore place a cloud at a field
+several times too weak.
 
 The field is taken from the diffuse material only, below $6.31{\times}10^{21}$\,cm$^{-2}$. In denser bins, the fields that the
 procedure gives rise steadily with the surface density in every cloud. In Aquila, for example, the median field rises from about
@@ -1634,14 +1615,13 @@ $-19$ to $+23$\% (Fig.~\ref{fig:fielderr}, dotted lines).
 %%%%% NUMBERS (2026-10-20): from python/paper_numbers/inclination_errors.py (the adopted factor of hicorrect2.py, G_0 = 10).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 The factor was computed for lines of sight normal to a layer or perpendicular to the axis of a filament. Seen at an angle $i$ from
-that direction, a layer or a filament has the same temperature profile along the line of sight, but its surface density and its
-fitted surface density are both larger by the factor $1/\cos i$. The factor that it requires does not change, whereas the
-correction applies the factor of a denser structure. With the adopted factor, the corrected $\Sigma$ is too high by $2$, $5$, $13$,
-and $27$\% at $i = 30$, $45$, $60$, and $70\degr$ for $\Sigma_{\rm F} = 3.16{\times}10^{21}$\,cm$^{-2}$, and by $5$, $11$, $20$,
-and $26$\% for $10^{22}$\,cm$^{-2}$. Below $10^{21}$\,cm$^{-2}$ the error is a few percent at most, and above
-$3.2{\times}10^{22}$\,cm$^{-2}$ it vanishes, because the factor is held at its maximum there. For random orientations, the mean
-error is up to $23$\% for layers and up to $8$\% for filaments, in both cases between $3.2{\times}10^{21}$ and
-$10^{22}$\,cm$^{-2}$, where the factor rises most steeply.
+that direction, a layer or a filament has the same temperature profile along the line of sight, but both $\Sigma$ and $\Sigma_{\rm
+F}$ are larger by the factor $1/\cos i$. The factor that it requires does not change, whereas the correction applies the factor of
+a denser structure. With the adopted factor, the corrected $\Sigma$ is too high by $2$, $5$, $13$, and $27$\% at $i = 30$, $45$,
+$60$, and $70\degr$ for $\Sigma_{\rm F} = 3.16{\times}10^{21}$\,cm$^{-2}$, and by $5$, $11$, $20$, and $26$\% for
+$10^{22}$\,cm$^{-2}$. Below $10^{21}$\,cm$^{-2}$ the error is a few percent at most, and above $3.2{\times}10^{22}$\,cm$^{-2}$ it
+vanishes, because the factor is held at its maximum there. For random orientations, the mean error is up to $23$\% for layers and
+up to $8$\% for filaments, in both cases between $3.2{\times}10^{21}$ and $10^{22}$\,cm$^{-2}$, where the factor rises most steeply.
 
 \subsection{Floor temperature of shielded dust}
 \label{sec:floor}
@@ -1660,16 +1640,16 @@ would substantially lower the factor at the highest surface densities. The geome
 
 The correction is insensitive to noise, because it evaluates a smooth function of an image and fits nothing. Gaussian noise of
 $1.5$, $0.50$, $0.30$, and $0.15$\,MJy\,sr$^{-1}$ at $160$, $250$, $350$, and $500${\um} was added to the models, and the total
-corrected surface density changed by less than $0.5$\%. The amplification of the photometric errors by $7$ to $9$ found
-in Appendix~\ref{app:colors} does not apply to the correction, because the underestimation is not derived from the colors. A
-calibration error changes the fitted surface density $\Sigma_{\rm F}$, and the corrected surface density $f(\Sigma_{\rm
-F})\,\Sigma_{\rm F}$ follows. The effect of an error of $10$\% in each waveband was computed for uniform lines of sight of
-$3{\times}10^{21}$ to $10^{23}$\,cm$^{-2}$. An error at $500${\um}, the reference waveband, changes the uncorrected surface density
-by $16$ to $18$\% and the corrected one by $16$ to $23$\%. An error at $160$, $250$ or $350${\um} changes the fitted temperature by
-up to $0.4$\,K. It changes the uncorrected surface density by $1$ to $12$\% and the corrected one by $1$ to $11$\%. An error of
-$10$\% in all wavebands at once changes the uncorrected surface density by $10$\% and the corrected one by $9$ to $13$\%. Where $f$
-rises steeply with $\Sigma_{\rm F}$, between $10^{22}$ and $3{\times}10^{22}$\,cm$^{-2}$, the correction enlarges the error of the
-uncorrected image by up to $1.4$ times. Where $f$ declines, at the highest surface densities, it reduces the error slightly.
+corrected surface density changed by less than $0.5$\%. The amplification of the photometric errors by $7$ to $9$ found in
+Appendix~\ref{app:colors} does not apply to the correction, because the underestimation is not derived from the colors. A
+calibration error changes $\Sigma_{\rm F}$, and the corrected surface density $f(\Sigma_{\rm F})\,\Sigma_{\rm F}$ follows. The
+effect of an error of $10$\% in each waveband was computed for uniform lines of sight of $3{\times}10^{21}$ to
+$10^{23}$\,cm$^{-2}$. An error at $500${\um}, the reference waveband, changes the uncorrected surface density by $16$ to $18$\% and
+the corrected one by $16$ to $23$\%. An error at $160$, $250$ or $350${\um} changes $T_{\rm F}$ by up to $0.4$\,K. It changes the
+uncorrected surface density by $1$ to $12$\% and the corrected one by $1$ to $11$\%. An error of $10$\% in all wavebands at once
+changes the uncorrected surface density by $10$\% and the corrected one by $9$ to $13$\%. Where $f$ rises steeply with $\Sigma_{\rm
+F}$, between $10^{22}$ and $3{\times}10^{22}$\,cm$^{-2}$, the correction enlarges the error of the uncorrected image by up to $1.4$
+times. Where $f$ declines, at the highest surface densities, it reduces the error slightly.
 
 \subsection{Internally heated sources}
 \label{sec:notdo}
