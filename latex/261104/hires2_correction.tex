@@ -286,7 +286,7 @@ isotropic, that is, the same in all directions $\hat{n}$, as in all the models (
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\columnwidth]{fig_shielding.pdf}
+\includegraphics[width=0.93\columnwidth]{fig_shielding.pdf}
 \caption{The dust temperature against the effective attenuating column $\Sigma_{\rm A}$ in the radiative transfer models. The gray
 scale shows the distribution of the radial shells (over $10^5$) of the $2086$ spheres in this plane, each shell weighted by its
 mass, with every sphere given the same total weight. The gray scale is logarithmic and spans four orders of magnitude. The green
@@ -312,10 +312,6 @@ column of a shell was computed by integrating the number density of hydrogen mol
 cores and $200{\times}180$ directions of equal solid angle for the filaments, and Eq.~(\ref{eq:seff}) was then evaluated by summing
 over the directions. A few innermost shells of the densest cores, with poor Monte Carlo statistics, and the outermost shell of
 every sphere, whose single temperature is an average over a steep gradient, were rejected (Appendix~\ref{sec:grid}).
-%%The density structure of every model is known, and the attenuating column of a shell
-%%was computed by integrating the number density of hydrogen molecules along many rays: $240$ directions for the spherical shells of
-%%the cores and $200{\times}180$ directions of equal solid angle for the cylindrical shells of the filaments, at $45$ radii.
-%%Equation~(\ref{eq:seff}) was then evaluated by summing over the directions. 
 
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 %%%%% NUMBERS (2026-10-20): T_min, T_max, Sigma_star, gamma and the scatter from the header of attenuation_law.txt written by
@@ -340,7 +336,7 @@ warmer. Leaving out any single filament changes the correction factor by at most
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.76\textwidth]{fig_method.pdf}
+\includegraphics[width=0.75\textwidth]{fig_method.pdf}
 \caption{Flowchart of the method. The first group is the calibration, which is done once and yields the temperature relation of
 Eq.~(\ref{eq:law}). The second is the calculation of Sect.~\ref{sec:factor}, repeated for a grid of true surface densities
 $\Sigma$, which yields the table of the correction factor against the surface density that an observed image actually holds. Its
@@ -427,7 +423,7 @@ $\Sigma$, so the factor was tabulated against $\Sigma_{\rm F}$:
 
 \begin{figure}
 \centering
-\includegraphics[width=0.98\columnwidth]{fig_relation.pdf}
+\includegraphics[width=0.96\columnwidth]{fig_relation.pdf}
 \caption{The correction factor as a function of the surface density $\Sigma_{\rm F}$ of the uncorrected image for three uniform
 structures -- plane-parallel layer, cylinder, and uniform sphere -- and for an average of the sphere and layer, with $G_0 = 10$.
 The dotted curve shows the factor when the column $\Sigma_{\rm A}$ is replaced with $\Sigma_{\rm min}$ along the shortest path
@@ -491,16 +487,6 @@ any density profile. Two lines of sight with the same total surface density emit
 smooth or clumped and wherever a clump lies. Appendix~\ref{app:arrange} confirms this numerically, showing that density profiles
 that differ by a factor of thirty reproduce the smooth case to within $0.02$\%.
 
-%One assumption remains: each structure was assumed to have a uniform density. This assumption matters much less than it seems. For
-%a line of sight through a plane-parallel layer, in which the density varies only along the line of sight, it does not matter at
-%all. A dust grain is shielded by the column between the grain and the surface. This column does not depend on how the material
-%within it is distributed. Measured in column rather than in depth, every segment of a line of sight contains the same mass,
-%whatever the density profile; the density only sets how long the segment is. Equation~(\ref{eq:emission}), written in the fraction
-%$u$ of the column in front of a segment, therefore holds for any density profile, and the density does not appear there. Two lines
-%of sight with the same total surface density emit the same spectrum, whether their material is smooth or clumped and wherever a
-%clump lies. Appendix~\ref{app:arrange} confirms this numerically, showing that density profiles that differ by a factor of thirty
-%reproduce the smooth case to within $0.02$\%.
-
 This argument holds for a layer, in which radiation reaches the dust only through the material along the line of sight. In a
 bounded structure, radiation also reaches the dust from the sides, and only through this effect do the concentration and
 arrangement of the material matter. Their effect is modest. A sphere with a central-to-edge density ratio of $10$ needs a
@@ -563,7 +549,7 @@ to the temperature, which reduces the bias of any contrast.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.98\columnwidth]{fig_fieldfactor.pdf}
+\includegraphics[width=0.96\columnwidth]{fig_fieldfactor.pdf}
 \caption{The radiation field factor $g(\Sigma_{\rm F}, G_0)$ from Eq.~(\ref{eq:factorg0}) is plotted against the fitted surface
 density $\Sigma_{\rm F}$, for the nine field strengths $G_0$ of the model grid, from the weakest to the strongest. For the field 
 $G_0 = 10$ of the calibration, $g = 1$. Above $7.1{\times}10^{22}$\,cm$^{-2}$ (dotted line), $g$ is held constant.}
@@ -703,7 +689,7 @@ percentiles as in (b).}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.98\columnwidth]{fig_grid_validation.pdf}
+\includegraphics[width=0.96\columnwidth]{fig_grid_validation.pdf}
 \caption{Testing the correction method on the radiative transfer models of embedded cores. The relative error of the corrected
 surface density (Sect.~\ref{sec:valgrid}) is shown against the distance from the center of the core, as the median over the
 $1815$ models. The dashed line marks $O/2$ for $O = 13.5{\arcsec}$.}
@@ -892,7 +878,7 @@ This matters for any criterion based on a surface density threshold, such as tha
 
 \begin{figure*}
 \centering
-\includegraphics[width=\textwidth]{fig_aquila.pdf}
+\includegraphics[width=0.98\textwidth]{fig_aquila.pdf}
 \caption{The Aquila sub-region at $O = 13.5{\arcsec}$, corrected for the radiation field $G_0 = 33$. \emph{Upper panels}: the
 surface density before and after the correction, on a common logarithmic scale. \emph{Lower panels}: the image of the correction
 factors $\mathcal{F}$ and the corrected dust temperature (Sect.~\ref{sec:aquila}). }
@@ -948,10 +934,8 @@ filaments in a cloud like Aquila, the over-correction is about $10$\%.
 
 After the correction, the median core mass is only $2$\% too low, less than the error produced by a core footprint wrong by a
 quarter of its radius ($-15$ to $+8$\%). A correction that depends on the surface density alone is therefore sufficient.
-Corrections that also use the fitted temperature are not worth their complexity, because a warm pixel may need either more or less
-correction. A stronger radiation field makes a pixel warmer and requires more correction, whereas a pixel near the surface of a
-structure, or one whose line of sight crosses a warm cloud, is warmer but requires less, and its fitted temperature cannot
-distinguish the two cases (Appendix~\ref{app:tcorr}).
+Corrections that also use the fitted temperature do not improve it, because a warm pixel may need either more or less correction
+(Appendix~\ref{app:tcorr}).
 
 The correction was calibrated for a radiation field with $G_0 = 10$. Models computed for nine fields from $G_0 = 1$ to $483$ show
 that, without further adjustment, it is too large by up to $27$\% in the weakest fields and too small by up to $20$\% in fields of
@@ -1137,7 +1121,7 @@ them from the side.
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=\columnwidth]{fig_cube3d.pdf}
+\includegraphics[width=0.98\columnwidth]{fig_cube3d.pdf}
 \caption{A cut-away view of the radiative transfer model of the cloud, seen from the side of the observer. The front face is the
 surface density map of the lower half of the imaged area, oriented as in Fig.~\ref{fig:simsky6}; the depth runs along the line of
 sight. The upper face is a cut through the middle row of the map, and the right face a cut along its last column. Both show the
@@ -1147,7 +1131,7 @@ dust temperature in the plane of the cut.}
 
 \begin{figure*}[ht!]
 \centering
-\includegraphics[width=\textwidth]{fig_cube.pdf}
+\includegraphics[width=0.98\textwidth]{fig_cube.pdf}
 \caption{A slice through the radiative transfer model of the cloud, along the middle row of the map (horizontal axis) and the line
 of sight (vertical axis). \emph{Left images}: The H$_2$ number density, the dust temperature, and the difference between the
 dust temperature and that of the uniform layer with the same surface density in each column. \emph{Right panel}: The dust
@@ -1177,7 +1161,7 @@ emission depends only on the total surface density (Sect.~\ref{sec:orient}).
 
 \begin{figure*}[ht!]
 \centering
-\includegraphics[width=0.96\textwidth]{fig_angular.pdf}
+\includegraphics[width=0.95\textwidth]{fig_angular.pdf}
 \caption{\emph{Left}: Transmitted fraction $\exp\left(-\sigma\Sigma(\hat n)\right)$ of the external radiation against the cosine of
 the angle $i$ to the normal, for a dust grain at mid-depth of a plane-parallel layer of three total surface densities. The dashed lines
 mark the angular means of the curves and are labeled with the effective attenuating column $\Sigma_{\rm A}$ of Eq.~(\ref{eq:seff})
@@ -1272,7 +1256,7 @@ Eq.~(\ref{eq:factor}).
 
 \begin{figure*}[ht!]
 \centering
-\includegraphics[width=0.97\textwidth]{fig_superposition.pdf}
+\includegraphics[width=0.95\textwidth]{fig_superposition.pdf}
 \caption{Superposition of a cloud and a sphere (total $\Sigma = 2{\times}10^{22}$\,cm$^{-2}$). \emph{Upper left}: The dust
 temperature along a line of sight through the uniform cloud that the method assumes (blue) and through the same surface density
 divided equally between the cloud and a uniform sphere outside it, touching its near side (red, $q = 0$). \emph{Upper right}: The
@@ -1327,7 +1311,7 @@ too small for $G_0 \approx 20$--$100$, and again too large at the highest surfac
 %%%%% G_0 = 10. The decomposition of g is from analytic_g.py and scale_test.py with hicorrect2.py.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 \centering
-\includegraphics[width=0.99\textwidth]{fig_field_errors.pdf}
+\includegraphics[width=0.96\textwidth]{fig_field_errors.pdf}
 \caption{Temperature relations and errors of the correction for the grid of radiation fields. \emph{Left}: The relation
 $T(\Sigma_{\rm A})$ of Eq.~(\ref{eq:law}) refitted on the models of each field strength $G_0$ is compared with the adopted relation
 for $G_0 = 10$ (dashed line). \emph{Right}: Relative errors of the corrected surface density are plotted against $G_0$, in four
@@ -1414,8 +1398,8 @@ Cloud & $G_{0,16}$\tablefootmark{a} & $G_{0,50}$\tablefootmark{a} & $G_{0,84}$\t
 Taurus      &\phantom{0}$^<$0.98             &\phantom{0} $^<$0.98 &\phantom{0} $^<$0.98 & \phantom{0}0.0 \\
 California  &\phantom{0} 3.6                &\phantom{0} 5.4     &\phantom{0} 6.9     & \phantom{0}0.1 \\
 Perseus     &\phantom{0} 3.2                &\phantom{0} 4.7     &\phantom{0} 6.1     & \phantom{0}0.1 \\
-Scorpius    &\phantom{0} 6.2                &\phantom{0} 7.9     &\phantom{0} 10      & \phantom{0}0.0 \\
-Orion~A     &\phantom{0} 5.9                &\phantom{0} 8.9     &\phantom{0} 28      & \phantom{0}2.0 \\
+Scorpius    &\phantom{0} 6.2                &\phantom{0} 7.9     & 10\phantom{0}      & \phantom{0}0.0 \\
+Orion~A     &\phantom{0} 5.9                &\phantom{0} 8.9     & 28\phantom{0}      & \phantom{0}2.0 \\
 Ophiuchus   & 14\phantom{0}                 & 31\phantom{0}      & 55\phantom{0}      & \phantom{0}0.7 \\
 Aquila      & 25\phantom{0}                 & 33\phantom{0}      & 41\phantom{0}      & \phantom{0}0.4 \\
 W3 W4 W5    & 54\phantom{0}                 & 62\phantom{0}      & 73\phantom{0}      & \phantom{0}1.3 \\
@@ -1439,152 +1423,127 @@ field, and the correction factor $f_{G_0}$ is not calibrated for them.
 \section{Inadequacy of the observed colors and temperatures}
 \label{app:onlysigma}
 
-The observed images contain more than the surface density of a single modified blackbody fit: the spectral shape and the fitted
-temperature. This appendix shows why neither of them improves the correction.
-
 \subsection{Insufficient accuracy of the observed colors}
 \label{app:colors}
 \label{sec:amplification}
 
-One could try to measure the temperature structure directly, by fitting more than one component to the observed spectrum of each
-line of sight. Without noise, this works. A free two-temperature fit from $160$ to $500${\um} recovers $0.96$ to $1.00$ of the true
-surface density at the centers of the four models, against $0.62$ to $0.91$ for the single-temperature fit. With noise, it does not
-work. At the centers of four models with central-to-edge density ratios from $1.2$ to $91$, the residuals of the single-temperature
-fit have the same pattern: positive at $160$ and $500${\um} and negative at $250$ and $350${\um} (Fig.~\ref{fig:mixing}). This is
-the broadening of the spectrum by a mixture of temperatures. Their root-mean-square is $1.0$ to $5.8$\%, whereas the fit recovers
-only $0.91$ to $0.62$ of the true surface density, so that the underestimation is $6.6$ to $8.9$ times the residual.
-
-Any method that infers the underestimation from the colors therefore amplifies the relative photometric errors by a factor of $7$
-to $9$. The calibration uncertainties of \emph{Herschel} observations of Aquila are $20$\% at $70$ to $160${\um} and $10$\% at
-$250$ to $500${\um} \citep{Konyves+2015}. For the two weakly concentrated models, the whole signature is below the photometric
-accuracy, and a test that accepts a second component only where it significantly improves the fit never accepts it
-(Fig.~\ref{fig:mixing}). The correction must therefore be calibrated on models in which the answer is known.
+The temperature structure along a line of sight could, in principle, be measured by fitting more than one component to the observed
+spectrum. Without noise, a free two-temperature fit from $160$ to $500${\um} recovers $0.96$ to $1.00$ of the true surface density
+$\Sigma$ at the centers of four models of cores, against $0.62$ to $0.91$ for the single-temperature fit. The residuals of the
+single-temperature fit, however, are only $1.0$ to $5.8$\% (root-mean-square), positive at $160$ and $500${\um} and negative at
+$250$ and $350${\um} (Fig.~\ref{fig:mixing}). The underestimation of $\Sigma$ is $6.6$ to $8.9$ times larger, so any method that
+infers it from the colors amplifies the photometric errors by that factor. With calibration uncertainties of $20$\% at $160${\um}
+and $10$\% at $250$ to $500${\um} \citep{Konyves+2015}, the residual pattern is below the photometric accuracy. The correction must
+therefore be calibrated on models in which the answer is known.
 
 \begin{figure*}[ht!]
 \centering
-\includegraphics[width=0.96\textwidth]{fig_mixing.pdf}
-\caption{\emph{Left}: the emission of a line of sight of $3{\times}10^{22}$\,cm$^{-2}$, the sum over depth of material at every
-temperature, with the single modified blackbody fitted to it in the four wavebands and with the weights that the reconstruction
-uses. The fit is drawn toward the warmer and brighter material, so the temperature it returns is too high and the surface density
-that follows from it is too low. \emph{Right}: the relative residuals of that fit, waveband by waveband, for three total surface
-densities, with the fraction of the true surface density recovered beside each. The pattern is always the same, positive at the
-ends and negative in the middle, and it grows with the surface density, but it never rises above the calibration uncertainties of
-$20${\%} at $160${\um} and $10${\%} at the three longer wavebands.}
+\includegraphics[width=0.95\textwidth]{fig_mixing.pdf}
+\caption{Single-temperature fits to lines of sight through a mixture of temperatures. \emph{Left}: The emission of a line of
+sight of $3{\times}10^{22}$\,cm$^{-2}$, summed over depth, with the single modified blackbody fitted to it in the four wavebands.
+\emph{Right}: Relative residuals of the fit in each waveband for three surface densities, with the fraction of the true $\Sigma$
+recovered. The residuals grow with the surface density but remain below the calibration uncertainties of $20${\%} at $160${\um} and
+$10${\%} at the longer wavebands.}
 \label{fig:mixing}
 \end{figure*}
 
 \subsection{Ambiguity of the fitted temperatures}
 \label{app:tcorr}
 
-The reconstruction gives a dust temperature for every pixel, together with the surface density. If the temperature of a pixel
-differs from the one that the relation predicts at its surface density, the temperature carries information that the surface
-density does not. Four ways of using it were tested, all calibrated on the radiative transfer models. None was adopted, and the
-reason is the same for all four.
+A fitted temperature that differs from the one that the relation predicts at the same surface density might improve the correction.
+Four corrections that use it were tested, as tables or functions of the surface density and the temperature, calibrated on the
+radiative transfer models or on analytic lines of sight. They changed the median core mass by only $2$ to $9$\%, less than the mass
+errors caused by uncertain footprints and backgrounds (Appendix~\ref{app:footprint}). Each correction failed in some cases,
+under-correcting dense material in stronger fields, over-correcting the flanks of filaments, or copying the noise of the finest
+image into the factor.
 
-The methods were: a table of the required factor against the surface density, the fitted temperature, and the contrast between the
-images $\Dim_{13.5}$ and $\Dim_{36.3}$; a smooth function of the surface density and of the offset of the fitted temperature
-from the relation, fitted to the grid of radiation fields; a table computed from analytic lines of sight through structures
-embedded in a diffuse medium; and a redistribution of the correction within each beam to follow the shape of the finest image. On
-the models of the subdivision grid, they changed the median core mass by $2$ to $9$\% relative to the adopted correction. The third
-method under-corrected the dense material in fields of $G_0 = 20$ to $50$ by a factor of $1.5$ to $1.7$. On an earlier simulated
-sky, the first two over-corrected the flanks of filaments even more than the adopted correction, and the fourth copied the noise of
-the finest image into the factor.
-
-The reason is that a warm pixel is ambiguous. A pixel can be warmer than the relation predicts for two reasons. First, a stronger
-radiation field may heat it. The radiative transfer models then say that it needs more correction. Second, it may lie on the flank
-of a structure, near its surface, or its line of sight may also cross a warm cloud. It then needs less correction. The models used
-for the calibration contain only the first case, and the simulated star-forming region mostly the second. A correction that uses
-the temperature is therefore right in one case and wrong in the other. The fitted temperature of a single pixel cannot distinguish
-the two cases. The radiation field varies over parsecs, and the warmth of a flank varies over the width of a filament. The field is
-therefore estimated from the temperature of the diffuse material of the whole map, as one number for a cloud
-(Appendix~\ref{app:fieldest}). In a small region, such as the Aquila sub-region of Sect.~\ref{sec:aquila}, only $12$\% of the pixels are
-diffuse enough, and most of them lie in one corner, so the field must be taken from the larger map. None of these corrections
-changed the core mass by more than the error due to the footprint and the background (Appendix~\ref{app:footprint}), so the simplest one was adopted.
+The reason is that a warm pixel is ambiguous. A stronger radiation field makes it warmer and requires more correction, whereas a
+pixel near the surface of a structure, or one whose line of sight crosses a warm cloud, is warmer but requires less. The models of
+the calibration contain only the first case, the simulated star-forming region mostly the second, and the temperature of a single
+pixel cannot distinguish them. Because the field varies over parsecs, much more slowly than the temperature across a filament,
+$G_0$ is estimated as one number for a cloud from the diffuse material of the whole map (Appendix~\ref{app:fieldest}).
 
 \section{Uncertainties and limitations}
 \label{sec:limits}
-
-Table~\ref{tab:accuracy} collects the accuracies measured on the models of this paper, before and after the correction. The
-subsections that follow discuss each source of error.
-
-\subsection{Summary of the accuracy}
-\label{sec:accuracy}
 
 \begin{table*}[ht!]
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 %%%%% NUMBERS (2026-10-20): the values of this table are copied from Sects. 5, 6 and 7 and Appendices B and D; see comments there.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-\caption{Accuracy of surface densities and masses derived from \emph{Herschel} images at $160$--$500${\um}, measured
-on the radiative transfer models of this paper. Accuracy ratios (measured over true values) and relative errors are medians over
-the models, with the 16th and 84th percentiles in parentheses where they are available; ranges span the models listed. For the
-diffuse cloud, the range is that between $10^{22}$ and $10^{21}$\,cm$^{-2}$. Uncorrected: the reconstruction
-$\Dim_{13.5}$ of \emph{hires}, or a single modified blackbody fit. Corrected: the same after the correction of Eq.~(\ref{eq:correction}).}
+\caption{Accuracy of surface densities and masses derived from \emph{Herschel} images at $160$--$500${\um}.}
 \label{tab:accuracy}
 \centering
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{llll}
 \hline\hline
 \noalign{\smallskip}
-Quantity & Uncorrected & Corrected & Models (Section) \\
+Quantity\tablefootmark{a} & Uncorrected\tablefootmark{b} & Corrected\tablefootmark{c} & Models (Section)\tablefootmark{d} \\
 \noalign{\smallskip}
 \hline
 \noalign{\smallskip}
-diffuse cloud, accuracy ratio of $\Sigma$                 & 0.76                 & 0.89 (0.86--0.94)  & cloud model (\ref{sec:sim}) \\
-total $\Sigma$ within core footprints, accuracy ratio     & 0.78 (0.56--0.93)    & 0.99 (0.92--1.03)  & 1815 cores (\ref{sec:valgrid}) \\
-core mass $M$ from the image, accuracy ratio              & 0.63 (0.46--0.86)    & 0.98 (0.75--1.11)  & 1750 cores (\ref{sec:valgrid}) \\
-core center ($3{\arcsec}$), relative error of $\Sigma$    & $-0.44$              & $-0.12$            & 1815 cores (\ref{sec:valgrid}) \\
-filament crest, accuracy ratio of $\Sigma$                & 0.42--0.86           & 0.78--0.94         & 7 filaments (\ref{sec:cyl}) \\
-filament linear density $\Lambda$, accuracy ratio         & 0.60--0.96           & 0.93--1.01         & 7 filaments (\ref{sec:cyl}) \\
-filament width $H_{13.5}$ ($48{\arcsec}$), accuracy ratio & 1.21--1.65           & 1.15--1.31         & 6 filaments (\ref{sec:cyl}) \\
-filament slope $\alpha_{13.5}$, error                     & up to $-0.22$        & within $\pm 0.05$  & 7 filaments (\ref{sec:cyl}) \\
-superposed structures, relative error of $\Sigma$         & --                   & $-0.13$ to $+0.21$ & analytic (\ref{app:twocomp}) \\
-filament flanks in a dense cloud, relative error          & --                   & $+0.10$ to $+0.19$ & simulated region (\ref{sec:sim}) \\
-inclined layers, random, mean relative error              & --                   & $0$ to $+0.23$     & analytic (\ref{sec:incl}) \\
-inclined filaments, random, mean relative error           & --                   & $0$ to $+0.08$     & analytic (\ref{sec:incl}) \\
-field $G_0 = 1$ to 483 without $g$, relative error        & --                   & $-0.23$ to $+0.26$ & 9 radiation fields (\ref{sec:field}) \\
-field $G_0 = 1$ to 483 with $g$, relative error           & --                   & $-0.16$ to $+0.02$ & 9 radiation fields (\ref{sec:field}) \\
-local field wrong by a factor of 2.2, relative error      & --                   & $-0.10$ to $+0.13$ & 9 radiation fields (\ref{sec:field}) \\
-floor $T_{\rm min}$ wrong by $\pm 1$\,K, relative error   & --                   & $-0.22$ to $+0.51$ & relation (\ref{sec:floor}) \\
-calibration error of 10\% at 500{\um}, $\Sigma$           & 0.16--0.18           & 0.16--0.23         & uniform bodies (\ref{sec:calerr}) \\
+total $\Sigma$ within core footprints, accuracy ratio      & 0.78 (0.56--0.93) & 0.99 (0.92--1.03) & 1815 cores (\ref{sec:valgrid}) \\
+core mass $M$ from the image, accuracy ratio               & 0.63 (0.46--0.86) & 0.98 (0.75--1.11) & 1750 cores (\ref{sec:valgrid}) \\
+core center $\Sigma$ (within $3{\arcsec}$), relative error & $-0.44$          & $-0.12$           & 1815 cores (\ref{sec:valgrid}) \\
+filament crest $\Sigma$, accuracy ratio                    & 0.42--0.86        & 0.78--0.94        & 7 filaments (\ref{sec:cyl}) \\
+filament linear density $\Lambda$, accuracy ratio          & 0.60--0.96        & 0.93--1.01        & 7 filaments (\ref{sec:cyl}) \\
+filament width $H_{13.5}$ (true $48{\arcsec}$), accuracy ratio & 1.21--1.65   & 1.15--1.31        & 6 filaments (\ref{sec:cyl}) \\
+filament slope $\alpha_{13.5}$, error                      & up to $-0.22$     & within $\pm 0.05$ & 7 filaments (\ref{sec:cyl}) \\
+diffuse cloud, accuracy ratio of $\Sigma$                  & 0.76              & 0.89 (0.86--0.94) & cloud model (\ref{sec:sim}) \\
+filament flanks in a dense cloud, relative error           & --                & $0.10$ to $0.19$  & simulated region (\ref{sec:sim}) \\
+superposed structures, relative error of $\Sigma$          & --                & $-0.13$ to $0.21$ & analytic (\ref{app:twocomp}) \\
+field $G_0 = 1$ to 483 without $g$, relative error         & --                & $-0.23$ to $0.26$ & 9 radiation fields (\ref{sec:field}) \\
+field $G_0 = 1$ to 483 with $g$, relative error            & --                & $-0.16$ to $0.02$ & 9 radiation fields (\ref{sec:field}) \\
+local field wrong by a factor of 2.2, relative error       & --                & $-0.12$ to $0.12$ & 9 radiation fields (\ref{sec:field}) \\
+inclined layers, random, mean relative error               & --                & $0$ to $0.23$     & analytic (\ref{sec:incl}) \\
+inclined filaments, random, mean relative error            & --                & $0$ to $0.08$     & analytic (\ref{sec:incl}) \\
+floor $T_{\rm min}$ wrong by $\pm 1$\,K, relative error    & --                & $-0.22$ to $0.51$ & relation (\ref{sec:floor}) \\
+calibration error of 10\% at 500{\um}, $\Sigma$            & 0.16--0.18        & 0.16--0.23        & uniform bodies (\ref{sec:calerr}) \\
 \noalign{\smallskip}
 \hline
 \end{tabular}
+\tablefoot{
+\tablefoottext{a}{Accuracy ratios are measured over true values. Values are medians over the models, with the 16th and 84th
+percentiles in parentheses where available; ranges span the models listed. For the diffuse cloud, the range is that between
+$10^{21}$ and $10^{22}$\,cm$^{-2}$.}
+\tablefoottext{b}{The derived $\Dim_{13.5}$ from \emph{hires}, or a single modified blackbody fit.}
+\tablefoottext{c}{The same after the correction of Eq.~(\ref{eq:correction}).}
+\tablefoottext{d}{The radiative transfer or analytic models on which the quantity was measured, with the section that describes the
+test.}
+}
 \end{table*}
 
-The numbers of Table~\ref{tab:accuracy} rest on noiseless models, on the simplest backgrounds, and on the dust and the radiation
-field of the models. For observers, they can be combined into a realistic total, adding the terms in quadrature. In diffuse
-material, the terms are the bias that the correction leaves ($10$\%), the superposition of structures ($10$\%), a local field that
-differs from the field of the cloud by a factor of about two ($10$\%), the calibration uncertainty of \emph{Herschel} of $10$\% per
-waveband ($17$\%, Appendix~\ref{sec:calerr}), and an error of $1$\,K in the floor temperature $T_{\rm min}$ ($10$\%). In dense
-structures, the same terms are $15$ to $20$, $15$, $15$, $20$ and $35$\%. The floor depends on the dust properties, which are not
-known in a real cloud, and it is the largest term in dense structures (Appendix~\ref{sec:floor}). The total is about $30$\% in
-diffuse material and about $50$\% in dense structures. In addition, the absolute dust opacity is uncertain by a factor of about
-$1.5$ to $2$ \citep{Roy+2014}, and it may increase in dense cores \citep{Ossenkopf+Henning1994, Juvela+2015}. The opacity scales
-all surface densities together, apart from such an increase, and no correction of the temperature bias can reduce its uncertainty.
-Uncorrected images have the calibration and opacity uncertainties as well, but they are also biased: they underestimate $\Sigma$ by
-$10$ to $25$\% in diffuse material and by factors of $1.3$ to $2.4$ in dense structures. The corrected temperature follows from the
-corrected $\Sigma$ through the intensity at $500${\um} (Sect.~\ref{sec:aquila}), independently of the absolute opacity. By
-Eq.~(\ref{eq:sensitivity}), an error of $30$ to $50$\% in $\Sigma$ corresponds to about $2$\,K at $11$ to $17$\,K. The fitted
-temperatures, in contrast, are too high by $1$ to $4$\,K in dense structures. These estimates hold for fields within the grid of
-models and for lines of sight without internal heating. Inclined layers and filaments can be over-corrected by a further $10$ to
-$25$\% between $3.2{\times}10^{21}$ and $10^{22}$\,cm$^{-2}$ (Appendix~\ref{sec:incl}). For the mass of a core, the errors of its
-footprint and background must be added (Appendix~\ref{app:footprint}).
+\subsection{Summary of the accuracy}
+\label{sec:accuracy}
+
+Table~\ref{tab:accuracy} collects the accuracies measured on the models, before and after the surface density correction. These
+numbers come from noiseless models with simple backgrounds. They can be combined into a realistic total by adding in quadrature the
+bias that the correction leaves, the superposition of structures, a local $G_0$ that differs from that of the cloud by a factor of
+${\sim}2$, the calibration uncertainty of \emph{Herschel}, and an error of $1$\,K in the floor temperature $T_{\rm min}$. The total
+is ${\sim}30$\% in diffuse material and ${\sim}50$\% in dense structures, where the floor is the largest term. Uncorrected images
+systematically underestimate $\Sigma$ by $10$--$25$\% in diffuse material and by factors of $1.3$--$2.4$ in dense structures, and
+they also have the calibration uncertainty. The total error of $30$--$50$\% in the corrected $\Sigma$ corresponds to ${\sim}2$\,K
+in the corrected temperature (Eq.~(\ref{eq:sensitivity})), whereas the fitted temperatures are too high by $1$--$4$\,K in dense
+structures. These estimates hold for fields within the grid of models and for lines of sight without internal heating. In addition,
+the absolute dust opacity is uncertain by a factor of $1.5$--$2$ \citep{Roy+2014} and may increase in dense cores
+\citep{Ossenkopf+Henning1994, Juvela+2015}.
 
 \subsection{Errors of core footprints}
 \label{app:footprint}
 
-In observed images, the footprints of cores are estimated by source extraction and can be wrong. To test the effect of such errors,
-the radius $R$ of the footprint was decreased or increased by $\Delta R$ (Fig.~\ref{fig:footprint}). A footprint too small by $\Delta
-R/R$ of $0.25$ or $0.5$ lowers the median corrected mass from $0.98$ to $0.83$ or $0.52$, because part of the core is then
-considered as background. A footprint too large by $0.25$ or $0.5$ raises it to $1.06$ or $1.11$, and the spread widens sharply for
-cores of low contrast (Sect.~\ref{sec:valgrid}), whose mass is small compared with the background within the footprint. For contrasts below $1.5$, a
-footprint too large by $\Delta R/R = 1$ triples the median mass, whereas for contrasts above $10$ it lowers it by $12$\%. These
-errors are lower limits, because the models are embedded in uniform clouds, whereas real cores overlap with filaments, background
-fluctuations, and other cores, which make the background harder to estimate.
+In observed images, the footprints of cores, estimated by source extraction, can be inaccurate. A footprint radius $R$ too small by
+$\Delta R/R = 0.25$ or $0.5$ lowers the median corrected mass from $0.98$ to $0.83$ or $0.52$, because part of the core is counted
+as background (Fig.~\ref{fig:footprint}). A footprint too large by $0.25$ or $0.5$ raises it to $1.06$ or $1.11$, and much more for
+cores of low contrast, whose mass is small compared with the background within the footprint. For contrasts below $1.5$, a
+footprint twice too large triples the median mass. These errors are lower limits. The models are embedded in uniform clouds,
+whereas real cores overlap with filaments, background fluctuations, and other cores. Moreover, the true masses of the tests were
+measured in the same way, with the background taken just outside the footprint, so the tests do not include the bias of the
+background itself. An embedded core has a crater-like background, because the lines of sight through the core cross less of the
+surrounding cloud than those next to it, and a background taken just outside the core is too high. This underestimates the masses
+of resolved cores by factors of up to $1.4$--$1.8$ in filaments \citep{Menshchikov2016}.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.98\columnwidth]{fig_footprint.pdf}
+\includegraphics[width=0.95\columnwidth]{fig_footprint.pdf}
 \caption{The accuracy ratio of the core mass for the $1750$ models of the subdivision grid in which it can be measured, when the
 estimated radius $R$ of the core, and hence of its footprint, is too small ($\Delta R < 0$) or too large ($\Delta R > 0$). The
 background is always taken in a ring just outside the footprint used. The lines are medians over the models, and the band marks
@@ -1598,15 +1557,12 @@ the 16th to 84th percentiles for $\mathcal{F}_{36.3\,}\mathcal{D}_{13.5}$.}
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 %%%%% NUMBERS (2026-11-05): from Figure fig:fielderr (see the comment there).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-The factor $f$ was calibrated for $G_0 = 10$. In the nine fields of the grid, from $G_0 = 0.98$ to $483$, the correction without
-the field factor $g$ errs by up to $+26$\% in weak fields and by up to $-23$\% for $G_0 \approx 20$--$100$ (Appendix~\ref{app:field}).
-With $g$, the errors are between $-16$ and $+2$\%, within $4$\% of those at $G_0 = 10$. With $g$ built without the field being
-tested, they are within $8$\% of those at $G_0 = 10$ (Fig.~\ref{fig:fielderr}).
-
-The uncertainty of the field of a cloud, estimated from the spread of the temperatures of its diffuse material
-(Appendix~\ref{app:fieldest}), changes the field factor by $\pm 3$\% in Aquila. A local field that differs from the field of the
-cloud by a factor of $2.2$, one step of the grid, changes the corrected $\Sigma$ by $-11$ to $+11$\%, and a factor of $4.7$ by
-$-19$ to $+23$\% (Fig.~\ref{fig:fielderr}, dotted lines).
+With the field factor $g$, the errors of the surface density correction in the nine radiation fields of the grid are within $4$\%
+of those at $G_0 = 10$ (Appendix~\ref{app:field}). In Aquila, the field factor varies by only $\pm 3$\% between the values of $G_0$
+at the 16th and 84th percentiles of the temperature of the diffuse material (Appendix~\ref{app:fieldest}). A local $G_0$ that
+differs from that of the cloud by a factor of $2.2$ or $4.7$ changes the corrected $\Sigma$ by $-12$ to $12$\% or $-19$ to $22$\%,
+respectively, the differences between the dotted lines at $G_0 = 4.61$ and $21.7$, or $2.12$ and $47.1$, and those at $G_0 = 10$
+(Fig.~\ref{fig:fielderr}).
 
 \subsection{Inclined layers and filaments}
 \label{sec:incl}
@@ -1614,42 +1570,35 @@ $-19$ to $+23$\% (Fig.~\ref{fig:fielderr}, dotted lines).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 %%%%% NUMBERS (2026-10-20): from python/paper_numbers/inclination_errors.py (the adopted factor of hicorrect2.py, G_0 = 10).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-The factor was computed for lines of sight normal to a layer or perpendicular to the axis of a filament. Seen at an angle $i$ from
-that direction, a layer or a filament has the same temperature profile along the line of sight, but both $\Sigma$ and $\Sigma_{\rm
-F}$ are larger by the factor $1/\cos i$. The factor that it requires does not change, whereas the correction applies the factor of
-a denser structure. With the adopted factor, the corrected $\Sigma$ is too high by $2$, $5$, $13$, and $27$\% at $i = 30$, $45$,
-$60$, and $70\degr$ for $\Sigma_{\rm F} = 3.16{\times}10^{21}$\,cm$^{-2}$, and by $5$, $11$, $20$, and $26$\% for
-$10^{22}$\,cm$^{-2}$. Below $10^{21}$\,cm$^{-2}$ the error is a few percent at most, and above $3.2{\times}10^{22}$\,cm$^{-2}$ it
-vanishes, because the factor is held at its maximum there. For random orientations, the mean error is up to $23$\% for layers and
-up to $8$\% for filaments, in both cases between $3.2{\times}10^{21}$ and $10^{22}$\,cm$^{-2}$, where the factor rises most steeply.
+The factor was computed for lines of sight normal to a plane-parallel layer or perpendicular to the axis of a cylindrical filament.
+Seen at an angle $i$ from that direction, a layer or a filament has the same temperature profile along the line of sight, but both
+$\Sigma$ and $\Sigma_{\rm F}$ are larger by the factor $(\cos i)^{-1}$. The correction factor that it requires does not change,
+whereas the correction applies the factor of a denser structure. The corrected $\Sigma$ is then overestimated by up to $27$\% at $i
+= 70\degr$, between $3.2{\times}10^{21}$ and $10^{22}$\,cm$^{-2}$, where the factor rises most steeply. For isotropic orientations,
+the inclinations of layers and filaments are uniformly distributed in $\cos i$ and $\sin i$, respectively. Thus, half of the layers
+but only $13$\% of the filaments are inclined by more than $60\degr$. Averaged over these distributions, the error is up to $23$\%
+for layers and up to $8$\% for filaments. Both maxima lie between $3.2{\times}10^{21}$ and $10^{22}$\,cm$^{-2}$, where the factor
+rises most steeply (Fig.~\ref{fig:relation}). For real clouds, which are rarely extended thin layers, the error is probably smaller.
 
 \subsection{Floor temperature of shielded dust}
 \label{sec:floor}
 
-The size of the correction depends on Eq.~(\ref{eq:law}), and in particular on the temperature $T_{\rm min} = 7.0$\,K that dust
-approaches when it is completely shielded. The factor is very sensitive to $T_{\rm min}$. Lowering $T_{\rm min}$ by $1$\,K raises
-the factor by $30$\% at $10^{22}$\,cm$^{-2}$ and by $51$\% at $3{\times}10^{22}$\,cm$^{-2}$. Raising $T_{\rm min}$ by $1$\,K lowers
-the factor by $13$ and $22$\%, respectively. The floor is therefore the part of the relation that most needs to be right. The fit
-to $2086$ spheres and seven cylinders constrains it well (Fig.~\ref{fig:shielding}). Above $10^{23}$\,cm$^{-2}$, the models contain
-too little mass to constrain the relation. Other radiative transfer models of prestellar cores also give central temperatures of
-about $7$ to $8$\,K in the local radiation field \citep{Evans+2001, Zucconi+2001}. A floor of $10$\,K, as is sometimes assumed,
-would substantially lower the factor at the highest surface densities. The geometry adds at most $5$\% (Sect.~\ref{sec:orient}).
+The factor is very sensitive to the temperature $T_{\rm min} = 7.0$\,K that dust approaches when it is completely shielded
+(Eq.~(\ref{eq:law})). Lowering $T_{\rm min}$ by $1$\,K raises the factor by $30$\% at $10^{22}$\,cm$^{-2}$ and by $51$\% at
+$3{\times}10^{22}$\,cm$^{-2}$, and raising it by $1$\,K lowers the factor by $13$ and $22$\%. The fit to $2086$ spheres and seven
+cylinders constrains $T_{\rm min}$ well (Fig.~\ref{fig:shielding}), and other radiative transfer models of prestellar cores give
+similar central temperatures of $7$ to $8$\,K in the local radiation field \citep{Evans+2001, Zucconi+2001}.
 
 \subsection{Noise and calibration errors}
 \label{sec:calerr}
 
-The correction is insensitive to noise, because it evaluates a smooth function of an image and fits nothing. Gaussian noise of
-$1.5$, $0.50$, $0.30$, and $0.15$\,MJy\,sr$^{-1}$ at $160$, $250$, $350$, and $500${\um} was added to the models, and the total
-corrected surface density changed by less than $0.5$\%. The amplification of the photometric errors by $7$ to $9$ found in
-Appendix~\ref{app:colors} does not apply to the correction, because the underestimation is not derived from the colors. A
-calibration error changes $\Sigma_{\rm F}$, and the corrected surface density $f(\Sigma_{\rm F})\,\Sigma_{\rm F}$ follows. The
-effect of an error of $10$\% in each waveband was computed for uniform lines of sight of $3{\times}10^{21}$ to
-$10^{23}$\,cm$^{-2}$. An error at $500${\um}, the reference waveband, changes the uncorrected surface density by $16$ to $18$\% and
-the corrected one by $16$ to $23$\%. An error at $160$, $250$ or $350${\um} changes $T_{\rm F}$ by up to $0.4$\,K. It changes the
-uncorrected surface density by $1$ to $12$\% and the corrected one by $1$ to $11$\%. An error of $10$\% in all wavebands at once
-changes the uncorrected surface density by $10$\% and the corrected one by $9$ to $13$\%. Where $f$ rises steeply with $\Sigma_{\rm
-F}$, between $10^{22}$ and $3{\times}10^{22}$\,cm$^{-2}$, the correction enlarges the error of the uncorrected image by up to $1.4$
-times. Where $f$ declines, at the highest surface densities, it reduces the error slightly.
+The correction is insensitive to noise, because it evaluates a smooth function of an image and fits nothing: realistic Gaussian
+noise changed the total corrected surface density by less than $0.5$\%. The amplification of photometric errors found in
+Appendix~\ref{app:colors} is irrelevant, because the underestimation is not derived from the colors. A calibration error affects
+$\Sigma_{\rm F}$, and the corrected $\Sigma$ follows. An error of $10$\% at $500${\um}, the reference waveband, changes the
+uncorrected $\Sigma$ by $16$--$18$\% and the corrected one by $16$--$23$\%. Errors at the shorter wavelengths have smaller effects,
+which the correction changes little. The correction enlarges the error by up to $1.4$ times only where $f$ rises steeply, between
+$10^{22}$ and $3{\times}10^{22}$\,cm$^{-2}$.
 
 \subsection{Internally heated sources}
 \label{sec:notdo}

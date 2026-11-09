@@ -799,7 +799,7 @@ def fig_mixing(out="fig_mixing.pdf"):
     ax[1].tick_params(labelsize=7.5)
     ax[1].set_xlabel(r"Wavelength ($\mu$m)", fontsize=7.5)
     ax[1].set_ylabel("Relative residual of the fit (%)", fontsize=7.5, labelpad=1.8)
-    ax[1].legend(loc="upper center", frameon=False, fontsize=FS_LEG, handlelength=1.6, labelspacing=0.2)
+    ax[1].legend(loc="upper center", frameon=False, fontsize=FS_LEG, handlelength=1.8, labelspacing=0.2)
 
     for a in ax:
         a.set_box_aspect(1.0 / 1.25)
@@ -1108,7 +1108,7 @@ def fig_fieldfactor(out="fig_fieldfactor.pdf"):
 
     lines = []
     for k, g0 in enumerate(h2.GFIELD):
-        lab = r"$G_0 = %g$" % g0
+        lab = r"$%g$" % g0
         lines += ax.plot(10.0 ** x, h2.field_factor(x, g0), "-", color=colors[k], lw=1.0, label=lab)
 
     # above the last measured row of the table, 10^22.85 cm^-2, the field factor is held constant
@@ -2106,15 +2106,15 @@ if __name__ == "__main__":
 #    fig_shielding()
 #    fig_method()
 #    fig_relation()
-#    fig_fieldfactor()
+    fig_fieldfactor()
 #    fig_grid_validation()
-#    fig_footprint()
 #    fig_cylinders()
 #    fig_simsky6()
 #    fig_aquila()
 #    fig_cube3d()
 #    fig_cube()
 #    fig_angular()
-    fig_superposition()
+#    fig_superposition()
 #    fig_field_errors()  #   fig_field_errors_tall()
 #    fig_mixing()
+#    fig_footprint()
