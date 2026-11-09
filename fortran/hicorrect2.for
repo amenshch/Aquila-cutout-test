@@ -53,38 +53,58 @@
 !
 ! The correction must be applied once. It is not idempotent: applied to an image it has already corrected it would raise the values
 ! again. Every output image is stamped with CREATOR = 'HICORRECT', and the program refuses any input that carries it. The output
-! images also record the radiation field of the correction (HIG0), the wavebands fitted (HIBANDS) with their relative calibration
-! uncertainties (HIWGTS), and the four constants of the temperature relation (HITMIN, HIT0, HISSTAR, HIGAMMA).
+! images also record the radiation field of the correction (HIG0), how it was obtained (HIG0SRC: given, estimated or default),
+! the fields at the 16th and 84th percentiles if it was estimated (HIG0P16, HIG0P84), the wavebands fitted (HIBANDS) with their relative calibration
+! uncertainties (HIERRS), and the four constants of the temperature relation (HITMIN, HIT0, HISSTAR, HIGAMMA).
 !
-! Usage:  hicorrect2 <image> [-temp=<file>] [-bands=<list>] [-weights=<errs>] [-g0=<field>] [-verb{0|1|2}]
+! Usage:  hicorrect2 <image> [<file>] [-bands=<list>] [-errors=<errs>] [-g0=<field>] [-verb{0|1|2}]
 !
 !         <image>      the surface density image to be corrected; the factor is evaluated on it and it is multiplied by it
 !                      (the file names of <image> and <file> may be given without the extension '.fits', which is then added)
 !         <file>       the dust temperature image fitted together with <image>, optional; it must have the same resolution and
-!                      the same pixels as <image>
+!                      the same pixels as <image>. The two images are told apart by their values: an image with more pixels
+!                      between 1 and 10^4 than above 10^4 is taken as temperatures, and the run stops if <image> looks like
+!                      temperatures or <file> does not.
 !         <list>       the wavelengths in µm of the wavebands fitted to make <image>, separated by commas, for example
 !                      -bands=250,350,500; by default: 160,250,350,500. The longest one is the reference waveband.
 !         <errs>       the relative calibration uncertainties of the same wavebands, in the same order, which set their weights
-!                      in the fit that made <image>, for example -weights=0.1,0.1,0.1 for equal weights; only their ratios
+!                      in the fit that made <image>, for example -errors=0.1,0.1,0.1 for equal weights; only their ratios
 !                      matter. By default 0.2 at 160 µm and shorter and 0.1 at longer wavelengths, the weights of hires. The
 !                      analytic relation is built for any wavebands and weights. The calibration on a diffuse cloud is provided
 !                      for five sets: 160-500 µm with the default or equal weights, 250-500 µm with equal weights, 100-500 and
 !                      70-500 µm with the default weights; for other sets that of the standard set is used, with a warning. The
 !                      field factor was measured with the standard set only; for other sets it is approximate.
-!         <field>      the radiation field of the cloud in Habing units, as estimated by g0_requirement.py; 10 by default
+!         <field>      the radiation field of the cloud in Habing units. Without -g0=, the field is estimated from the images if
+!                      <file> is given, and G_0 = 10 is used otherwise. The estimate compares the fitted temperatures of the
+!                      diffuse material, between 10^21.0 and 10^21.8 cm^-2, with the median fitted temperatures of the models of
+!                      the grid of radiation fields at the same fitted surface density (the table ttab). For each bin of 0.2 dex
+!                      with at least 100 pixels, the 16th, 50th and 84th percentiles of the temperatures of the image are
+!                      converted into fields by interpolating log G_0 against the model temperatures. The field is the median
+!                      of the fields of the bins weighted by their pixels, rounded to two significant digits; the 16th and 84th
+!                      percentiles give its spread. The model temperatures are those of 13.5 arcsec images fitted to 160-500 µm
+!                      with the standard weights; for other resolutions or wavebands the estimate is used with a warning. A
+!                      warning is also printed if the healthy pixels (surface densities of at least 10^19 cm^-2 and positive
+!                      temperatures) cover less than the smallest observed Herschel maps (2000 x 2000 pixels of 3 arcsec): the
+!                      image is then probably a cutout, and the field should be estimated from the full map.
 !
 ! output: written to the current directory, whatever directory the inputs come from
 !         <image>.correct.fits, the corrected image
 !         <image>.cfactor.fits, the image of the correction factors
-!         <file>.correct.fits, the dust temperature implied by the corrected surface density, if -temp=<file> is given
+!         <file>.correct.fits, the dust temperature implied by the corrected surface density, if <file> is given
 !__________________________________________________________________________________________________________________________________
 !
        implicit      none
        integer       iotty, iolog, mband, ntab, ndep, ntfit, nang, ncset
        parameter   ( iotty = 6, iolog = 0, mband = 10, ntab = 200, ndep = 512, ntfit = 3000, nang = 160, ncset = 5 )
        integer       nwgt, ncirn(ncset), icset, ic, lm
-       integer       ngx, ngf, lt
-       parameter   ( ngx = 24, ngf = 9 )
+       integer       ngx, ngf, lt, ntb, tminpix, ndif, ngood
+       parameter   ( ngx = 24, ngf = 9, ntb = 11, tminpix = 100 )
+       real*8        ttab(ntb,ngf), tx0, tdx, txfield, g16, g50, g84, hotfr, ee
+       parameter   ( tx0 = 21.0d0, tdx = 0.2d0, txfield = 21.8d0 )
+       integer       sblank
+       character*9   g0src
+       character*80  sbunit
+       logical       estok
        real*8        gtab(ngx,ngf), gfld(ngf), gx0, gdx, g0, fieldfac
        parameter   ( gx0 = 20.95d0, gdx = 0.1d0 )
        logical       lunix
@@ -114,7 +134,8 @@
        character*3   cnan
        equivalence ( cnan, rnan )
        data          cnan / 'NaN' /
-       external      planckf, rfits, wfits, interp, putima, invplanck, fieldfac, addkeys
+       external      planckf, rfits, wfits, interp, putima, invplanck, fieldfac, addkeys, estfield, istemp
+       logical       istemp
 !__________________________________________________________________________________________________________________________________
 !
 ! The field factor g, which adapts the correction factor to a radiation field other than G_0 = 10 in Habing units, measured on the
@@ -162,10 +183,44 @@
      &             , 0.995d0, 0.990d0, 0.986d0, 0.984d0, 0.981d0, 0.978d0, 0.984d0, 0.999d0
      &             , 1.014d0, 1.015d0, 1.004d0, 0.973d0, 0.943d0, 0.907d0, 0.869d0, 0.835d0
      &             , 0.798d0, 0.768d0, 0.746d0, 0.723d0, 0.723d0, 0.723d0, 0.723d0, 0.723d0 /
+!
+! The median fitted temperature (K) of the models of the grid of radiation fields, for estimating the field of a cloud when -g0= is
+! not given. Rows are bins of 0.2 dex of the fitted surface density from 10^tx0 cm^-2; columns are the fields gfld; -1 where a bin
+! has no models. From the images at 13.5 arcsec fitted to 160-500 µm with the standard weights (make_g0_table.py on the tables of
+! harvest_calib3.py).
+!
+       data ttab /
+! G_0 = 0.98
+     &               14.900d0, 14.900d0, 13.900d0, 12.500d0, 12.300d0, 11.300d0, 10.500d0, 9.700d0
+     &             , 8.897d0, 8.100d0, 7.900d0
+! G_0 = 2.12
+     &             , 15.500d0, 15.300d0, 14.100d0, 12.900d0, 11.700d0, 11.500d0, 10.700d0, 9.900d0
+     &             , 9.100d0, 8.300d0, 8.100d0
+! G_0 = 4.61
+     &             , 16.300d0, 16.100d0, 14.700d0, 13.300d0, 12.100d0, 11.300d0, 11.100d0, 10.300d0
+     &             , 9.500d0, 8.569d0, 8.500d0
+! G_0 = 10
+     &             , 17.700d0, 17.300d0, 15.700d0, 14.100d0, 12.900d0, 11.900d0, 11.100d0, 11.100d0
+     &             , 10.100d0, 9.100d0, -1.0d0
+! G_0 = 21.7
+     &             , 19.300d0, 19.100d0, 17.100d0, 15.300d0, 14.100d0, 13.041d0, 12.100d0, 11.100d0
+     &             , 11.100d0, 10.071d0, -1.0d0
+! G_0 = 47.1
+     &             , 21.700d0, 21.300d0, 18.900d0, 16.700d0, 15.300d0, 14.500d0, 13.293d0, 12.100d0
+     &             , 12.100d0, 10.900d0, -1.0d0
+! G_0 = 102.4
+     &             , 24.300d0, 23.900d0, 20.900d0, 18.500d0, 16.900d0, 15.900d0, 14.700d0, 14.103d0
+     &             , 13.300d0, 11.900d0, -1.0d0
+! G_0 = 222.2
+     &             , 27.500d0, 27.100d0, 23.700d0, 20.500d0, 18.500d0, 17.300d0, 15.900d0, 15.300d0
+     &             , 14.300d0, 13.300d0, 13.015d0
+! G_0 = 482.5
+     &             , 33.900d0, 30.700d0, 26.700d0, 22.700d0, 20.300d0, 18.700d0, 17.900d0, 17.300d0
+     &             , 15.513d0, 14.700d0, 14.100d0 /
 !__________________________________________________________________________________________________________________________________
 !
-! The command line. The first positional argument is the image to be corrected; any further ones are images of the same
-! reconstruction to which the same amount is added. The wavebands that were fitted to make the image are given with -bands=.
+! The command line. The first positional argument is the surface density image to be corrected, the second one, optional, is the
+! temperature image fitted together with it. The wavebands that were fitted to make the image are given with -bands=.
 !
        call osystem ( lunix )
        call ftvers ( fitsvers )
@@ -181,10 +236,13 @@
        wfit(3)  = 350.0d0
        wfit(4)  = 500.0d0
        g0       = 10.0d0
+       g0src    = 'default'
+       g16      = 0.0d0
+       g84      = 0.0d0
 
        narg = iargc ()
        if (narg .lt. 1) then
-         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <image> [-temp=<file>] [-bands=<list>] [-weights=<errs>]'
+         write (iotty,'(/a/)') '   HICORRECT: usage: hicorrect2 <image> [<temperature image>] [-bands=<list>] [-errors=<errs>]'
      &                         //' [-g0=<field>] [-verb{0|1|2}]'
          stop
        endif
@@ -196,8 +254,7 @@
            cverbose = arg(1:6)
          elseif (arg(1:4) .eq. '-g0=') then
            read (arg(5:la),*) g0
-         elseif (arg(1:6) .eq. '-temp=') then
-           tempfile = arg(7:la)
+           g0src = 'given'
          elseif (arg(1:7) .eq. '-bands=') then
            nfit = 1
            do k=8,la
@@ -212,25 +269,30 @@
              write (iotty,'(/a,a/)') '   HICORRECT: ERROR: cannot read the wavelengths from ', arg(1:la)
              stop
            endif
-         elseif (arg(1:9) .eq. '-weights=') then
+         elseif (arg(1:8) .eq. '-errors=') then
            nwgt = 1
-           do k=10,la
+           do k=9,la
              if (arg(k:k) .eq. ',') nwgt = nwgt + 1
            enddo
            if (nwgt .gt. mband) then
-             write (iotty,'(/a,i3,a/)') '   HICORRECT: ERROR: at most', mband, ' values can be given with -weights=.'
+             write (iotty,'(/a,i3,a/)') '   HICORRECT: ERROR: at most', mband, ' values can be given with -errors=.'
              stop
            endif
-           read (arg(10:la),*,iostat=ios) ( relin(k), k=1,nwgt )
+           read (arg(9:la),*,iostat=ios) ( relin(k), k=1,nwgt )
            if (ios .ne. 0) then
              write (iotty,'(/a,a/)') '   HICORRECT: ERROR: cannot read the calibration uncertainties from ', arg(1:la)
              stop
            endif
+         elseif (arg(1:1) .eq. '-') then
+           write (iotty,'(/a/)') '   HICORRECT: ERROR: unknown option '//arg(1:la)//'.'
+           stop
          elseif (mapfile .eq. ' ') then
            mapfile = arg
+         elseif (tempfile .eq. ' ') then
+           tempfile = arg
          else
-           write (iotty,'(/a/a/)') '   HICORRECT: ERROR: only one surface density image can be corrected in one run.'
-     &                         , '   Give the temperature image with -temp=<file>.'
+           write (iotty,'(/a/a/)') '   HICORRECT: ERROR: too many images: give the surface density image to be corrected'
+     &                         , '   and, optionally, the temperature image fitted together with it.'
            stop
          endif
        enddo
@@ -248,6 +310,18 @@
          la = len_trim ( tempfile )
          if (la .lt. 5 .or. tempfile(max(la-4,1):la) .ne. '.fits') tempfile = tempfile(1:la)//'.fits'
        endif
+       inquire ( file=mapfile(1:len_trim(mapfile)), exist=estok )
+       if (.not.estok) then
+         write (iotty,'(/a/)') '   HICORRECT: ERROR: '''//mapfile(1:len_trim(mapfile))//''' does not exist.'
+         stop
+       endif
+       if (tempfile .ne. ' ') then
+         inquire ( file=tempfile(1:len_trim(tempfile)), exist=estok )
+         if (.not.estok) then
+           write (iotty,'(/a/)') '   HICORRECT: ERROR: '''//tempfile(1:len_trim(tempfile))//''' does not exist.'
+           stop
+         endif
+       endif
 
        call when ( lunix, ctime, cdate, ndate, 4 )
 
@@ -258,11 +332,6 @@
          write (iotty,'(a,f8.4,a,f8.4,a,f8.4,a,1pe11.4,a,0pf8.5,a)')
      &                               '   shielding law T(s) =', tfloor, ' + (', tsurf, ' -', tfloor, ') (1 + s /', sstar
      &                             , ')**(-', gamma, ') K'
-         write (iotty,'(a,f9.3,a)')  '   radiation field G_0 =', g0, ' (Habing units)'
-       endif
-       if (g0 .lt. gfld(1) .or. g0 .gt. gfld(ngf)) then
-         write (iotty,'(a,f9.3,a)')  '   HICORRECT: WARNING: G_0 =', g0, ' lies outside the grid of radiation fields;'
-         write (iotty,'(a)')         '   the field factor of the nearest field is used.'
        endif
 !__________________________________________________________________________________________________________________________________
 !
@@ -276,16 +345,16 @@
        endif
 !
 ! The relative calibration uncertainties set the weights of the wavebands in the fit, as in hires: 20% at 160 µm and shorter and
-! 10% at longer wavelengths by default, or the values of -weights=, given in the order of -bands= and sorted together with them.
+! 10% at longer wavelengths by default, or the values of -errors=, given in the order of -bands= and sorted together with them.
 !
        if (nwgt .gt. 0) then
          if (nwgt .ne. nfit) then
-           write (iotty,'(/a/)') '   HICORRECT: ERROR: -weights= must give one value for each waveband of -bands=.'
+           write (iotty,'(/a/)') '   HICORRECT: ERROR: -errors= must give one value for each waveband of -bands=.'
            stop
          endif
          do k=1,nfit
            if (relin(k) .le. 0.0d0) then
-             write (iotty,'(/a/)') '   HICORRECT: ERROR: the values of -weights= must be positive.'
+             write (iotty,'(/a/)') '   HICORRECT: ERROR: the values of -errors= must be positive.'
              stop
            endif
            relerr(k) = relin(k)
@@ -404,10 +473,6 @@
          cirf = cirtab(:,1)
        else
          cirf = cirtab(:,icset)
-       endif
-       if (g0 .ne. 10.0d0 .and. icset .ne. 1) then
-         write (iotty,'(a)') '   HICORRECT: WARNING: the field factor was measured with 160-500 µm and the standard weights;'
-         write (iotty,'(a)') '   for other wavebands or weights it is approximate.'
        endif
        xb0 = 21.6d0
        xb1 = 22.0d0
@@ -537,18 +602,7 @@
        do i=2,ntab
          fcor(i) = max ( fcor(i), fcor(i-1) )
        enddo
-       if (g0 .ne. 10.0d0) then
-         do i=1,ntab
-           fcor(i) = fcor(i) * fieldfac ( log10 ( ffit(i) ), g0, gtab, gfld, ngx, ngf, gx0, gdx )
-         enddo
-       endif
 
-       if (cverbose .eq. '-verb2') then
-         write (iotty,'(/a)') '   the tabulated relation, fitted surface density and the factor that restores the true one:'
-         do i=1,ntab,20
-           write (iotty,'(4x,1pe12.4,3x,0pf9.4)') ffit(i), fcor(i)
-         enddo
-       endif
 !__________________________________________________________________________________________________________________________________
 !
 ! The image to be corrected.
@@ -621,6 +675,110 @@
          write (iotty,'(/a/)') '   HICORRECT: ERROR: the image has no positive pixel.'
          stop
        endif
+       if (istemp ( nx, ny, smap )) then
+         write (iotty,'(/a/a/)') '   HICORRECT: ERROR: '''//mapfile(1:len_trim(mapfile))//''' looks like a temperature image.'
+     &                         , '   The surface density image to be corrected must be given first.'
+         stop
+       endif
+!__________________________________________________________________________________________________________________________________
+!
+! The radiation field. Without -g0=, it is estimated from the fitted temperatures of the diffuse material (Appendix C.2 of the
+! paper), if the temperature image is given. Reading that image overwrites some header values of the image, which are restored.
+!
+       if (g0src .eq. 'default' .and. tempfile .ne. ' ') then
+         la = len_trim ( tempfile )
+         sbunit = bunit
+         sblank = blank
+         call getfitshead ( tempfile(1:la), nxi, nyi, dxi, dyi, bunit )
+         if (nxi .eq. nx .and. nyi .eq. ny) then
+           call rfits ( nx, ny, bunit, ctype1, ctype2, crpix1, crpix2, crval1, crval2, iref, dxi, dyi, object, ra, dec
+     &                , tempfile(1:la), iotty, iolog, creator, beamkw, funmin, funmax, blank, crota1, crota2, cd11, cd12
+     &                , cd21, cd22, equinox, bzero, bscale, wavekw, datamn, datamx, history, cverbose )
+           if (.not.istemp ( nx, ny, iref )) then
+             write (iotty,'(/a/)') '   HICORRECT: ERROR: '''//tempfile(1:la)//''' does not look like a temperature image.'
+             stop
+           endif
+           call estfield ( nx, ny, smap, iref, valid, ttab, ntb, gfld, ngf, tx0, tdx, txfield, tminpix, cverbose, iotty
+     &                   , g16, g50, g84, hotfr, ndif, estok )
+           if (estok) then
+             ee = 10.0d0 ** ( floor ( log10 ( g50 ) ) - 1 )
+             g0 = anint ( g50 / ee ) * ee
+             g0src = 'estimated'
+             if (cverbose .ne. '-verb0') then
+               write (iotty,'(a,i0,a,f4.1,a,f4.1,a)') '   radiation field estimated from ', ndif
+     &                                  , ' pixels of the diffuse material (10^', tx0, ' to 10^', txfield, ' cm^-2):'
+               write (iotty,'(a,f8.2,a,f8.2,a,f8.2,a)') '   G_0 =', g50, ' (', g16, ' to', g84
+     &                                  , ' at the 16th and 84th percentiles of the temperature)'
+               write (iotty,'(a,0pf6.1,a)') '   pixels warmer than the strongest field allows:', 100.0d0 * hotfr, '%'
+             endif
+! The area of the healthy pixels: surface densities of at least 10^19 cm^-2 (lower values, which some methods produce around the
+! usable area, are taken as bad) and positive temperatures. The smallest observed Herschel maps have about 2000 x 2000 pixels of
+! 3 arcsec; a smaller area is probably a cutout, whose diffuse material may not represent the field of the cloud.
+             ngood = 0
+             do j=1,ny
+               do i=1,nx
+                 if (valid(i,j) .eq. 1 .and. smap(i,j) .ge. 1.0d19 .and. iref(i,j) .gt. 0.0d0
+     &               .and. .not.isnan ( iref(i,j) )) ngood = ngood + 1
+               enddo
+             enddo
+             if (dx .gt. 0.0d0 .and. dy .gt. 0.0d0) then
+               ee = dble ( ngood ) * dx * dy / 6000.0d0**2
+             else
+               ee = dble ( ngood ) / 2000.0d0**2
+             endif
+             if (ee .lt. 1.0d0) then
+               write (iotty,'(a)') '   HICORRECT: WARNING: the image appears to be a cutout of a larger map;'
+     &                           //' estimate the field from the full map.'
+             endif
+             if (beamsd .gt. 0.0d0 .and. abs ( beamsd / 13.5d0 - 1.0d0 ) .gt. 1.0d-2) then
+               write (iotty,'(a,f7.2,a)') '   HICORRECT: WARNING: the field was estimated with the model temperatures of'
+     &                                  //' 13.5 arcsec images; at', beamsd, ' arcsec it is approximate.'
+             endif
+             if (icset .ne. 1) then
+               write (iotty,'(a)') '   HICORRECT: WARNING: the field was estimated with the model temperatures of 160-500 µm'
+     &                           //' with the standard weights;'
+               write (iotty,'(a)') '   for these wavebands or weights it is approximate.'
+             endif
+           else
+             write (iotty,'(a,f4.1,a,f4.1,a)') '   HICORRECT: WARNING: too few pixels between 10^', tx0, ' and 10^', txfield
+     &                                       , ' cm^-2 to estimate the field; G_0 = 10 is used.'
+           endif
+         else
+           write (iotty,'(a)') '   HICORRECT: WARNING: the temperature image does not match the image;'
+     &                       //' the field cannot be estimated, and G_0 = 10 is used.'
+         endif
+         bunit = sbunit
+         blank = sblank
+       elseif (g0src .eq. 'default') then
+         if (cverbose .ne. '-verb0') write (iotty,'(a)') '   no temperature image given, so the field'
+     &                                                 //' cannot be estimated; G_0 = 10 is used.'
+       endif
+
+       if (cverbose .ne. '-verb0') write (iotty,'(a,f9.3,a)') '   radiation field G_0 =', g0, ' (Habing units), '
+     &                                                      //g0src(1:len_trim(g0src))
+       if (g0 .lt. gfld(1) .or. g0 .gt. gfld(ngf)) then
+         write (iotty,'(a,f9.3,a)')  '   HICORRECT: WARNING: G_0 =', g0, ' lies outside the grid of radiation fields;'
+         write (iotty,'(a)')         '   the field factor of the nearest field is used.'
+       endif
+       if (g0 .ne. 10.0d0 .and. icset .ne. 1) then
+         write (iotty,'(a)') '   HICORRECT: WARNING: the field factor was measured with 160-500 µm and the standard weights;'
+         write (iotty,'(a)') '   for other wavebands or weights it is approximate.'
+       endif
+!
+! The field factor multiplies the factor held at its maximum (Eq. 9 of the paper).
+!
+       if (g0 .ne. 10.0d0) then
+         do i=1,ntab
+           fcor(i) = fcor(i) * fieldfac ( log10 ( ffit(i) ), g0, gtab, gfld, ngx, ngf, gx0, gdx )
+         enddo
+       endif
+
+       if (cverbose .eq. '-verb2') then
+         write (iotty,'(/a)') '   the tabulated relation, fitted surface density and the factor that restores the true one:'
+         do i=1,ntab,20
+           write (iotty,'(4x,1pe12.4,3x,0pf9.4)') ffit(i), fcor(i)
+         enddo
+       endif
 !__________________________________________________________________________________________________________________________________
 !
 ! The correction of the image. The factor is found by
@@ -664,7 +822,7 @@
 
        call putima ( iotty, cverbose, cfitsversion, nx, ny, corr, valid, rnan, fname, 'ratio', rhead, chead, blank, cdate, ctime )
 
-       call addkeys ( fname, g0, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
+       call addkeys ( fname, g0, g0src, g16, g84, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
 
        if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
 
@@ -677,7 +835,7 @@
 
        call putima ( iotty, cverbose, cfitsversion, nx, ny, work, valid, rnan, fname, bunit, rhead, chead, blank, cdate, ctime )
 
-       call addkeys ( fname, g0, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
+       call addkeys ( fname, g0, g0src, g16, g84, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
 
        if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
 !__________________________________________________________________________________________________________________________________
@@ -685,7 +843,7 @@
 ! The dust temperature that goes with the corrected surface density, at the resolution of the corrected image. The reconstruction
 ! derived the surface density from the reference waveband with the temperature it fitted at that resolution. With f times more
 ! material on the line of sight, the same intensity of the reference waveband is reproduced by colder dust, whose Planck function
-! is that of the fitted temperature divided by f. The fitted temperature image of the same resolution is given with -temp=<file>.
+! is that of the fitted temperature divided by f. The fitted temperature image of the same resolution is the second image given.
 !
        if (tempfile .ne. ' ') then
 
@@ -698,6 +856,10 @@
            call rfits ( nx, ny, bunit, ctype1, ctype2, crpix1, crpix2, crval1, crval2, iref, dxi, dyi, object, ra, dec
      &                , tempfile(1:la), iotty, iolog, creator, beamkw, funmin, funmax, blank, crota1, crota2, cd11, cd12
      &                , cd21, cd22, equinox, bzero, bscale, wavekw, datamn, datamx, history, cverbose )
+           if (.not.istemp ( nx, ny, iref )) then
+             write (iotty,'(/a/)') '   HICORRECT: ERROR: '''//tempfile(1:la)//''' does not look like a temperature image.'
+             stop
+           endif
 
            if (beamsd .gt. 0.0d0 .and. beamkw .gt. 0.0d0 .and. abs ( beamkw / beamsd - 1.0d0 ) .gt. 1.0d-2) then
              write (iotty,'(a,f7.2,a,f7.2,a)') '   HICORRECT2: ERROR: the temperature image has the resolution', beamkw
@@ -724,7 +886,7 @@
 
            call putima ( iotty, cverbose, cfitsversion, nx, ny, work, valid, rnan, fname, 'K', rhead, chead, blank, cdate, ctime )
 
-           call addkeys ( fname, g0, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
+           call addkeys ( fname, g0, g0src, g16, g84, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
 
            if (cverbose .ne. '-verb0') write (iotty,'(a)') '   --> '''//fname(1:len_trim(fname))//''''
          else
@@ -732,7 +894,7 @@
            write (iotty,'(a)') '   so no temperature map is written.'
          endif
        else
-         if (cverbose .ne. '-verb0') write (iotty,'(a)') '   no temperature image given with -temp=<file>,'
+         if (cverbose .ne. '-verb0') write (iotty,'(a)') '   no temperature image given,'
      &                                                 //' so no temperature map is written.'
        endif
        deallocate ( smap, valid, delta, corr, work, iref )
@@ -829,32 +991,33 @@
 
        subroutine addkeys
          
-     &          ( fname, g0, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
+     &          ( fname, g0, g0src, g16, g84, nfit, wfit, relerr, tfloor, tsurf, sstar, gamma )
 !__________________________________________________________________________________________________________________________________
 !
-! Add to the header of an output image the radiation field of the correction, the wavebands fitted to make the image with their
+! Add to the header of an output image the radiation field of the correction, how it was obtained, its spread if it was
+! estimated, the wavebands fitted to make the image with their
 ! relative calibration uncertainties, and the four constants of the temperature relation, so that every output records how it
 ! was corrected.
 !__________________________________________________________________________________________________________________________________
 !
        implicit      none
-       character*(*) fname
+       character*(*) fname, g0src
        integer       nfit, k, unit, status, block, la
-       real*8        g0, wfit(nfit), relerr(nfit), tfloor, tsurf, sstar, gamma
-       character*80  bands, wgts
+       real*8        g0, g16, g84, wfit(nfit), relerr(nfit), tfloor, tsurf, sstar, gamma
+       character*80  bands, errs
        character*8   cw
        external      ftgiou, ftopen, ftpkyd, ftpkys, ftclos, ftfiou, printerr
 !__________________________________________________________________________________________________________________________________
 !
        bands = ' '
-       wgts  = ' '
+       errs  = ' '
        do k=1,nfit
          write (cw,'(f5.3)') relerr(k)
-         la = len_trim ( wgts )
+         la = len_trim ( errs )
          if (la .eq. 0) then
-           wgts = adjustl ( cw )
+           errs = adjustl ( cw )
          else
-           wgts = wgts(1:la)//','//adjustl ( cw )
+           errs = errs(1:la)//','//adjustl ( cw )
          endif
          write (cw,'(i0)') nint ( wfit(k) )
          la = len_trim ( bands )
@@ -869,8 +1032,13 @@
        call ftgiou ( unit, status )
        call ftopen ( unit, fname, 1, block, status )
        call ftpkyd ( unit, 'HIG0'   , g0    , 6, 'radiation field of the correction (Habing units)', status )
+       call ftpkys ( unit, 'HIG0SRC', g0src ,    'radiation field given, estimated or default', status )
+       if (g0src(1:9) .eq. 'estimated') then
+         call ftpkyd ( unit, 'HIG0P16', g16 , 6, 'estimated field at the 16th percentile of T', status )
+         call ftpkyd ( unit, 'HIG0P84', g84 , 6, 'estimated field at the 84th percentile of T', status )
+       endif
        call ftpkys ( unit, 'HIBANDS', bands ,    'wavebands fitted to make the image (µm)', status )
-       call ftpkys ( unit, 'HIWGTS' , wgts  ,    'relative calibration errors of HIBANDS', status )
+       call ftpkys ( unit, 'HIERRS' , errs  ,    'relative calibration errors of HIBANDS', status )
        call ftpkyd ( unit, 'HITMIN' , tfloor, 8, 'T_min of the temperature relation (K)', status )
        call ftpkyd ( unit, 'HIT0'   , tsurf , 8, 'T_max of the temperature relation (K)', status )
        call ftpkyd ( unit, 'HISSTAR', sstar , 7, 'Sigma_star of the temperature relation, cm^-2', status )
@@ -1431,6 +1599,319 @@ cc!      bscale = abs ( funmax - bzero ) / 32767.0d0
        r1 = ( 1.0d0 - b ) * log ( gtab(i,j)   ) + b * log ( gtab(i+1,j)   )
        r2 = ( 1.0d0 - b ) * log ( gtab(i,j+1) ) + b * log ( gtab(i+1,j+1) )
        fieldfac = exp ( ( 1.0d0 - a ) * r1 + a * r2 )
+
+       return
+       end
+
+!||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+       subroutine estfield
+
+     &          ( nx, ny, smap, tmap, valid, ttab, ntb, gfld, ngf, tx0, tdx, txfield, minpix, cverbose, iotty
+     &          , g16, g50, g84, hotfr, ndif, estok )
+!__________________________________________________________________________________________________________________________________
+!
+! Radiation field of a cloud from its fitted surface density image smap and temperature image tmap, as in Appendix C.2 of the
+! paper. The pixels are binned in 0.2 dex of the fitted surface density. In each bin with at least minpix pixels and models in at
+! least two fields, the 16th, 50th and 84th percentiles of the temperature are converted into fields by interpolating log G_0
+! against the median model temperatures ttab of that bin, made non-decreasing with the field; a temperature outside them gives
+! the weakest or the strongest field. The fields of the diffuse bins, below 10^txfield cm^-2, are combined into medians weighted
+! by the pixels of the bins: g16, g50 and g84. hotfr is the fraction of the binned pixels warmer than the strongest field allows,
+! ndif the number of diffuse pixels used; estok is false if there are none.
+!__________________________________________________________________________________________________________________________________
+!
+       implicit      none
+       integer       nx, ny, ntb, ngf, minpix, iotty, ndif, valid(nx,ny)
+       real*8        smap(nx,ny), tmap(nx,ny), ttab(ntb,ngf), gfld(ngf), tx0, tdx, txfield, g16, g50, g84, hotfr
+       character*(*) cverbose
+       logical       estok
+       integer       i, j, k, n, m, npx, nall, nhot, nd, ib
+       integer,  allocatable :: ibin(:)
+       real*8,   allocatable :: tb(:)
+       real*8        gs(ngf), tm(ngf), tp(3), fl(3), e0, e1, wmedf, pctl, fieldof, tprev
+       real*8        dv16(ntb), dv50(ntb), dv84(ntb), dw(ntb), dw2(ntb)
+       character*1   fg(3)
+       character*13  cnote
+       external      hsort, wmedf, pctl, fieldof
+
+       n = nx * ny
+       allocate ( ibin(n), tb(n) )
+!
+! The bin of every pixel with a positive surface density and temperature; 0 outside the bins.
+!
+       m = 0
+       do j=1,ny
+         do i=1,nx
+           m = m + 1
+           ibin(m) = 0
+           if (valid(i,j) .eq. 1 .and. tmap(i,j) .gt. 0.0d0 .and. .not.isnan ( tmap(i,j) )) then
+             e0 = ( log10 ( smap(i,j) ) - tx0 ) / tdx
+             if (e0 .ge. 0.0d0 .and. e0 .lt. dble ( ntb )) ibin(m) = int ( e0 ) + 1
+           endif
+         enddo
+       enddo
+
+       if (cverbose .eq. '-verb2') then
+         write (iotty,'(/a)') '   fields that the temperatures of the image require, in bins of the fitted surface density:'
+         write (iotty,'(a)')  '   log10 Sigma_F       pixels   T (K) at 16, 50, 84%     G_0 at 16, 50, 84%           too warm'
+       endif
+       nall = 0
+       nhot = 0
+       nd   = 0
+       ndif = 0
+       do ib=1,ntb
+         e0 = tx0 + tdx * dble ( ib - 1 )
+         e1 = e0 + tdx
+!
+! The fields with models in this bin and their temperatures, made non-decreasing with the field.
+!
+         k = 0
+         tprev = 0.0d0
+         do j=1,ngf
+           if (ttab(ib,j) .gt. 0.0d0) then
+             k = k + 1
+             gs(k) = gfld(j)
+             tm(k) = max ( ttab(ib,j), tprev )
+             tprev = tm(k)
+           endif
+         enddo
+         npx = 0
+         do m=1,n
+           if (ibin(m) .eq. ib) then
+             npx = npx + 1
+             tb(npx) = tmap(mod(m-1,nx)+1,(m-1)/nx+1)
+           endif
+         enddo
+         if (npx .lt. minpix .or. k .lt. 2) cycle
+         call hsort ( npx, tb )
+         tp(1) = pctl ( npx, tb, 16.0d0 )
+         tp(2) = pctl ( npx, tb, 50.0d0 )
+         tp(3) = pctl ( npx, tb, 84.0d0 )
+         do i=1,3
+           fl(i) = fieldof ( tp(i), k, gs, tm )
+           fg(i) = ' '
+           if (tp(i) .lt. tm(1)) fg(i) = '<'
+           if (tp(i) .gt. tm(k)) fg(i) = '>'
+         enddo
+         m = 0
+         do i=1,npx
+           if (tb(i) .gt. tm(k)) m = m + 1
+         enddo
+         nall = nall + npx
+         nhot = nhot + m
+         cnote = '   (not used)'
+         if (e1 .le. txfield + 1.0d-6) then
+           cnote = ' '
+           nd = nd + 1
+           dv16(nd) = fl(1)
+           dv50(nd) = fl(2)
+           dv84(nd) = fl(3)
+           dw(nd)   = dble ( npx )
+           ndif = ndif + npx
+         endif
+         if (cverbose .eq. '-verb2') then
+           write (iotty,'(3x,f5.1,a,f5.1,i11,3x,3f7.1,3x,3(1x,a1,1pg9.3),0pf9.1,2a)') e0, ' --', e1, npx, tp
+     &          , ( fg(i), fl(i), i=1,3 ), 100.0d0 * dble ( m ) / dble ( npx ), '%', cnote
+         endif
+       enddo
+       deallocate ( ibin, tb )
+
+       estok = nd .gt. 0
+       hotfr = 0.0d0
+       if (nall .gt. 0) hotfr = dble ( nhot ) / dble ( nall )
+       if (.not.estok) return
+       dw2 = dw
+       g16 = wmedf ( nd, dv16, dw2 )
+       dw2 = dw
+       g50 = wmedf ( nd, dv50, dw2 )
+       dw2 = dw
+       g84 = wmedf ( nd, dv84, dw2 )
+
+       return
+       end
+
+!||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+       function fieldof
+
+     &          ( t, k, gs, tm )
+!__________________________________________________________________________________________________________________________________
+!
+! The field that reproduces the temperature t, interpolating log G_0 linearly against the non-decreasing model temperatures tm of
+! the k fields gs, as numpy.interp does; the weakest or the strongest field outside them.
+!__________________________________________________________________________________________________________________________________
+!
+       implicit      none
+       integer       k, j
+       real*8        fieldof, t, gs(k), tm(k)
+
+       if (t .lt. tm(1)) then
+         fieldof = gs(1)
+       elseif (t .ge. tm(k)) then
+         fieldof = gs(k)
+       else
+         j = 1
+         do while (j .lt. k - 1 .and. tm(j+1) .le. t)
+           j = j + 1
+         enddo
+         fieldof = 10.0d0 ** ( log10 ( gs(j) ) + ( t - tm(j) ) / ( tm(j+1) - tm(j) ) * ( log10 ( gs(j+1) ) - log10 ( gs(j) ) ) )
+       endif
+
+       return
+       end
+
+!||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+       function pctl
+
+     &          ( n, a, q )
+!__________________________________________________________________________________________________________________________________
+!
+! The percentile q (in percent) of the n sorted values a, interpolated linearly between them, as numpy.percentile does.
+!__________________________________________________________________________________________________________________________________
+!
+       implicit      none
+       integer       n, i
+       real*8        pctl, a(n), q, p
+
+       if (n .eq. 1) then
+         pctl = a(1)
+         return
+       endif
+       p = q / 100.0d0 * dble ( n - 1 )
+       i = min ( int ( p ), n - 2 )
+       pctl = a(i+1) + ( p - dble ( i ) ) * ( a(i+2) - a(i+1) )
+
+       return
+       end
+
+!||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+       function wmedf
+
+     &          ( n, v, w )
+!__________________________________________________________________________________________________________________________________
+!
+! The median of the n values v with the weights w, interpolated between the cumulative weights at the centers of the sorted
+! values, as wmedian of hicorrect2.py does. The arrays are sorted in place.
+!__________________________________________________________________________________________________________________________________
+!
+       implicit      none
+       integer       n, i, j
+       real*8        wmedf, v(n), w(n), c(n), x, y, tot
+
+       do i=2,n
+         x = v(i)
+         y = w(i)
+         j = i - 1
+         do while (j .ge. 1)
+           if (v(j) .le. x) exit
+           v(j+1) = v(j)
+           w(j+1) = w(j)
+           j = j - 1
+         enddo
+         v(j+1) = x
+         w(j+1) = y
+       enddo
+       tot = 0.0d0
+       do i=1,n
+         tot  = tot + w(i)
+         c(i) = tot - 0.5d0 * w(i)
+       enddo
+       do i=1,n
+         c(i) = c(i) / tot
+       enddo
+       if (0.5d0 .le. c(1)) then
+         wmedf = v(1)
+       elseif (0.5d0 .ge. c(n)) then
+         wmedf = v(n)
+       else
+         j = 1
+         do while (c(j+1) .lt. 0.5d0)
+           j = j + 1
+         enddo
+         wmedf = v(j) + ( 0.5d0 - c(j) ) / ( c(j+1) - c(j) ) * ( v(j+1) - v(j) )
+       endif
+
+       return
+       end
+
+!||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+       subroutine hsort
+
+     &          ( n, a )
+!__________________________________________________________________________________________________________________________________
+!
+! Sort the n values a in increasing order (heapsort).
+!__________________________________________________________________________________________________________________________________
+!
+       implicit      none
+       integer       n, i, ir, j, l
+       real*8        a(n), ra
+
+       if (n .lt. 2) return
+       l  = n / 2 + 1
+       ir = n
+       do
+         if (l .gt. 1) then
+           l  = l - 1
+           ra = a(l)
+         else
+           ra    = a(ir)
+           a(ir) = a(1)
+           ir    = ir - 1
+           if (ir .eq. 1) then
+             a(1) = ra
+             return
+           endif
+         endif
+         i = l
+         j = l + l
+         do while (j .le. ir)
+           if (j .lt. ir) then
+             if (a(j) .lt. a(j+1)) j = j + 1
+           endif
+           if (ra .lt. a(j)) then
+             a(i) = a(j)
+             i = j
+             j = j + j
+           else
+             j = ir + 1
+           endif
+         enddo
+         a(i) = ra
+       enddo
+       end
+
+!||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+       function istemp
+
+     &          ( nx, ny, a )
+!__________________________________________________________________________________________________________________________________
+!
+! True if the image a looks like a temperature image: more of its pixels lie between 1 and 10^4 (temperatures in K) than above 10^4
+! (surface densities in cm^-2). Pixels below 1, such as the wild low values around the usable area of some images, are ignored.
+!__________________________________________________________________________________________________________________________________
+!
+       implicit      none
+       integer       nx, ny, i, j, nhigh, nlow
+       real*8        a(nx,ny)
+       logical       istemp
+
+       nhigh = 0
+       nlow  = 0
+       do j=1,ny
+         do i=1,nx
+           if (a(i,j) .ge. 1.0d4) then
+             nhigh = nhigh + 1
+           elseif (a(i,j) .ge. 1.0d0) then
+             nlow = nlow + 1
+           endif
+         enddo
+       enddo
+       istemp = nlow .gt. nhigh
 
        return
        end
