@@ -148,9 +148,10 @@ Details are given in Appendix~\ref{app:rtmodels}.
 \label{sec:modcores}
 
 Each model of a core was a Bonnor--Ebert sphere \citep{Ebert1955, Bonnor1956}, with the radial volume density distribution
-$\rho(r)$ of an isothermal sphere, embedded in a uniform spherical cloud. Three grids of models were computed
+$\rho(r)$ of an isothermal sphere, embedded in a uniform spherical envelope that stood for the surrounding cloud. Three grids of
+models were computed
 (Appendix~\ref{sec:grid}). The $2086$ models of the main grid spanned surface densities
-$3.75{\times}10^{20}$--$9.6{\times}10^{22}$\,cm$^{-2}$ of the embedding cloud, masses $1.6{\times}10^{-3}$--$31\,M_{\odot}$ of the
+$3.75{\times}10^{20}$--$9.6{\times}10^{22}$\,cm$^{-2}$ of the envelope, masses $1.6{\times}10^{-3}$--$31\,M_{\odot}$ of the
 sphere, and half-maximum widths $0.003$--$0.25$\,pc of its volume density profile, with central-to-edge density ratios
 $1.04$--$2.1{\times}10^{3}$. The main grid was used to fit the relation of Sect.~\ref{sec:relation}, together with the filaments.
 The $1815$ models of a subdivision grid, with parameters between those of the main grid, served to test the correction
@@ -206,11 +207,12 @@ $3{\times}10^{20}$--$3{\times}10^{22}$\,cm$^{-2}$, with a median of $5{\times}10
 
 The simulated star-forming region combined this cloud with seven filaments and $96$ cores in an image of $1793{\times}1793$ pixels
 of $3{\arcsec}$. Every structural component was computed with the radiative transfer code, so that its emission and its surface
-density were consistent. The filaments and the cores were the models embedded in cylindrical envelopes (Sect.~\ref{sec:modfil}) and
-in spherical clouds (Sect.~\ref{sec:modcores}), respectively, with the emission of the envelopes and of the embedding clouds
-subtracted. The envelopes and the embedding clouds were matched to the simulated cloud at the positions of the structures, so that
-the filaments and the cores were shielded approximately as at the middle depth of the cloud (Appendix~\ref{app:embfil}). The
-emission of the simulated star-forming region was convolved to the beams of the wavebands at $160$--$500${\um} and its surface
+density were consistent. The filaments and the cores were the models embedded in cylindrical and spherical envelopes
+(Sects.~\ref{sec:modfil} and \ref{sec:modcores}), with the emission of the envelopes subtracted. The envelopes were matched to the
+simulated cloud at the positions of the structures, so that the filaments and the cores were shielded approximately as at the
+middle depth of the cloud (Appendices~\ref{app:embfil} and \ref{sec:grid}).
+
+The emission of the simulated star-forming region was convolved to the beams of the wavebands at $160$--$500${\um} and its surface
 density $\Dim_{13.5}$ was derived with \emph{hires}, as done for real observations. The true surface density was also convolved to
 the same resolution.
 
@@ -232,7 +234,7 @@ The external radiation arrives from all directions, and it crosses different amo
 (cm$^{-2}$) that the radiation crosses on its way in along the direction $\hat{n}$, the mean intensity $J_{\lambda}$ that reaches
 the grain is
 \begin{equation}
-  J_{\lambda} = \frac{1}{4\pi} \int I_{{\lambda}0}\,\exp\left(-\sigma_{\lambda}\,\Sigma(\hat{n})\right){\rm d}\Omega,
+  J_{\lambda} = \frac{1}{4\pi} \int_{4\pi} I_{{\lambda}0}\,\exp\left(-\sigma_{\lambda}\,\Sigma(\hat{n})\right){\rm d}\Omega,
 \label{eq:meanint}
 \end{equation}
 where $\sigma_{\lambda}$ is the extinction cross section per hydrogen molecule. The quantity $\Sigma(\hat{n})$ is the attenuating
@@ -241,12 +243,11 @@ column in the direction $\hat{n}$.
 Figure~\ref{fig:geometry} illustrates this for the three shapes used to describe structures in clouds. Deep inside
 a layer, the radiation arrives almost entirely along the normal. A direction inclined by an angle $i$ crosses $(\cos i)^{-1}$ times
 more material, and grazing directions deliver nothing. At the center of a sphere, every direction crosses the same column, and no
-direction is preferred. A straight filament, with a short path across it and a long one along its axis, resembles a sphere in its
-cross-section and a layer along its axis.
+direction is preferred. A straight filament resembles a sphere across its axis and a layer along it.
 
 The mean intensity of Eq.~(\ref{eq:meanint}) is an integral over all directions, each with its own column $\Sigma(\hat{n})$. It is
-convenient to describe the shielding of a dust grain by a single number instead, as the column that, if it were the same in all
-directions, would give the mean intensity. With a gray cross section $\sigma$ (see below), this effective attenuating column
+convenient to describe the shielding of a dust grain by a single number instead, as the column that would give the same mean
+intensity if it were the same in all directions. With a gray cross section $\sigma$ (see below), this effective attenuating column
 $\Sigma_{\rm A}$ is defined by
 \begin{equation}
   \Sigma_{\rm A} = - \frac{1}{\sigma}
@@ -254,27 +255,28 @@ $\Sigma_{\rm A}$ is defined by
 \label{eq:seff}
 \end{equation}
 where the angle brackets denote averaging over all directions. The exponential describes the fraction of the external radiation
-that reaches the grain from the direction $\hat{n}$. For an isotropic external field, their average is the ratio
-$J_{\lambda}/I_{\lambda 0}$ of Eq.~(\ref{eq:meanint}), so that $\sigma\Sigma_{\rm A} = -\ln \left(J_{\lambda}/I_{\lambda 0}\right)$
-is the optical depth that would reduce the radiation reaching the grain by the same factor.
+that reaches the grain from the direction $\hat{n}$. For an isotropic external field, the average of this fraction over all
+directions is the ratio $J_{\lambda}/I_{\lambda 0}$ of Eq.~(\ref{eq:meanint}), so that $\sigma\Sigma_{\rm A} = -\ln
+\left(J_{\lambda}/I_{\lambda 0}\right)$ is the optical depth that would reduce the radiation reaching the grain by that factor.
 
 This average in Eq.~(\ref{eq:seff}) is dominated by the least shielded directions, because the exponential suppresses the
 contribution of heavily shielded ones. For an infinite layer, the arithmetic mean of $\Sigma(\hat{n})$ is infinite, whereas
-$\Sigma_{\rm A}$ remains finite. At the other extreme is the column along the shortest path to the surface,
-$\Sigma_{\rm min} = \min_{\hat{n}}\Sigma(\hat{n})$. No exponential in Eq.~(\ref{eq:seff}) exceeds $\exp(-\sigma\Sigma_{\rm min})$,
-so $\Sigma_{\rm A} \ge \Sigma_{\rm min}$, with equality only if all the radiation arrived from the least shielded direction. Deep
-inside a structure the two nearly agree, because only the directions close to the shortest path still deliver radiation. Near a
-surface they differ most. At the surface of an optically thick layer $\Sigma_{\rm min} = 0$, whereas half of the directions are
-blocked, so that $\sigma\Sigma_{\rm A} = \ln 2$ and $\Sigma_{\rm A} \approx 7{\times}10^{20}$\,cm$^{-2}$. Figure~\ref{fig:angular}
-in Appendix~\ref{app:shape} shows how the average of Eq.~(\ref{eq:seff}) is formed at the midplane of a layer, and how $\Sigma_{\rm
-A}$ grows with the total surface density of the line of sight.
+$\Sigma_{\rm A}$ remains finite. At the other extreme is the column along the shortest path to the surface, $\Sigma_{\rm min} =
+\min_{\hat{n}}\Sigma(\hat{n})$. No exponential in Eq.~(\ref{eq:seff}) exceeds $\exp(-\sigma\Sigma_{\rm min})$, so $\Sigma_{\rm A}
+\ge \Sigma_{\rm min}$, with equality only if all the radiation arrived from the least shielded direction. Deep inside a structure
+the two nearly agree, because only the directions close to the shortest path still deliver radiation. Near a surface they differ
+most. At the surface of an optically thick layer $\Sigma_{\rm min} = 0$, whereas half of the directions are blocked, so that
+$\sigma\Sigma_{\rm A} = \ln 2$ and $\Sigma_{\rm A} \approx 7{\times}10^{20}$\,cm$^{-2}$. Figure~\ref{fig:angular} shows how the
+average of Eq.~(\ref{eq:seff}) is formed at the midplane of a layer, and how $\Sigma_{\rm A}$ grows with the total surface density
+of the line of sight.
 
-The above reasoning contains two simplifying assumptions. First, the extinction across the ultraviolet and optical wavelengths was
-taken to be gray, with $A_{V} = \Sigma / (0.94{\times}10^{21}\,{\rm cm}^{-2})$ \citep{Bohlin+1978} and the optical depth $\tau =
-A_{V} / 1.086 = \sigma\,\Sigma$, where $\sigma = 9.8{\times}10^{-22}$\,cm$^{2}$. In reality, the extinction varies at those
-wavelengths, so the transmitted fraction in Eq.~(\ref{eq:seff}) should also be averaged over $\lambda$, weighted by the energy that
-the grains absorb. The gray cross section replaces this average. Second, the radiation field outside the cloud was assumed to be
-isotropic, that is, the same in all directions $\hat{n}$, as in all the models (Sect.~\ref{sec:models}).
+The above reasoning contains two simplifications. First, the radiation field outside the cloud was assumed to be isotropic, that
+is, the same in all directions $\hat{n}$, as in all the models (Sect.~\ref{sec:models}). Second, the extinction across the
+ultraviolet and optical wavelengths was assumed to be gray, with $A_{V} = \Sigma / (0.94{\times}10^{21}\,{\rm cm}^{-2})$
+\citep{Bohlin+1978} and the optical depth $\tau = A_{V} / 1.086 = \sigma\,\Sigma$, where $\sigma = 9.8{\times}10^{-22}$\,cm$^{2}$.
+In reality, the extinction decreases with wavelength, so the effective cross section decreases with depth, where the radiation is
+redder. A constant gray cross section is adequate, because the relation between $T$ and $\Sigma_{\rm A}$ was fitted to the
+radiative transfer models (Sect.~\ref{sec:relation}), computed with the full wavelength dependence of the opacity.
 
 \begin{figure}
 \centering
@@ -297,13 +299,13 @@ the temperature $T_{\rm min}$ that fully shielded dust approaches.}
 %%%%% densest embedding clouds (cSD_09), measured on attenuation_law.txt of the fit with the outermost shells kept (-keepouter);
 %%%%% the shells were identified with the node column of the table and diagnose_shielding_branches.py.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-The relation between $\Sigma_{\rm A}$ and $T$ is not a free choice. It follows from radiative transfer, once the dust properties
-and the external radiation field are fixed. The density and the dust temperature of every model are tabulated in radial shells, the
-cells of its radial grid: spherical shells for the cores and cylindrical shells at $45$ radii for the filaments. The attenuating
-column of a shell was computed by integrating the number density of hydrogen molecules along many rays, $240$ directions for the
-cores and $200{\times}180$ directions of equal solid angle for the filaments, and Eq.~(\ref{eq:seff}) was then evaluated by summing
-over the directions. A few innermost shells of the densest cores, with poor Monte Carlo statistics, and the outermost shell of
-every sphere, whose single temperature is an average over a steep gradient, were rejected (Appendix~\ref{sec:grid}).
+The relation between $\Sigma_{\rm A}$ and $T$ follows from radiative transfer, once the dust properties and the external radiation
+field are fixed. The density and the dust temperature of every model are tabulated in radial shells, the cells of its radial grid:
+spherical shells for the cores and cylindrical shells for the filaments. The attenuating column of a shell was computed by
+integrating the number density of hydrogen molecules along many rays, $240$ directions for the cores and $200{\times}180$
+directions of equal solid angle for the filaments, and Eq.~(\ref{eq:seff}) was then evaluated by summing over the directions. A few
+innermost shells of the densest cores, with poor Monte Carlo statistics, and the outermost shell of every sphere, whose single
+temperature is an average over a steep gradient, were rejected (Appendix~\ref{sec:grid}).
 
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 %%%%% NUMBERS (2026-10-20): T_min, T_max, Sigma_star, gamma and the scatter from the header of attenuation_law.txt written by
@@ -319,7 +321,7 @@ More than $10^5$ shells of the $2086$ spheres and $45$ shells of each of the sev
 \label{eq:law}
 \end{equation}
 where the fit parameters are $T_{\rm min\!} = 7.0495$\,K, $T_{\rm max\!} = 22.8668$\,K, $\Sigma_{\star\!} =
-2.3897{\times}10^{21}$\,cm$^{-2}$ and $\gamma = 1.5969$. The fit minimized the mass-weighted sum of the squared logarithmic
+2.3897{\times}10^{21}$\,cm$^{-2}$, and $\gamma = 1.5969$. The fit minimized the mass-weighted sum of the squared logarithmic
 differences between the fitted and the model temperatures, with every sphere and every cylinder normalized to the same total weight
 and the two types of structure given equal weights. The mass-weighted scatter about the relation is $2.4$\%. The cores and the
 filaments follow the same relation: on average, the cores are $0.6$\% colder than the relation and the filaments $0.1$--$1.1$\%
@@ -347,8 +349,9 @@ $\Sigma_{\rm A\!} = \Sigma_\star$, the excess of the temperature over $T_{\rm mi
 
 The size and the concentration of a core do not appear in Eq.~(\ref{eq:law}), because they affect $T$ only by changing the amount of
 material between the dust and the radiation. For the same reason, the filaments did not need a surrounding cloud, because
-$\Sigma_{\rm A}$ of every dust grain already includes all the material that shields it. Accordingly, the cores, embedded in clouds
-that differ by a factor of $256$ in $\Sigma$, follow the same relation. An isolated cylinder provides the shielding geometry of a
+$\Sigma_{\rm A}$ of every dust grain already includes all the material that shields it. Accordingly, the cores, embedded in
+envelopes that differ by a factor of $256$ in $\Sigma$, follow the same relation. An isolated cylinder provides the shielding
+geometry of a
 filament without an artificial envelope, which shields the axis less than a cloud layer of the same $\Sigma$
 (Appendix~\ref{app:embfil}). The scatter of $2.4$\% reflects the physics that a single gray $\Sigma_{\rm A}$ omits, mainly the
 wavelength dependence of the
@@ -433,7 +436,7 @@ bias of the fit. At higher surface densities, most of the material of a uniform 
 min}$. The cold interior then dominates the emission as well as the mass, $T_{\rm F}$ approaches $T_{\rm min}$, and the line of
 sight becomes nearly isothermal again, so the factor declines toward unity.
 
-Real dense structures are not uniform. A concentrated core has a cold center inside a warmer envelope, and its temperature still
+Real dense structures are not uniform. A concentrated core has a cold center inside warmer outer layers, and its temperature still
 varies along the line of sight. The radiative transfer models confirm this: the factor that they require stays between $2.0$ and
 $2.4$ up to the highest surface densities of the models, ${\sim}10^{23}$\,cm$^{-2}$. The decline of the analytic relation is an
 artifact of the uniform bodies. The factor was therefore held at its maximum above the surface density at which it is reached, so
@@ -504,7 +507,7 @@ sphere and layer, which was used above. Extending the calibration on the cloud t
 it improved the cloud by only $2$\%, did not improve the flanks of the dense filaments in the simulated star-forming region, and
 over-corrected dense cores. The factor remains a function of the surface density alone. The bounded spheres and the extended cloud
 are the two limits for diffuse material, as the sphere and the layer are for a single structure. Their average divides the
-uncertainty between them. As a result, the uniform clouds around the cores are corrected about $2$\% too much and the model of the
+uncertainty between them. As a result, the uniform envelopes of the cores are corrected about $2$\% too much and the model of the
 diffuse cloud $11$\% too little in the median (Sects.~\ref{sec:valgrid} and \ref{sec:sim}).
 
 \subsection{Adaptation to different radiation fields}
@@ -613,7 +616,8 @@ effects of noise and of calibration errors are discussed in Appendix~\ref{sec:ca
 \label{sec:valid}
 
 The method can be tested only on images whose true surface density is known. The correction was tested in three settings, all
-computed with radiative transfer. They are a grid of cores embedded in uniform clouds, a set of isolated filaments, and a simulated
+computed with radiative transfer. They are a grid of cores embedded in uniform envelopes, a set of isolated filaments, and a
+simulated
 star-forming region, in which a cloud, filaments, and cores overlap along the lines of sight. All of them were computed for $G_0 =
 10$, hence $g = 1$ in Eq.~(\ref{eq:factorg0}). The factor $f$ was held at its
 maximum (Sect.~\ref{sec:factor}) in all these tests. The correction for other fields was tested separately, on the models from
@@ -683,7 +687,7 @@ The uncorrected $\Dim_{13.5}$ contains $78$\% of the true $\Sigma$ and $63$\% of
 underestimation, $44$\%, is at the core center. The correction restores the median total to $99$\% and the median $M$ to $98$\%.
 Beyond $15{\arcsec}$ from the center, the corrected $\Sigma$ is overestimated by about $2$\% (Fig.~\ref{fig:valgrid}). There,
 $\Sigma$ is
-dominated by the uniform cloud around the core, which the calibration of Sect.~\ref{sec:diffuse}
+dominated by the uniform envelope of the core, which the calibration of Sect.~\ref{sec:diffuse}
 corrects slightly too much. An underestimation of $13$\% remains at $3{\arcsec}$ from the centers of the cores. No correction that
 depends on the surface density alone can remove it. The center of a core is colder than the center of a uniform structure with the
 same $\Sigma$, and $\Sigma$ does not reveal this.
@@ -966,25 +970,22 @@ Projects jointly carried out by SPIRE Specialist Astronomy Group 3 (SAG3), scien
 \subsection{Embedded spherical cores}
 \label{sec:grid}
 
-Each core was modeled as a Bonnor--Ebert sphere embedded in a uniform spherical cloud, heated from outside by the interstellar
+Each core was modeled as a Bonnor--Ebert sphere embedded in a uniform spherical envelope, heated from outside by the interstellar
 radiation field and computed with \emph{radmc-3d} for the dust opacity given in Sect.~\ref{sec:models}. Three sets of models were
 computed: the main grid of $2086$ models, used to fit the relation of Eq.~(\ref{eq:law}); the subdivision grid of $1815$ models,
 used in the tests of Sect.~\ref{sec:valgrid}; and nine grids that repeated $339$ models of the main grid in different radiation
 fields (Appendix~\ref{app:field}). All spheres were computed in one dimension, with $10^9$ photon packets, on a radial grid of $50$
 shells. The $35$ shells of the Bonnor--Ebert sphere widened geometrically outward from its center, by a factor of $18$. The $15$
-shells of the embedding cloud began with the width of the outermost shell of the sphere, widened beyond $1.3$ radii of the sphere,
-and narrowed again to the same width at the outer edge of the cloud, to resolve its steep temperature gradient.
+shells of the envelope began with the width of the outermost shell of the sphere, widened beyond $1.3$ radii of the sphere, and
+narrowed again to the same width at the outer edge of the envelope, to resolve its steep temperature gradient.
 
-The main grid varied three parameters: the surface density $\Sigma_{\rm emb}$ of the embedding cloud,
+The main grid varied three parameters: the surface density $\Sigma_{\rm emb}$ of the envelope,
 $3.75\times10^{20}$--$9.6\times10^{22}$\,cm$^{-2}$ in $9$ values spaced by a factor of $2$; the mass $M_{\rm BE}$ of the
 Bonnor--Ebert sphere, $1.6{\times}10^{-3}$--$31\,M_{\odot}$ in $26$ values spaced by $0.17$\,dex; and the half-maximum width $h$ of
-its volume density
-profile,
-$0.003$--$0.25$\,pc in $19$ values spaced by $0.11$\,dex. Only the models whose peak surface density exceeded that of the
-embedding
-cloud by at least $5$\% were computed. The central-to-edge density ratios $\rho_{\rm C}/\rho_{\rm E}$ of the $2086$ computed models
-were $1.04$--$2.1{\times}10^{3}$. The temperature of each model, tabulated shell by shell, entered the relation of
-Eq.~(\ref{eq:law}).
+its volume density profile, $0.003$--$0.25$\,pc in $19$ values spaced by $0.11$\,dex. Only the models whose peak surface density
+exceeded that of the envelope by at least $5$\% were computed. The central-to-edge density ratios $\rho_{\rm C}/\rho_{\rm E}$ of
+the $2086$ computed models were $1.04$--$2.1{\times}10^{3}$. The temperature of each model, tabulated shell by shell, entered the
+relation of Eq.~(\ref{eq:law}).
 
 The attenuating columns of Eq.~(\ref{eq:seff}) were computed by integrating the density along rays. For the spherical shells of the
 cores, a direction $\hat{n}$ is defined by its angle $\psi$ to the outward radial direction. The $240$ values of $\psi$ were spaced
@@ -994,20 +995,21 @@ Few photon packets of the Monte Carlo calculation arrived near the centers of th
 innermost shells scattered widely. A shell among the ten innermost ones was rejected if its temperature differed by more than
 $10$\% from the median of its five neighbors, together with every shell inside it. The rejected shells were $1.8$\% of all shells
 and contained a negligible fraction of the mass, and the fit does not depend on this choice. The outermost shell of every sphere
-was also rejected. In the thicker embedding clouds, it spans an extinction
-of several magnitudes, and its single Monte Carlo temperature is an average over a steep temperature gradient. If assigned to
-$\Sigma_{\rm A}$ at the center of the shell, it would exceed the relation of Eq.~(\ref{eq:law}) by $2.4$\,K on average in the
-densest embedding clouds.
+was also rejected. In the thicker envelopes, it spans an extinction of several magnitudes, and its single Monte Carlo temperature
+is an average over a steep temperature gradient. If assigned to $\Sigma_{\rm A}$ at the center of the shell, it would exceed the
+relation of Eq.~(\ref{eq:law}) by $2.4$\,K on average in the densest envelopes.
 
 The models of the subdivision grid lay between the models of the main grid and were not used in the relation. The footprint of
 Sect.~\ref{sec:valgrid} contains more than $99.9$\% of the mass of a core. For $65$ models, the mass of the core could not be
 measured: the ring contains fewer than $20$ valid pixels, because the footprint reaches the edge of the image, or the true mass
-within the footprint is not positive, because the core barely stands above its cloud.
+within the footprint is not positive, because the core barely stands above its envelope. The $96$ cores of the simulated
+star-forming region (Sect.~\ref{sec:modcloud}) were taken from the main grid, and the emission of their envelopes was subtracted in
+the same way as for the filaments (Appendix~\ref{app:embfil}).
 
-The grid of radiation fields repeated $305$ models of the main grid, together with $34$ models at a tenth embedding surface density
-of $1.92\times10^{23}$\,cm$^{-2}$. They were computed for nine strengths of the radiation field, $G_0 = 0.98$--$483$, in
-steps of a factor of $2.17$. The weakest field is that of \citet{Black1994} alone (without the hot component), the lowest that its
-table defines.
+The grid of nine radiation fields repeated $305$ models of the main grid, together with $34$ models at an additional value of
+$\Sigma_{\rm emb} = 1.92{\times}10^{23}$\,cm$^{-2}$. They were computed for the strengths $G_0 = 0.98$--$483$, in steps of a factor
+of $2.17$. The weakest field is that of \citet{Black1994} alone (without the hot component), which is the lowest field that can be
+obtained from that table.
 
 \subsection{Isolated cylindrical filaments}
 \label{app:isofil}
@@ -1072,9 +1074,9 @@ same as in the middle of the simulated cloud (Appendix~\ref{app:simcloud}). The 
 $0.2$\,pc long along the axis, which followed the variation of the envelope. The embedded filaments were computed with $10^9$
 photon packets. Runs with $8\times10^9$ packets gave the same temperatures to $0.02$\,K and the same emission to $0.3$\%.
 
-Each model was imaged twice: once in full, and once with the density of the filament set
-to zero while all temperatures were kept. The difference is the emission of the filament inside the cloud, without the emission of
-the envelope itself. It was added to the cloud, assumed to lie in the middle of its depth (Sect.~\ref{sec:modcloud}).
+Each model was imaged twice: once in full, and once with the density of the filament set to zero while all temperatures were kept.
+The difference is the emission of the filament inside the cloud, with the background of the envelope subtracted. It was added to
+the emission of the cloud. The shielding by the envelope corresponds to the middle depth of the cloud (Sect.~\ref{sec:modcloud}).
 
 \subsection{Diffuse three-dimensional cloud}
 \label{app:simcloud}
@@ -1319,7 +1321,7 @@ Eq.~(\ref{eq:factorg0}), with $g = 1$ for the dotted lines.}
 \subsection{Deriving the field factor $g$}
 \label{app:fieldR}
 
-Each field shifts the plateaus of the embedding clouds to a different $\Sigma_{\rm F}$, so bins of $\Sigma_{\rm F}$ would compare
+Each field shifts the plateaus of the envelopes to a different $\Sigma_{\rm F}$, so bins of $\Sigma_{\rm F}$ would compare
 unrelated pixels in different fields. The pixels were therefore binned in their true $\Sigma$, in bins of $0.05$\,dex. Each bin gave
 the
 mean $\log\Sigma_{\rm F}$ and the mean logarithm of the required factor $\Sigma/\Sigma_{\rm F}$, which was smoothed against

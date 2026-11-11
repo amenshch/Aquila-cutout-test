@@ -579,7 +579,8 @@ def fig_geometry(out="fig_geometry.pdf"):
     b1.text(0.14, 0.92, "to observer", fontsize=7.0, color="black", va="center", transform=b1.transAxes)
 
     for b, x, ha in ((b1, 0.97, "right"), (b2, 0.5, "center")):
-        b.text(x, 0.92, "Uniform layer and sphere ", fontsize=7.6, color="black", ha=ha, va="center", transform=b.transAxes)
+        b.text(x, 0.92, "Uniform layer and sphere ", fontsize=7.6, color="black", ha=ha, va="center", transform=b.transAxes,
+           bbox=dict(facecolor="white", edgecolor="none", pad=1.5), zorder=5)
 
     b1.tick_params(labelsize=7.8)
     b1.set_xlabel(r"Fractional depth $u$ along line of sight", fontsize=7.8)
@@ -592,7 +593,7 @@ def fig_geometry(out="fig_geometry.pdf"):
               labelspacing=0.25, facecolor="white", edgecolor="none", framealpha=1.0)  # the line styles, below the curves of the column panel
 
     b2.axhline(TFLOOR, ls=":", color="black")
-    b2.text(0.04, TFLOOR + 0.3, r"$T_{\rm min}$", fontsize=8, color="black")
+    b2.text(0.035, TFLOOR + 0.3, r"$T_{\rm min}$", fontsize=8, color="black")
     b2.set_xlim(0.0, 1.0)
     b2.set_ylim(6.5, 22.0)
     b2.tick_params(labelsize=7.8)
@@ -1684,7 +1685,7 @@ def fig_footprint(table="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/260910_RT
     ax.tick_params(labelsize=7.7)
     ax.set_xlabel(r"Footprint error $\Delta R\,/R$", fontsize=7.7, labelpad=1.5)
     ax.set_ylabel("Accuracy ratio of core mass", fontsize=7.7, labelpad=1.5)
-    ax.text(-0.42, 1.806, "Core masses (1750 models)", fontsize=7.3)
+    ax.text(-0.42, 1.806, "Core masses (1750 models)", fontsize=7.3, bbox=dict(facecolor="white", edgecolor="none", pad=1.5), zorder=5)
     h, l = ax.get_legend_handles_labels()
     ax.legend([h[i] for i in order], [l[i] for i in order], loc="upper left", bbox_to_anchor=(0.03, 0.76), fontsize=7.5)
     ax.set_box_aspect(1.0 / 1.25)
@@ -2106,7 +2107,7 @@ if __name__ == "__main__":
 #    fig_shielding()
 #    fig_method()
 #    fig_relation()
-    fig_fieldfactor()
+#    fig_fieldfactor()
 #    fig_grid_validation()
 #    fig_cylinders()
 #    fig_simsky6()
@@ -2117,4 +2118,4 @@ if __name__ == "__main__":
 #    fig_superposition()
 #    fig_field_errors()  #   fig_field_errors_tall()
 #    fig_mixing()
-#    fig_footprint()
+    fig_footprint()
