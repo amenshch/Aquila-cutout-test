@@ -43,21 +43,21 @@ Universit\'e Paris-Saclay, 91191 Gif-sur-Yvette, France}
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 \abstract{Surface densities of molecular clouds are derived by fitting one modified blackbody to each pixel of far-infrared images.
 In dense structures, the spectral distribution of intensities, and therefore the fitted temperature, is dominated by the warmer
-material along the line of sight and underestimates the surface densities by more than a factor of two in the densest material. The
-observed spectral shapes cannot reveal this underestimation, because its signature corresponds to only a few percent of
-intensities. This paper presents a correction method for surface densities $\Sigma$, calibrated on radiative transfer models. The
-dust temperature $T$ depends only on the effective attenuating column $\Sigma_{\rm A}$ that shields the dust from the interstellar
-radiation field. A single relation $T(\Sigma_{\rm A})$ reproduces the dust temperatures of $2086$ embedded models of Bonnor--Ebert
-spheres and $7$ cylindrical filaments with a scatter of $2.4$\%. The correction factor is an explicit function of $\Sigma$ alone
-and only slightly depends on the shapes of structures. The method applies to any conventional image of surface density, obtained
-with any angular resolution. The method was tested on $1815$ additional models of cores, on the isolated filaments, and on a
-simulated star-forming region built from radiative transfer models of a cloud, filaments, and cores. The correction raises the
-median core mass from $0.63$ to $0.98$ of the true mass, the linear densities of filaments from $0.60$--$0.96$ to $0.93$--$1.01$,
-and the total $\Sigma$ of the simulated star-forming region from $0.67$ to $0.98$ of the truth. The correction includes dependence
-on a wide range of strengths $G_{0}$ of the interstellar radiation field, measured on $9$ supplementary grids of models. Applied to
-a sub-region of the molecular cloud in Aquila, the correction raises the total $\Sigma$ by a factor of $1.86$. For the adopted dust
-properties and known radiation fields, the errors of the method are ${\sim}20$\% in diffuse material and ${\sim}25$\% in dense
-structures.}
+material along the line of sight, and the fitting underestimates the surface densities by more than a factor of two in the densest
+material. The observed spectral shapes cannot reveal this underestimation, because its signature corresponds to only a few percent
+of intensities. This paper presents a correction method for surface densities $\Sigma$, calibrated on radiative transfer models.
+The dust temperature $T$ depends only on the effective attenuating column $\Sigma_{\rm A}$ that shields the dust from the
+interstellar radiation field. A single relation $T(\Sigma_{\rm A})$ reproduces the dust temperatures of $2086$ models of embedded
+Bonnor--Ebert spheres and $7$ cylindrical filaments with a scatter of $2.4$\%. The correction factor is an explicit function of the
+derived $\Sigma$ and only slightly depends on the shapes of structures. The method applies to any surface density image derived by
+single-temperature fitting, at any angular resolution. The method was tested on $1815$ additional models of cores, on the isolated
+filaments, and on a simulated star-forming region built from radiative transfer models of a cloud, filaments, and cores. The
+correction raises the median core mass from $0.63$ to $0.98$ of the true mass, the linear densities of filaments from
+$0.60$--$0.96$ to $0.93$--$1.01$, and the total $\Sigma$ of the simulated star-forming region from $0.67$ to $0.98$ of the truth.
+The correction includes dependence on a wide range of strengths $G_{0}$ of the interstellar radiation field, measured on
+supplementary grids of models for 9 field strengths. Applied to a sub-region of the molecular cloud in Aquila, the correction
+raises the total $\Sigma$ by a factor of $1.86$. For the adopted dust properties and known radiation fields, the errors of the
+method are ${\sim}20$\% in diffuse material and ${\sim}25$\% in dense structures.}
 
 \keywords{ISM: clouds -- ISM: structure -- Stars: formation -- Infrared: ISM -- Submillimeter: ISM -- Techniques: image processing}
 
@@ -69,12 +69,11 @@ structures.}
 \section{Introduction}
 \label{sec:intro}
 
-Far-infrared and submillimeter imaging surveys of the nearby and distant molecular clouds with the \emph{Herschel} Space
-Observatory \citep{Pilbratt_etal2010} have greatly expanded the knowledge of the structures in star-forming regions
-\citep[e.g.,][]{Andre+2010, Motte+2010, Andre+2014}. One of the most important quantities is the surface density $\Sigma$ of dusty
-gas, derived by fitting an optically thin modified blackbody to the intensities $I_{\lambda}$ of each pixel \citep{Hildebrand1983}.
-The fitting gives a single pair of values, the dust temperature $T$ and the surface density $\Sigma$, for each pixel (line of
-sight).
+Far-infrared and submillimeter imaging surveys of nearby and distant molecular clouds with the \emph{Herschel} Space Observatory
+\citep{Pilbratt_etal2010} have greatly expanded the knowledge of the structures in star-forming regions \citep[e.g.,][]{Andre+2010,
+Motte+2010, Andre+2014}. One of the most important quantities is the surface density $\Sigma$ of dusty gas, derived by fitting an
+optically thin modified blackbody to the intensities $I_{\lambda}$ of each pixel \citep{Hildebrand1983}. The fitting gives a single
+pair of values, the dust temperature $T$ and the surface density $\Sigma$, for each pixel (line of sight).
 
 Dense cores and filaments are extracted from the surface density images, and their masses, linear densities, widths, and other
 properties depend on the accuracy of the images. Conventional surface density images have a poor angular resolution of
@@ -85,9 +84,9 @@ $160${\um} waveband.
 
 A weak point of the fitting procedure is the assumption of a constant temperature. Although it is a reasonable approximation for
 diffuse material, whose temperatures change less along the line of sight, the assumption fails for a cold dense structure embedded
-in a warmer cloud. The derived temperature is weighted by the emission, hence by the warmer material, which leads to the
-underestimated surface densities. The size of the effect on surface density follows from the wavelength-dependent sensitivity of
-the Planck function to the temperature,
+in a warmer cloud. The derived temperature is weighted by the emission, hence by the warmer material, which leads to underestimated
+surface densities. The size of the effect on surface density follows from the wavelength-dependent sensitivity of the Planck
+function to the temperature,
 \begin{equation} \frac{\partial \ln \Sigma}{\partial \ln T} =
 -\,\frac{x_\lambda}{1-{\exp\left(-x_\lambda\right)}}, \quad x_\lambda \equiv \frac{h_{\rm P} c}{\lambda k_{\rm B} T},
 \label{eq:sensitivity} 
@@ -97,7 +96,7 @@ constant, and $k_{\rm B}$ is the Boltzmann constant. At $T = 10$\,K, this deriva
 $160$, $250$, $350$, and $500${\um}, respectively. If the temperature of a cold core is overestimated by only $1$\,K, the surface
 density derived at $500${\um} is underestimated by $24$\% and the one derived at $160${\um} is underestimated by a factor of $2.3$.
 
-This systematic underestimation, also called the bias below, cannot be absorbed into the assumed dust opacity, because it is not a
+This systematic underestimation, called the bias below, cannot be absorbed into the assumed dust opacity, because it is not a
 constant factor. It grows with the surface density of the surrounding cloud, because denser clouds produce larger temperature
 contrasts along the line of sight, that is, larger ratios of the temperatures of the warmest and the coldest dust on it. The bias
 is also expected to grow with the concentration of a structure, because a more concentrated core is better shielded. The fitting
@@ -105,7 +104,7 @@ therefore gives different surface densities for two structures with the same tru
 
 The bias has been studied with radiative transfer models of clouds, cores, and filaments \citep{Shetty+2009b, Malinen+2011,
 Juvela+Ysard2012, Juvela+2013}. These studies found that the single-temperature fitting underestimates the surface density toward
-the densest structures, by up to a factor of $3$ \citep{Juvela+2013}. Several ways to recover the temperature structure were
+the densest structures, by up to a factor of $3$ \citep{Juvela+2013}. Several ways to recover the temperature structure have been
 proposed. The observed profiles of a core can be inverted under the assumption of spherical symmetry \citep{Roy+2014}. The emission
 of each line of sight can be described by several temperature components and fitted in many wavebands at once \citep{Marsh+2015}.
 Radiative transfer models can be fitted to the observed images of a whole region \citep{Juvela+2013}, and empirical models can be
@@ -134,16 +133,16 @@ The surface density correction method is based on accurate radiative transfer mo
 a diffuse cloud, in which the true surface density is known. All models were computed with the Monte Carlo dust continuum
 radiative-transfer code \emph{radmc-3d}\footnote{\url{http://www.ita.uni-heidelberg.de/~dullemond/software/radmc-3d}}
 \citep{Dullemond+2012} to derive their one-, two-, or three-dimensional temperature structure and images of their surface density
-and emergent surface brightness in the \emph{Herschel} photometric bands ($70$, $100$, $160$, $250$, $350$, and $500$\,$\mu$m).
+and emergent surface brightness in the \emph{Herschel} photometric bands ($70$, $100$, $160$, $250$, $350$, and $500${\um}).
 
 The models were heated from outside by the isotropic interstellar radiation field \citep{Black1994} that has strength $G_0=0.98$
 (in \citet{Habing1968} units) to which a hot blackbody component of $2.2{\times}10^4$\,K was added to obtain stronger fields.
 Integrated over its far-ultraviolet part, the adopted fiducial field has $G_0 \approx 10$. The dust opacity was that tabulated by
-\citet{Ossenkopf+Henning1994} for grains with thin ice mantles, corresponding to coagulation time of $10^{5}$\,yr and hydrogen atom
-number density of $10^{6}$\,cm$^{-3}$. The opacities were scaled by a factor of $1.0746$ to match the analytic approximation
-$\kappa_\lambda = 10\,(300\,\mu{\rm m}/\lambda)^2\,{\rm cm^2\,g^{-1}}$ commonly used in observational studies. The adopted fiducial
-distance of $260$\,pc corresponds to the value previously used for the Aquila cloud \citep{Konyves+2015}. Details are given in
-Appendix \ref{app:rtmodels}.
+\citet{Ossenkopf+Henning1994} for grains with thin ice mantles, corresponding to a coagulation time of $10^{5}$\,yr and a hydrogen
+atom number density of $10^{6}$\,cm$^{-3}$. The opacities were scaled by a factor of $1.0746$ to match the analytic approximation
+$\kappa_\lambda = 10\,(300\,\mu{\rm m}/\lambda)^2\,{\rm cm^2\,g^{-1}}$ (per gram of dust) commonly used in observational studies.
+The adopted fiducial distance of $260$\,pc corresponds to the value previously used for the Aquila cloud \citep{Konyves+2015}.
+Details are given in Appendix~\ref{app:rtmodels}.
 
 \subsection{Cores}
 \label{sec:modcores}
@@ -164,8 +163,8 @@ The $1815$ models of a subdivision grid, with parameters between those of the ma
 Each filament was computed twice, for two purposes. As an isolated cylinder, without any surrounding cloud, it was used to
 determine the temperature relation (Sect.~\ref{sec:relation}). Inside a cylindrical envelope that stood for the surrounding cloud,
 which shields the outer parts of the filament and makes them colder, it was used to populate the simulated star-forming region
-(Sect.~\ref{sec:modcloud} and Appendix~\ref{app:embfil}). The isolated cylinder, $7.2$\,pc long, had the radial volume density
-profile
+(Sect.~\ref{sec:modcloud} and Appendix~\ref{app:embfil}). The isolated cylinder had a length of $7.2$,pc and the radial volume
+density profile
 \begin{equation}
   \rho(r) = \rho_{\rm C}\left(1 + \left(2^{2/\beta}-1\right)\left(\frac{2r}{h}\right)^{2}\right)^{-\beta/2},
 \label{eq:fdens}
@@ -181,18 +180,16 @@ with an optical depth of $0.84$ through its axis, and was not used.
 \begin{figure*}
 \centering
 \includegraphics[width=0.85\linewidth]{fig_geometry.pdf}
-\caption{Geometry of the dust attenuation in different structures. \emph{Upper}: The radiation that heats a dust grain, marked by
-the black point, arrives from every direction having crossed columns of very different lengths. The rays are drawn thicker where
-less material has been crossed. Most energy arrives along the normal in the midplane of a layer; no direction is favored at the
-center of a sphere; a cylindrical filament has intermediate properties -- resembling a layer along its axis and a sphere across the
-axis. \emph{Lower left}: The effective attenuating column $\Sigma_{\rm A}$ of Eq.~(\ref{eq:seff}) against the fractional depth $u$
-along the line of sight normal to a uniform-density layer (solid curves) and along the diameter of a uniform-density sphere (dashed
-curves), for total surface densities $\Sigma$ of $10^{21}$, $10^{22}$ and $10^{23}$\,cm$^{-2}$ along that line of sight. The dotted
-curves are the column $\Sigma_{\rm min}$ along the shortest path to the surface, which for these central lines of sight is $\min(u,
-1-u)\,\Sigma$ for both shapes (for off-center lines of sight through a sphere or a filament, the nearest surface lies across the
-line of sight, and the column is smaller), and the thin vertical line marks the midplane (the center of the sphere), about which
-the profiles are symmetric. \emph{Lower right}: The dust temperature that follows from $\Sigma_{\rm A}$ through Eq.~(\ref{eq:law}).
-The dotted line marks the floor temperature $T_{\rm min}$.}
+\caption{Geometry of the dust attenuation in different structures. \emph{Upper}: The radiation that heats a dust grain (black
+point) arrives from every direction after crossing very different columns. The rays are thicker where less material has been
+crossed. Most energy arrives along the normal in the midplane of a layer, and no direction is favored at the center of a sphere. A
+cylindrical filament resembles a layer along its axis and a sphere across the axis. \emph{Lower left}: The effective attenuating
+column $\Sigma_{\rm A}$ of Eq.~(\ref{eq:seff}) against the fractional depth $u$ along the line of sight normal to a uniform layer
+(solid curves) and along the diameter of a uniform sphere (dashed curves), for $\Sigma = 10^{21}$, $10^{22}$, and
+$10^{23}$\,cm$^{-2}$. The dotted curves show the column $\Sigma_{\rm min} = \min(u, 1-u)\,\Sigma$ along the shortest path to the
+surface. The thin vertical line marks the midplane of the layer and the center of the sphere. \emph{Lower right}: The dust
+temperature that follows from $\Sigma_{\rm A}$ through Eq.~(\ref{eq:law}). The dotted line marks the floor temperature
+$T_{\rm min}$.}
 \label{fig:geometry}
 \end{figure*}
 
@@ -200,21 +197,20 @@ The dotted line marks the floor temperature $T_{\rm min}$.}
 \label{sec:modcloud}
 
 Most of the observed area of a molecular cloud is covered by extended diffuse material, referred to here as the diffuse cloud, or
-simply the cloud. It was modeled as a rectangular box of $6.8{\times}6.8$\,pc with a $2$\,pc depth along the line of sight, whose
-projection was a map with scale-free fluctuations, rising toward the center of the map. The map was derived from the same
-scale-free background used previously in \citet{Menshchikov_etal2012,Menshchikov2021method,Menshchikov2021bench}. The volume
-density was constructed to fluctuate along every line of sight with the same power spectrum as across the sky
-(Appendix~\ref{app:rtmodels}). Its surface densities were $3{\times}10^{20}$--$3{\times}10^{22}$\,cm$^{-2}$, with a median
-of $5{\times}10^{21}$\,cm$^{-2}$.
+simply the cloud. It was modeled as a rectangular box of $6.8{\times}6.8$\,pc with a $2$\,pc depth along the line of sight. Its
+projection was a surface density map with scale-free fluctuations and with an enhancement toward the center
+(Fig.~\ref{fig:cube3d}). The map was derived from the same scale-free background used previously in
+\citet{Menshchikov_etal2012,Menshchikov2021method,Menshchikov2021bench}. The volume density was constructed to fluctuate along
+every line of sight with the same power spectrum as across the sky (Appendix~\ref{app:simcloud}). Its surface densities were
+$3{\times}10^{20}$--$3{\times}10^{22}$\,cm$^{-2}$, with a median of $5{\times}10^{21}$\,cm$^{-2}$.
 
 The simulated star-forming region combined this cloud with seven filaments and $96$ cores in an image of $1793{\times}1793$ pixels
-of
-$3{\arcsec}$. Every structural component was computed with the radiative transfer code, so that its emission and its surface
-density were consistent. The filaments were those embedded in the envelopes of Sect.~\ref{sec:modfil}, with the emission of the
-envelopes subtracted, and they lay in the middle depth of the cloud (Appendix~\ref{app:embfil}). The cores were the grid models
-inside embedding spherical clouds whose surface density matched its surroundings in the cloud.
-
-The emission of the simulated star-forming region was convolved to the beams of the wavebands at $160$--$500${\um} and its surface
+of $3{\arcsec}$. Every structural component was computed with the radiative transfer code, so that its emission and its surface
+density were consistent. The filaments and the cores were the models embedded in cylindrical envelopes (Sect.~\ref{sec:modfil}) and
+in spherical clouds (Sect.~\ref{sec:modcores}), respectively, with the emission of the envelopes and of the embedding clouds
+subtracted. The envelopes and the embedding clouds were matched to the simulated cloud at the positions of the structures, so that
+the filaments and the cores were shielded approximately as at the middle depth of the cloud (Appendix~\ref{app:embfil}). The
+emission of the simulated star-forming region was convolved to the beams of the wavebands at $160$--$500${\um} and its surface
 density $\Dim_{13.5}$ was derived with \emph{hires}, as done for real observations. The true surface density was also convolved to
 the same resolution.
 
@@ -223,9 +219,9 @@ the same resolution.
 \section{Radiation shielding and dust temperature}
 \label{sec:law}
 
-Dust in a molecular cloud is heated mostly by the interstellar radiation field that arrives from outside the cloud, and locally
-also by the young stars that formed within it. The temperature of a dust grain is set by the amount of radiation that reaches it.
-The models and the correction of this paper consider the external heating only, for which this amount is reduced by the material
+Dust in molecular clouds is heated mostly by the interstellar radiation field that arrives from outside the clouds, and locally
+also by young stars formed within them. The temperature of a dust grain is set by the amount of radiation that reaches it. The
+models and the correction of this paper consider the external heating only, for which this amount is reduced by the material
 between the grain and the outside of the cloud. Internal heating is discussed in Appendix~\ref{sec:notdo}.
 
 \subsection{Effective attenuating column}
@@ -875,9 +871,9 @@ This matters for any criterion based on a surface density threshold, such as tha
 \begin{figure*}
 \centering
 \includegraphics[width=0.98\textwidth]{fig_aquila.pdf}
-\caption{The Aquila sub-region at $O = 13.5{\arcsec}$, corrected for the radiation field $G_0 = 33$. \emph{Upper panels}: the
-surface density before and after the correction, on a common logarithmic scale. \emph{Lower panels}: the image of the correction
-factors $\mathcal{F}$ and the corrected dust temperature (Sect.~\ref{sec:aquila}). }
+\caption{The Aquila sub-region at $O = 13.5{\arcsec}$, corrected for the radiation field $G_0 = 33$. Shown are the images of the
+surface density before and after the correction (on a common scale), of the correction factors, and of the corrected dust
+temperature (Sect.~\ref{sec:aquila}). }
 \label{fig:aquila}
 \end{figure*}
 
