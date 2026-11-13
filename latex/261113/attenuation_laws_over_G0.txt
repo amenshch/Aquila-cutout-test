@@ -1,0 +1,134 @@
+!!!! attenuation_law_G0=0p98:
+!
+! Dust temperature against the effective attenuating column, fitted on
+! 334 RADMC-3D nodes, 16039 shells, mass weighted.
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       6.138376 K
+!   T0    =      17.207124 K
+!   Sstar =   3.270049e+21 cm^-2
+!   gamma =       1.248631
+!   mass-weighted scatter 1.53 per cent
+!
+!!!! attenuation_law_G0=2p12:
+!
+! Dust temperature against the effective attenuating column, fitted on
+! 331 RADMC-3D nodes, 15866 shells, mass weighted.
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       6.071194 K
+!   T0    =      18.334724 K
+!   Sstar =   2.378448e+21 cm^-2
+!   gamma =       1.096700
+!   mass-weighted scatter 1.63 per cent
+!
+!!!! attenuation_law_G0=4p61:
+!
+! Dust temperature against the effective attenuating column, fitted on
+! 334 RADMC-3D nodes, 16055 shells, mass weighted.
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       6.092097 K
+!   T0    =      20.160398 K
+!   Sstar =   1.794372e+21 cm^-2
+!   gamma =       1.032535
+!   mass-weighted scatter 1.83 per cent
+!
+!!!! attenuation_law_G0=10:
+!
+! Dust temperature against the effective attenuating column, fitted on
+! 333 RADMC-3D nodes, 16078 shells, mass weighted.
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       6.309968 K
+!   T0    =      22.653655 K
+!   Sstar =   1.639268e+21 cm^-2
+!   gamma =       1.114175
+!   mass-weighted scatter 2.17 per cent
+!
+!!!! attenuation_law_G0=21p7:
+!
+! Dust temperature against the effective attenuating column, fitted on
+! 334 RADMC-3D nodes, 16027 shells, mass weighted.
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       6.728788 K
+!   T0    =      25.658067 K
+!   Sstar =   1.849422e+21 cm^-2
+!   gamma =       1.349367
+!   mass-weighted scatter 2.61 per cent
+!
+!!!! attenuation_law_G0=47p1:
+!
+! Dust temperature against the effective attenuating column, fitted on
+! 333 RADMC-3D nodes, 16065 shells, mass weighted.
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       7.360448 K
+!   T0    =      29.083487 K
+!   Sstar =   2.399403e+21 cm^-2
+!   gamma =       1.751897
+!   mass-weighted scatter 3.07 per cent
+!
+!!!! attenuation_law_G0=102p4:
+!
+! Dust temperature against the effective attenuating column, fitted on
+! 332 RADMC-3D nodes, 16087 shells, mass weighted.
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       8.264709 K
+!   T0    =      30.000000 K
+!   Sstar =   5.375712e+21 cm^-2
+!   gamma =       3.000000
+!   mass-weighted scatter 4.97 per cent
+!
+!!!! attenuation_law_G0=222p2:
+!
+! Dust temperature against the effective attenuating column, fitted on
+! 331 RADMC-3D nodes, 16077 shells, mass weighted.
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =       9.100801 K
+!   T0    =      30.000000 K
+!   Sstar =   6.775694e+21 cm^-2
+!   gamma =       3.000000
+!   mass-weighted scatter 10.58 per cent
+!
+!!!! attenuation_law_G0=482p5:
+!
+! Dust temperature against the effective attenuating column, fitted on
+! 332 RADMC-3D nodes, 16159 shells, mass weighted.
+! outermost shell of every sphere rejected
+! kappa at the heating wavelengths: 9.795854e-22 cm^2 per H2
+! T(Sigma_a) = Tf + (T0 - Tf) (1 + Sigma_a / Sstar)^(-gamma)
+!   Tf    =      10.282368 K
+!   T0    =      30.000000 K
+!   Sstar =   8.831290e+21 cm^-2
+!   gamma =       3.000000
+!   mass-weighted scatter 17.42 per cent
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
