@@ -45,11 +45,11 @@ Universit\'e Paris-Saclay, 91191 Gif-sur-Yvette, France}
 In dense structures, the spectral distribution of intensities, and therefore the fitted temperature, is dominated by the warmer
 material along the line of sight, and the fitting underestimates the surface densities by more than a factor of two in the densest
 material. The observed spectral shapes cannot reveal this underestimation, because its signature corresponds to only a few percent
-of intensities. This paper presents a correction method for surface densities $\Sigma$, calibrated on radiative transfer models.
+of the intensities. This paper presents a correction method for surface densities $\Sigma$, calibrated on radiative transfer models.
 The dust temperature $T$ depends only on the effective attenuating column $\Sigma_{\rm A}$ that shields the dust from the
 interstellar radiation field. A single relation $T(\Sigma_{\rm A})$ reproduces the dust temperatures of $2086$ models of embedded
 Bonnor--Ebert spheres and $7$ cylindrical filaments with a scatter of $2.4$\%. The correction factor is an explicit function of the
-derived $\Sigma$ and only slightly depends on the shapes of structures. The method applies to any surface density image derived by
+derived $\Sigma$ and depends only slightly on the shapes of structures. The method applies to any surface density image derived by
 single-temperature fitting, at any angular resolution. The method was tested on $1815$ additional models of cores, on the isolated
 filaments, and on a simulated star-forming region built from radiative transfer models of a cloud, filaments, and cores. The
 correction raises the median core mass from $0.63$ to $0.98$ of the true mass, the linear densities of filaments from
@@ -110,8 +110,8 @@ of each line of sight can be described by several temperature components and fit
 Radiative transfer models can be fitted to the observed images of a whole region \citep{Juvela+2013}, and empirical models can be
 used to combine the wavebands of different resolutions \citep{Juvela+Montillaud2013}. These methods need either an assumed geometry
 of a particular structure or a model of the whole region, whereas the correction method developed in this paper needs neither. It
-is calibrated on radiative transfer models and then applied to any surface density image, with a factor that depends only on the
-value of each pixel.
+is calibrated on radiative transfer models and then applied to any surface density image, with a factor that depends on the value
+of each pixel and on the radiation field of the cloud.
 
 Section~\ref{sec:models} describes the radiative transfer models, Sect.~\ref{sec:law} derives the relation between the dust
 temperature and the shielding column, and Sect.~\ref{sec:corr} turns it into the correction. Section~\ref{sec:valid} tests the
@@ -135,8 +135,8 @@ radiative-transfer code \emph{radmc-3d}\footnote{\url{http://www.ita.uni-heidelb
 \citep{Dullemond+2012} to derive their one-, two-, or three-dimensional temperature structure and images of their surface density
 and emergent surface brightness in the \emph{Herschel} photometric bands ($70$, $100$, $160$, $250$, $350$, and $500${\um}).
 
-The models were heated from outside by the isotropic interstellar radiation field \citep{Black1994} that has strength $G_0=0.98$
-(in \citet{Habing1968} units) to which a hot blackbody component of $2.2{\times}10^4$\,K was added to obtain stronger fields.
+The models were heated from outside by the isotropic interstellar radiation field \citep{Black1994}, which has the strength $G_0 =
+0.98$ in the units of \citet{Habing1968}. A hot blackbody component of $2.2{\times}10^4$,K was added to obtain stronger fields.
 Integrated over its far-ultraviolet part, the adopted fiducial field has $G_0 \approx 10$. The dust opacity was that tabulated by
 \citet{Ossenkopf+Henning1994} for grains with thin ice mantles, corresponding to a coagulation time of $10^{5}$\,yr and a hydrogen
 atom number density of $10^{6}$\,cm$^{-3}$. The opacities were scaled by a factor of $1.0746$ to match the analytic approximation
@@ -164,7 +164,7 @@ The $1815$ models of a subdivision grid, with parameters between those of the ma
 Each filament was computed twice, for two purposes. As an isolated cylinder, without any surrounding cloud, it was used to
 determine the temperature relation (Sect.~\ref{sec:relation}). Inside a cylindrical envelope that stood for the surrounding cloud,
 which shields the outer parts of the filament and makes them colder, it was used to populate the simulated star-forming region
-(Sect.~\ref{sec:modcloud} and Appendix~\ref{app:embfil}). The isolated cylinder had a length of $7.2$,pc and the radial volume
+(Sect.~\ref{sec:modcloud} and Appendix~\ref{app:embfil}). The isolated cylinder had a length of $7.2$\,pc and the radial volume
 density profile
 \begin{equation}
   \rho(r) = \rho_{\rm C}\left(1 + \left(2^{2/\beta}-1\right)\left(\frac{2r}{h}\right)^{2}\right)^{-\beta/2},
@@ -200,10 +200,10 @@ $T_{\rm min}$.}
 Most of the observed area of a molecular cloud is covered by extended diffuse material, referred to here as the diffuse cloud, or
 simply the cloud. It was modeled as a rectangular box of $6.8{\times}6.8$\,pc with a $2$\,pc depth along the line of sight. Its
 projection was a surface density map with scale-free fluctuations and with an enhancement toward the center
-(Fig.~\ref{fig:cube3d}). The map was derived from the same scale-free background used previously in
+(Fig.~\ref{fig:cube3d}). The map was derived from the same scale-free background used previously by
 \citet{Menshchikov_etal2012,Menshchikov2021method,Menshchikov2021bench}. The volume density was constructed to fluctuate along
-every line of sight with the same power spectrum as across the sky (Appendix~\ref{app:simcloud}). Its surface densities were
-$3{\times}10^{20}$--$3{\times}10^{22}$\,cm$^{-2}$, with a median of $5{\times}10^{21}$\,cm$^{-2}$.
+every line of sight with the same power spectrum as across the sky (Appendix~\ref{app:simcloud}). The surface densities of the
+cloud were $3{\times}10^{20}$--$3{\times}10^{22}$\,cm$^{-2}$, with a median of $5{\times}10^{21}$\,cm$^{-2}$.
 
 The simulated star-forming region combined this cloud with seven filaments and $96$ cores in an image of $1793{\times}1793$ pixels
 of $3{\arcsec}$. Every structural component was computed with the radiative transfer code, so that its emission and its surface
@@ -259,7 +259,7 @@ that reaches the grain from the direction $\hat{n}$. For an isotropic external f
 directions is the ratio $J_{\lambda}/I_{\lambda 0}$ of Eq.~(\ref{eq:meanint}), so that $\sigma\Sigma_{\rm A} = -\ln
 \left(J_{\lambda}/I_{\lambda 0}\right)$ is the optical depth that would reduce the radiation reaching the grain by that factor.
 
-This average in Eq.~(\ref{eq:seff}) is dominated by the least shielded directions, because the exponential suppresses the
+The average in Eq.~(\ref{eq:seff}) is dominated by the least shielded directions, because the exponential suppresses the
 contribution of heavily shielded ones. For an infinite layer, the arithmetic mean of $\Sigma(\hat{n})$ is infinite, whereas
 $\Sigma_{\rm A}$ remains finite. At the other extreme is the column along the shortest path to the surface, $\Sigma_{\rm min} =
 \min_{\hat{n}}\Sigma(\hat{n})$. No exponential in Eq.~(\ref{eq:seff}) exceeds $\exp(-\sigma\Sigma_{\rm min})$, so $\Sigma_{\rm A}
@@ -332,19 +332,18 @@ $\Sigma_{\rm A\!}\approx 10^{23}$\,cm$^{-2}$, the models contain too little mass
 \includegraphics[width=0.75\textwidth]{fig_method.pdf}
 \caption{Flowchart of the method. The first group is the calibration, which is done once and yields the temperature relation of
 Eq.~(\ref{eq:law}). The second is the calculation of Sect.~\ref{sec:factor}, repeated for a grid of true surface densities
-$\Sigma$, which yields the table of the correction factor against the surface density that an observed image actually holds. Its
-last two steps calibrate the low surface densities on a radiative transfer model of a diffuse cloud (Sect.~\ref{sec:diffuse}) and
-adapt the factor to the radiation field of the cloud (Sect.~\ref{sec:g0corr}). The third group is what is then done to an image, at
-any resolution.}
+$\Sigma$, which yields the table of the correction factor against the fitted surface density $\Sigma_{\rm F}$. Its last two steps
+calibrate the low surface densities on a radiative transfer model of a diffuse cloud (Sect.~\ref{sec:diffuse}) and adapt the factor
+to the radiation field of the cloud (Sect.~\ref{sec:g0corr}). The third group is what is then done to an image, at any resolution.}
 \label{fig:method}
 \end{figure*}
 
 The parameters of Eq.~(\ref{eq:law}) have simple meanings (Fig.~\ref{fig:shielding}). The temperature $T_{\rm max}$ is that of dust
 reached by unattenuated radiation. The temperature $T_{\rm min}$ is approached when the ultraviolet and optical radiation no longer
 reach the dust. The dust is then heated only by the infrared radiation that still penetrates, including the emission of the warmer
-dust around it, and by the cosmic microwave background. Between the limits, $\Sigma_\star$ is the characteristic attenuating column
-of the decline: at $\Sigma_{\rm A\!} = \Sigma_\star$, the excess of the temperature over $T_{\rm min}$ is reduced by the factor
-$2^{\gamma\!}\approx 3$, and $\gamma$ sets how steeply the temperature falls at larger columns.
+dust around it, and by the cosmic microwave background. Between these two temperatures, $\Sigma_\star$ is the characteristic
+attenuating column of the decline: at $\Sigma_{\rm A\!} = \Sigma_\star$, the excess of the temperature over $T_{\rm min}$ is
+reduced by the factor $2^{\gamma\!}\approx 3$, and $\gamma$ sets how steeply the temperature falls at larger columns.
 
 The size and the concentration of a core do not appear in Eq.~(\ref{eq:law}), because they affect $T$ only by changing the amount
 of material between the dust and the radiation. For the same reason, it does not matter whether the shielding material belongs to a
@@ -401,7 +400,7 @@ ref\!}=500${\um}, at which $\Sigma_{\rm F}$ is least sensitive to the temperatur
 Below, $T_{\rm F}$ and $\Sigma_{\rm F}$ are called the fitted temperature and the fitted surface density, the values that a
 single-temperature fit returns.
 
-(5) The correction factor is the ratio of the true and fitted surface densities. An observed image contains $\Sigma_{\rm F}$, not
+(5) The correction factor is the ratio of the true and fitted surface densities. A derived image contains $\Sigma_{\rm F}$, not
 $\Sigma$, so the factor was tabulated against $\Sigma_{\rm F}$:
 \begin{equation}
    f(\Sigma_{\rm F}) = {\Sigma}/{\Sigma_{\rm F}}.
@@ -441,11 +440,11 @@ one in this respect and below $10^{22}$\,cm$^{-2}$, for the reason given in Sect
 \subsection{Weak dependence on shapes and density distributions}
 \label{sec:orient}
 
-The correction factor assumes specific shapes of structures, however those in an observed region are unknown. Cores are embedded in
+The correction factor assumes specific shapes of structures, but those in an observed region are unknown. Cores are embedded in
 filaments, filaments are curved and blended with their neighbors, and everything lies in a fluctuating background cloud.
 Fortunately, the surface density correction depends little on the adopted shape.
 
-Figure~\ref{fig:relation} shows the correction factor for a uniform sphere, cylinder, and plane-parallel layer of the same observed
+Figure~\ref{fig:relation} shows the correction factor for a uniform sphere, cylinder, and plane-parallel layer of the same fitted
 surface density. The three agree to within $10$\% everywhere. Outside the range
 $2.5{\times}10^{21}$--$1.3{\times}10^{22}$\,cm$^{-2}$, they agree to within $5$\%. This is because at low surface densities the
 attenuation is weak, the line of sight is nearly isothermal, and every shape gives $f \approx 1$. At high surface densities the
@@ -454,13 +453,13 @@ deepest material is optically thick in every direction, and the distribution of 
 attenuating columns of the sphere and the layer were averaged in Sect.~\ref{sec:factor}, and half of the difference of their
 factors, at most $5$\%, was regarded as the uncertainty due to the geometry.
 
-The factor for a uniform cylinder seen perpendicular to its axis lies between those for the two limiting shapes. Its factor is
-within $1.5$\% of their average, so the average also represents filaments. The factor was computed for central lines of sight,
-along the normal of a layer and the diameter of a sphere. Off-center lines of sight through a sphere or a filament pass closer to
-its surface. They are warmer and more nearly isothermal than a central line of sight with the same $\Sigma$, and they are slightly
-over-corrected. The validation on all pixels of the models includes this effect (Sect.~\ref{sec:valgrid}). Inclined layers and
-filaments are over-corrected too (Appendix~\ref{sec:incl}). Appendix~\ref{app:shape} shows that the sphere and the layer are the
-two limiting shapes.
+The sphere and the layer are the two limiting shapes of uniform bodies (Appendix~\ref{app:shape}). The factor for a uniform
+cylinder seen perpendicular to its axis lies between their factors and is within $1.5$\% of their average, so the average also
+represents filaments. The factor was computed for central lines of sight, along the normal of a layer and the diameter of a sphere.
+Off-center lines of sight through a sphere or a filament pass closer to its surface. They are warmer and more nearly isothermal
+than a central line of sight with the same $\Sigma$, and they are slightly over-corrected. The validation on all pixels of the
+models includes this effect (Sect.~\ref{sec:valgrid}). Inclined layers and filaments are over-corrected too
+(Appendix~\ref{sec:incl}).
 
 The calculation also assumed that each structure has a uniform density. For a plane-parallel layer, in which the density varies
 only along the line of sight, this assumption does not matter. Radiation at an angle $i$ to the normal reaches a dust grain at the
@@ -502,9 +501,9 @@ cloud than through the analytic layer.
 The analytic layer was therefore replaced by the radiative transfer model of the cloud at low surface densities. For $\Sigma_{\rm
 F} < 3.98{\times}10^{21}$\,cm$^{-2}$, the correction factor was set to the average of $f$ of the analytic sphere and of $f$
 measured on the model cloud. Between $3.98{\times}10^{21}$ and $10^{22}$\,cm$^{-2}$, it was blended smoothly into the analytic
-average of the sphere and the layer, which was used at higher $\Sigma_{\rm F}$. An extension the calibration on the model cloud to
-higher surface densities was tested and rejected: it improved the accuracy for the cloud by only $2$\%, did not improve the flanks
-of the dense filaments in the simulated star-forming region (Sect.~\ref{sec:sim}), and over-corrected dense cores.
+average of the sphere and the layer, which was used at higher $\Sigma_{\rm F}$. An extension of the calibration on the model cloud
+to higher surface densities was tested and rejected: it improved the accuracy for the cloud by only $2$\%, did not improve the
+flanks of the dense filaments in the simulated star-forming region (Sect.~\ref{sec:sim}), and over-corrected dense cores.
 
 The factor remains a function of the surface density alone for a given radiation field. The bounded spheres and the extended cloud
 are the two limits for diffuse material, as the sphere and the layer are for a single structure. Their average divides the
@@ -521,7 +520,7 @@ temperatures at all attenuating columns, and it changes the temperature contrast
 $T_{\rm max}/T_{\rm min}$. The correction factor that a line of sight requires therefore depends on the radiation field
 (Appendix~\ref{app:field}).
 
-This dependence was measured on the model grid of embedded cores (Sect.~\ref{sec:modcores}) for 9 field strengths $G_0 =
+This dependence was measured on the model grid of embedded cores (Sect.~\ref{sec:modcores}) for $9$ field strengths $G_0 =
 0.98$--$483$. For each field, the pixels of all its models were binned in their true surface density. The mean logarithms of the
 required factor and of $\Sigma_{\rm F}$ in each bin give the mean factor as a function of $\Sigma_{\rm F}$
 (Appendix~\ref{app:fieldR}). The ratio of this mean to the same mean at $G_0 = 10$ defines the field factor $g(\Sigma_{\rm F},
@@ -535,7 +534,7 @@ is largest for $G_0 \approx 50$, and in the strongest fields it falls below unit
 \centering
 \includegraphics[width=0.96\columnwidth]{fig_fieldfactor.pdf}
 \caption{The radiation field factor $g(\Sigma_{\rm F}, G_0)$ of Eq.~(\ref{eq:factorg0}) is plotted against the fitted surface
-density $\Sigma_{\rm F}$, for the nine field strengths $G_0$ of the model grid, from the weakest to the strongest. Above
+density $\Sigma_{\rm F}$, for the $9$ field strengths $G_0$ of the model grid, from the weakest to the strongest. Above
 $7.1{\times}10^{22}$\,cm$^{-2}$ (dotted line), the $g$ factor is held constant.}
 \label{fig:fieldfactor}
 \end{figure}
@@ -594,37 +593,36 @@ The correction must be applied before a surface density image is separated into 
 filaments, and their backgrounds \citep[e.g., with \emph{getsf},][]{Menshchikov2021method}. A dust grain is shielded by the whole
 column along its line of sight, so the correction factor must be evaluated on the total image, not on a component of it. If a
 background is subtracted first, the factor is evaluated at a surface density that the material does not have, and the structure is
-corrected much too little. For the same reason, the correction must never be applied to an image that is already corrected, or to a
+strongly under-corrected. For the same reason, the correction must never be applied to an image that is already corrected, or to a
 true surface density.
 
-One condition applies when the correction is used outside \emph{hires}. The correction factor $f$ of Eq.~(\ref{eq:factor}) is built
-for the wavebands and the weights of the fit (Sect.~\ref{sec:factor}), because $\Sigma_{\rm F}$ depends on both. For uniform
-bodies, a map fitted with equal weights is under-corrected by $6$--$15$\% above $10^{22}$\,cm$^{-2}$, one fitted without $160${\um}
-is over-corrected by $12$--$24$\%, and one whose fit includes $70$ or $100${\um} is under-corrected by up to $40$\%. The factor $f$
-cannot be replaced by a correction derived from the photometry itself, because the mixing of temperatures along a line of sight
-changes the spectral shape by only a few percent (Appendix~\ref{app:colors}).
+One condition applies when the correction is used outside \emph{hires}. The correction factor $f$ of Eq.~(\ref{eq:factor}) depends
+on the wavebands and the weights of the fit (Sect.~\ref{sec:factor}), because $\Sigma_{\rm F}$ depends on both, and the standard
+factor was built for those of \emph{hires}. With the standard factor, an image fitted with equal weights would be under-corrected
+by $6$--$15$\% above $10^{22}$\,cm$^{-2}$, one fitted without $160${\um} would be over-corrected by $12$--$24$\%, and one whose fit
+includes $70$ or $100${\um} would be under-corrected by up to $40$\%. The factor $f$ cannot be replaced by a correction derived
+from the photometry itself, because the mixing of temperatures along a line of sight changes the spectral shape by only a few
+percent (Appendix~\ref{app:colors}).
 
 The correction method can also be applied to images derived with other wavebands or weights. In this case, the code computes $f$
 for the uniform sphere and layer (Sect.~\ref{sec:factor}) with the specified wavebands and weights. At low $\Sigma_{\rm F}$, it
 combines $f$ with the calibration on the model cloud (Sect.~\ref{sec:diffuse}), which is available for five sets: $160$--$500${\um}
-with the standard or equal weights, $250$--$500${\um}, $100$--$500${\um}, and $70$--$500${\um}. For $160$--$500$ and
-$250$--$500${\um} it is accurate to within $5$\% in fields $G_0 \lesssim 50$ and to within $16$\% in the strongest fields. For sets
-that include $70$ or $100${\um}, the error reaches $17$\%. The effects of noise and of calibration errors are discussed in
-Appendix~\ref{sec:calerr}.
+with the standard or equal weights, $250$--$500${\um}, $100$--$500${\um}, and $70$--$500${\um}. The field factor was measured with
+the standard set only. For $160$--$500$ and $250$--$500${\um} it is accurate to within $5$\% in fields $G_0 \lesssim 50$ and to
+within $16$\% in the strongest fields. For sets that include $70$ or $100${\um}, the error reaches $17$\%. The effects of noise and
+of calibration errors are discussed in Appendix~\ref{sec:calerr}.
 
 % =====================================================================
 
 \section{Validation of the method}
 \label{sec:valid}
 
-The method can be tested only on images whose true surface density is known. The correction was tested in three settings, all
-computed with radiative transfer. They are a grid of cores embedded in uniform envelopes, a set of isolated filaments, and a
-simulated
-star-forming region, in which a cloud, filaments, and cores overlap along the lines of sight. All of them were computed for $G_0 =
-10$, hence $g = 1$ in Eq.~(\ref{eq:factorg0}). The factor $f$ was held at its
-maximum (Sect.~\ref{sec:factor}) in all these tests. The correction for other fields was tested separately, on the models from
-which $g$ was derived (Appendix~\ref{app:fieldR}). The calibration on the diffuse cloud and the simulated star-forming region
-exist only for $G_0 = 10$.
+The correction was tested on radiative transfer models, in which the true surface densities are known. The tests used the grid of
+cores embedded in uniform envelopes, the isolated filaments, and the simulated star-forming region, in which a cloud, filaments,
+and cores overlap along the lines of sight (Sect.~\ref{sec:models}). All these models were computed for $G_0 = 10$, hence $g = 1$
+in Eq.~(\ref{eq:factorg0}). The correction for other fields was tested separately and only on the models of cores from which $g$
+was derived (Appendix~\ref{app:fieldR}), because the diffuse cloud and the simulated star-forming region were not computed for
+other fields.
 
 \subsection{Tests on the models of cores}
 \label{sec:valgrid}
@@ -670,18 +668,18 @@ from the center of the core, and its radial profile is shown in Fig.~\ref{fig:va
 \tablefoottext{b}{The accuracy ratio of the total surface density over the true model footprint: the median over the models, with
 the 16th and 84th percentiles in parentheses.}
 \tablefoottext{c}{The accuracy ratio of the core mass, for the $1750$ models in which it can be measured: the median and
-percentiles as in (b).}
+percentiles as in (\emph{b}).}
 \tablefoottext{d}{The median relative error of the surface density at $3{\arcsec}$ from the center of the core.}
-\tablefoottext{e}{The same at $21{\arcsec}$ from the center.}
+\tablefoottext{e}{The same as (\emph{d}) at $21{\arcsec}$ from the center.}
 }
 \end{table}
 
 \begin{figure}
 \centering
 \includegraphics[width=0.96\columnwidth]{fig_grid_validation.pdf}
-\caption{Testing the correction method on the radiative transfer models of embedded cores. The relative error of the corrected
-surface density (Sect.~\ref{sec:valgrid}) is shown against the distance from the center of the core, as the median over the
-$1815$ models. The dashed line marks $O/2$ for $O = 13.5{\arcsec}$.}
+\caption{Testing the correction method on the radiative transfer models of embedded cores. The relative error of the surface 
+density before and after correction (Sect.~\ref{sec:valgrid}) is shown against the distance from the center of the core, as the
+median over the $1815$ models. The dashed line marks $O/2$ for $O = 13.5{\arcsec}$.}
 \label{fig:valgrid}
 \end{figure}
 
@@ -1111,9 +1109,8 @@ Figure~\ref{fig:cube3d} shows a segment of the model, the lower half of the imag
 density on the front face and the dust temperature on two cuts through it. Figure~\ref{fig:cube} shows a slice through it, along
 one row of the map and the line of sight, and compares it with the analytic uniform layer of the same surface density
 (Sect.~\ref{sec:factor}). The outer parts of the model are up to $3$\,K warmer than the uniform layer (Sect.~\ref{sec:diffuse}).
-Columns
-of low surface density between dense regions are up to $2$\,K colder than the uniform layer, because their dense neighbors shield
-them from the side.
+Columns of low surface density between dense regions are up to $2$\,K colder than the uniform layer, because their dense neighbors
+shield them from the side.
 
 \begin{figure}[ht!]
 \centering
