@@ -2237,7 +2237,7 @@ if __name__ == "__main__":
 #    fig_method()
 #    fig_relation()
 #    fig_fieldfactor()
-#    fig_grid_validation()
+    fig_grid_validation()
 #    fig_cylinders()
 #    fig_simsky6()
 #    fig_aquila()
