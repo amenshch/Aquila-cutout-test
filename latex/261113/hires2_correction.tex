@@ -55,7 +55,8 @@ filaments, and on a simulated star-forming region built from radiative transfer 
 correction raises the median core mass from $0.63$ to $0.98$ of the true mass, the linear densities of filaments from
 $0.60$--$0.96$ to $0.93$--$1.01$, and the total $\Sigma$ of the simulated star-forming region from $0.67$ to $0.98$ of the truth.
 The correction includes dependence on a wide range of strengths $G_{0}$ of the interstellar radiation field, measured on
-supplementary grids of models for 9 field strengths. Applied to a sub-region of the molecular cloud in Aquila, the correction
+supplementary grids of models for 9 field strengths. Applied to a sub-region of the molecular cloud in \object{Aquila}, the
+correction
 raises the total $\Sigma$ by a factor of $1.86$. For the adopted dust properties and known radiation fields, the errors of the
 method are ${\sim}20$\% in diffuse material and ${\sim}25$\% in dense structures.}
 
@@ -115,7 +116,7 @@ of each pixel and on the radiation field of the cloud.
 
 Section~\ref{sec:models} describes the radiative transfer models, Sect.~\ref{sec:law} derives the relation between the dust
 temperature and the shielding column, and Sect.~\ref{sec:corr} turns it into the correction. Section~\ref{sec:valid} tests the
-correction, and Sect.~\ref{sec:aquila} applies it to the Aquila cloud. The appendices give details of the models and the
+correction, and Sect.~\ref{sec:aquila} applies it to the \object{Aquila} cloud. The appendices give details of the models and the
 calibration for different radiation fields, and they discuss the arrangement of material along the line of sight, the observed
 colors and temperatures, and the uncertainties.
 
@@ -141,7 +142,8 @@ Integrated over its far-ultraviolet part, the adopted fiducial field has $G_0 \a
 \citet{Ossenkopf+Henning1994} for grains with thin ice mantles, corresponding to a coagulation time of $10^{5}$\,yr and a hydrogen
 atom number density of $10^{6}$\,cm$^{-3}$. The opacities were scaled by a factor of $1.0746$ to match the analytic approximation
 $\kappa_\lambda = 10\,(300\,\mu{\rm m}/\lambda)^2\,{\rm cm^2\,g^{-1}}$ (per gram of dust) commonly used in observational studies.
-The adopted fiducial distance of $260$\,pc corresponds to the value previously used for the Aquila cloud \citep{Konyves+2015}.
+The adopted fiducial distance of $260$\,pc corresponds to the value previously used for the \object{Aquila} cloud
+\citep{Konyves+2015}.
 Details are given in Appendix~\ref{app:rtmodels}.
 
 \subsection{Cores}
@@ -527,7 +529,8 @@ required factor and of $\Sigma_{\rm F}$ in each bin give the mean factor as a fu
 G_0)$ (Fig.~\ref{fig:fieldfactor}). At $\Sigma_{\rm F}> 7.1{\times}10^{22}$\,cm$^{-2}$, the grid contains too few pixels to
 determine it, and $g$ was held at its value there. Between the radiation fields, $\log g$ is interpolated linearly in $\log G_0$.
 The field factor is close to unity in diffuse material and departs from it most at $\Sigma_{\rm F}\gtrsim 10^{22}$\,cm$^{-2}$. It
-is largest for $G_0 \approx 50$, and in the strongest fields it falls below unity at high $\Sigma_{\rm F}$ (Fig.~\ref{fig:fieldfactor}).
+is largest for $G_0 \approx 50$, and in the strongest fields it falls below unity at high $\Sigma_{\rm F}$
+(Fig.~\ref{fig:fieldfactor}).
 %(Appendix~\ref{app:field}).
 
 \begin{figure}
@@ -571,7 +574,7 @@ obtained from the images at $O = 13.5{\arcsec}$.
 In practice, when no estimate of $G_0$ is available, the method applies the default $G_0 = 10$. This paper uses the images
 $\Dim_{13.5}$, the finest that are usually available. The \emph{hires} images at the even higher resolutions of $8.4$ and
 $9.4{\arcsec}$ require the observed images at $70$ and $100${\um}, which are usually too noisy in cold molecular clouds, although
-in bright regions such as Cygnus~X even $\Dim_{8.4}$ is of good quality.
+in bright regions such as \object{Cygnus X} even $\Dim_{8.4}$ is of good quality.
 
 The correction method applies to surface density images at any angular resolution. The \emph{hires} images of the models of the
 subdivision grid (Sect.~\ref{sec:modcores}) at the six resolutions $O = 8.4$--$36.3{\arcsec}$ were each corrected with their own
@@ -813,8 +816,9 @@ the dense filaments are over-corrected by $10$--$16$\%, while the cloud alone at
 Both effects come from the superposition of two structures, which a correction based on the surface density alone treats as one.
 They have the signs predicted in Appendix~\ref{app:arrange}: a structure in a tenuous cloud is under-corrected, and a structure in
 a dense cloud is over-corrected. The central cloud of the simulated star-forming region is $2$--$3$ times denser than the
-background of the filaments in Aquila, which \emph{getsf} determines to be $6{\times}10^{21}$--$10^{22}$\,cm$^{-2}$. In a region
-like Aquila, the over-correction of the filament flanks should therefore be at most ${\sim}10$\%. 
+background of the filaments in \object{Aquila}, which \emph{getsf} determines to be $6{\times}10^{21}$--$10^{22}$\,cm$^{-2}$. In a
+region
+like \object{Aquila}, the over-correction of the filament flanks should therefore be at most ${\sim}10$\%. 
 
 \subsection{Remaining errors}
 \label{sec:base}
@@ -837,7 +841,8 @@ temperatures, which are under- or over-corrected by $10$--$20$\% (Sect.~\ref{sec
 \begin{figure*}
 \centering
 \includegraphics[width=0.98\textwidth]{fig_aquila.pdf}
-\caption{The Aquila sub-region at $O = 13.5{\arcsec}$, corrected for the radiation field $G_0 = 33$. Shown are the images of the
+\caption{The \object{Aquila} sub-region at $O = 13.5{\arcsec}$, corrected for the radiation field $G_0 = 33$. Shown are the images
+of the
 surface density before and after the correction (on a common scale), of the correction factors, and of the corrected dust
 temperature (Sect.~\ref{sec:aquila}). }
 \label{fig:aquila}
@@ -846,14 +851,16 @@ temperature (Sect.~\ref{sec:aquila}). }
 \section{Application to the Aquila cloud}
 \label{sec:aquila}
 
-The correction method was applied to a $31\arcmin{\times}31\arcmin$ sub-region of the Aquila star-forming region (centered at RA
+The correction method was applied to a $31\arcmin{\times}31\arcmin$ sub-region of the \object{Aquila} star-forming region (centered
+at RA
 $277{\fdg}4765227$, Dec $-1{\fdg}9962943$) observed with \emph{Herschel} \citep{Andre+2010, Konyves+2015}. The high-resolution
 surface density image $\Dim_{13.5}$ with $625{\times}625$ pixels of $3{\arcsec}$ was derived with \emph{hires} using the observed
 images at wavelengths of $160$, $250$, $350$, and $500${\um}. The correction factor was evaluated on $\Dim_{13.5}$ and applied to
 every pixel, including those toward protostars (Appendix~\ref{sec:notdo}).
 
 The strength $G_0$ of the radiation field of the cloud was estimated by \emph{hicorrect} with the procedure of
-Appendix~\ref{app:fieldest}, from the diffuse material of the entire Aquila region, which contains $2.9{\times}10^{7}$ pixels. The
+Appendix~\ref{app:fieldest}, from the diffuse material of the entire \object{Aquila} region, which contains $2.9{\times}10^{7}$
+pixels. The
 observations require a field strength $G_0 \approx 33$, with $G_0 = 25$ and $41$ from the 16th and 84th percentiles of the fitted
 temperature. The correction method therefore used $G_0 = 33$ in Eq.~(\ref{eq:factorg0}), about $3$ times the field adopted in the
 calibration of the method.
@@ -880,10 +887,10 @@ $18.6$\,K, against a median of $15.0$\,K for the original $\mathcal{T}_{13.5}$. 
 material between the structures and largest along the crests of the filaments and at the cores. The correction therefore raises the
 contrast of the image as well as its overall level. For $\Sigma_{\rm F} > 3{\times}10^{22}$\,cm$^{-2}$, the factor decreases
 slightly from $2.10$ to $2.03$, so the densest crests and cores receive nearly the largest correction. The radiation field in
-Aquila is not uniform, mainly because of the massive stars of the W40 cluster east of the sub-region \citep{Konyves+2015}. The warm
-corner in the upper left of $\mathcal{T}_{13.5\,\rm C}$ is the edge of the W40 \ion{H}{ii} region. It is heated more strongly than
-the rest of the sub-region, and there the single field strength $G_{0} = 33$ adopted for the cloud underestimates the local field
-strength (Appendices~\ref{app:fieldest} and \ref{sec:field}).
+\object{Aquila} is not uniform, mainly because of the massive stars of the \object{W40} cluster east of the sub-region
+\citep{Konyves+2015}. The warm corner in the upper left of $\mathcal{T}_{13.5\,\rm C}$ is the edge of the \object{W40} \ion{H}{ii}
+region. It is heated more strongly than the rest of the sub-region, and there the single field strength $G_{0} = 33$ adopted for
+the cloud underestimates the local field strength (Appendices~\ref{app:fieldest} and \ref{sec:field}).
 
 \section{Conclusions}
 \label{sec:conclusions}
@@ -894,51 +901,49 @@ strength (Appendices~\ref{app:fieldest} and \ref{sec:field}).
 Surface densities of molecular clouds observed with \emph{Herschel} are derived by fitting a single-temperature modified blackbody
 to the intensities of each pixel. These surface densities are systematically underestimated wherever the dust temperature varies
 along the line of sight. The underestimation, which exceeds a factor of two in the densest material, cannot be corrected using the
-observed colors, because its signature of $1$--$6$\% of the intensities would amplify the photometric errors $7$--$9$ times. The
-correction method is therefore based on radiative transfer models.
+observed colors (Appendix~\ref{app:colors}). The correction method is therefore based on radiative transfer models.
 
-Radiative transfer provides a single relation $T(\Sigma_{\rm A})$, Eq.~(\ref{eq:law}), between the temperature and the effective
-column $\Sigma_{\rm A}$ that shields the dust. It reproduces the dust temperatures of $2086$ models of embedded Bonnor--Ebert
-spheres and $7$ models of filaments, with a scatter of $2.4$\%. A sphere, a cylinder, and a plane-parallel layer of the same
-surface density need corrections within $10$\% of each other. The relation gives the correction factor $f(\Sigma_{\rm F})$ of
-Eq.~(\ref{eq:factor}) as an explicit function of the fitted surface density $\Sigma_{\rm F}$ of Eq.~(\ref{eq:fitted}). At low
-surface densities, the factor was improved by calibration on a radiative transfer model of an extended cloud, whose surface layers
-are warmer than the relation predicts. The relation and the factor $f(\Sigma_{\rm F})$, together with the radiation field factor
-$g(\Sigma_{\rm F}, G_{0})$ of Eq.~(\ref{eq:factorg0}), are available as tables at the CDS, and they may also be useful beyond the
-correction of surface densities, wherever the temperature of externally heated dust in clouds and their structures is needed.
+Radiative transfer modeling provides a single relation $T(\Sigma_{\rm A})$, Eq.~(\ref{eq:law}), between the temperature and the
+effective column $\Sigma_{\rm A}$ that shields the dust. It reproduces the dust temperatures of $2086$ models of embedded
+Bonnor--Ebert spheres and $7$ models of filaments, with a scatter of $2.4$\%. A sphere, a cylinder, and a plane-parallel layer of
+the same surface density need corrections within $10$\% of each other. The relation gives the correction factor $f(\Sigma_{\rm F})$
+of Eq.~(\ref{eq:factor}) as an explicit function of the fitted surface density. At low surface densities, the factor was improved
+by calibration on a radiative transfer model of a diffuse cloud, whose surface layers are warmer than the relation predicts. The
+relation and the factor $f(\Sigma_{\rm F})$, together with the radiation field factor $g(\Sigma_{\rm F}, G_{0})$ of
+Eq.~(\ref{eq:factorg0}), available as tables at the CDS, may also be useful beyond the correction of surface densities, wherever
+the temperature of externally heated clouds and their structures is needed.
 
-The correction applies to surface density images at any angular resolution, with similar accuracy at $O = 8.4$--$36.3{\arcsec}$.
+The correction applies to surface density images at any angular resolution ($O = 8.4$--$36.3{\arcsec}$), with a similar accuracy.
 The correction was tested on three kinds of radiative transfer models. On $1815$ models of cores that were not used in the
 calibration of the method, it raises the median core mass from $0.63$ to $0.98$ of the true mass and the total surface density from
 $0.78$ to $0.99$. On $7$ isolated filaments, it restores the linear densities to $0.93$--$1.01$ of the truth and the slopes of
 the profiles to within $0.05$. On a simulated star-forming region built from radiative transfer models of a cloud, filaments, and
-cores, it raises the total surface density from $0.67$ to $0.98$ of the truth. The crests of filaments remain underestimated by
-$6$--$22$\% and the centers of cores by $13$\% in the median, and more for unresolved cores and cores of high contrast, because
-they are colder than a uniform structure with the same surface density. Independently of their centers, structures superposed on a
-cloud are corrected too little where the cloud is tenuous and too much where it is dense. For the flanks of filaments in a cloud
-like Aquila, the over-correction is at most about $10$\%.
+cores, it raises the total surface density from $0.67$ to $0.98$ of the truth. 
+
+The crests of filaments remain underestimated by $6$--$22$\% and the centers of cores by $13$\% in the median, and more for
+unresolved cores and cores of high contrast, because they are colder than a uniform structure with the same surface density.
+Independently of their centers, structures superposed on a cloud are corrected too little where the cloud is tenuous and too much
+where it is dense. For the flanks of filaments in a cloud like \object{Aquila}, the over-correction is at most about $10$\%.
 
 After the correction, the median core mass is underestimated by only $2$\%, less than the error produced by a core footprint wrong
 by a quarter of its radius ($-15$ to $+8$\%). Corrections that also use the fitted temperature cannot be relied upon for observed
 images, because a warm pixel may need either more or less correction (Appendix~\ref{app:tcorr}).
 
-The correction was calibrated for a radiation field with $G_0 = 10$. Models computed for nine fields $G_0 = 1$--$483$ show that the
-errors of the correction differ from those in the calibration field by up to $28$\% in the weakest fields, by up to $-19$\% in
-fields of $G_0 \approx 20$--$100$, and by up to $36$\% at the highest surface densities in the strongest field. A field factor $g$
-measured on these models, a function of the surface density $\Sigma_{\rm F}$ and the field strength $G_{0}$, brings these
-differences to within $4$\%, and to within $8$\% for fields left out of its construction. The field strength $G_{0}$ of several
-observed clouds, estimated from the temperatures of their diffuse material, ranges from below $1$ (Taurus) to about $250$
-(Cygnus~X) in nine regions. The calibration on the diffuse cloud and the test on the simulated star-forming region were made only
-for $G_0 = 10$. The other main uncertainty is the floor temperature $T_{\rm min}$ of fully shielded dust, to which $f$ is sensitive
-above $10^{22}$\,cm$^{-2}$.
+The correction was calibrated for a radiation field with $G_0 = 10$. For other fields, the field factor $g$ was measured on models
+computed for $9$ fields $G_0 = 0.98$--$483$. Without $g$, the errors of the correction would differ from those in the calibration
+field by up to $36$\%. With $g$, they differ by at most $4$\%, and by at most $8$\% for fields left out of its construction. The
+field factor $g(\Sigma_{\rm F}, G_{0})$ measured on these models brings these differences to within $4$\%, and to within $8$\% for
+fields left out of its construction. The field strength $G_{0}$ of $9$ observed clouds ranges from below $1$ (\object{Taurus}) to
+about $250$ (\object{Cygnus X}). The calibration on the diffuse cloud and the test on the simulated star-forming region were made
+only for $G_0 = 10$. The other main uncertainty is the floor temperature $T_{\rm min}$ of fully shielded dust
+(Appendix~\ref{sec:floor}).
 
-Applied to a sub-region of the Aquila cloud, with $G_0 \approx 33$ required by the diffuse material of the whole cloud, the
-correction raises the total surface density by a factor of $1.86$ and the number of pixels with $\Sigma > 10^{23}$\,cm$^{-2}$ by a
-factor of $8.1$. For the adopted dust properties, the errors of the method itself are about $20$\% in diffuse material and $25$\% in
-dense structures. With the uncertainties of the radiation field, of $T_{\rm min}$, and of the calibration, the total uncertainties
-of corrected surface densities are about $30$\% and $50$\%, and those of corrected temperatures about $2$\,K
-(Appendix~\ref{sec:accuracy}).
-The uncertainty of the dust opacity, assumed here to be the same everywhere, adds a factor of about $1.5$--$2$.
+Applied to a sub-region of the \object{Aquila} cloud, with $G_0 \approx 33$, the correction raises the total surface density by a
+factor of $1.86$ and the number of pixels with $\Sigma > 10^{23}$\,cm$^{-2}$ by a factor of $8.1$. For the adopted dust properties,
+the errors of the method itself are about $20$\% in diffuse material and $25$\% in dense structures. With the uncertainties of the
+radiation field, of $T_{\rm min}$, and of the calibration, the total uncertainties of corrected surface densities are about $30$\%
+and $50$\%, and those of corrected temperatures about $2$\,K (Appendix~\ref{sec:accuracy}). The uncertainty of the dust opacity,
+assumed here to be the same everywhere, adds another factor of about $1.5$--$2$.
 
 \begin{acknowledgements}
 The images of the molecular clouds used in this work were downloaded from the \textit{Herschel} Science
@@ -1081,7 +1086,8 @@ distributions give the same map, and the model adopts one of them, described bel
 (Sect.~\ref{sec:modcloud}) had scale-free fluctuations, with a power spectrum $P(k) \propto k^{-3.0}$ and a median surface density
 of about $3{\times}10^{21}$\,cm$^{-2}$.
 
-Real clouds, such as Aquila, contain extended areas where the background is several times denser, which the input image lacked.
+Real clouds, such as \object{Aquila}, contain extended areas where the background is several times denser, which the input image
+lacked.
 Such an area was added at the center of the image by multiplying it by $1 + 5\,(1 + (r/600{\arcsec})^2)^{-0.75}$, where $r$ is the
 distance from the center. The enhancement is a factor of $6$ at the center, nearly constant within $600{\arcsec}$, and declines as
 $r^{-1.5}$ beyond, toward unity at large distances, while the fine structure of the image is preserved (Fig.~\ref{fig:simsky6}).
@@ -1354,9 +1360,11 @@ heating radiation. At a fixed $\Sigma_{\rm F}$, the models give $T_{\rm F} \prop
 relation would place a cloud at a field several times too weak.
 
 The parameter $G_0$ is estimated from the diffuse material only, between $10^{21}$ and $6.31{\times}10^{21}$\,cm$^{-2}$. In denser
-bins, the $G_0$ values that the procedure gives rise steadily with the surface density in every observed cloud. In Aquila, for
+bins, the $G_0$ values that the procedure gives rise steadily with the surface density in every observed cloud. In \object{Aquila},
+for
 example, the median $G_0$ rises from about $20$--$40$ in the diffuse bins to more than $100$ in the densest ones. The rise of $G_0$
-is found even in Scorpius, which contains no strong heating source. It is therefore not a real increase of the field strength but a
+is found even in \object{Scorpius}, which contains no strong heating source. It is therefore not a real increase of the field
+strength but a
 bias. Indeed, a dense structure seen through warm diffuse material has a higher fitted temperature than an isolated core of the
 same surface density, and the procedure attributes the extra warmth to the field. Pixels warmer than the models in the strongest
 field of the grid are counted separately. They are heated either internally by protostars or externally by nearby massive stars,
@@ -1364,7 +1372,8 @@ beyond the range of the grid.
 
 The resulting field strength $G_0$ of a cloud is defined as the median of the $G_0$ values of its diffuse bins, weighted by the
 number of pixels. The fields at the 16th and 84th percentiles of the temperature give its spread. Table~\ref{tab:g0regions} lists
-the results for nine observed regions. Only Scorpius and Orion~A are close to the value $G_0 = 10$ of the calibration. In Taurus,
+the results for nine observed regions. Only \object{Scorpius} and \object{Orion A} are close to the value $G_0 = 10$ of the
+calibration. In \object{Taurus},
 the diffuse dust ($13.6$--$14.4$\,K between $10^{21}$ and $2.5{\times}10^{21}$\,cm$^{-2}$) is colder than the models in the
 weakest field of the grid ($14.9$\,K), and the procedure gives only an upper limit. The correction then uses $G_0 = 0.98$, which
 changes the corrected $\Sigma$ by a few percent at most (Fig.~\ref{fig:fielderr}).
@@ -1380,15 +1389,15 @@ Cloud & $G_{0,16}$\tablefootmark{a} & $G_{0,50}$\tablefootmark{a} & $G_{0,84}$\t
 \noalign{\smallskip}
 \hline
 \noalign{\smallskip}
-Taurus      &\phantom{0}$^<$0.98             &\phantom{0} $^<$0.98 &\phantom{0} $^<$0.98 & \phantom{0}0.0 \\
-California  &\phantom{0} 3.6                &\phantom{0} 5.4     &\phantom{0} 6.9     & \phantom{0}0.1 \\
-Perseus     &\phantom{0} 3.2                &\phantom{0} 4.7     &\phantom{0} 6.1     & \phantom{0}0.1 \\
-Scorpius    &\phantom{0} 6.2                &\phantom{0} 7.9     & 10\phantom{0}      & \phantom{0}0.0 \\
-Orion~A     &\phantom{0} 5.9                &\phantom{0} 8.9     & 28\phantom{0}      & \phantom{0}2.0 \\
-Ophiuchus   & 14\phantom{0}                 & 31\phantom{0}      & 55\phantom{0}      & \phantom{0}0.7 \\
-Aquila      & 25\phantom{0}                 & 33\phantom{0}      & 41\phantom{0}      & \phantom{0}0.4 \\
-W3 W4 W5    & 54\phantom{0}                 & 62\phantom{0}      & 73\phantom{0}      & \phantom{0}1.3 \\
-Cygnus~X    & 200\phantom{0}\phantom{0}     & 250\phantom{0}\phantom{0}     & 320\phantom{0}\phantom{0}     & 21.8           \\
+\object{Taurus}      &\phantom{0}$^<$0.98             &\phantom{0} $^<$0.98 &\phantom{0} $^<$0.98 & \phantom{0}0.0 \\
+\object{California}  &\phantom{0} 3.6                &\phantom{0} 5.4     &\phantom{0} 6.9     & \phantom{0}0.1 \\
+\object{Perseus}     &\phantom{0} 3.2                &\phantom{0} 4.7     &\phantom{0} 6.1     & \phantom{0}0.1 \\
+\object{Scorpius}    &\phantom{0} 6.2                &\phantom{0} 7.9     & 10\phantom{0}      & \phantom{0}0.0 \\
+\object{Orion A}     &\phantom{0} 5.9                &\phantom{0} 8.9     & 28\phantom{0}      & \phantom{0}2.0 \\
+\object{Ophiuchus}   & 14\phantom{0}                 & 31\phantom{0}      & 55\phantom{0}      & \phantom{0}0.7 \\
+\object{Aquila}      & 25\phantom{0}                 & 33\phantom{0}      & 41\phantom{0}      & \phantom{0}0.4 \\
+\object{W3} \object{W4} \object{W5} & 54\phantom{0}                 & 62\phantom{0}      & 73\phantom{0}      & \phantom{0}1.3 \\
+\object{Cygnus X}    & 200\phantom{0}\phantom{0}     & 250\phantom{0}\phantom{0}     & 320\phantom{0}\phantom{0}     & 21.8           \\
 \noalign{\smallskip}
 \hline
 \end{tabular}
@@ -1409,9 +1418,11 @@ diffuse bins contain the outer parts of filaments, which are colder than cloud m
 of a cloud rich in filaments may therefore be underestimated by a factor of about $2$, which is included in the uncertainties of
 Appendix~\ref{sec:field}.
 
-A single $G_0$ value per cloud is an approximation. In Orion~A and Ophiuchus, the fields at the 16th and 84th percentiles differ by
+A single $G_0$ value per cloud is an approximation. In \object{Orion A} and \object{Ophiuchus}, the fields at the 16th and 84th
+percentiles differ by
 a factor of $4$--$5$, because parts of these regions are exposed to radiation from nearby OB stars. For such clouds, the map can be
-divided into regions with their own $G_0$ values. In Cygnus~X, a fifth of the pixels are warmer than the models in the strongest
+divided into regions with their own $G_0$ values. In \object{Cygnus X}, a fifth of the pixels are warmer than the models in the
+strongest
 field, and the correction factor $f_{G_0}$ is not calibrated for them.
 
 \section{Inadequacy of the observed colors and temperatures}
@@ -1559,7 +1570,8 @@ the 16th to 84th percentiles for $\mathcal{F}_{36.3\,}\mathcal{D}_{13.5}$.}
 %%%%% NUMBERS (2026-11-05): from Figure fig:fielderr (see the comment there).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 With the field factor $g$, the errors of the surface density correction in the nine radiation fields of the grid are within $4$\%
-of those at $G_0 = 10$ (Appendix~\ref{app:field}). In Aquila, the field factor varies by only $\pm 3$\% between the values of $G_0$
+of those at $G_0 = 10$ (Appendix~\ref{app:field}). In \object{Aquila}, the field factor varies by only $\pm 3$\% between the values
+of $G_0$
 at the 16th and 84th percentiles of the temperature of the diffuse material (Appendix~\ref{app:fieldest}). A local $G_0$ that
 differs from that of the cloud by a factor of $2.2$ or $4.7$ changes the corrected $\Sigma$ by $-12$ to $12$\% or $-19$ to $22$\%,
 respectively (Fig.~\ref{fig:fielderr}).
