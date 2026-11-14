@@ -852,36 +852,38 @@ surface density image $\Dim_{13.5}$ with $625{\times}625$ pixels of $3{\arcsec}$
 images at wavelengths of $160$, $250$, $350$, and $500${\um}. The correction factor was evaluated on $\Dim_{13.5}$ and applied to
 every pixel, including those toward protostars (Appendix~\ref{sec:notdo}).
 
-The interstellar radiation field for the cloud was estimated by \emph{hicorrect} with the procedure of Appendix~\ref{app:fieldest},
-from the diffuse material of the entire Aquila region, which contains $2.9{\times}10^{7}$ pixels. The observations require a field
-strength $G_0 \approx 33$, with $G_0 = 25$ and $41$ from the 16th and 84th percentiles of the fitted temperature. Therefore, the
-correction method used $G_0 = 33$ in Eq.~(\ref{eq:factorg0}), about three times the field adopted in the calibration of the method.
+The strength $G_0$ of the radiation field of the cloud was estimated by \emph{hicorrect} with the procedure of
+Appendix~\ref{app:fieldest}, from the diffuse material of the entire Aquila region, which contains $2.9{\times}10^{7}$ pixels. The
+observations require a field strength $G_0 \approx 33$, with $G_0 = 25$ and $41$ from the 16th and 84th percentiles of the fitted
+temperature. The correction method therefore used $G_0 = 33$ in Eq.~(\ref{eq:factorg0}), about $3$ times the field adopted in the
+calibration of the method.
 
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 %%%%% NUMBERS (2026-10-20): Sect. 6 from python/paper_numbers/aquila_numbers.py on the images of hires/Aquila_cutout_g33
 %%%%% (hicorrect2 with -g0=33); the values for G_0 = 10 are recomputed by the same script from hicorrect2.py.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-The median correction factor over the sub-region is $1.70$. It lies between $1.21$ and $2.10$ for $98$\% of the pixels and reaches
-its maximum of $2.10$ at $\Sigma\approx 3{\times}10^{22}$\,cm$^{-2}$, so the correction is significant everywhere in the image. The
-total surface density of the image increases by a factor of $1.86$. With the calibration value $G_0 = 10$, the median factor would
-be $1.45$ and the total would increase by a factor of $1.61$.
+The median correction factor over the sub-region is $1.70$. The factor is $1.21$--$2.10$ for $98$\% of the pixels and reaches its
+maximum of $2.10$ at $\Sigma_{\rm F}\approx 3{\times}10^{22}$\,cm$^{-2}$, so the correction is significant everywhere in the image.
+The total surface density of the image increases by a factor of $1.86$. With the calibration field $G_0 = 10$, the median factor
+would be $1.45$ and the total would increase by a factor of $1.61$.
 
 The distribution of surface densities in $\Dim_{13.5}$ changes more than the median factor suggests, because the correction factor
 rises with $\Sigma$. The median surface density of the image increases from $9.7{\times}10^{21}$ to
 $1.7{\times}10^{22}$\,cm$^{-2}$, and its 99th percentile from $5.6{\times}10^{22}$ to $1.1{\times}10^{23}$\,cm$^{-2}$. The numbers
-of pixels with values above $10^{22}$, $3{\times}10^{22}$, and $10^{23}$\,cm$^{-2}$ increase by factors of $1.8$, $5.2$, and $8.1$.
-The area and the mass above a given surface density therefore change strongly. This affects quantities defined by a surface density
-threshold, such as the mass of dense gas above the threshold for the formation of prestellar cores.
+of pixels with values above $10^{22}$, $3{\times}10^{22}$, and $10^{23}$\,cm$^{-2}$ increase by factors of $1.8$, $5.2$, and $8.1$,
+respectively. The area and the mass above a given surface density therefore change strongly. This affects quantities defined by a
+surface density threshold, such as the mass of dense gas above the threshold for the formation of prestellar cores.
 
-Figure~\ref{fig:aquila} shows the images before and after the correction, together with $\mathcal{F}$ and $\mathcal{T}_{13.5\,\rm
-C}$. The median for $\mathcal{T}_{13.5\,\rm C}$ is $12.2$\,K, against $15.0$\,K for the original $\mathcal{T}_{13.5}$, and its 1st
-and 99th percentiles are $9.6$ and $18.6$\,K. The correction factor is smallest in the diffuse material between the structures and
-largest along the crests of the filaments and at the cores. The correction therefore raises the contrast of the image as well as
-its overall level. Above $\Sigma = 3{\times}10^{22}$\,cm$^{-2}$, the factor decreases slightly from $2.10$ to $2.03$, so the
-densest crests and cores receive nearly the largest correction. The radiation field in Aquila is not uniform. The warm corner in
-the upper left of $\mathcal{T}_{13.5\,\rm C}$ is heated more strongly than the rest of the sub-region, and there the single field
-strength $G_{0} = 33$ adopted for the cloud underestimates the true one. Appendix~\ref{sec:field} discusses the uncertainties due
-to the radiation field.
+Figure~\ref{fig:aquila} shows the images before and after the correction, together with $\mathcal{F}_{13.5}$ and
+$\mathcal{T}_{13.5\,\rm C}$. The median of $\mathcal{T}_{13.5\,\rm C}$ is $12.2$\,K and its 1st and 99th percentiles are $9.6$ and
+$18.6$\,K, against a median of $15.0$\,K for the original $\mathcal{T}_{13.5}$. The correction factor is smallest in the diffuse
+material between the structures and largest along the crests of the filaments and at the cores. The correction therefore raises the
+contrast of the image as well as its overall level. For $\Sigma_{\rm F} > 3{\times}10^{22}$\,cm$^{-2}$, the factor decreases
+slightly from $2.10$ to $2.03$, so the densest crests and cores receive nearly the largest correction. The radiation field in
+Aquila is not uniform, mainly because of the massive stars of the W40 cluster east of the sub-region \citep{Konyves+2015}. The warm
+corner in the upper left of $\mathcal{T}_{13.5\,\rm C}$ is the edge of the W40 \ion{H}{ii} region. It is heated more strongly than
+the rest of the sub-region, and there the single field strength $G_{0} = 33$ adopted for the cloud underestimates the local field
+strength (Appendices~\ref{app:fieldest} and \ref{sec:field}).
 
 \section{Conclusions}
 \label{sec:conclusions}
