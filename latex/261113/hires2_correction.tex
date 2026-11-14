@@ -636,8 +636,8 @@ Table~\ref{tab:valgrid} presents four quantities. The total surface density was 
 as the area within the contour at $1$\% of the peak of the core in its true image at $O = 13.5{\arcsec}$. The core mass $M$ was
 integrated after subtraction of the background, defined as the median surface density in a ring $15{\arcsec}$ wide just outside the
 footprint. The mass could be measured for $1750$ of the models (Appendix~\ref{sec:grid}). Both are given as accuracy ratios, the
-corrected value divided by the true one. The relative error of the corrected surface density is given at $3$ and $21{\arcsec}$
-from the center of the core, and its radial profile is shown in Fig.~\ref{fig:valgrid}.
+derived value divided by the true one. The relative error of the corrected surface density is given at the core center (within
+$3{\arcsec}$) and at $21{\arcsec}$ from it, and its radial profile is shown in Fig.~\ref{fig:valgrid}.
 
 \begin{table}
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
@@ -732,7 +732,7 @@ profiles.}
 \includegraphics[width=\textwidth]{fig_cylinders.pdf}
 \caption{The isolated radiative transfer cylinders reconstructed by \emph{hires} at $O = 13.5{\arcsec}$ and then corrected.
 \emph{Left}: The profile across the cylinder with $3{\times}10^{22}$\,cm$^{-2}$ on its axis, true (convolved to the beam),
-uncorrected and corrected. \emph{Right}: Relative error of the corrected surface density across all $7$ cylinders, labeled by
+uncorrected, and corrected. \emph{Right}: Relative error of the corrected surface density across all $7$ cylinders, labeled by
 their surface density $\Sigma_{0}$ on the axis. Each profile is the median over the middle part of the cylinder.}
 \label{fig:cylinders}
 \end{figure*}
@@ -750,27 +750,27 @@ one-sixth of the cores and overestimated by more than $11$\% for another one-six
 the core contrast, the ratio of the peak surface density of a core to the surface density of its background in the true image
 $\Dim_{13.5}$. Cores with contrasts above $10$ dominate the background along their lines of sight, and their cold interiors leave
 the surface density at their centers underestimated by $45$\% and their masses by $16$\%. Cores with contrasts below $1.5$ are
-nearly uniform, and their median mass is overestimated by $4$\%. No correction that depends on the surface density alone can remove
-this spread, because cores with the same surface density differ in how their temperature varies along the line of sight. A
-footprint with its radius under- or overestimated by a quarter changes the median mass by $-15$\% and $8$\%, respectively, much
-more than the error of $2$\% that remains after the correction (Appendix~\ref{app:footprint}).
+nearly uniform, and their median mass is overestimated by $4$\%. This spread cannot be removed either, because cores with the same
+surface density differ in how their temperature varies along the line of sight. A footprint with its radius under- or overestimated
+by a quarter changes the median mass by $-15$\% and $8$\%, respectively, much more than the error of $2$\% that remains after the
+correction (Appendix~\ref{app:footprint}).
 
 \begin{figure*}
 \centering
 \includegraphics[width=\textwidth]{fig_simsky6.pdf}
 \caption{The simulated star-forming region, built from radiative transfer models of a cloud, $7$ filaments, and $96$ cores.
 \emph{Upper}: The true surface density at $O = 13.5{\arcsec}$, the relative error of the corrected surface density, and the same
-for a region that contains the cloud alone. \emph{Lower}: the relative error across each filament, as the median over the outer
-rows of the region, where the cloud is tenuous, and over its central rows, where the cloud is dense. The filaments are labeled by
-their surface density $\Sigma_{0}$ on the axis. The cores are masked in the profiles. The dashed curve is the cloud alone at the
-same positions.}
+for a region that contains the cloud alone. \emph{Lower}: The relative error across each filament, as the median over the outer
+rows of the region, where the cloud is tenuous, and over its central rows, where the cloud is dense. The profiles, with the cores
+masked, are labeled by the surface density $\Sigma_{0}$ on the axis of each filament, and the dashed curves show the cloud alone at
+the same positions.}
 \label{fig:simsky6}
 \end{figure*}
 
 \subsection{Tests on the models of filaments}
 \label{sec:cyl}
 
-The correction method was also validated on the radiative transfer models of $7$ isolated cylindrical filaments of
+The correction method was also validated on the radiative transfer models of the $7$ isolated cylindrical filaments of
 Sect.~\ref{sec:modfil}. Their surface density images $\Dim_{13.5}$, derived with \emph{hires} from the simulated emission, were
 corrected with the factors $\mathcal{F}_{13.5}$ evaluated on them and compared with the true surface density at the same
 resolution. They are isolated, so their profiles are not affected by any background. Table~\ref{tab:cyl} and
@@ -780,19 +780,17 @@ Without the correction, the crests of the filaments are underestimated by $14$\%
 densest (Table~\ref{tab:cyl}), and the profiles are too wide and too shallow, because the crest is suppressed much more than the
 wings (Fig.~\ref{fig:cylinders}). After the correction, the linear densities $\Lambda$ are within $7$\% of the truth and the slopes
 $\alpha_{13.5}$ of the profiles within $0.05$. The crests remain underestimated by $6$--$22$\%, and the widths of the six filaments
-with
-$H_{13.5} = 48{\arcsec}$ (intrinsic $H = 40{\arcsec}$) are $15$--$31$\% too large, because the axis of a filament, like the
-center of a core, is colder than the middle of a uniform structure with the same surface density. Beyond about $20{\arcsec}$ from
-the crest, the corrected profiles are within $8$\% of the truth (Fig.~\ref{fig:cylinders}).
+with $H_{13.5} = 47$--$48{\arcsec}$ (intrinsic $H = 40{\arcsec}$) are overestimated by $15$--$31$\%, because the axis of a
+filament, like the center of a core, is colder than the middle of a uniform structure with the same surface density. Beyond
+${\sim}20{\arcsec}$ from the crest, the corrected profiles are within $8$\% of the truth (Fig.~\ref{fig:cylinders}).
 
 \subsection{Tests on the simulated star-forming region}
 \label{sec:sim}
 
-The simulated star-forming region (Sect.~\ref{sec:modcloud}) imitates an observed molecular region, with a cloud, $7$ filaments,
-and $96$ cores that overlap along the lines of sight. Its image $\Dim_{13.5}$ was corrected with the factors $\mathcal{F}_{13.5}$
-and compared with the true surface density at the same resolution. The image of the same region with the cloud alone was treated in
-the same way. Its image $\Dim_{13.5}$ was corrected with the factors $\mathcal{F}_{13.5}$ and compared with the true surface
-density at the same resolution, as was the image of the same region with the cloud alone.
+The simulated star-forming region (Sect.~\ref{sec:modcloud}) imitates a region observed with \emph{Herschel}, with a cloud, $7$
+filaments, and $96$ cores that overlap along the lines of sight. Its image $\Dim_{13.5}$ was corrected with the factors
+$\mathcal{F}_{13.5}$ and compared with the true surface density at the same resolution. The image of the same region with the cloud
+alone was treated in the same way.
 
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 %%%%% NUMBERS (2026-10-20): Sect. 5.3 from python/paper_numbers/simsky_numbers.py on simsky6_RT_enh_cirrdepth=2_nocrater (the sky),
@@ -802,22 +800,21 @@ density at the same resolution, as was the image of the same region with the clo
 %%%%% the whole image without masking (recomputed on 2026-11-09 with hicorrect2.py; with the cores masked, 0.968 and 0.663).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 Figure~\ref{fig:simsky6} shows the relative error of the corrected surface density over the region, for the cloud alone, and across
-the filaments. For the cloud alone, the correction raises the median accuracy ratio from $0.76$ to $0.89$. The corrected $\Sigma$
-is underestimated by $6$\% at $10^{21}$\,cm$^{-2}$ and by $14$\% at $10^{22}$\,cm$^{-2}$. The remaining underestimation of $\Sigma$
-in the cloud is the consequence of the average of Sect.~\ref{sec:diffuse}, which gives half the weight to the sphere.
+the filaments. The total surface density of the whole simulated star-forming region is corrected from $0.67$ to $0.98$ of the
+truth. For the cloud alone, the correction raises the median accuracy ratio from $0.76$ to $0.89$. The corrected $\Sigma$ is
+underestimated by $6$\% at $10^{21}$\,cm$^{-2}$ and by $14$\% at $10^{22}$\,cm$^{-2}$. The remaining underestimation of $\Sigma$ in
+the cloud is the consequence of the average of Sect.~\ref{sec:diffuse}, which gives half the weight to the sphere.
 
 In the outer parts of the simulated region, the cloud has $\Sigma \approx 2$--$5{\times}10^{21}$\,cm$^{-2}$. There the crests of
-the filaments are corrected to within $4$--$17$\%, and their flanks to within $5$\%. Their outer wings are under-corrected by
-$6$--$9$\%, as much as the cloud around them. In the center, the cloud reaches $\Sigma \approx 2$--$3{\times}10^{22}$\,cm$^{-2}$.
-There the flanks of the dense filaments are over-corrected, by $10$--$16$\%, while the cloud alone at the same positions is
-under-corrected.
+the filaments are accurate to $4$--$17$\%, and their flanks to $5$\%. Their outer wings are under-corrected by $6$--$9$\%, as much
+as the cloud around them. In the center, the cloud reaches $\Sigma \approx 2$--$3{\times}10^{22}$\,cm$^{-2}$. There the flanks of
+the dense filaments are over-corrected by $10$--$16$\%, while the cloud alone at the same positions is under-corrected.
 
 Both effects come from the superposition of two structures, which a correction based on the surface density alone treats as one.
 They have the signs predicted in Appendix~\ref{app:arrange}: a structure in a tenuous cloud is under-corrected, and a structure in
-a dense cloud is over-corrected. The central cloud of the simulated star-forming region is two to three times denser than the
-background of the filaments in Aquila, which \emph{getsf} determines to be $6{\times}10^{21}$ to $10^{22}$\,cm$^{-2}$. In a region
-like Aquila, the over-correction of the filament flanks should therefore be at most ${\sim}10$\%. The total surface density of the
-whole simulated star-forming region is corrected from $0.67$ to $0.98$ of the truth.
+a dense cloud is over-corrected. The central cloud of the simulated star-forming region is $2$--$3$ times denser than the
+background of the filaments in Aquila, which \emph{getsf} determines to be $6{\times}10^{21}$--$10^{22}$\,cm$^{-2}$. In a region
+like Aquila, the over-correction of the filament flanks should therefore be at most ${\sim}10$\%. 
 
 \subsection{Remaining errors}
 \label{sec:base}
@@ -827,13 +824,13 @@ whole simulated star-forming region is corrected from $0.67$ to $0.98$ of the tr
 %%%%% r_h below 13.5 arcsec, row 'hicorrect2, fine': median and 16th percentile of the central residual, median and 84th percentile
 %%%%% of the largest residual of the radial profile within 3 r_h.
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-Two kinds of structure are not corrected well by any correction that depends on the surface density alone. The first kind is the
+Two kinds of structure cannot be corrected well by a factor that depends on the surface density alone. The first kind is the
 centers of concentrated structures. The crests of filaments remain underestimated by $6$--$22$\%, and the centers of cores by
 $13$\% in the median. Cores with $H_{13.5} < 2\,O$ \citep[relatively low resolvedness,][]{Menshchikov+Zhang2026}, representing half
 of the grid, remain underestimated by $27$\% at their centers in the median and by more than $56$\% for one-sixth of them. They are
 surrounded by a ring that is over-corrected by $5$\% in the median and by more than $16$\% for one-sixth of them, because the beam
 spreads their cold centers over an area of lower surface density. The second kind is superposed structures of very different
-temperatures, which are corrected too little or too much, by $10$--$20$\% (Sect.~\ref{sec:sim}); see also Appendix~\ref{app:tcorr}.
+temperatures, which are under- or over-corrected by $10$--$20$\% (Sect.~\ref{sec:sim}); see also Appendix~\ref{app:tcorr}.
 
 % =====================================================================
 
@@ -873,17 +870,18 @@ The distribution of surface densities in $\Dim_{13.5}$ changes more than the med
 rises with $\Sigma$. The median surface density of the image increases from $9.7{\times}10^{21}$ to
 $1.7{\times}10^{22}$\,cm$^{-2}$, and its 99th percentile from $5.6{\times}10^{22}$ to $1.1{\times}10^{23}$\,cm$^{-2}$. The numbers
 of pixels with values above $10^{22}$, $3{\times}10^{22}$, and $10^{23}$\,cm$^{-2}$ increase by factors of $1.8$, $5.2$, and $8.1$.
-This matters for any criterion based on a surface density threshold, such as that for star formation.
+The area and the mass above a given surface density therefore change strongly. This affects quantities defined by a surface density
+threshold, such as the mass of dense gas above the threshold for the formation of prestellar cores.
 
 Figure~\ref{fig:aquila} shows the images before and after the correction, together with $\mathcal{F}$ and $\mathcal{T}_{13.5\,\rm
 C}$. The median for $\mathcal{T}_{13.5\,\rm C}$ is $12.2$\,K, against $15.0$\,K for the original $\mathcal{T}_{13.5}$, and its 1st
-and 99th percentiles are $9.6$ and $18.6$\,K. The correction is not a uniform rescaling. The factor is smallest in the diffuse
-material between the structures and largest along the crests of the filaments and at the cores. The correction therefore raises the
-contrast of the image as well as its overall level. Above $\Sigma = 3{\times}10^{22}$\,cm$^{-2}$, the factor decreases slightly
-from $2.10$ to $2.03$, so the densest crests and cores receive nearly the largest correction. The radiation field is not uniform
-across the cloud. The warm corner in the upper left of $\mathcal{T}_{13.5\,\rm C}$ is heated more strongly than the rest of the
-sub-region, and there the single radiation field strength $G_{0} = 33$ adopted for the cloud underestimates the true one.
-Appendix~\ref{sec:field} discusses the uncertainties due to the radiation field.
+and 99th percentiles are $9.6$ and $18.6$\,K. The correction factor is smallest in the diffuse material between the structures and
+largest along the crests of the filaments and at the cores. The correction therefore raises the contrast of the image as well as
+its overall level. Above $\Sigma = 3{\times}10^{22}$\,cm$^{-2}$, the factor decreases slightly from $2.10$ to $2.03$, so the
+densest crests and cores receive nearly the largest correction. The radiation field in Aquila is not uniform. The warm corner in
+the upper left of $\mathcal{T}_{13.5\,\rm C}$ is heated more strongly than the rest of the sub-region, and there the single field
+strength $G_{0} = 33$ adopted for the cloud underestimates the true one. Appendix~\ref{sec:field} discusses the uncertainties due
+to the radiation field.
 
 \section{Conclusions}
 \label{sec:conclusions}
