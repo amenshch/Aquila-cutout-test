@@ -43,7 +43,7 @@ Universit\'e Paris-Saclay, 91191 Gif-sur-Yvette, France}
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 \abstract{Surface densities of molecular clouds are derived by fitting one modified blackbody to each pixel of far-infrared images.
 In dense structures, the spectral distribution of intensities, and therefore the fitted temperature, is dominated by the warmer
-material along the line of sight, and the fitting underestimates the surface densities by more than a factor of two in the densest
+material along the line of sight, and the fitting underestimates the surface densities by more than a factor of $2$ in the densest
 material. The observed spectral shapes cannot reveal this underestimation, because its signature corresponds to only a few percent
 of the intensities. This paper presents a correction method for surface densities $\Sigma$, calibrated on radiative transfer models.
 The dust temperature $T$ depends only on the effective attenuating column $\Sigma_{\rm A}$ that shields the dust from the
@@ -495,7 +495,7 @@ fitted to the intensities at $160$--$500${\um}, and the result was compared with
 The analytic layer, averaged with the sphere in Sect.~\ref{sec:factor}, does not reproduce the correction factors that the
 radiative transfer model of the cloud requires. The layer needs almost no correction below $10^{21}$\,cm$^{-2}$, but the model
 cloud needs $5$\% even at $\Sigma_{\rm F} = 3.5{\times}10^{20}$\,cm$^{-2}$ and $15$--$25$\% at $\Sigma_{\rm F} =
-2$--$4.5{\times}10^{21}$\,cm$^{-2}$. The reason is the surface of the cloud, whose outer layers are heated by the unattenuated
+(2$--$4.5){\times}10^{21}$\,cm$^{-2}$. The reason is the surface of the cloud, whose outer layers are heated by the unattenuated
 ultraviolet radiation from half the sky. They are up to $3$\,K warmer than Eq.~(\ref{eq:law}) predicts, because that relation
 describes the attenuation with a gray cross section. The temperature therefore varies more along a line of sight through the model
 cloud than through the analytic layer.
@@ -808,9 +808,9 @@ truth. For the cloud alone, the correction raises the median accuracy ratio from
 underestimated by $6$\% at $10^{21}$\,cm$^{-2}$ and by $14$\% at $10^{22}$\,cm$^{-2}$. The remaining underestimation of $\Sigma$ in
 the cloud is the consequence of the average of Sect.~\ref{sec:diffuse}, which gives half the weight to the sphere.
 
-In the outer parts of the simulated region, the cloud has $\Sigma \approx 2$--$5{\times}10^{21}$\,cm$^{-2}$. There the crests of
+In the outer parts of the simulated region, the cloud has $\Sigma \approx (2$--$5){\times}10^{21}$\,cm$^{-2}$. There the crests of
 the filaments are accurate to $4$--$17$\%, and their flanks to $5$\%. Their outer wings are under-corrected by $6$--$9$\%, as much
-as the cloud around them. In the center, the cloud reaches $\Sigma \approx 2$--$3{\times}10^{22}$\,cm$^{-2}$. There the flanks of
+as the cloud around them. In the center, the cloud reaches $\Sigma \approx (2$--$3){\times}10^{22}$\,cm$^{-2}$. There the flanks of
 the dense filaments are over-corrected by $10$--$16$\%, while the cloud alone at the same positions is under-corrected.
 
 Both effects come from the superposition of two structures, which a correction based on the surface density alone treats as one.
@@ -900,43 +900,41 @@ the cloud underestimates the local field strength (Appendices~\ref{app:fieldest}
 
 Surface densities of molecular clouds observed with \emph{Herschel} are derived by fitting a single-temperature modified blackbody
 to the intensities of each pixel. These surface densities are systematically underestimated wherever the dust temperature varies
-along the line of sight. The underestimation, which exceeds a factor of two in the densest material, cannot be corrected using the
+along the line of sight. The underestimation, which exceeds a factor of $2$ in the densest material, cannot be corrected using the
 observed colors (Appendix~\ref{app:colors}). The correction method is therefore based on radiative transfer models.
 
 Radiative transfer modeling provides a single relation $T(\Sigma_{\rm A})$, Eq.~(\ref{eq:law}), between the temperature and the
 effective column $\Sigma_{\rm A}$ that shields the dust. It reproduces the dust temperatures of $2086$ models of embedded
 Bonnor--Ebert spheres and $7$ models of filaments, with a scatter of $2.4$\%. A sphere, a cylinder, and a plane-parallel layer of
-the same surface density need corrections within $10$\% of each other. The relation gives the correction factor $f(\Sigma_{\rm F})$
-of Eq.~(\ref{eq:factor}) as an explicit function of the fitted surface density. At low surface densities, the factor was improved
-by calibration on a radiative transfer model of a diffuse cloud, whose surface layers are warmer than the relation predicts. The
-relation and the factor $f(\Sigma_{\rm F})$, together with the radiation field factor $g(\Sigma_{\rm F}, G_{0})$ of
+the same fitted surface density need corrections within $10$\% of each other. The relation gives the correction factor
+$f(\Sigma_{\rm F})$ of Eq.~(\ref{eq:factor}) as an explicit function of the fitted surface density. At low surface densities, the
+factor was improved by calibration on a radiative transfer model of a diffuse cloud, whose surface layers are warmer than the
+relation predicts. The relation and the factor $f(\Sigma_{\rm F})$, together with the field factor $g(\Sigma_{\rm F}, G_{0})$ of
 Eq.~(\ref{eq:factorg0}), available as tables at the CDS, may also be useful beyond the correction of surface densities, wherever
-the temperature of externally heated clouds and their structures is needed.
+the dust temperature of externally heated clouds and their structures is needed.
 
-The correction applies to surface density images at any angular resolution ($O = 8.4$--$36.3{\arcsec}$), with a similar accuracy.
-The correction was tested on three kinds of radiative transfer models. On $1815$ models of cores that were not used in the
-calibration of the method, it raises the median core mass from $0.63$ to $0.98$ of the true mass and the total surface density from
-$0.78$ to $0.99$. On $7$ isolated filaments, it restores the linear densities to $0.93$--$1.01$ of the truth and the slopes of
-the profiles to within $0.05$. On a simulated star-forming region built from radiative transfer models of a cloud, filaments, and
-cores, it raises the total surface density from $0.67$ to $0.98$ of the truth. 
+The correction applies to surface density images at any angular resolution, with a similar accuracy at the tested $O =
+8.4$--$36.3{\arcsec}$. The correction was tested on three kinds of radiative transfer models. On $1815$ models of cores that were
+not used in the calibration of the method, it raises the median core mass from $0.63$ to $0.98$ of the true mass and the total
+surface density from $0.78$ to $0.99$. On $7$ isolated filaments, it restores the linear densities to $0.93$--$1.01$ of the truth
+and the slopes of the profiles to within $0.05$. On a simulated star-forming region built from radiative transfer models of a
+cloud, filaments, and cores, it raises the total surface density from $0.67$ to $0.98$ of the truth.
 
 The crests of filaments remain underestimated by $6$--$22$\% and the centers of cores by $13$\% in the median, and more for
 unresolved cores and cores of high contrast, because they are colder than a uniform structure with the same surface density.
-Independently of their centers, structures superposed on a cloud are corrected too little where the cloud is tenuous and too much
+Independently of their centers, structures superposed on a cloud are under-corrected where the cloud is tenuous and over-corrected
 where it is dense. For the flanks of filaments in a cloud like \object{Aquila}, the over-correction is at most about $10$\%.
 
-After the correction, the median core mass is underestimated by only $2$\%, less than the error produced by a core footprint wrong
-by a quarter of its radius ($-15$ to $+8$\%). Corrections that also use the fitted temperature cannot be relied upon for observed
-images, because a warm pixel may need either more or less correction (Appendix~\ref{app:tcorr}).
+After the correction, the median core mass is underestimated by only $2$\%, less than the error produced by a core footprint with
+its radius under- or overestimated by a quarter ($-15$\% and $8$\%) Corrections that also use the fitted temperature cannot be
+relied upon for observed images, because a warm pixel may need either more or less correction (Appendix~\ref{app:tcorr}).
 
 The correction was calibrated for a radiation field with $G_0 = 10$. For other fields, the field factor $g$ was measured on models
 computed for $9$ fields $G_0 = 0.98$--$483$. Without $g$, the errors of the correction would differ from those in the calibration
 field by up to $36$\%. With $g$, they differ by at most $4$\%, and by at most $8$\% for fields left out of its construction. The
-field factor $g(\Sigma_{\rm F}, G_{0})$ measured on these models brings these differences to within $4$\%, and to within $8$\% for
-fields left out of its construction. The field strength $G_{0}$ of $9$ observed clouds ranges from below $1$ (\object{Taurus}) to
-about $250$ (\object{Cygnus X}). The calibration on the diffuse cloud and the test on the simulated star-forming region were made
-only for $G_0 = 10$. The other main uncertainty is the floor temperature $T_{\rm min}$ of fully shielded dust
-(Appendix~\ref{sec:floor}).
+field strength $G_{0}$ of $9$ observed clouds ranges from below $1$ (\object{Taurus}) to about $250$ (\object{Cygnus X}). The
+calibration on the diffuse cloud and the test on the simulated star-forming region were made only for $G_0 = 10$. The other main
+uncertainty is the floor temperature $T_{\rm min}$ of fully shielded dust (Appendix~\ref{sec:floor}).
 
 Applied to a sub-region of the \object{Aquila} cloud, with $G_0 \approx 33$, the correction raises the total surface density by a
 factor of $1.86$ and the number of pixels with $\Sigma > 10^{23}$\,cm$^{-2}$ by a factor of $8.1$. For the adopted dust properties,
@@ -970,21 +968,21 @@ Projects jointly carried out by SPIRE Specialist Astronomy Group 3 (SAG3), scien
 \label{sec:grid}
 
 Each core was modeled as a Bonnor--Ebert sphere embedded in a uniform spherical envelope, heated from outside by the interstellar
-radiation field and computed with \emph{radmc-3d} for the dust opacity given in Sect.~\ref{sec:models}. Three sets of models were
-computed: the main grid of $2086$ models, used to fit the relation of Eq.~(\ref{eq:law}); the subdivision grid of $1815$ models,
-used in the tests of Sect.~\ref{sec:valgrid}; and nine grids that repeated $339$ models of the main grid in different radiation
-fields (Appendix~\ref{app:field}). All spheres were computed in one dimension, with $10^9$ photon packets, on a radial grid of $50$
+radiation field and computed with \emph{radmc-3d} (Sect.~\ref{sec:models}). Three sets of models were computed: the main grid of
+$2086$ models, used to fit the relation $T(\Sigma_{\rm A})$ of Eq.~(\ref{eq:law}); the subdivision grid of $1815$ models, for the
+tests of Sect.~\ref{sec:valgrid}; and $9$ grids that repeated $339$ models of the main grid in different radiation fields
+(Appendix~\ref{app:field}). All spheres were computed in one dimension, with $10^9$ photon packets, on a radial grid of $50$
 shells. The $35$ shells of the Bonnor--Ebert sphere widened geometrically outward from its center, by a factor of $18$. The $15$
 shells of the envelope began with the width of the outermost shell of the sphere, widened beyond $1.3$ radii of the sphere, and
 narrowed again to the same width at the outer edge of the envelope, to resolve its steep temperature gradient.
 
-The main grid varied three parameters: the surface density $\Sigma_{\rm emb}$ of the envelope,
-$3.75\times10^{20}$--$9.6\times10^{22}$\,cm$^{-2}$ in $9$ values spaced by a factor of $2$; the mass $M_{\rm BE}$ of the
-Bonnor--Ebert sphere, $1.6{\times}10^{-3}$--$31\,M_{\odot}$ in $26$ values spaced by $0.17$\,dex; and the half-maximum width $h$ of
-its volume density profile, $0.003$--$0.25$\,pc in $19$ values spaced by $0.11$\,dex. Only the models whose peak surface density
-exceeded that of the envelope by at least $5$\% were computed. The central-to-edge density ratios $\rho_{\rm C}/\rho_{\rm E}$ of
-the $2086$ computed models were $1.04$--$2.1{\times}10^{3}$. The temperature of each model, tabulated shell by shell, entered the
-relation of Eq.~(\ref{eq:law}).
+The main grid varied three parameters: the surface density of the embedding envelope, $\Sigma_{\rm emb} =
+3.75{\times}10^{20}$--$9.6{\times}10^{22}$\,cm$^{-2}$, in $9$ values spaced by a factor of $2$; the mass of the Bonnor--Ebert
+sphere, $M_{\rm BE} = 1.6{\times}10^{-3}$--$31\,M_{\odot}$, in $26$ values spaced by $0.17$\,dex; and the half-maximum width of its
+volume density profile, $h = 3.0{\times}10^{-3}$--$0.25$\,pc, in $19$ values spaced by $0.11$\,dex. Only the models whose peak
+surface density exceeded that of the envelope by at least $5$\% were computed. The central-to-edge density ratios of the $2086$
+computed models were $\rho_{\rm C}/\rho_{\rm E} = 1.04$--$2.1{\times}10^{3}$. The temperatures of the shells of each model were
+used to fit the relation of Eq.~(\ref{eq:law}).
 
 The attenuating columns of Eq.~(\ref{eq:seff}) were computed by integrating the density along rays. For the spherical shells of the
 cores, a direction $\hat{n}$ is defined by its angle $\psi$ to the outward radial direction. The $240$ values of $\psi$ were spaced
@@ -992,20 +990,22 @@ uniformly and weighted by $\sin\psi$, proportional to the solid angle that each 
 
 Few photon packets of the Monte Carlo calculation arrived near the centers of the densest cores, so the temperatures of their
 innermost shells scattered widely. A shell among the ten innermost ones was rejected if its temperature differed by more than
-$10$\% from the median of its five neighbors, together with every shell inside it. The rejected shells were $1.8$\% of all shells
-and contained a negligible fraction of the mass, and the fit does not depend on this choice. The outermost shell of every sphere
-was also rejected. In the thicker envelopes, it spans an extinction of several magnitudes, and its single Monte Carlo temperature
-is an average over a steep temperature gradient. If assigned to $\Sigma_{\rm A}$ at the center of the shell, it would exceed the
-relation of Eq.~(\ref{eq:law}) by $2.4$\,K on average in the densest envelopes.
+$10$\% from the median of its five neighbors, together with all the shells at smaller radii. The rejected shells were $1.8$\% of
+all shells and contained a negligible fraction of the mass, and the fit did not depend on this choice. The outermost shell of every
+sphere was also rejected. In the envelopes with high $\Sigma_{\rm emb}$, it spans an extinction of several magnitudes, and its
+single Monte Carlo temperature is an average over a steep temperature gradient. If assigned to $\Sigma_{\rm A}$ at the center of
+the shell, it would exceed the relation of Eq.~(\ref{eq:law}) by $2.4$\,K on average in the densest envelopes.
 
-The models of the subdivision grid lay between the models of the main grid and were not used in the relation. The footprint of
-Sect.~\ref{sec:valgrid} contains more than $99.9$\% of the mass of a core. For $65$ models, the mass of the core could not be
-measured: the ring contains fewer than $20$ valid pixels, because the footprint reaches the edge of the image, or the true mass
-within the footprint is not positive, because the core barely stands above its envelope. The $96$ cores of the simulated
-star-forming region (Sect.~\ref{sec:modcloud}) were taken from the main grid, and the emission of their envelopes was subtracted in
-the same way as for the filaments (Appendix~\ref{app:embfil}).
+The parameters of the models of the subdivision grid had values between those of the main grid, and these models were not used to
+fit the relation $T(\Sigma_{\rm A})$. The footprint of a core (Sect.~\ref{sec:valgrid}) contained more than $99.9$\% of its mass.
+For $65$ models, the mass of the core could not be measured: the ring contained fewer than $20$ valid pixels, because the footprint
+reached the edge of the image, or the true mass within the footprint was not positive, because the core barely stood above its
+envelope. The $96$ cores of the simulated star-forming region (Sect.~\ref{sec:modcloud}) were taken from the main grid. Each core
+was placed where the surface density of the cloud, averaged over the size of the model, agreed with $\Sigma_{\rm emb}$ of the model
+within a factor of $2^{1/2}$. The emission of their envelopes was subtracted in the same way as for the filaments
+(Appendix~\ref{app:embfil}).
 
-The grid of nine radiation fields repeated $305$ models of the main grid, together with $34$ models at an additional value of
+The grid of $9$ radiation fields repeated $305$ of the models of the main grid, together with $34$ models at an additional value of
 $\Sigma_{\rm emb} = 1.92{\times}10^{23}$\,cm$^{-2}$. They were computed for the strengths $G_0 = 0.98$--$483$, in steps of a factor
 of $2.17$. The weakest field is that of \citet{Black1994} alone (without the hot component), which is the lowest field that can be
 obtained from that table.
@@ -1016,10 +1016,10 @@ obtained from that table.
 The cylinders were computed with \emph{radmc-3d} on an axisymmetric grid in spherical coordinates, with the axis of the cylinder
 along the polar axis, of $400$ cells in radius and $480$ cells in the polar angle, which covered both sides of the equatorial
 plane. The grid was refined in radius toward the axis and in polar angle toward the equatorial plane, which crosses the middle of
-the cylinder. The temperatures of the Monte Carlo calculation were averaged over the middle part of the cylinder, in bins of the
+the cylinder. The temperatures from the Monte Carlo calculation were averaged over the middle part of the cylinder, in bins of the
 distance $r$ from the axis, which removed most of the Monte Carlo noise. The isolated cylinders were computed with $2{\times}10^9$
 photon packets. The parameters of the eight cylinders are listed in Table~\ref{tab:cylpar}. The width $h$ of each model was chosen
-to give the required $H$.
+to give the required width $H$ of its surface density profile (Sect.~\ref{sec:modfil}).
 
 \begin{table}[ht!]
 \caption{Parameters of the isolated cylinders of Sect.~\ref{sec:modfil}.}
@@ -1043,7 +1043,7 @@ $3{\times}10^{22}$ & $1.75$ & $42.5$ & $80$ \\
 \noalign{\smallskip}
 \hline
 \end{tabular}
-\tablefoot{The cylinder with $\Sigma_0 = 2{\times}10^{23}$\,cm$^{-2}$ was not optically thin at $100${\um} and was not used.
+\tablefoot{The cylinder with $\Sigma_0 = 2{\times}10^{23}$\,cm$^{-2}$ was not optically thin at $100${\um} and was therefore not used.
 \tablefoottext{a}{The surface density on the axis.}
 \tablefoottext{b}{The slope and the half-maximum width of the volume density profile of Eq.~(\ref{eq:fdens}).}
 \tablefoottext{c}{The half-maximum width of the surface density profile.}
@@ -1056,58 +1056,60 @@ cross-section and the outward radial direction. The $200$ values of $\cos\theta$
 uniformly, so that all directions represent equal solid angles.
 
 The mirror symmetry of \emph{radmc-3d} about the equatorial plane was not used, because it underestimated the temperatures. A test
-sphere computed with it on a two-dimensional grid was $0.6$--$1.1$\,K colder than the same sphere computed in one dimension, as
+sphere computed with it on a two-dimensional grid was colder by $0.6$--$1.1$\,K than the same sphere computed in one dimension, as
 the cores were, whereas without the symmetry the two agreed within $0.15$\,K.
 
 \subsection{Embedded cylindrical filaments}
 \label{app:embfil}
 
-For use in the simulated star-forming region, each filament of Sect.~\ref{sec:modfil} and Appendix~\ref{app:isofil} was embedded in
+For use in the simulated star-forming region (Sect.~\ref{sec:modcloud}), each filament (Appendix~\ref{app:isofil}) was embedded in
 a cylindrical envelope representing the cloud around it and recomputed with \emph{radmc-3d}. The envelope had a uniform density
 between $R = 0.5$\,pc and $1$\,pc, and the cylinder was $10.3$\,pc long, longer than the region, so that its ends lay outside the
-images. The filaments ran vertically in the images, and the surface density of the envelope through its axis followed that of the
-simulated cloud (Sect.~\ref{sec:modcloud}, Appendix~\ref{app:simcloud}) along the filament, row by row. A cylindrical envelope
-shields the axis less than a cloud layer of the same surface density, because the layer also blocks the directions close to its
-plane. The envelope was therefore made $1.3$--$1.6$ times denser than the cloud, so that the mean intensity at the axis was the
-same as in the middle of the simulated cloud (Appendix~\ref{app:simcloud}). The temperatures were averaged in a running window
-$0.2$\,pc long along the axis, which followed the variation of the envelope. The embedded filaments were computed with $10^9$
-photon packets. Runs with $8\times10^9$ packets gave the same temperatures to $0.02$\,K and the same emission to $0.3$\%.
+images. The filaments were oriented vertically in the images, and the surface density of the envelope through its axis followed
+that of the simulated cloud (Sect.~\ref{sec:modcloud}, Appendix~\ref{app:simcloud}), row by row. A cylindrical envelope shields the
+axis less than a cloud layer of the same surface density, because the layer also blocks the directions close to its plane. The
+envelope was therefore made denser than the cloud by a factor of $1.3$--$1.6$, depending on the surface density of the cloud, so
+that the mean intensity at the axis was the same as in the middle of the simulated cloud (Appendix~\ref{app:simcloud}). The
+temperatures were averaged along the axis in a sliding window $0.2$\,pc long, short enough for them to follow the variation of the
+envelope. The embedded filaments were computed with $10^9$ photon packets. Runs with $8{\times}10^9$ packets gave the same
+temperatures within $0.02$\,K and the same emission within $0.3$\%.
 
 Each model was imaged twice: once in full, and once with the density of the filament set to zero while all temperatures were kept.
-The difference is the emission of the filament inside the cloud, with the background of the envelope subtracted. It was added to
-the emission of the cloud. The shielding by the envelope corresponds to the middle depth of the cloud (Sect.~\ref{sec:modcloud}).
+The difference is the emission of the filament inside the cloud, with the background of the envelope subtracted. It was then added
+to the emission of the cloud. The shielding by the envelope corresponds to the middle depth of the cloud (Sect.~\ref{sec:modcloud}).
 
 \subsection{Diffuse three-dimensional cloud}
 \label{app:simcloud}
 
 The simulated diffuse cloud was a three-dimensional radiative transfer model, computed with \emph{radmc-3d} on a Cartesian grid,
-whose projection gives the map of the cloud. Surface density is integrated along the line of sight, so many volume density
-distributions give the same map, and the model adopts one of them, described below. The input surface density image
-(Sect.~\ref{sec:modcloud}) had scale-free fluctuations, with a power spectrum $P(k) \propto k^{-3.0}$ and a median surface density
-of about $3{\times}10^{21}$\,cm$^{-2}$.
+whose projection gives the map of the cloud. Surface density is integrated along the line of sight, therefore many volume density
+distributions give the same map, and the model adopts one of them, described below. The input surface density map $\Sigma(x,y)$
+(Sect.~\ref{sec:modcloud}) had scale-free fluctuations, with a power spectrum $P(k) \propto k^{-3}$ and a median surface density of
+about $3{\times}10^{21}$\,cm$^{-2}$.
 
-Real clouds, such as \object{Aquila}, contain extended areas where the background is several times denser, which the input image
-lacked.
-Such an area was added at the center of the image by multiplying it by $1 + 5\,(1 + (r/600{\arcsec})^2)^{-0.75}$, where $r$ is the
-distance from the center. The enhancement is a factor of $6$ at the center, nearly constant within $600{\arcsec}$, and declines as
-$r^{-1.5}$ beyond, toward unity at large distances, while the fine structure of the image is preserved (Fig.~\ref{fig:simsky6}).
-The same enhanced map was used for the cloud of the simulated region and for the envelopes of the embedded filaments. The image was
-averaged into cells of $12{\arcsec}$ and extended on every side by margins of $2$\,pc, by mirror reflection. The margins kept the
-heating through the sides of the box away from the imaged area.
+Real clouds contain extended areas where the background is several times denser, which the input map lacked. Such an area was added
+at the center of the map by multiplying it by $1 + 5\,(1 + (\vartheta/600{\arcsec})^2)^{-0.75}$, where $\vartheta$ is the angular
+distance from the center of the map. The enhancement is a factor of $6$ at the center, nearly constant within $600{\arcsec}$, and
+declines as $\vartheta^{-1.5}$ beyond, toward unity at large distances, while the fine structure of the map is preserved
+(Fig.~\ref{fig:simsky6}). The same enhanced map was used as the cloud of the simulated region and to set the surface densities of
+the envelopes of the embedded filaments (Appendix~\ref{app:embfil}). The map was averaged into cells of $12{\arcsec}$ and extended
+by mirror reflection with a margin of $2$\,pc on every side. The margins kept the heating through the sides of the box away from
+the mapped area.
 
-The volume density was built in three steps. First, a Gaussian random field $G(x, y, z)$ of unit variance, with the same power
-spectrum $P(k) \propto k^{-3.0}$ in three dimensions, filled a box with the area of the extended map and a depth of $2$\,pc.
-Second, its log-normal transform $\zeta(x,y,z) = \exp(s\,G - s^2/2)$, with the amplitude $s = 0.5$, turned it into positive
-fluctuations with a log-normal distribution, a mean of unity, and a root-mean-square contrast of about $50$\%. Third, every column
-of $\zeta$ was rescaled so that its integral equaled the surface density of the image in that pixel, $n(x,y,z) =
-\Sigma(x,y)\,\zeta(x,y,z) / \int \zeta\,{\rm d}z$. The projection of the box is therefore exactly the map, while the density varies
-along every line of sight as it does across the sky. With the margins, the box had $712{\times}712{\times}132$ cells
-($10.8{\times}10.8{\times}2.0$\,pc) and was computed with $8{\times}10^{10}$ photon packets. Fewer photon packets, cells of
-$24{\arcsec}$, or a density uniform along each line of sight gave the same correction factors to $0.1$\%.
+The volume density distribution of the cloud was constructed in three steps. First, a Gaussian random field $G(x, y, z)$ of unit
+variance, with the same power spectrum $P(k) \propto k^{-3}$ in three dimensions, filled a box with the area of the extended map
+and a depth of $2$\,pc. Second, the field was exponentiated, $\zeta(x,y,z) = \exp\,(s\,G - s^2/2)$, with $s = 0.5$, which
+gave positive fluctuations with a log-normal distribution, in which $s$ is the standard deviation of $\ln\zeta$. The term $-s^2/2$
+makes the mean of $\zeta$ equal to unity, and the standard deviation of $\zeta$ is $0.53$. Third, $\zeta$ was normalized to the
+surface density $\Sigma(x,y)$ of the map in that pixel, giving the volume density $\rho(x,y,z) = \zeta(x,y,z)\,\Sigma(x,y)/\!\int
+\zeta(x,y,z')\,{\rm d}z'$. The projection of the box is therefore exactly the map, while the density varies along every line of
+sight as it does across the sky. With the margins, the box had $712{\times}712{\times}132$ cells
+($10.8{\times}10.8{\times}2.0$\,pc) and was computed with $8{\times}10^{10}$ photon packets. A density uniform along each line of
+sight, fewer photon packets, or cells of $24{\arcsec}$ gave the same correction factors to $0.1$\%.
 
-Figure~\ref{fig:cube3d} shows a segment of the model, the lower half of the imaged area, in three dimensions, with its surface
-density on the front face and the dust temperature on two cuts through it. Figure~\ref{fig:cube} shows a slice through it, along
-one row of the map and the line of sight, and compares it with the analytic uniform layer of the same surface density
+Figure~\ref{fig:cube3d} shows a three-dimensional segment of the model, the lower half of the mapped area, with its surface density
+on the front face and the dust temperature on two cuts through it. Figure~\ref{fig:cube} shows a slice through the cloud, along one
+row of the map and the line of sight, and compares it with the analytic uniform layer of the same surface density
 (Sect.~\ref{sec:factor}). The outer parts of the model are up to $3$\,K warmer than the uniform layer (Sect.~\ref{sec:diffuse}).
 Columns of low surface density between dense regions are up to $2$\,K colder than the uniform layer, because their dense neighbors
 shield them from the side.
@@ -1116,7 +1118,7 @@ shield them from the side.
 \centering
 \includegraphics[width=0.98\columnwidth]{fig_cube3d.pdf}
 \caption{A cut-away view of the radiative transfer model of the cloud, seen from the side of the observer. The front face is the
-surface density map of the lower half of the imaged area, oriented as in Fig.~\ref{fig:simsky6}; the depth runs along the line of
+surface density map of the lower half of the mapped area, oriented as in Fig.~\ref{fig:simsky6}; the depth runs along the line of
 sight. The upper face is a cut through the middle row of the map, and the right face a cut along its last column. Both show the
 dust temperature in the plane of the cut.}
 \label{fig:cube3d}
@@ -1133,10 +1135,11 @@ analytic uniform layer (dashed).}
 \label{fig:cube}
 \end{figure*}
 
-As a result, the emission of the model at $160${\um} is up to $1.5$ times that of the uniform layer with the same $\Sigma$. The
-model has cells of $12{\arcsec}$, whereas the image of the simulated region has $3{\arcsec}$ pixels (Sect.~\ref{sec:modcloud}). The
+The resulting emission of the model at $160${\um} is up to $1.5$ times that of the uniform layer with the same $\Sigma$. The model
+has cells of $12{\arcsec}$, whereas the image of the simulated region has $3{\arcsec}$ pixels (Sect.~\ref{sec:modcloud}). The
 emission in each pixel was therefore computed analytically for a uniform layer with its $\Sigma$ (Sect.~\ref{sec:factor}) and
-multiplied in each band by the ratio of the emission of the model to that of the layer, interpolated from the cells to the pixels.
+multiplied in each band by the ratio of the emission of the model cloud to that of the layer, interpolated from the cells to the
+pixels.
 
 \section{Structure along lines of sight}
 \label{app:arrange}
