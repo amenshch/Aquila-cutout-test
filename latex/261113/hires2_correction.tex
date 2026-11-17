@@ -183,16 +183,15 @@ with an optical depth of $0.84$ through its axis, and was not used.
 \begin{figure*}
 \centering
 \includegraphics[width=0.85\linewidth]{fig_geometry.pdf}
-\caption{Geometry of the dust attenuation in different structures. \emph{Upper}: The radiation that heats a dust grain (black
-point) arrives from every direction after crossing very different columns. The rays are thicker where less material has been
-crossed. Most energy arrives along the normal in the midplane of a layer, and no direction is favored at the center of a sphere. A
-cylindrical filament resembles a layer along its axis and a sphere across the axis. \emph{Lower left}: The effective attenuating
-column $\Sigma_{\rm A}$ of Eq.~(\ref{eq:seff}) against the fractional depth $u$ along the line of sight normal to a uniform layer
-(solid curves) and along the diameter of a uniform sphere (dashed curves), for $\Sigma = 10^{21}$, $10^{22}$, and
-$10^{23}$\,cm$^{-2}$. The dotted curves show the column $\Sigma_{\rm min} = \min(u, 1-u)\,\Sigma$ along the shortest path to the
-surface. The thin vertical line marks the midplane of the layer and the center of the sphere. \emph{Lower right}: The dust
-temperature that follows from $\Sigma_{\rm A}$ through Eq.~(\ref{eq:law}). The dotted line marks the floor temperature
-$T_{\rm min}$.}
+\caption{Geometry of the dust attenuation in different structures. \emph{Upper}: The radiation that heats a dust grain (black point)
+arrives from every direction after crossing very different columns. The rays are thicker where less material has been crossed. Most
+energy arrives along the normal in the midplane of a layer, and no direction is favored at the center of a sphere. A cylindrical
+filament resembles a layer along its axis and a sphere across the axis. \emph{Lower left}: The effective attenuating column
+$\Sigma_{\rm A}$ of Eq.~(\ref{eq:seff}) against the fractional depth $u$ along the line of sight normal to a uniform layer (solid
+curves) and along the diameter of a uniform sphere (dashed curves), for $\Sigma = 10^{21}$, $10^{22}$, and $10^{23}$\,cm$^{-2}$. The
+dotted curves show the column $\Sigma_{\rm min} = \min(u, 1-u)\,\Sigma$ along the shortest path to the surface. The thin vertical
+line marks the midplane of the layer and the center of the sphere. \emph{Lower right}: The dust temperature that follows from
+$\Sigma_{\rm A}$ through Eq.~(\ref{eq:law}). The dotted line marks the floor temperature $T_{\rm min}$.}
 \label{fig:geometry}
 \end{figure*}
 
@@ -283,12 +282,12 @@ radiative transfer models (Sect.~\ref{sec:relation}), computed with the full wav
 \begin{figure}
 \centering
 \includegraphics[width=0.93\columnwidth]{fig_shielding.pdf}
-\caption{The dust temperature against the effective attenuating column $\Sigma_{\rm A}$ in the radiative transfer models. The gray
-scale (logarithmic, four orders of magnitude) shows the mass-weighted distribution of the radial shells of the $2086$ spheres,
-with every sphere given the same total weight. The green line and the magenta band are the weighted median and the 16th to 84th
-percentiles of the temperature in bins of $0.2$\,dex in $\Sigma_{\rm A}$. The blue circles are the $45$ radii of each of the $7$
-cylinders. The red dashed line is the relation of Eq.~(\ref{eq:law}). The dotted lines mark its parameters $T_{\rm min}$,
-$T_{\rm max}$, and $\Sigma_\star$ (white circle).}
+\caption{Dust temperature against the effective attenuating column $\Sigma_{\rm A}$ in the radiative transfer models. The gray scale
+(logarithmic, four orders of magnitude) shows the mass-weighted distribution of the radial shells of the $2086$ spheres, with every
+sphere given the same total weight. The green line and the magenta band are the weighted median and the 16th to 84th percentiles of
+the temperature in bins of $0.2$\,dex in $\Sigma_{\rm A}$. The blue circles are the $45$ radii of each of the $7$ cylinders. The red
+dashed line is the relation of Eq.~(\ref{eq:law}). The dotted lines mark its parameters $T_{\rm min}$, $T_{\rm max}$, and
+$\Sigma_\star$ (white circle).}
 \label{fig:shielding}
 \end{figure}
 
@@ -333,10 +332,10 @@ $\Sigma_{\rm A\!}\approx 10^{23}$\,cm$^{-2}$, the models contain too little mass
 \centering
 \includegraphics[width=0.75\textwidth]{fig_method.pdf}
 \caption{Flowchart of the method. The first group is the calibration, which is done once and yields the temperature relation of
-Eq.~(\ref{eq:law}). The second is the calculation of Sect.~\ref{sec:factor}, repeated for a grid of true surface densities
-$\Sigma$, which yields the table of the correction factor against the fitted surface density $\Sigma_{\rm F}$. Its last two steps
-calibrate the low surface densities on a radiative transfer model of a diffuse cloud (Sect.~\ref{sec:diffuse}) and adapt the factor
-to the radiation field of the cloud (Sect.~\ref{sec:g0corr}). The third group is what is then done to an image, at any resolution.}
+Eq.~(\ref{eq:law}). The second is the calculation of Sect.~\ref{sec:factor}, repeated for a grid of true surface densities $\Sigma$,
+which yields the table of the correction factor against the fitted surface density $\Sigma_{\rm F}$. Its last two steps calibrate
+the low surface densities on a radiative transfer model of a diffuse cloud (Sect.~\ref{sec:diffuse}) and adapt the factor to the
+radiation field of the cloud (Sect.~\ref{sec:g0corr}). The third group is what is then done to an image, at any resolution.}
 \label{fig:method}
 \end{figure*}
 
@@ -412,8 +411,8 @@ $\Sigma$, so the factor was tabulated against $\Sigma_{\rm F}$:
 \begin{figure}
 \centering
 \includegraphics[width=0.96\columnwidth]{fig_relation.pdf}
-\caption{The correction factor $f$ against the fitted surface density $\Sigma_{\rm F}$ for $G_0 = 10$, for three uniform
-structures (layer, cylinder, and sphere) and for the average of the sphere and the layer. The dotted curve shows $f$ when
+\caption{Correction factor $f$ against the fitted surface density $\Sigma_{\rm F}$. The curves show $f$ for $G_0 = 10$ for three
+uniform structures (layer, cylinder, and sphere) and for the average of the sphere and the layer. The dotted curve shows $f$ when
 $\Sigma_{\rm A}$ is replaced with $\Sigma_{\rm min}$ along the shortest path (Sect.~\ref{sec:why}), which overestimates the
 correction by up to $50$\% above $10^{22}$\,cm$^{-2}$. The thick magenta curve is the adopted relation, which uses the radiative
 transfer model of a diffuse cloud below $3.98{\times}10^{21}$\,cm$^{-2}$ (Sect.~\ref{sec:diffuse}) and is held constant above its
@@ -536,9 +535,9 @@ is largest for $G_0 \approx 50$, and in the strongest fields it falls below unit
 \begin{figure}
 \centering
 \includegraphics[width=0.96\columnwidth]{fig_fieldfactor.pdf}
-\caption{The radiation field factor $g(\Sigma_{\rm F}, G_0)$ of Eq.~(\ref{eq:factorg0}) is plotted against the fitted surface
-density $\Sigma_{\rm F}$, for the $9$ field strengths $G_0$ of the model grid, from the weakest to the strongest. Above
-$7.1{\times}10^{22}$\,cm$^{-2}$ (dotted line), the $g$ factor is held constant.}
+\caption{Field factor $g(\Sigma_{\rm F}, G_0)$ of Eq.~(\ref{eq:factorg0}) against the fitted surface density $\Sigma_{\rm F}$. The
+curves correspond to the $9$ field strengths $G_0$ of the model grid, from the weakest to the strongest. Above
+$7.1{\times}10^{22}$\,cm$^{-2}$ (dotted line), $g$ is held constant.}
 \label{fig:fieldfactor}
 \end{figure}
 
@@ -680,9 +679,9 @@ percentiles as in (\emph{b}).}
 \begin{figure}
 \centering
 \includegraphics[width=0.96\columnwidth]{fig_grid_validation.pdf}
-\caption{Testing the correction method on the radiative transfer models of embedded cores. The relative error of the surface 
-density before and after correction (Sect.~\ref{sec:valgrid}) is shown against the distance from the center of the core, as the
-median over the $1815$ models. The dashed line marks $O/2$ for $O = 13.5{\arcsec}$.}
+\caption{Test of the correction method on the radiative transfer models of embedded cores. The relative error of the surface density
+before and after correction (Sect.~\ref{sec:valgrid}) is shown against the distance from the center of the core, as the median over
+the $1815$ models. The dashed line marks $O/2$ for $O = 13.5{\arcsec}$.}
 \label{fig:valgrid}
 \end{figure}
 
@@ -733,10 +732,11 @@ profiles.}
  \begin{figure*}
 \centering
 \includegraphics[width=\textwidth]{fig_cylinders.pdf}
-\caption{The isolated radiative transfer cylinders reconstructed by \emph{hires} at $O = 13.5{\arcsec}$ and then corrected.
-\emph{Left}: The profile across the cylinder with $3{\times}10^{22}$\,cm$^{-2}$ on its axis, true (convolved to the beam),
-uncorrected, and corrected. \emph{Right}: Relative error of the corrected surface density across all $7$ cylinders, labeled by
-their surface density $\Sigma_{0}$ on the axis. Each profile is the median over the middle part of the cylinder.}
+\caption{Test of the correction method on the isolated cylindrical filaments. The images were reconstructed by \emph{hires} at $O =
+13.5{\arcsec}$ and then corrected. \emph{Left}: The profile across the cylinder with $3{\times}10^{22}$\,cm$^{-2}$ on its axis, true
+(convolved to the beam), uncorrected, and corrected. \emph{Right}: The relative error of the corrected surface density across all
+$7$ cylinders, labeled by their surface density $\Sigma_{0}$ on the axis. Each profile is the median over the middle part of the
+cylinder.}
 \label{fig:cylinders}
 \end{figure*}
 
@@ -761,12 +761,12 @@ correction (Appendix~\ref{app:footprint}).
 \begin{figure*}
 \centering
 \includegraphics[width=\textwidth]{fig_simsky6.pdf}
-\caption{The simulated star-forming region, built from radiative transfer models of a cloud, $7$ filaments, and $96$ cores.
-\emph{Upper}: The true surface density at $O = 13.5{\arcsec}$, the relative error of the corrected surface density, and the same
-for a region that contains the cloud alone. \emph{Lower}: The relative error across each filament, as the median over the outer
-rows of the region, where the cloud is tenuous, and over its central rows, where the cloud is dense. The profiles, with the cores
-masked, are labeled by the surface density $\Sigma_{0}$ on the axis of each filament, and the dashed curves show the cloud alone at
-the same positions.}
+\caption{Simulated star-forming region, built from radiative transfer models of a cloud, $7$ filaments, and $96$ cores.
+\emph{Upper}: The true surface density at $O = 13.5{\arcsec}$, the relative error of the corrected surface density, and the same for
+a region that contains the cloud alone. \emph{Lower}: The relative error across each filament, as the median over the outer rows of
+the region, where the cloud is tenuous, and over its central rows, where the cloud is dense. The profiles, with the cores masked,
+are labeled by the surface density $\Sigma_{0}$ on the axis of each filament, and the dashed curves show the cloud alone at the same
+positions.}
 \label{fig:simsky6}
 \end{figure*}
 
@@ -841,10 +841,9 @@ temperatures, which are under- or over-corrected by $10$--$20$\% (Sect.~\ref{sec
 \begin{figure*}
 \centering
 \includegraphics[width=0.98\textwidth]{fig_aquila.pdf}
-\caption{The \object{Aquila} sub-region at $O = 13.5{\arcsec}$, corrected for the radiation field $G_0 = 33$. Shown are the images
-of the
-surface density before and after the correction (on a common scale), of the correction factors, and of the corrected dust
-temperature (Sect.~\ref{sec:aquila}). }
+\caption{\object{Aquila} sub-region at $O = 13.5{\arcsec}$, corrected for the radiation field $G_0 = 33$. The images show the
+surface density before and after the correction (on a common scale), the correction factors, and the corrected dust temperature
+(Sect.~\ref{sec:aquila}). }
 \label{fig:aquila}
 \end{figure*}
 
@@ -1067,12 +1066,12 @@ a cylindrical envelope representing the cloud around it and recomputed with \emp
 between $R = 0.5$\,pc and $R_{\rm Env} = 1.0$\,pc, and the cylinder had length of $10.3$\,pc, longer than the region, so that its
 ends lay outside the images. The filaments were oriented vertically in the images, and the surface density of the envelope through
 its axis was set from that of the simulated cloud (Sect.~\ref{sec:modcloud}, Appendix~\ref{app:simcloud}), row by row. A
-cylindrical envelope shields the axis less than a cloud layer of the same surface density, because the layer also blocks the
-directions close to its plane. The envelope was therefore made denser than the cloud by a factor of $1.3$--$1.6$, depending on the
-surface density of the cloud, so that the mean intensity at the axis was the same as at the middle depth of the simulated cloud.
-The temperatures were averaged along the axis in a sliding window $0.2$\,pc long, short enough for them to follow the variation of
-the envelope. The embedded filaments were computed with $10^9$ photon packets. Runs with $8{\times}10^9$ packets gave the same
-temperatures within $0.02$\,K and the same emission within $0.3$\%.
+cylindrical envelope shields the axis less than a cloud layer of the same surface density, because the layer also strongly
+attenuates the radiation arriving close to its plane. The envelope was therefore made denser than the cloud by a factor of
+$1.3$--$1.6$, depending on the surface density of the cloud, so that the mean intensity at the axis was the same as at the middle
+depth of the simulated cloud. The temperatures were averaged along the axis in a sliding window $0.2$\,pc long, short enough for
+them to follow the variation of the envelope. The embedded filaments were computed with $10^9$ photon packets. Runs with
+$8{\times}10^9$ packets gave the same temperatures within $0.02$\,K and the same emission within $0.3$\%.
 
 Each model was imaged twice: once in full, and once with the density of the filament set to zero while all temperatures were kept.
 The difference is the emission of the filament inside the cloud, with the background of the envelope subtracted. It was then added
@@ -1116,21 +1115,21 @@ uniform layer of the same surface density, because the dense neighbors shield it
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.98\columnwidth]{fig_cube3d.pdf}
-\caption{A composite view of the radiative transfer model of the cloud, seen from the side of the observer. The front face is the
+\caption{Composite view of the radiative transfer model of the cloud, seen from the side of the observer. The front face is the
 surface density map $\Sigma(x,y)$ of the lower half of the mapped area, oriented as in Fig.~\ref{fig:simsky6}. The upper and right
-faces are slices along the line of sight through the middle row and the rightmost column of the map, both showing the dust
-temperatures $T$.}
+faces are slices along the line of sight through the middle row and the rightmost column of the map, showing the dust temperatures
+$T(x,z)$ and $T(y,z)$.}
 \label{fig:cube3d}
 \end{figure}
 
 \begin{figure*}[ht!]
 \centering
 \includegraphics[width=0.98\textwidth]{fig_cube.pdf}
-\caption{A slice through the radiative transfer model of the cloud, along the middle row of the map (horizontal axis) and the line
-of sight (vertical axis). \emph{Left}: The volume density $\rho$, the dust temperature $T$, and the difference between the dust
-temperature and that of the uniform layer with the same surface density $\Sigma$ in each column. \emph{Right}: The dust temperature
-against the depth for three columns of different $\Sigma$, in the radiative transfer model (solid) and in the analytic uniform
-layer (dashed).}
+\caption{Slice through the radiative transfer model of the cloud, along the middle row of the map (horizontal axis, $x$) and the
+line of sight (vertical axis, $z$). \emph{Left}: The volume density $\rho(x,z)$, the dust temperature $T_{\rm RT}(x,z)$ of the
+model, and the difference $T_{\rm RT} - T_{\rm L}$ from the temperature of the uniform layer with the same surface density
+$\Sigma$ in each column. \emph{Right}: The dust temperatures $T_{\rm RT}$ (solid) and $T_{\rm L}$ (dashed) against the depth
+$z$ for three columns of different $\Sigma$.}
 \label{fig:cube}
 \end{figure*}
 
@@ -1152,12 +1151,12 @@ correction method (Sect.~\ref{sec:factor}) replaces this distribution by that of
 \begin{figure*}[ht!]
 \centering
 \includegraphics[width=0.95\textwidth]{fig_angular.pdf}
-\caption{\emph{Left}: The transmitted fraction $\exp\left(-\sigma\Sigma(\hat n)\right)$ of the external radiation against the
-cosine of the angle $i$ to the normal, for a dust grain at the middle depth of a plane-parallel layer of three total surface
-densities. The dashed lines mark the angular means of the curves and are labeled with the effective attenuating column $\Sigma_{\rm
-A}$ of Eq.~(\ref{eq:seff}) that gives the same mean intensity. \emph{Right}: Effective attenuating column $\Sigma_{\rm A}$ against
-the total surface density $\Sigma$ of the line of sight, for the two limiting shapes and their adopted average, with the
-shortest-path column $\Sigma_{\rm min}$ for comparison.}
+\caption{Attenuation of the external radiation in layers and spheres. \emph{Left}: The transmitted fraction
+$\exp\left(-\sigma\Sigma(\hat n)\right)$ of the external radiation for a dust grain at the middle depth of a plane-parallel layer,
+against the cosine of the angle $i$ to the normal, for three total surface densities. The dashed lines mark the angular means of the
+curves and are labeled with the effective attenuating column $\Sigma_{\rm A}$ of Eq.~(\ref{eq:seff}) that gives the same mean
+intensity. \emph{Right}: The effective attenuating column $\Sigma_{\rm A}$ against the total surface density $\Sigma$ of the line of
+sight, for the two limiting shapes and their adopted average, with the shortest-path column $\Sigma_{\rm min}$ for comparison.}
 \label{fig:angular}
 \end{figure*}
 
@@ -1167,7 +1166,7 @@ factor lies between them at every surface density, within $5$\% of the sphere an
 extreme case because it is unbounded across the line of sight. A whole band of directions near the plane of the layer does not
 deliver radiation, however thin the layer is (Fig.~\ref{fig:angular}). In a bounded body, the path to the boundary is finite in
 every direction, and every direction delivers some radiation. The sphere is the opposite extreme: a compact body with a given
-central surface density blocks less of the sky than any other body with that surface density. Uniform bodies of other shapes are
+central surface density attenuates the radiation from less of the sky than any other body. Uniform bodies of other shapes are
 bounded in some directions and extended in others, and their correction factors lie between the two limits. The method averages the
 attenuating columns of the two limiting shapes (Sect.~\ref{sec:factor}), so the error due to the shape of a uniform body is at most
 ${\sim}5$\%. The surface layers of an extended cloud (Sect.~\ref{sec:diffuse}) and the concentration of the material
@@ -1176,14 +1175,15 @@ ${\sim}5$\%. The surface layers of an extended cloud (Sect.~\ref{sec:diffuse}) a
 \subsection{Centrally concentrated structures}
 \label{app:concentr}
 
-In a layer, the density profile has no effect on $f$ (Sect.~\ref{sec:orient}). In a bounded body, slanted paths from a grain away
-from the center cross the body along chords at
-larger radii, so their columns depend on the density profile. Concentration of material can act only through these paths. The
-effect was measured on a sphere with the density $\rho(r) \propto (1 + r^2/a^2)^{-1}$ out to its boundary. The sphere was
-normalized so that the column through its center equaled the surface density $\Sigma$ of the uniform sphere it was compared with,
-and $a$ was set by the central-to-edge density ratio. The positions along the central line of sight were weighted by the density
-there, as in the emission. For each position, the column was integrated along the ray to the boundary in every direction of the
-average.
+In a layer, the density profile along the normal has no effect on the correction factor $f$ (Sect.~\ref{sec:orient}), because a
+slanted path from a grain crosses the same sequence of densities as the path along the normal. In a bounded body, a slanted path
+from a grain away from the center crosses the body along a chord that passes at a different distance from the center, and therefore
+through different densities. Its column depends on the density profile, and the concentration of the material can affect $f$ only
+through such paths. The effect was evaluated on a sphere with the density $\rho(r) \propto (1 + r^2/a^2)^{-1}$ out to its boundary.
+The sphere was normalized so that the column through its center was equal to the surface density $\Sigma$ of the uniform sphere it
+was compared with, and $a$ was set by the central-to-edge density ratio. The positions along the central line of sight were
+weighted by the density there, as in the emission. For each position, the column $\Sigma(\hat{n})$ was integrated along the ray to
+the boundary in every direction $\hat{n}$, and $\Sigma_{\rm A}$ was obtained from Eq.~(\ref{eq:seff}).
 
 \begin{table}[ht!]
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
@@ -1213,49 +1213,51 @@ $1{\times}10^{23}$ & $1.835$ & $1.881$ & $1.981$ & $2.165$ \\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:concentr} shows that the concentration always raises the required correction, because the mass of a concentrated
-structure lies where the shielding is deepest. For a density ratio of $10$ the effect is $2$--$5$\% and for a ratio of $10^3$ it
-is $9$--$20$\%. It is one-sided: on the central line of sight, a correction built on uniform structures under-corrects a
-concentrated structure
+Table~\ref{tab:concentr} shows that a concentrated sphere always requires a larger correction factor than the uniform sphere with
+the same central surface density. In a concentrated sphere, a larger fraction of the mass lies near the center, where the attenuating
+column $\Sigma_{\rm A}$ is largest and the dust is coldest. The single-temperature fit therefore underestimates its surface density
+more. For a central-to-edge density ratio of $10$, the required factor is larger by $2$--$5$\%, and for a ratio of $10^3$ by
+$9$--$20$\%. A correction built on uniform structures therefore under-corrects the central line of sight of a concentrated structure
 and never over-corrects it.
 
 \subsection{Two superposed components}
 \label{app:twocomp}
 
-This case of a denser structure at an unknown depth in a cloud was modeled as a
-plane-parallel cloud of surface density $\Sigma_{\rm L}$ with an embedded uniform sphere of central surface density $\Sigma_{\rm
-S}$. A direction is defined by its angle $\psi$ to the line of sight, measured from the direction toward the observer. The material
-at the column depth $x$ in the cloud is shielded by the angular average of $x/|\cos\psi|$ toward the observer and of $(\Sigma_{\rm
-L} - x)/|\cos\psi|$ away from the observer. A fraction $q$ of the cloud lies in front of every point of the sphere and the rest
-behind it, so that the sphere lies between two layers of the cloud, in front of it for $q = 0$ and behind it for $q = 1$. A dust
-grain at the position $z$ along the diameter of the sphere, from $-1$ to $1$ in units of its radius and positive toward the
-observer, is shielded by the sphere over the path
+This case of a denser structure at an unknown depth in a cloud was modeled as a plane-parallel layer of surface density
+$\Sigma_{\rm L}$, representing the cloud, with an embedded uniform sphere of central surface density $\Sigma_{\rm S}$. A direction
+is defined by its angle $\psi$ to the line of sight, measured from the direction toward the observer. The material at the
+fractional column depth $u$ in the cloud is shielded by the angular average of $u\,\Sigma_{\rm L}/|\cos\psi|$ toward the observer
+and of $(1-u)\,\Sigma_{\rm L}/|\cos\psi|$ away from the observer. A fraction $q$ of the cloud lies in front of every point of the
+sphere and the fraction $1-q$ behind it, so that the sphere is in front of the whole cloud for $q = 0$ and behind it for $q = 1$. 
+
+A dust grain located at the position $z$ along the diameter of the sphere, from $-1$ to $1$ in units of its radius and positive
+toward the observer, is shielded by the sphere over the path
 \begin{equation}
    p(z,\psi) = -z\cos\psi + \left(1 - z^2\sin^2\psi\right)^{1/2},
 \label{eq:lsphere}
 \end{equation}
 which contains the column $(\Sigma_{\rm S}/2)\,p(z,\psi)$. Beyond the sphere, the path also crosses the column $q\,\Sigma_{\rm
 L}/|\cos\psi|$ of the cloud toward the observer or $(1-q)\,\Sigma_{\rm L}/|\cos\psi|$ away from the observer. The sum of the two
-columns entered the angular average of Eq.~(\ref{eq:seff}), computed over $\psi$ with the weight $\sin\psi$, proportional to the
-solid angle of the directions at that angle. The temperature of every grain along the line of sight was determined from
-Eq.~(\ref{eq:law}). The emissions of the cloud and of the sphere, given by Eq.~(\ref{eq:emission}) with $\Sigma_{\rm L}$ and
-$\Sigma_{\rm S}$ and the temperatures of their grains, were added, and one modified blackbody was fitted to the sum, exactly as for
-the uniform bodies of Sect.~\ref{sec:factor}. This gave $\Sigma_{\rm F}$ of the composite line of sight, whose true value is
-$\Sigma = \Sigma_{\rm L} + \Sigma_{\rm S}$, and the corrected value $f(\Sigma_{\rm F})\,\Sigma_{\rm F}$, with $f$ of
-Eq.~(\ref{eq:factor}).
+columns were used in the angular average of Eq.~(\ref{eq:seff}) to obtain $\Sigma_{\rm A}$ of the grain, computed over $\psi$ with
+the weight $\sin\psi$, proportional to the solid angle of the directions at that angle. The temperature of every grain along the
+line of sight was determined from Eq.~(\ref{eq:law}). The emissions of the cloud and of the sphere, given by
+Eq.~(\ref{eq:emission}) with $\Sigma_{\rm L}$ and $\Sigma_{\rm S}$ and the temperatures of their grains, were added. A modified
+blackbody was fitted to the sum, exactly as for the uniform bodies of Sect.~\ref{sec:factor}. This gave $\Sigma_{\rm F}$ of the
+composite line of sight, whose true value is $\Sigma = \Sigma_{\rm L} + \Sigma_{\rm S}$, and the corrected value
+$f(\Sigma_{\rm F})\,\Sigma_{\rm F}$, with $f$ of Eq.~(\ref{eq:factor}).
 
 \begin{figure*}[ht!]
 \centering
-\includegraphics[width=0.95\textwidth]{fig_superposition.pdf}
+\includegraphics[width=0.94\textwidth]{fig_superposition.pdf}
 \caption{Superposition of a cloud and a sphere (total $\Sigma = 2{\times}10^{22}$\,cm$^{-2}$). \emph{Upper left}: The dust
-temperature along a line of sight through the uniform cloud that the method assumes (blue) and through the same surface density
-divided equally between the cloud and a uniform sphere outside it, touching its near side (red, $q = 0$). \emph{Upper right}: The
-intensities $I_{\lambda}$ of the two cases, with the surface densities $\Sigma_{\rm F}$ from a single modified blackbody fit.
-\emph{Lower left}: The correction factor $f$ that the method applies and the range of factors that the composite lines of sight
-require, against $\Sigma_{\rm F}$. The range covers cloud surface densities $\Sigma_{\rm L}$ of $10^{21}$, $3{\times}10^{21}$, and
-$10^{22}$\,cm$^{-2}$ and all positions of the sphere. \emph{Lower right}: Relative errors of the corrected surface density against
-the fraction $q$ of the cloud in front of the sphere, for three surface densities $\Sigma_{\rm L}$ of the cloud and total $\Sigma$
-of $2{\times}10^{22}$ and $5{\times}10^{22}$\,cm$^{-2}$.}
+temperature $T$ along a line of sight through the uniform cloud that the method assumes (blue) and through the same surface density
+divided equally between the cloud and a uniform sphere touching its near side (red, $q = 0$). \emph{Upper right}: The intensities
+$I_{\lambda}$ of the two cases, with the surface densities $\Sigma_{\rm F}$ from a single modified blackbody fit. \emph{Lower
+left}: The correction factor $f$ that the method applies and the range of factors that the composite lines of sight require,
+against $\Sigma_{\rm F}$. The range covers cloud surface densities $\Sigma_{\rm L}$ of $10^{21}$, $3{\times}10^{21}$, and
+$10^{22}$\,cm$^{-2}$ and all positions of the sphere. \emph{Lower right}: The relative errors of the corrected $\Sigma$ against the
+fraction $q$ of the cloud, for three surface densities $\Sigma_{\rm L}$ of the cloud and total $\Sigma$ of $2{\times}10^{22}$ and
+$5{\times}10^{22}$\,cm$^{-2}$.}
 \label{fig:superposition}
 \end{figure*}
 
@@ -1263,27 +1265,25 @@ of $2{\times}10^{22}$ and $5{\times}10^{22}$\,cm$^{-2}$.}
 %%%%% NUMBERS (2026-10-20): from python/paper_numbers/superposition_numbers.py (range of the error over q; the worked example:
 %%%%% q = 0, Sigma = 2e22, Sigma_cl = 1e22 cm^-2).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-Figure~\ref{fig:superposition} shows the effect and its size. The example has a cloud and a sphere of equal surface densities,
-$\Sigma_{\rm L} = \Sigma_{\rm S} = 10^{22}$\,cm$^{-2}$, totaling $\Sigma = 2{\times}10^{22}$\,cm$^{-2}$. The sphere lies outside
-the cloud and touches its near side ($q = 0$). It is heated from the front and from the sides, where nothing blocks the incoming
+Figure~\ref{fig:superposition} shows the effect and its size, using as an example a cloud and a sphere of equal surface densities,
+$\Sigma_{\rm L} = \Sigma_{\rm S} = 10^{22}$\,cm$^{-2}$ and total $\Sigma = 2{\times}10^{22}$\,cm$^{-2}$. The sphere lies outside
+the cloud and touches its near side ($q = 0$). It is heated from the front and from the sides, where nothing attenuates the incoming
 radiation. Therefore, this line of sight is warmer and brighter than that through the uniform body with the same total $\Sigma$.
 The fit returns $\Sigma_{\rm F} = 1.47{\times}10^{22}$\,cm$^{-2}$, against $1.27{\times}10^{22}$\,cm$^{-2}$ for the uniform body,
 whose correction factor $1.57$ restores the true total $\Sigma$. To the composite line of sight, the method applies the factor of a
-uniform body with $\Sigma_{\rm F} = 1.47{\times}10^{22}$\,cm$^{-2}$, $1.64$ instead of the required $1.36$, and obtains
+uniform body with $\Sigma_{\rm F} = 1.47{\times}10^{22}$\,cm$^{-2}$, $f = 1.64$ instead of the required $1.36$, and obtains
 $2.4{\times}10^{22}$\,cm$^{-2}$, overestimated by $21$\%.
 
-Figure~\ref{fig:superposition} also gives the general picture. The factors that the composite lines of sight require
-form a band around the factor that the method applies, and the error of the corrected surface density ranges from $-13$ to $+21$\%.
-Its sign depends on the cloud. A tenuous cloud ($\Sigma_{\rm L} = 10^{21}$\,cm$^{-2}$) holds only $5$\% of the total $\Sigma =
-2{\times}10^{22}$\,cm$^{-2}$, but
-its dust is warm. Its emission raises the fitted temperature of the line of sight, from $11.4$\,K for an isolated sphere to
-$11.7$--$12.0$\,K, which lowers $\Sigma_{\rm F}$. The correction is then too small by $8$--$13$\%, at any depth, although an
-isolated sphere would be corrected $2$\% too much. A dense cloud ($\Sigma_{\rm L} = 10^{22}$\,cm$^{-2}$) with the sphere at one of
-its sides makes the line of sight warmer
-than a single body, and the correction is then too large, by up to $21$\%. When the sphere lies near the middle of a dense cloud,
-the error is only a few percent. The simulated star-forming region of Sect.~\ref{sec:sim}, built entirely from radiative transfer
-models, shows both regimes: the wings of filaments in its tenuous outer areas are corrected too little, and the flanks of filaments
-in its dense central areas too much.
+Figure~\ref{fig:superposition} also gives the general picture. The factors that the composite lines of sight require form a band
+around the factor that the method applies, and the error of the corrected surface density ranges from $-13$ to $+21$\%. Its sign
+depends on the cloud. A tenuous cloud ($\Sigma_{\rm L} = 10^{21}$\,cm$^{-2}$) holds only $5$\% of the total $\Sigma =
+2{\times}10^{22}$\,cm$^{-2}$, but its dust is warm. Its emission raises the fitted temperature of the line of sight, from $11.4$\,K
+for an isolated sphere to $11.7$--$12.0$\,K, which lowers $\Sigma_{\rm F}$. The correction is then too small by $8$--$13$\%, at any
+depth, although an isolated sphere would be corrected $2$\% too much. A dense cloud ($\Sigma_{\rm L} = 10^{22}$\,cm$^{-2}$) with
+the sphere at one of its sides makes the line of sight warmer than a single body, and the correction is then too large, by up to
+$21$\%. When the sphere lies near the middle of a dense cloud, the error is only a few percent. The simulated star-forming region
+of Sect.~\ref{sec:sim}, built entirely from radiative transfer models, shows both regimes: the wings of filaments in its tenuous
+outer areas are corrected too little, and the flanks of filaments in its dense central areas too much.
 
 \section{Calibration for different radiation fields}
 \label{app:field}
@@ -1307,13 +1307,13 @@ too small for $G_0 \approx 20$--$100$, and again too large at the highest surfac
 \includegraphics[width=0.96\textwidth]{fig_field_errors.pdf}
 \caption{Temperature relations and errors of the correction for the grid of radiation fields. \emph{Left}: The relation
 $T(\Sigma_{\rm A})$ of Eq.~(\ref{eq:law}) refitted on the models of each field strength $G_0$ is compared with the adopted relation
-for $G_0 = 10$ (dashed line). \emph{Right}: Relative errors of the corrected surface density are plotted against $G_0$, in four
-ranges of the fitted surface density $\Sigma_{\rm F}$. Each point is the median over the pixels in its range. The correction
-without the field factor $g$ (dotted lines) is compared with that with $g$ of all nine fields (Sect.~\ref{sec:g0corr}, solid
-lines). Each circle on the dashed lines is a separate test of a field $G_0$ with $g$ interpolated in $\log G_0$ between its two
-neighboring values, the field itself being left out. Such a test is not possible for the weakest and strongest fields and for the
-field $G_0 = 10$ of the calibration (vertical dotted line). In all cases, the correction factor $f_{G_0}$ is that of
-Eq.~(\ref{eq:factorg0}), with $g = 1$ for the dotted lines.}
+for $G_0 = 10$ (dashed line). \emph{Right}: The relative errors of the corrected surface density against $G_0$, in four ranges of
+the fitted surface density $\Sigma_{\rm F}$. Each point is the median over the pixels in its range. The correction without the field
+factor $g$ (dotted lines) is compared with that with $g$ of all nine fields (Sect.~\ref{sec:g0corr}, solid lines). Each circle on
+the dashed lines is a separate test of a field $G_0$ with $g$ interpolated in $\log G_0$ between its two neighboring values, the
+field itself being left out. Such a test is not possible for the weakest and strongest fields and for the field $G_0 = 10$ of the
+calibration (vertical dotted line). In all cases, the correction factor $f_{G_0}$ is that of Eq.~(\ref{eq:factorg0}), with $g = 1$
+for the dotted lines.}
 \label{fig:fielderr}
 \end{figure*}
 
@@ -1447,7 +1447,7 @@ therefore be calibrated on models in which the answer is known.
 \includegraphics[width=0.95\textwidth]{fig_mixing.pdf}
 \caption{Single-temperature fits to lines of sight through a mixture of temperatures. \emph{Left}: The emission of a line of
 sight of $3{\times}10^{22}$\,cm$^{-2}$, summed over depth, with the single modified blackbody fitted to it in the four wavebands.
-\emph{Right}: Relative residuals of the fit in each waveband for three surface densities, with the fraction of the true $\Sigma$
+\emph{Right}: The relative residuals of the fit in each waveband for three surface densities, with the fraction of the true $\Sigma$
 recovered. The residuals grow with the surface density but remain below the calibration uncertainties of $20${\%} at $160${\um} and
 $10${\%} at the longer wavebands.}
 \label{fig:mixing}
@@ -1557,10 +1557,11 @@ of resolved cores by factors of up to $1.4$--$1.8$ in filaments \citep{Menshchik
 \begin{figure}
 \centering
 \includegraphics[width=0.95\columnwidth]{fig_footprint.pdf}
-\caption{The accuracy ratio of the core mass for the $1750$ models of the subdivision grid in which it can be measured, when the
-estimated radius $R$ of the core, and hence of its footprint, is too small ($\Delta R < 0$) or too large ($\Delta R > 0$). The
-background is always taken in a ring just outside the footprint used. The lines are medians over the models, and the band marks
-the 16th to 84th percentiles for $\mathcal{F}_{36.3\,}\mathcal{D}_{13.5}$.}
+\caption{Accuracy ratio of the core mass against the error of its estimated footprint. The ratio is shown for the $1750$ models of
+the subdivision grid in which it could be measured, when the estimated radius $R$ of the core, and hence of its footprint, is
+underestimated ($\Delta R < 0$) or overestimated ($\Delta R > 0$). The background is always taken in a ring just outside the
+footprint used. The lines are medians over the models, and the band marks the 16th to 84th percentiles for
+$\mathcal{F}_{36.3\,}\mathcal{D}_{13.5}$.}
 \label{fig:footprint}
 \end{figure}
 
