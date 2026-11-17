@@ -414,7 +414,8 @@ $\Sigma$, so the factor was tabulated against $\Sigma_{\rm F}$:
 \caption{Correction factor $f$ against the fitted surface density $\Sigma_{\rm F}$. The curves show $f$ for $G_0 = 10$ for three
 uniform structures (layer, cylinder, and sphere) and for the average of the sphere and the layer. The dotted curve shows $f$ when
 $\Sigma_{\rm A}$ is replaced with $\Sigma_{\rm min}$ along the shortest path (Sect.~\ref{sec:why}), which overestimates the
-correction by up to $50$\% above $10^{22}$\,cm$^{-2}$. The thick magenta curve is the adopted relation, which uses the radiative
+correction factor by up to $50$\% above $10^{22}$\,cm$^{-2}$. The thick magenta curve is the adopted relation, which uses the
+radiative
 transfer model of a diffuse cloud below $3.98{\times}10^{21}$\,cm$^{-2}$ (Sect.~\ref{sec:diffuse}) and is held constant above its
 maximum (Sect.~\ref{sec:factor}). The thin magenta curves are the adopted relations for $G_0 = 5$ and $33$
 (Eq.~(\ref{eq:factorg0})).}
@@ -1214,7 +1215,8 @@ $1{\times}10^{23}$ & $1.835$ & $1.881$ & $1.981$ & $2.165$ \\
 \end{table}
 
 Table~\ref{tab:concentr} shows that a concentrated sphere always requires a larger correction factor than the uniform sphere with
-the same central surface density. In a concentrated sphere, a larger fraction of the mass lies near the center, where the attenuating
+the same central surface density. In a concentrated sphere, a larger fraction of the mass lies near the center, where the
+attenuating
 column $\Sigma_{\rm A}$ is largest and the dust is coldest. The single-temperature fit therefore underestimates its surface density
 more. For a central-to-edge density ratio of $10$, the required factor is larger by $2$--$5$\%, and for a ratio of $10^3$ by
 $9$--$20$\%. A correction built on uniform structures therefore under-corrects the central line of sight of a concentrated structure
@@ -1250,11 +1252,11 @@ $f(\Sigma_{\rm F})\,\Sigma_{\rm F}$, with $f$ of Eq.~(\ref{eq:factor}).
 \centering
 \includegraphics[width=0.94\textwidth]{fig_superposition.pdf}
 \caption{Superposition of a cloud and a sphere (total $\Sigma = 2{\times}10^{22}$\,cm$^{-2}$). \emph{Upper left}: The dust
-temperature $T$ along a line of sight through the uniform cloud that the method assumes (blue) and through the same surface density
-divided equally between the cloud and a uniform sphere touching its near side (red, $q = 0$). \emph{Upper right}: The intensities
-$I_{\lambda}$ of the two cases, with the surface densities $\Sigma_{\rm F}$ from a single modified blackbody fit. \emph{Lower
-left}: The correction factor $f$ that the method applies and the range of factors that the composite lines of sight require,
-against $\Sigma_{\rm F}$. The range covers cloud surface densities $\Sigma_{\rm L}$ of $10^{21}$, $3{\times}10^{21}$, and
+temperature $T$ along a line of sight through the uniform structure that the method assumes (blue) and through the same surface
+density divided equally between the cloud and a uniform sphere touching its near side (red, $q = 0$). \emph{Upper right}: The
+intensities $I_{\lambda}$ of the two cases, with the surface densities $\Sigma_{\rm F}$ from a single modified blackbody fit.
+\emph{Lower left}: The correction factor $f$ that the method applies and the range of factors that the composite lines of sight
+require, against $\Sigma_{\rm F}$. The range covers cloud surface densities $\Sigma_{\rm L}$ of $10^{21}$, $3{\times}10^{21}$, and
 $10^{22}$\,cm$^{-2}$ and all positions of the sphere. \emph{Lower right}: The relative errors of the corrected $\Sigma$ against the
 fraction $q$ of the cloud, for three surface densities $\Sigma_{\rm L}$ of the cloud and total $\Sigma$ of $2{\times}10^{22}$ and
 $5{\times}10^{22}$\,cm$^{-2}$.}
@@ -1267,31 +1269,37 @@ $5{\times}10^{22}$\,cm$^{-2}$.}
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
 Figure~\ref{fig:superposition} shows the effect and its size, using as an example a cloud and a sphere of equal surface densities,
 $\Sigma_{\rm L} = \Sigma_{\rm S} = 10^{22}$\,cm$^{-2}$ and total $\Sigma = 2{\times}10^{22}$\,cm$^{-2}$. The sphere lies outside
-the cloud and touches its near side ($q = 0$). It is heated from the front and from the sides, where nothing attenuates the incoming
-radiation. Therefore, this line of sight is warmer and brighter than that through the uniform body with the same total $\Sigma$.
-The fit returns $\Sigma_{\rm F} = 1.47{\times}10^{22}$\,cm$^{-2}$, against $1.27{\times}10^{22}$\,cm$^{-2}$ for the uniform body,
-whose correction factor $1.57$ restores the true total $\Sigma$. To the composite line of sight, the method applies the factor of a
-uniform body with $\Sigma_{\rm F} = 1.47{\times}10^{22}$\,cm$^{-2}$, $f = 1.64$ instead of the required $1.36$, and obtains
-$2.4{\times}10^{22}$\,cm$^{-2}$, overestimated by $21$\%.
+the cloud and touches its near side ($q = 0$). It is heated from the front and from the sides, where nothing attenuates the
+incoming radiation. Therefore, this line of sight is warmer and brighter than that through the uniform body with the same total
+$\Sigma$. The fit returns $\Sigma_{\rm F} = 1.47{\times}10^{22}$\,cm$^{-2}$, against $1.27{\times}10^{22}$\,cm$^{-2}$ for the
+uniform body, whose correction factor $1.57$ restores the true total $\Sigma$. To the composite line of sight, the method applies
+the factor $f = 1.64$ for a uniform body with $\Sigma_{\rm F} = 1.47{\times}10^{22}$\,cm$^{-2}$ instead of the required $1.36$, and
+obtains $2.4{\times}10^{22}$\,cm$^{-2}$, overestimated by $21$\%.
 
-Figure~\ref{fig:superposition} also gives the general picture. The factors that the composite lines of sight require form a band
-around the factor that the method applies, and the error of the corrected surface density ranges from $-13$ to $+21$\%. Its sign
-depends on the cloud. A tenuous cloud ($\Sigma_{\rm L} = 10^{21}$\,cm$^{-2}$) holds only $5$\% of the total $\Sigma =
-2{\times}10^{22}$\,cm$^{-2}$, but its dust is warm. Its emission raises the fitted temperature of the line of sight, from $11.4$\,K
-for an isolated sphere to $11.7$--$12.0$\,K, which lowers $\Sigma_{\rm F}$. The correction is then too small by $8$--$13$\%, at any
-depth, although an isolated sphere would be corrected $2$\% too much. A dense cloud ($\Sigma_{\rm L} = 10^{22}$\,cm$^{-2}$) with
-the sphere at one of its sides makes the line of sight warmer than a single body, and the correction is then too large, by up to
-$21$\%. When the sphere lies near the middle of a dense cloud, the error is only a few percent. The simulated star-forming region
-of Sect.~\ref{sec:sim}, built entirely from radiative transfer models, shows both regimes: the wings of filaments in its tenuous
-outer areas are corrected too little, and the flanks of filaments in its dense central areas too much.
+Figure~\ref{fig:superposition} also gives the general picture. The sphere stands for any dense structure in a cloud, such as a core
+or a filament seen across its axis, and the errors refer to the corrected $\Sigma$ of the line of sight through its center. The
+factors that this line of sight requires for different surface densities $\Sigma_{\rm L}$ of the cloud and positions of the sphere
+form a band around the applied correction factor $f$. The error of the corrected $\Sigma$ ranges from $-13$ to $21$\%, with a sign
+that depends on $\Sigma_{\rm L}$.
+
+In both cases the line of sight is warmer than the uniform structures on which $f$ is based (Sect.~\ref{sec:factor}), but the
+warmer material is in the cloud in one case and in the sphere in the other. A tenuous cloud ($\Sigma_{\rm L} = 10^{21}$\,cm$^{-2}$)
+holds only $5$\% of the total $\Sigma = 2{\times}10^{22}$\,cm$^{-2}$, but its dust is warm. Its emission raises the fitted
+temperature from $11.4$\,K for an isolated sphere to $11.7$--$12.0$\,K, while the sphere stays cold, which lowers $\Sigma_{\rm F}$.
+The line of sight is then under-corrected by $8$--$13$\% at any depth, although an isolated sphere would be over-corrected by
+$2$\%. A dense cloud ($\Sigma_{\rm L} = 10^{22}$\,cm$^{-2}$) with the sphere at one of its sides shields the sphere from that side
+only, so the sphere itself is warmer than the same material in a single uniform structure. Its surface density is then
+underestimated less than the method assumes, and the line of sight is over-corrected by up to $21$\%. When the sphere lies near the
+middle of a dense cloud, the error is only a few percent.
 
 \section{Calibration for different radiation fields}
 \label{app:field}
 
 The correction was tested on the grid of models in nine radiation fields (Appendix~\ref{sec:grid}), comparing for every pixel the
 factor that the correction applies with the factor that restores its true surface density. Without the field factor, the errors
-range from $-23$ to $+26$\% (Fig.~\ref{fig:fielderr}). They change sign twice: the correction is too large in the weakest fields,
-too small for $G_0 \approx 20$--$100$, and again too large at the highest surface densities in the strongest fields.
+range from $-23$ to $+26$\% (Fig.~\ref{fig:fielderr}). They change sign twice: the surface densities are over-corrected in the
+weakest fields, under-corrected for $G_0 \approx 20$--$100$, and again over-corrected at the highest surface densities in the
+strongest fields.
 
 \begin{figure*}[ht!]
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
@@ -1543,11 +1551,14 @@ the absolute dust opacity is uncertain by a factor of $1.5$--$2$ \citep{Roy+2014
 \subsection{Errors of core footprints}
 \label{app:footprint}
 
-In observed images, the footprints of cores, estimated by source extraction, can be inaccurate. A footprint radius $R$ too small by
-$\Delta R/R = 0.25$ or $0.5$ lowers the median corrected mass from $0.98$ to $0.83$ or $0.52$, because part of the core is counted
-as background (Fig.~\ref{fig:footprint}). A footprint too large by $0.25$ or $0.5$ raises it to $1.06$ or $1.11$, and much more for
-cores of low contrast, whose mass is small compared with the background within the footprint. For contrasts below $1.5$, a
-footprint twice too large triples the median mass. These errors are lower limits, because real cores overlap with other structures,
+In observed images, the footprints of cores, estimated by source extraction, can be inaccurate. A footprint radius $R$
+underestimated by $\Delta R/R = 0.25$ or $0.5$ lowers the median corrected mass from $0.98$ to $0.83$ or $0.52$, because part of the
+core is counted
+as background (Fig.~\ref{fig:footprint}). A footprint radius overestimated by $0.25$ or $0.5$ raises it to $1.06$ or $1.11$, and
+much more for
+cores of low contrast, whose mass is small compared with the background within the footprint. For contrasts below $1.5$, a footprint
+radius overestimated by a factor of $2$ triples the median mass. These errors are lower limits, because real cores overlap with
+other structures,
 and because the true masses of the tests were measured with the same background just outside the footprint. An embedded core has a
 crater-like background, because the lines of sight through the core cross less of the
 surrounding cloud than those next to it, and a background taken just outside the core is overestimated. This underestimates the
