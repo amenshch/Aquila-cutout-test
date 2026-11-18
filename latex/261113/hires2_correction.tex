@@ -1152,7 +1152,7 @@ correction method (Sect.~\ref{sec:factor}) replaces this distribution by that of
 \begin{figure*}[ht!]
 \centering
 \includegraphics[width=0.95\textwidth]{fig_angular.pdf}
-\caption{Attenuation of the external radiation in layers and spheres. \emph{Left}: The transmitted fraction
+\caption{Attenuation of the external radiation in uniform layers and spheres. \emph{Left}: The transmitted fraction
 $\exp\left(-\sigma\Sigma(\hat n)\right)$ of the external radiation for a dust grain at the middle depth of a plane-parallel layer,
 against the cosine of the angle $i$ to the normal, for three total surface densities. The dashed lines mark the angular means of the
 curves and are labeled with the effective attenuating column $\Sigma_{\rm A}$ of Eq.~(\ref{eq:seff}) that gives the same mean
@@ -1225,7 +1225,7 @@ and never over-corrects it.
 \subsection{Two superposed components}
 \label{app:twocomp}
 
-This case of a denser structure at an unknown depth in a cloud was modeled as a plane-parallel layer of surface density
+A denser structure at an unknown depth in a cloud was modeled as a plane-parallel layer of surface density
 $\Sigma_{\rm L}$, representing the cloud, with an embedded uniform sphere of central surface density $\Sigma_{\rm S}$. A direction
 is defined by its angle $\psi$ to the line of sight, measured from the direction toward the observer. The material at the
 fractional column depth $u$ in the cloud is shielded by the angular average of $u\,\Sigma_{\rm L}/|\cos\psi|$ toward the observer
@@ -1240,7 +1240,7 @@ toward the observer, is shielded by the sphere over the path
 \end{equation}
 which contains the column $(\Sigma_{\rm S}/2)\,p(z,\psi)$. Beyond the sphere, the path also crosses the column $q\,\Sigma_{\rm
 L}/|\cos\psi|$ of the cloud toward the observer or $(1-q)\,\Sigma_{\rm L}/|\cos\psi|$ away from the observer. The sum of the two
-columns were used in the angular average of Eq.~(\ref{eq:seff}) to obtain $\Sigma_{\rm A}$ of the grain, computed over $\psi$ with
+columns was used in the angular average of Eq.~(\ref{eq:seff}) to obtain $\Sigma_{\rm A}$ of the grain, computed over $\psi$ with
 the weight $\sin\psi$, proportional to the solid angle of the directions at that angle. The temperature of every grain along the
 line of sight was determined from Eq.~(\ref{eq:law}). The emissions of the cloud and of the sphere, given by
 Eq.~(\ref{eq:emission}) with $\Sigma_{\rm L}$ and $\Sigma_{\rm S}$ and the temperatures of their grains, were added. A modified
@@ -1251,15 +1251,15 @@ $f(\Sigma_{\rm F})\,\Sigma_{\rm F}$, with $f$ of Eq.~(\ref{eq:factor}).
 \begin{figure*}[ht!]
 \centering
 \includegraphics[width=0.94\textwidth]{fig_superposition.pdf}
-\caption{Superposition of a cloud and a sphere (total $\Sigma = 2{\times}10^{22}$\,cm$^{-2}$). \emph{Upper left}: The dust
-temperature $T$ along a line of sight through the uniform structure that the method assumes (blue) and through the same surface
-density divided equally between the cloud and a uniform sphere touching its near side (red, $q = 0$). \emph{Upper right}: The
-intensities $I_{\lambda}$ of the two cases, with the surface densities $\Sigma_{\rm F}$ from a single modified blackbody fit.
-\emph{Lower left}: The correction factor $f$ that the method applies and the range of factors that the composite lines of sight
-require, against $\Sigma_{\rm F}$. The range covers cloud surface densities $\Sigma_{\rm L}$ of $10^{21}$, $3{\times}10^{21}$, and
-$10^{22}$\,cm$^{-2}$ and all positions of the sphere. \emph{Lower right}: The relative errors of the corrected $\Sigma$ against the
-fraction $q$ of the cloud, for three surface densities $\Sigma_{\rm L}$ of the cloud and total $\Sigma$ of $2{\times}10^{22}$ and
-$5{\times}10^{22}$\,cm$^{-2}$.}
+\caption{Superposition of a uniform cloud and a uniform sphere. \emph{Upper left}: The dust temperature $T$ along a line of sight
+through the uniform structure with $\Sigma = 2{\times}10^{22}$,cm$^{-2}$ that the method assumes (blue) and along a composite line
+of sight with the same $\Sigma$, divided equally between the cloud and the sphere, which touches the near side of the cloud (red,
+$q = 0$). \emph{Upper right}: The intensities $I_{\lambda}$ of the two cases, with the surface densities $\Sigma_{\rm F}$ from a
+modified blackbody fit. \emph{Lower left}: The correction factor $f$ that the method applies and the range of factors that
+the composite lines of sight require, against $\Sigma_{\rm F}$. The range covers cloud surface densities $\Sigma_{\rm L}$ of
+$10^{21}$, $3{\times}10^{21}$, and $10^{22}$\,cm$^{-2}$ and all positions of the sphere. \emph{Lower right}: The relative errors of
+the corrected $\Sigma$ against the fraction $q$ of the cloud, for the same three $\Sigma_{\rm L}$ and total $\Sigma$ of
+$2{\times}10^{22}$ and $5{\times}10^{22}$\,cm$^{-2}$.}
 \label{fig:superposition}
 \end{figure*}
 
@@ -1267,39 +1267,34 @@ $5{\times}10^{22}$\,cm$^{-2}$.}
 %%%%% NUMBERS (2026-10-20): from python/paper_numbers/superposition_numbers.py (range of the error over q; the worked example:
 %%%%% q = 0, Sigma = 2e22, Sigma_cl = 1e22 cm^-2).
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
-Figure~\ref{fig:superposition} shows the effect and its size, using as an example a cloud and a sphere of equal surface densities,
-$\Sigma_{\rm L} = \Sigma_{\rm S} = 10^{22}$\,cm$^{-2}$ and total $\Sigma = 2{\times}10^{22}$\,cm$^{-2}$. The sphere lies outside
-the cloud and touches its near side ($q = 0$). It is heated from the front and from the sides, where nothing attenuates the
-incoming radiation. Therefore, this line of sight is warmer and brighter than that through the uniform body with the same total
-$\Sigma$. The fit returns $\Sigma_{\rm F} = 1.47{\times}10^{22}$\,cm$^{-2}$, against $1.27{\times}10^{22}$\,cm$^{-2}$ for the
-uniform body, whose correction factor $1.57$ restores the true total $\Sigma$. To the composite line of sight, the method applies
-the factor $f = 1.64$ for a uniform body with $\Sigma_{\rm F} = 1.47{\times}10^{22}$\,cm$^{-2}$ instead of the required $1.36$, and
-obtains $2.4{\times}10^{22}$\,cm$^{-2}$, overestimated by $21$\%.
+Figure~\ref{fig:superposition} shows an example with $\Sigma_{\rm L} = \Sigma_{\rm S} = 10^{22}$\,cm$^{-2}$ (total $\Sigma =
+2{\times}10^{22}$\,cm$^{-2}$) and the sphere touching the near side of the cloud ($q = 0$). The sphere is heated from the front and
+from the sides, where nothing attenuates the incoming radiation, so the line of sight is warmer and brighter than that through the
+uniform structure that the method assumes. The fit returns $\Sigma_{\rm F} = 1.47{\times}10^{22}$\,cm$^{-2}$, against
+$1.27{\times}10^{22}$\,cm$^{-2}$ for the uniform structure, whose correction factor $1.57$ restores the true $\Sigma$. The method
+applies the factor $f = 1.64$ for $\Sigma_{\rm F} = 1.47{\times}10^{22}$\,cm$^{-2}$ instead of the required $1.36$, and obtains
+$2.4{\times}10^{22}$\,cm$^{-2}$, overestimated by $21$\%.
 
-Figure~\ref{fig:superposition} also gives the general picture. The sphere stands for any dense structure in a cloud, such as a core
-or a filament seen across its axis, and the errors refer to the corrected $\Sigma$ of the line of sight through its center. The
-factors that this line of sight requires for different surface densities $\Sigma_{\rm L}$ of the cloud and positions of the sphere
-form a band around the applied correction factor $f$. The error of the corrected $\Sigma$ ranges from $-13$ to $21$\%, with a sign
-that depends on $\Sigma_{\rm L}$.
-
-In both cases the line of sight is warmer than the uniform structures on which $f$ is based (Sect.~\ref{sec:factor}), but the
-warmer material is in the cloud in one case and in the sphere in the other. A tenuous cloud ($\Sigma_{\rm L} = 10^{21}$\,cm$^{-2}$)
-holds only $5$\% of the total $\Sigma = 2{\times}10^{22}$\,cm$^{-2}$, but its dust is warm. Its emission raises the fitted
-temperature from $11.4$\,K for an isolated sphere to $11.7$--$12.0$\,K, while the sphere stays cold, which lowers $\Sigma_{\rm F}$.
-The line of sight is then under-corrected by $8$--$13$\% at any depth, although an isolated sphere would be over-corrected by
-$2$\%. A dense cloud ($\Sigma_{\rm L} = 10^{22}$\,cm$^{-2}$) with the sphere at one of its sides shields the sphere from that side
-only, so the sphere itself is warmer than the same material in a single uniform structure. Its surface density is then
-underestimated less than the method assumes, and the line of sight is over-corrected by up to $21$\%. When the sphere lies near the
-middle of a dense cloud, the error is only a few percent.
+The sphere stands for any dense structure in a cloud, such as a core or a filament seen across its axis, and the errors refer to the
+corrected $\Sigma$ of the line of sight through its center. For different $\Sigma_{\rm L}$ and positions of the sphere, the required
+factors form a band around the applied factor $f$, and the error of the corrected $\Sigma$ ranges from $-13$ to $21$\%. Its sign
+depends on which material is warmer than in the uniform structure. In a dense cloud, it is the sphere, shielded from one side only,
+as in the example. Its surface density is then underestimated less than the method assumes, and the line of sight is over-corrected,
+by only a few percent when the sphere lies near the middle of the cloud. In a tenuous cloud ($\Sigma_{\rm L} = 10^{21}$\,cm$^{-2}$),
+which holds only $5$\% of the total $\Sigma$, it is the cloud. Its warm dust raises the fitted temperature from $11.4$\,K for an
+isolated sphere to $11.7$--$12.0$\,K, while the sphere stays cold, which lowers $\Sigma_{\rm F}$. The line of sight is then
+under-corrected by $8$--$13$\% at any depth, although an isolated sphere would be over-corrected by $2$\%. The simulated
+star-forming region of Sect.~\ref{sec:sim}, built entirely from radiative transfer models, shows both regimes: the wings of
+filaments in its tenuous outer areas are under-corrected, and the flanks of filaments in its dense central areas are over-corrected.
 
 \section{Calibration for different radiation fields}
 \label{app:field}
 
-The correction was tested on the grid of models in nine radiation fields (Appendix~\ref{sec:grid}), comparing for every pixel the
-factor that the correction applies with the factor that restores its true surface density. Without the field factor, the errors
-range from $-23$ to $+26$\% (Fig.~\ref{fig:fielderr}). They change sign twice: the surface densities are over-corrected in the
-weakest fields, under-corrected for $G_0 \approx 20$--$100$, and again over-corrected at the highest surface densities in the
-strongest fields.
+The correction method was tested on the grid of radiative transfer models in $9$ radiation fields (Appendix~\ref{sec:grid}), by
+comparing for every pixel the factor that the correction applies with the factor required to restore its true surface density.
+Without the field factor $g$, the errors of the corrected $\Sigma$ range from $-23$ to $26$\% (Fig.~\ref{fig:fielderr}). They
+change sign twice: $\Sigma$ is overestimated in the weakest fields, underestimated for $G_0 \approx 20$--$100$, and again
+overestimated at the highest surface densities in the strongest fields.
 
 \begin{figure*}[ht!]
 %%%%% -----------------------------------------------------------------------------------------------------------------------------
@@ -1328,29 +1323,32 @@ for the dotted lines.}
 \subsection{Deriving the field factor $g$}
 \label{app:fieldR}
 
-Each field shifts the plateaus of the envelopes to a different $\Sigma_{\rm F}$, so bins of $\Sigma_{\rm F}$ would compare
-unrelated pixels in different fields. The pixels were therefore binned in their true $\Sigma$, in bins of $0.05$\,dex. Each bin gave
-the
-mean $\log\Sigma_{\rm F}$ and the mean logarithm of the required factor $\Sigma/\Sigma_{\rm F}$, which was smoothed against
-$\log\Sigma_{\rm F}$ and divided by the same at $G_0 = 10$.
+Most pixels of a model image show only the uniform envelope, whose true surface density $\Sigma_{\rm emb}$ is the same in all
+fields. Its fitted $\Sigma_{\rm F}$, however, differs from field to field, so bins of $\Sigma_{\rm F}$ would compare different
+pixels in different fields. The pixels were therefore binned in their true $\Sigma$, with a width of $0.05$\,dex. The mean
+$\log\Sigma_{\rm F}$ and the mean logarithm of the required factor $\Sigma/\Sigma_{\rm F}$ were computed in each bin. The required
+factor, as a function of $\log\Sigma_{\rm F}$, was smoothed along $\log\Sigma_{\rm F}$ and divided by the same function for $G_0 =
+10$, which gives $g$.
 
-With the field factor $g$, the errors are within $4$\% of those at $G_0 = 10$ (the errors of the calibration itself) in every field
-and range of $\Sigma_{\rm F}$ (Fig.~\ref{fig:fielderr}). This agreement is not an independent test, because $g$ was derived from
-the same models. When a field is left out of the calculation of $g$, its errors change by
-up to $6$\% from those with $g$ and by up to $8$\% from those at $G_0 = 10$, which measures the error of interpolating between the
-fields of the model grid.
+With the correction factor $f_{G_0}(\Sigma_{\rm F})$ of Eq.~(\ref{eq:factorg0}), which includes the field factor $g$, the errors of
+the corrected $\Sigma$ are within $4$\% of those at $G_0 = 10$ (the errors of the calibration itself) for every $G_0$ and range of
+$\Sigma_{\rm F}$ (Fig.~\ref{fig:fielderr}). This agreement is not an independent test, because $g$ was derived from the same
+models. When a field is left out of the calculation of the field factor and $g$ is interpolated for it, the errors of the corrected
+$\Sigma$ in that field change by up to $6$\% from those with the full $g$ and differ by up to $8$\% from those at $G_0 = 10$.
 
-The shape of $g(\Sigma_{\rm F}, G_0)$ follows from the changes of the relation of Eq.~(\ref{eq:law}) with the field, refitted on
-the models of each field (Fig.~\ref{fig:fielderr}), whose constants are available at the CDS. For $G_0 = 10$, they differ from
-those of Eq.~(\ref{eq:law}), which was fitted to the main grid and the filaments, so only their trends with the field are discussed
-here. $T_{\rm max}$ rises steadily with increasing $G_0$, whereas $T_{\rm min}$ stays near $6$--$7$\,K up to $G_0 \approx 20$ and
-then rises, while the shielded dust is heated by the infrared emission of the warmer dust around it. The contrast $T_{\rm
-max}/T_{\rm min}$ therefore increases from $2.8$ to about $4$ near $G_0 \approx 50$--$100$ and then decreases slightly. The higher
-$T_{\rm max}$ and the steeper decline of $T(\Sigma_{\rm A})$ increase the bias and dominate up to $G_0 \approx 50$. The higher
-$T_{\rm min}$ and the overall warming reduce the underestimation of $\Sigma$ in the strongest fields. The analytic calculation of
-Sect.~\ref{sec:factor} with the refitted relations reproduces these features only qualitatively, within $25$\%, because the density
-in the bodies of the calculation is uniform, whereas the models are centrally concentrated. The derived $g$, which describes only
-the change with the field and leaves the calibration at $G_0 = 10$ unchanged, was therefore adopted.
+The shape of $g(\Sigma_{\rm F}, G_0)$ follows from the changes of the relation $T(\Sigma_{\rm A})$ of Eq.~(\ref{eq:law}), refitted
+on the models of each value of $G_0$ (Fig.~\ref{fig:fielderr}). The constants of the refitted relations are available at the CDS.
+For $G_0 = 10$, they differ from those of Eq.~(\ref{eq:law}), which was fitted to the main grid and the filaments, so only their
+trends with the field strength are discussed here. The temperature $T_{\rm max}$ rises steadily with increasing $G_0$, whereas
+$T_{\rm min}$ stays near $6$--$7$\,K up to $G_0 \approx 20$ and then rises, while the shielded dust is heated by the infrared
+emission of the warmer dust around it. The contrast $T_{\rm max}/T_{\rm min}$ therefore increases from $2.8$ to about $4$ near $G_0
+\approx 50$--$100$ and then decreases slightly. The higher $T_{\rm max}$ and the steeper decline of $T(\Sigma_{\rm A})$ increase
+the bias and dominate up to $G_0 \approx 50$. The higher $T_{\rm min}$ and the overall warming reduce the underestimation of
+$\Sigma$ in the strongest fields. 
+
+The analytic calculation of Sect.~\ref{sec:factor} with the refitted relations reproduces these features only qualitatively (within
+$25$\%) because it assumes a uniform density, whereas the models are centrally concentrated. Therefore, the derived $g(\Sigma_{\rm
+F}, G_0)$, which describes only the change with the field and keeps the calibration at $G_0 = 10$ unchanged, was adopted.
 
 \subsection{Estimating the radiation fields of clouds}
 \label{app:fieldest}
