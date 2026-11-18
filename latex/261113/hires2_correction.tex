@@ -177,8 +177,8 @@ $(2^{2/\beta}-1)$ makes $h$ independent of the slope $\beta$ \citep{Menshchikov2
 cylinder has the half-maximum width $H$ of $1.7$--$2$ times $h$ for the slopes $\beta = 2$ and $1.75$ and the extents $R/h
 \approx 9$--$20$ of the models \citep{Menshchikov+Zhang2026}. Only the middle section of each cylinder was used, where the
 radiation entering through its ends is negligible and the temperature depends only on the distance $r$ from the axis. The
-parameters of the eight filaments are given in Table~\ref{tab:cylpar}. The densest one was not optically thin at $100${\um},
-with an optical depth of $0.84$ through its axis, and was not used.
+parameters of the eight filaments are given in Table~\ref{tab:cylpar}. The densest one was not optically thin at $100${\um} (optical
+depth of $0.84$ through its axis) and was not used.
 
 \begin{figure*}
 \centering
@@ -204,9 +204,8 @@ projection was a surface density map with scale-free fluctuations and with an en
 (Fig.~\ref{fig:cube3d}). The map was derived from the same scale-free background used previously by
 \citet{Menshchikov_etal2012,Menshchikov2021method,Menshchikov2021bench}. The volume density was constructed to fluctuate along
 every line of sight with the same power spectrum as across the sky (Appendix~\ref{app:simcloud}). The surface densities of the
-cloud were $3{\times}10^{20}$--$3{\times}10^{22}$\,cm$^{-2}$, with a median of $5{\times}10^{21}$\,cm$^{-2}$.
-
-The simulated star-forming region combined this cloud with $7$ filaments and $96$ cores in an image of $1793{\times}1793$ pixels
+cloud were $3{\times}10^{20}$--$3{\times}10^{22}$\,cm$^{-2}$ (median $5{\times}10^{21}$\,cm$^{-2}$). The simulated star-forming
+region combined this cloud with $7$ filaments and $96$ cores in an image of $1793{\times}1793$ pixels
 of $3{\arcsec}$. Every structural component was computed with the radiative transfer code, so that its emission and its surface
 density were consistent. The filaments and the cores were the models embedded in cylindrical and spherical envelopes
 (Sects.~\ref{sec:modfil} and \ref{sec:modcores}), with the emission of the envelopes subtracted. The envelopes were matched to the
@@ -452,8 +451,8 @@ $2.5{\times}10^{21}$--$1.3{\times}10^{22}$\,cm$^{-2}$, they agree to within $5$\
 attenuation is weak, the line of sight is nearly isothermal, and every shape gives $f \approx 1$. At high surface densities the
 deepest material is optically thick in every direction, and the distribution of path lengths over directions no longer matters
 (Fig.~\ref{fig:geometry}). Shapes of structures matter only in between, while the factor is still rising. This is why the
-attenuating columns of the sphere and the layer were averaged in Sect.~\ref{sec:factor}, and half of the difference of their
-factors, at most $5$\%, was regarded as the uncertainty due to the geometry.
+attenuating columns of the sphere and the layer were averaged in Sect.~\ref{sec:factor}, and half of the difference of their factors
+(at most $5$\%) was regarded as the uncertainty due to the geometry.
 
 The sphere and the layer are the two limiting shapes of uniform bodies (Appendix~\ref{app:shape}). The factor for a uniform
 cylinder seen perpendicular to its axis lies between their factors and is within $1.5$\% of their average, so the average also
@@ -742,7 +741,7 @@ cylinder.}
 \end{figure*}
 
 In the median, the uncorrected $\Dim_{13.5}$ contains $78$\% of the true total $\Sigma$ and $63$\% of the true $M$. The largest
-underestimation, $44$\%, is at the core centers. The correction restores the median total $\Sigma$ to $99$\% and the median $M$ to
+underestimation ($44$\%) is at the core centers. The correction restores the median total $\Sigma$ to $99$\% and the median $M$ to
 $98$\% of the true values (Table~\ref{tab:valgrid}). Beyond $15{\arcsec}$ from the center, the corrected $\Sigma$ is overestimated
 by about $2$\% (Fig.~\ref{fig:valgrid}). There, $\Sigma$ is dominated by the uniform envelope of the core, which the calibration of
 Sect.~\ref{sec:diffuse} slightly over-corrects. An underestimation of $13$\% remains at the core centers. No correction that
@@ -936,7 +935,7 @@ field strength $G_{0}$ of $9$ observed clouds ranges from below $1$ (\object{Tau
 calibration on the diffuse cloud and the test on the simulated star-forming region were made only for $G_0 = 10$. The other main
 uncertainty is the floor temperature $T_{\rm min}$ of fully shielded dust (Appendix~\ref{sec:floor}).
 
-Applied to a sub-region of the \object{Aquila} cloud, with $G_0 \approx 33$, the correction raises the total surface density by a
+Applied to a sub-region of the \object{Aquila} cloud (with $G_0 \approx 33$), the correction raises the total surface density by a
 factor of $1.86$ and the number of pixels with $\Sigma > 10^{23}$\,cm$^{-2}$ by a factor of $8.1$. For the adopted dust properties,
 the errors of the method itself are about $20$\% in diffuse material and $25$\% in dense structures. With the uncertainties of the
 radiation field, of $T_{\rm min}$, and of the calibration, the total uncertainties of corrected surface densities are about $30$\%
@@ -1353,7 +1352,7 @@ F}, G_0)$, which describes only the change with the field and keeps the calibrat
 \subsection{Estimating the radiation fields of clouds}
 \label{app:fieldest}
 
-The field strength of a cloud is estimated by comparing its fitted temperatures with those of the models at the same surface
+The field strength of a cloud can be estimated by comparing its fitted temperatures with those of the models at the same surface
 density. Both come from the images $\Dim_{13.5}$ and $\mathcal{T}_{13.5}$ that \emph{hires} derived from the \emph{Herschel} images
 of the cloud and from the simulated images of the models in the grid of radiation fields (Appendix~\ref{sec:grid}). For each field
 $G_0$ of the grid, the median temperature of the model pixels was tabulated in bins of $0.2$\,dex of the fitted surface density. At
@@ -1362,31 +1361,28 @@ $\mathcal{T}_{13.5}$ of a cloud is therefore converted into a field strength, by
 temperature of the models in the same bin of surface density. The procedure is built into \emph{hicorrect}, which applies it
 whenever the temperature image is given and the field strength is not specified.
 
-The scaling relation $T \propto G_0^{1/6}$ \citep{IvezicElitzur1997, Tielens2005} holds only for dust that is optically thin to the
-heating radiation. At a fixed $\Sigma_{\rm F}$, the models give $T_{\rm F} \propto G_0^{\,0.09\text{--}0.13}$, so the scaling
-relation would place a cloud at a field several times too weak.
+The well-known scaling relation $T \propto G_0^{1/6}$ \citep{IvezicElitzur1997, Tielens2005} holds only for dust in a medium that
+is optically thin to the heating radiation. At a fixed $\Sigma_{\rm F}$, the models give $T_{\rm F} \propto
+G_0^{\,0.09\text{--}0.13}$, so the scaling relation would place a cloud at a field several times too weak.
 
-The parameter $G_0$ is estimated from the diffuse material only, between $10^{21}$ and $6.31{\times}10^{21}$\,cm$^{-2}$. In denser
-bins, the $G_0$ values that the procedure gives rise steadily with the surface density in every observed cloud. In \object{Aquila},
-for
-example, the median $G_0$ rises from about $20$--$40$ in the diffuse bins to more than $100$ in the densest ones. The rise of $G_0$
-is found even in \object{Scorpius}, which contains no strong heating source. It is therefore not a real increase of the field
-strength but a
-bias. Indeed, a dense structure seen through warm diffuse material has a higher fitted temperature than an isolated core of the
-same surface density, and the procedure attributes the extra warmth to the field. Pixels warmer than the models in the strongest
-field of the grid are counted separately. They are heated either internally by protostars or externally by nearby massive stars,
-beyond the range of the grid.
+The parameter $G_0$ is estimated from the diffuse material only (between $10^{21}$ and $6.31{\times}10^{21}$\,cm$^{-2}$). In denser
+bins, the estimated $G_0$ rises with the surface density steadily with the surface density in every observed cloud. In
+\object{Aquila}, for example, the median $G_0$ rises from about $20$--$40$ in the diffuse bins to more than $100$ in the densest
+ones. The rise of $G_0$ is found even in \object{Scorpius}, which contains no strong heating source. It is therefore not a real
+increase of the field strength but a bias. Indeed, a dense structure seen through warm diffuse material has a higher fitted
+temperature than an isolated core of the same surface density, and the procedure attributes the extra warmth to the field. Pixels
+warmer than the models in the strongest field of the grid are counted separately. They are heated either internally by protostars
+or nearby massive stars, beyond the grid range.
 
 The resulting field strength $G_0$ of a cloud is defined as the median of the $G_0$ values of its diffuse bins, weighted by the
 number of pixels. The fields at the 16th and 84th percentiles of the temperature give its spread. Table~\ref{tab:g0regions} lists
 the results for nine observed regions. Only \object{Scorpius} and \object{Orion A} are close to the value $G_0 = 10$ of the
-calibration. In \object{Taurus},
-the diffuse dust ($13.6$--$14.4$\,K between $10^{21}$ and $2.5{\times}10^{21}$\,cm$^{-2}$) is colder than the models in the
-weakest field of the grid ($14.9$\,K), and the procedure gives only an upper limit. The correction then uses $G_0 = 0.98$, which
-changes the corrected $\Sigma$ by a few percent at most (Fig.~\ref{fig:fielderr}).
+calibration. In \object{Taurus}, the diffuse dust ($13.6$--$14.4$\,K between $10^{21}$ and $2.5{\times}10^{21}$\,cm$^{-2}$) is
+colder than the models in the weakest field of the grid ($14.9$\,K), and the procedure provides only an upper limit. The correction
+then uses $G_0 = 0.98$, which changes the corrected $\Sigma$ by a few percent at most (Fig.~\ref{fig:fielderr}).
 
 \begin{table}[ht!]
-\caption{Estimates of $G_0$ for nine regions observed with \emph{Herschel}.}
+\caption{Estimates of $G_0$ for $9$ regions observed with \emph{Herschel}.}
 \label{tab:g0regions}
 \centering
 \begin{tabular}{lcccc}
@@ -1416,21 +1412,22 @@ taken as the field of the region. The values preceded by "$^<$" are upper limits
 }
 \end{table}
 
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
 %%%%% NUMBERS (2026-11-09): estimate_field of hicorrect2.py on hi.surface.density.r13p5.fits and hi.temperature.r13p5.fits of
 %%%%% hires/simsky6_RT_enh_cirronly (8.82; 7.29 and 10.88) and hires/simsky6_RT_enh_cirrdepth=2_nocrater (4.33; 2.75 and 6.08).
-The procedure was tested on the simulated star-forming region (Sect.~\ref{sec:modcloud}), computed for $G_0 = 10$. The image of
-the cloud alone gives $G_0 = 8.8$, with $7.3$ and $10.9$ at the 16th and 84th percentiles of the temperature. The image of the
-whole region, with its filaments and cores, gives $G_0 = 4.3$, with $2.7$ and $6.1$. The estimate is lower probably because the
-diffuse bins contain the outer parts of filaments, which are colder than cloud material of the same surface density. The field
-of a cloud rich in filaments may therefore be underestimated by a factor of about $2$, which is included in the uncertainties of
+%%%%% -----------------------------------------------------------------------------------------------------------------------------
+The procedure was tested on the simulated star-forming region (Sect.~\ref{sec:modcloud}), computed for $G_0 = 10$. The image of the
+cloud alone gives $G_0 = 8.8$ ($7.3$ and $10.9$ at the 16th and 84th percentiles of the temperature). The image of the whole
+region, with its filaments and cores, gives $G_0 = 4.3$ ($2.7$ and $6.1$). The estimate is lower probably because the diffuse bins
+contain the outer parts of filaments, which are colder than cloud material of the same surface density. The field of a cloud rich
+in filaments may therefore be underestimated by a factor of about $2$, which is included in the uncertainties of
 Appendix~\ref{sec:field}.
 
 A single $G_0$ value per cloud is an approximation. In \object{Orion A} and \object{Ophiuchus}, the fields at the 16th and 84th
-percentiles differ by
-a factor of $4$--$5$, because parts of these regions are exposed to radiation from nearby OB stars. For such clouds, the map can be
-divided into regions with their own $G_0$ values. In \object{Cygnus X}, a fifth of the pixels are warmer than the models in the
-strongest
-field, and the correction factor $f_{G_0}$ is not calibrated for them.
+percentiles differ by a factor of $4$--$5$, because parts of these regions are exposed to radiation from nearby OB stars. For such
+clouds, the map can be divided into areas with their own $G_0$ values. In \object{Cygnus X}, a fifth of the pixels are warmer than
+the models in the strongest field, so their conditions lie outside the range of the calibration. They are corrected with the same
+factor $f_{G_0}(\Sigma_{\rm F})$ as all other pixels, with the $G_0$ adopted for the cloud.
 
 \section{Inadequacy of the observed colors and temperatures}
 \label{app:onlysigma}
@@ -1621,10 +1618,9 @@ changes of $T_{\rm min}$ with the field (Appendix~\ref{app:fieldR}).
 
 The correction is insensitive to noise, because it evaluates a smooth function of an image and fits nothing: realistic Gaussian
 noise changed the total corrected surface density by less than $0.5$\%. A calibration error affects
-$\Sigma_{\rm F}$, and the corrected $\Sigma$ follows. An error of $10$\% at $500${\um}, the reference waveband, changes the
+$\Sigma_{\rm F}$, and the corrected $\Sigma$ follows. An error of $10$\% at $500${\um} (the reference waveband) changes the
 uncorrected $\Sigma$ by $16$--$18$\% and the corrected one by $16$--$23$\%. The correction enlarges the error by up to $1.4$ times
-only where $f$ rises steeply, between
-$10^{22}$ and $3{\times}10^{22}$\,cm$^{-2}$.
+only where $f$ rises steeply (between $10^{22}$ and $3{\times}10^{22}$\,cm$^{-2}$).
 
 \subsection{Internally heated sources}
 \label{sec:notdo}
