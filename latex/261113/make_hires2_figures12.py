@@ -272,7 +272,6 @@ def fig_superposition(out="fig_superposition.pdf"):
     # ---- the temperature along the line of sight, against the surface density measured from the observer's side
     u = (np.arange(400) + 0.5) / 400.0
     sc = 1.0e22
-    ax[0].plot(u * sig / sc, law(attenuating_column(sig, "mean", 400)), "-", color=one, label="one uniform cloud")
     tc = sup.layer_temperatures(sig_c)
     ts = sup.sphere_temperatures(sig_s, sig_c, q)
     nc = len(tc) // 2
@@ -281,26 +280,28 @@ def fig_superposition(out="fig_superposition.pdf"):
     xc2 = q * sig_c + sig_s + (np.arange(nc) + 0.5) / nc * (1.0 - q) * sig_c
 
     ax[0].plot(xc1 / sc, tc[:nc], "-", color=sep, label="cloud and sphere")
+    ax[0].plot(u * sig / sc, law(attenuating_column(sig, "mean", 400)), "-", color=one, label="one uniform cloud")
     ax[0].plot(xs / sc, ts[::-1], "-", color=sep)
     ax[0].plot(xc2 / sc, tc[nc:], "-", color=sep)
     ax[0].axvspan(q * sig_c / sc, (q * sig_c + sig_s) / sc, color="0.90", zorder=0)
     ax[0].text((q * sig_c + 0.5 * sig_s) / sc, 14.0, "sphere", fontsize=7.75, color="black", ha="center")
+    ax[0].text(((1-q) * sig_c + 0.5 * sig_s) / sc, 14.0, "cloud", fontsize=7.75, color="black", ha="center")
     ax[0].set_xlim(0.0, sig / sc + 0.001)
     ax[0].set_ylim(7.5, 19.0)
     ax[0].tick_params(labelsize=7.7)
-    ax[0].set_xlabel(r"Surface density from the near side ($10^{22}$ cm$^{-2}$)", fontsize=7.7, labelpad=1.5)
+    ax[0].set_xlabel(r"Surface density ($10^{22}$ cm$^{-2}$) from the near side", fontsize=7.7, labelpad=1.5)
     ax[0].set_ylabel(r"Temperature $T$ (K)", fontsize=7.7, labelpad=1.5)
     ax[0].legend(loc="upper right", **LEG, bbox_to_anchor=(0.97, 0.98))
     ax[0].annotate("", xy=(0.02, 0.9), xytext=(0.15, 0.9), xycoords=ax[0].transAxes, textcoords=ax[0].transAxes,
                    annotation_clip=False, arrowprops=dict(arrowstyle="-|>", color="black", lw=0.5))
     ax[0].text(0.16, 0.9, "to observer", fontsize=7.5, color="black", va="center", transform=ax[0].transAxes)
-    ax[0].text(1.0, 12.0, r"$\Sigma = 2{\times}10^{22}$ cm$^{-2}$", fontsize=7.75, color="black", ha="center")
+    ax[0].text(1.0, 12.95, r"$\Sigma = 2{\times}10^{22}$ cm$^{-2}$", fontsize=7.75, color="black", ha="center")
 
     # ---- the emission each produces, and what one blackbody fitted to it returns
     wl = np.geomspace(130.0, 620.0, 200)
-    for label, temps, wgts, col in (("one uniform cloud", law(attenuating_column(sig, "mean", 400)), np.full(400, sig / 400.0), one),
-                                    ("cloud and sphere", np.concatenate([tc, ts]), np.concatenate([np.full(len(tc), sig_c / len(tc)),
-                                                                                                    np.full(len(ts), sig_s / len(ts))]), sep)):
+    for label, temps, wgts, col in (("cloud and sphere", np.concatenate([tc, ts]), np.concatenate([np.full(len(tc), sig_c / len(tc)),
+                                                                                   np.full(len(ts), sig_s / len(ts))]), sep),
+                                    ("one uniform cloud", law(attenuating_column(sig, "mean", 400)), np.full(400, sig / 400.0), one)):
         obs = np.array([cnu(w) * np.sum(wgts * planck(temps, w)) for w in BANDS])
         sf = sup.fitted_column(obs)
         ax[1].plot(wl, [cnu(w) * np.sum(wgts * planck(temps, w)) for w in wl], "-", color=col,
@@ -319,7 +320,7 @@ def fig_superposition(out="fig_superposition.pdf"):
     ax[1].set_ylabel(r"Intensity $I_\nu$ (MJy sr$^{-1}$)", fontsize=7.7, labelpad=1.5)
     clean_log(ax[1], "y")
     ax[1].legend(loc="lower center", **LEG, bbox_to_anchor=(0.5, 0.02))
-    ax[1].text(280.0, 69.0, r"$\Sigma = 2{\times}10^{22}$ cm$^{-2}$", fontsize=7.75, color="black", ha="center")
+    ax[1].text(280.0, 80.0, r"$\Sigma = 2{\times}10^{22}$ cm$^{-2}$", fontsize=7.75, color="black", ha="center")
 
     # ---- the factor the method applies, and the factor each arrangement requires, both against the observed (fitted) surface
     # density: the method sees only the fitted surface density of a pixel, so the two must be compared at the same fitted value
@@ -357,11 +358,11 @@ def fig_superposition(out="fig_superposition.pdf"):
         for tot, ls in ((2.0e22, "-"), (5.0e22, "--")):
             req = np.array([sup.two_component(tot, scir, v) for v in qq])
             axq.plot(qq, fmeth(tot / req) / req - 1.0, ls, color=col)
-        axq.plot([], [], "-", color=col, label=r"$\Sigma_{\rm L} = %s$" % {1.0e21: r"1{\times}10^{21}", 3.0e21: r"3{\times}10^{21}",
+        axq.plot([], [], "-", color=col, label=r"$\Sigma_{\rm L} = %s$ cm$^{-2}$" % {1.0e21: r"1{\times}10^{21}", 3.0e21: r"3{\times}10^{21}",
                                                                            1.0e22: r"1{\times}10^{22}"}[scir])
     axq.axhline(0.0, **REF)
-    axq.plot([], [], "-", color="1", label=r"solid: $\Sigma = 2{\times}10^{22}$")
-    axq.plot([], [], "--", color="1", label=r"dash: $\Sigma = 5{\times}10^{22}$")
+    axq.plot([], [], "-", color="1", label=r"solid: $\Sigma = 2{\times}10^{22}$ cm$^{-2}$")
+    axq.plot([], [], "--", color="1", label=r"dash: $\Sigma = 5{\times}10^{22}$ cm$^{-2}$")
     axq.set_xlim(0.0, 1.0)
     axq.set_ylim(-0.13, 0.23)
     axq.tick_params(labelsize=7.7)
@@ -736,7 +737,7 @@ def fig_angular(out="fig_angular.pdf"):
     ax[0].tick_params(labelsize=7.7)
     ax[0].set_xlabel(r"Direction of incidence $\cos i$", fontsize=7.7, labelpad=3.5)
     ax[0].set_ylabel(r"Transmitted fraction $\exp\left(-\sigma\,\Sigma(\hat n)\right)$", fontsize=7.7, labelpad=1.5)
-    ax[0].legend(loc="upper left", **LEG)    ##, bbox_to_anchor=(0.02, 0.98)
+    ax[0].legend(loc="upper left", **LEG, bbox_to_anchor=(0.02, 0.98))
 
     sg = np.geomspace(1.0e20, 1.0e24, 60)
     mid = 512 // 2
@@ -746,15 +747,15 @@ def fig_angular(out="fig_angular.pdf"):
         y = np.array([attenuating_column(v, geom)[mid] for v in sg])
         ax[1].plot(sg, y, "-", color=col, label=lab)
 
-    ax[1].plot(sg, 0.5 * sg, ":", color=CCURVE[3], lw=3.0, label=r"shortest path, $\Sigma_{\rm A} = \Sigma_{\rm min}$")
+    ax[1].plot(sg, 0.5 * sg, ".", color=CCURVE[3], ms=5.0, mew=0, lw=1.0, label=r"shortest path, $\Sigma_{\rm A} = \Sigma_{\rm min}$")
     ax[1].set_xscale("log")
     ax[1].set_yscale("log")
     ax[1].set_xlim(1.0e20, 1.0e24)
     ax[1].set_ylim(5.0e19, 5.0e23)
     ax[1].tick_params(labelsize=7.7)
-    ax[1].set_xlabel(r"Surface density $\Sigma$ of the line of sight (cm$^{-2}$)", fontsize=7.7, labelpad=1.5)
+    ax[1].set_xlabel(r"Surface density $\Sigma$ (cm$^{-2}$) of the line of sight", fontsize=7.7, labelpad=1.5)
     ax[1].set_ylabel(r"Attenuating column $\Sigma_{\rm A}$ (cm$^{-2}$) at mid-depth", fontsize=7.7, labelpad=1.5)
-    ax[1].legend(loc="upper left", **LEG)    ##, bbox_to_anchor=(0.02, 0.98)
+    ax[1].legend(loc="upper left", **LEG, bbox_to_anchor=(0.02, 0.98))
 
     for a in ax:
         a.set_box_aspect(1.0 / 1.25)
@@ -813,9 +814,9 @@ def fig_mixing(out="fig_mixing.pdf"):
     ax[0].set_xlabel(r"Wavelength ($\mu$m)", fontsize=7.5)
     ax[0].set_ylabel(r"Intensity $I_\nu$ (MJy sr$^{-1}$)", fontsize=7.5, labelpad=1.5)
     clean_log(ax[0], "y")
-    ax[0].legend(loc="lower center", **LEG)
+    ax[0].legend(loc="lower center", **LEG, bbox_to_anchor=(0.5, 0.04))
 ##    ax[0].set_title(r"$\Sigma = 3\times10^{22}$ cm$^{-2}$, recovered %.3f" % rec, fontsize=FS_TITLE, pad=3)
-    ax[0].text(280.0, 50.0, r"$\Sigma = 3{\times}10^{22}$ cm$^{-2}$, recovered: %.3f" % rec, fontsize=7.5, color="black", ha="center")
+    ax[0].text(280.0, 60.0, r"$\Sigma = 3{\times}10^{22}$ cm$^{-2}$, recovered: %.3f" % rec, fontsize=7.5, color="black", ha="center")
 
     for sig, col, lab in ((3.0e21, CCURVE[0], r"$3{\times}10^{21}$"), (1.0e22, CCURVE[1], r"$1{\times}10^{22}$"),
                           (3.0e22, CCURVE[2], r"$3{\times}10^{22}$")):
@@ -833,7 +834,7 @@ def fig_mixing(out="fig_mixing.pdf"):
     ax[1].tick_params(labelsize=7.5)
     ax[1].set_xlabel(r"Wavelength ($\mu$m)", fontsize=7.5)
     ax[1].set_ylabel("Relative residual of the fit (%)", fontsize=7.5, labelpad=1.8)
-    ax[1].legend(loc="upper center", frameon=False, fontsize=FS_LEG, handlelength=1.8, labelspacing=0.2)
+    ax[1].legend(loc="upper center", frameon=False, fontsize=FS_LEG, handlelength=1.8, labelspacing=0.2, bbox_to_anchor=(0.5, 0.96))
 
     for a in ax:
         a.set_box_aspect(1.0 / 1.25)
@@ -1107,7 +1108,7 @@ def fig_field_errors(table="field_factor_errors.txt", laws="laws_refit.txt", out
     a2.set_xlim(0.8, 700.0)
     a2.set_ylim(-26.0, 35.0)
     a2.tick_params(labelsize=7.7)
-    a2.set_xlabel(r"Radiation field $G_0$", fontsize=7.7, labelpad=1.5)
+    a2.set_xlabel(r"Radiation field strength $G_0$", fontsize=7.7, labelpad=1.5)
     a2.set_ylabel(r"Relative error of the corrected $\Sigma$ (%)", fontsize=7.7, labelpad=1.5)
 
     # two legends: the ranges of the fitted surface density (shades) and the three variants (line styles)
@@ -1952,7 +1953,9 @@ def fig_simsky6(sky="simsky6_RT_enh_nocrater", cirrus="simsky6_RT_enh_cirronly",
         if k == 1: b.tick_params(labelright=True, labelsize=6.8)
         b.set_box_aspect(1.0 / 1.25)
 
-    b.legend(loc="upper left", bbox_to_anchor=(1.17, 1.06), fontsize=6.4) ##, **LEG
+    b.legend(loc="upper left", bbox_to_anchor=(1.17, 1.06), fontsize=6.4, frameon=False, handlelength=1.8, labelspacing=0.3,
+             title=r"$\Sigma_{0}$ (cm$^{-2}$)", title_fontsize=6.8)
+#    b.legend(loc="upper left", bbox_to_anchor=(1.17, 1.06), fontsize=6.4) ##, **LEG
 
 #    fig.tight_layout(pad=0.0, w_pad=0.7)
     fig.savefig(out)
@@ -1987,7 +1990,7 @@ def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT
     gs = fig.add_gridspec(3, 3, width_ratios=[1.0, 0.03, 1.02], hspace=0.13, wspace=0.02, left=0.052, right=0.945, bottom=0.115, top=0.975)
     panels = ((np.log10(n), r"$\log_{10} n_{\rm H_2}$ (cm$^{-3}$)", None, None),
               (T, r"$T_{\rm RT}$ (K)", None, None),
-              (T - Ta, r"$T_{\rm RT} - T_{\rm layer}$ (K)", -3.0, 3.0))
+              (T - Ta, r"$T_{\rm RT} - T_{\rm L}$ (K)", -3.0, 3.0))
     ext = [0.0, nx * cell, 0.0, nz * cell]
 
     for k, (img, lab, vmin, vmax) in enumerate(panels):
@@ -1996,9 +1999,9 @@ def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT
         a.tick_params(labeltop=False, labelright=False, labelbottom=(k == 2), labelsize=7.0)
         a.set_yticks([0.0, 1.0, 2.0])
         if k == 1:
-            a.set_ylabel("Depth (pc)", labelpad=1.5, fontsize=7.0)
+            a.set_ylabel(r"Depth $z$ (pc)", labelpad=1.5, fontsize=7.0)
         if k == 2:
-            a.set_xlabel("Position along the row (pc)", labelpad=1.5, fontsize=7.0)
+            a.set_xlabel(r"Position $x$ (pc) along the row", labelpad=1.5, fontsize=7.0)
         cax = fig.add_subplot(gs[k, 1])
         cb = fig.colorbar(im, cax=cax, orientation="vertical")
         cb.ax.tick_params(labelsize=6.5, pad=2)
@@ -2009,7 +2012,7 @@ def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT
     # the profiles, in a separate area to the right, leaving room for the labels of the color bars
     b = fig.add_axes([0.0, 0.0, 1.0, 1.0])
     b.set_axes_locator(None)
-    b.set_position([0.595, 0.115, 0.33, 0.73])
+    b.set_position([0.595, 0.245, 0.33, 0.59])
     order = np.argsort(sig)
     picks = [order[int(q * (nx - 1))] for q in (0.1, 0.5, 0.97)]
     depth = (np.arange(nz) + 0.9) * cell
@@ -2022,13 +2025,14 @@ def fig_cube(slice_file="/Users/amenshch/Astronomy/+SIMULATIONS_IMAGES/261008_RT
         b.plot(depth, T[:, col_i], "-", color=c, lw=1.0)
         b.plot(depth, Ta[:, col_i], "--", color=c, lw=1.0)
         hs.append(Line2D([], [], color=c, lw=1.0, label=r"$%.1f{\times}10^{%d}$ cm$^{-2}$" % (sig[col_i] / 10 ** e, e)))
+
     hv = [Line2D([], [], color="black", ls="-", lw=1.0, label="radiative transfer"),
           Line2D([], [], color="black", ls="--", lw=1.0, label="analytic estimate")]
 
     b.tick_params(labeltop=True, labelleft=True, labelright=True, labelsize=7.0)
     b.set_xlim(0.0, nz * cell + 0.004)
     b.set_ylim(np.nanmin(T[:, picks]) - 0.75, np.nanmax(T[:, picks]) + 0.3)
-    b.set_xlabel("Depth (pc)", labelpad=1.5, fontsize=7.0)
+    b.set_xlabel(r"Depth $z$ (pc)", labelpad=1.5, fontsize=7.0)
     b.set_ylabel(r"Temperature $T$ (K)", labelpad=1.5, fontsize=7.0)
     leg = b.legend(handles=hs, loc="upper center", fontsize=6.5, frameon=False, bbox_to_anchor=(0.50, 0.97), handlelength=1.6,
                    labelspacing=0.4)
@@ -2237,7 +2241,7 @@ if __name__ == "__main__":
 #    fig_method()
 #    fig_relation()
 #    fig_fieldfactor()
-    fig_grid_validation()
+#    fig_grid_validation()
 #    fig_cylinders()
 #    fig_simsky6()
 #    fig_aquila()
@@ -2246,5 +2250,5 @@ if __name__ == "__main__":
 #    fig_angular()
 #    fig_superposition()
 #    fig_field_errors()  #   fig_field_errors_tall()
-#    fig_mixing()
-    fig_footprint()
+    fig_mixing()
+#    fig_footprint()
