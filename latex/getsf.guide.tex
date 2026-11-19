@@ -1,0 +1,1959 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[multidot]{grffile}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{txfonts}
+\usepackage{natbib}
+\usepackage[colorlinks,allcolors=blue,bookmarks=false,hypertexnames=true]{hyperref} 
+\hyphenation{get-sources get-filaments get-images get-old non-uniform}
+\catcode`\_=11\relax
+\newcommand\email[1]{\_email #1\q_nil}
+\def\_email#1@#2\q_nil{%
+  \href{mailto:#1@#2}{{\emailfont\detokenize{#1}\emailampersat\detokenize{#2}}}%
+}
+\newcommand\emailfont{\sffamily}
+\newcommand\emailampersat{{\color{red}\small@}}
+\catcode`\_=8\relax   
+\newcommand*{\arcsec}{^{\prime\prime}\mkern-1.2mu}
+\usepackage{verbatimbox}
+\usepackage{latexsym}
+\usepackage[english]{isodate}
+\pdfoutput=1
+
+%%\def\mydate{\leavevmode\hbox{\the\year/\twodigits\month/\twodigits\day}}
+%%\def\twodigits#1{\ifnum#1<10 0\fi\the#1}
+
+\title
+{
+\textbf{User's Guide\\Extracting Sources and Filaments with \textsl{getsf}}
+}
+
+\author
+{
+Alexander Men'shchikov\vspace{1.2mm}\\
+\normalsize
+AIM, CEA, CNRS, Universit{\'e} Paris-Saclay, Universit{\'e} Paris Diderot, Sorbonne Paris Cit{\'e}\\
+\normalsize
+F-91191 Gif-sur-Yvette, France
+}
+
+\date{} % <-- This is here to remove the automatic date insertion by \maketitle
+\begin{document}
+\null  % Empty line
+\nointerlineskip  % No skip for prev line
+\vfill
+\let\snewpage \newpage
+\let\newpage \relax
+\vspace{-30mm}
+\maketitle
+\vspace{-3mm}
+\centerline{\date{\today}}
+\vspace{5mm}
+\centerline{{The \textsl{getsf} method was published by \cite{Men'shchikov2021getsf}}}
+\vspace{3mm}
+\centerline{\normalsize{\url{http://irfu.cea.fr/Pisp/alexander.menshchikov/}}}
+\centerline{\normalsize{\url{https://ascl.net/2012.001}}}
+\thispagestyle{empty}  % No page number
+\let \newpage \snewpage
+\vfill 
+\break % page break
+%\maketitle
+
+\newpage
+\tableofcontents
+\newpage
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\section{Introduction}
+\label{intro}
+
+The term \emph{source} denotes almost round intensity emission peaks in the observed images, significantly stronger than the local
+surrounding fluctuations, indicating the presence of one or several physical \emph{objects} in space that produced the emission. An
+implicit assumption that an unresolved far-infrared source on a complex fluctuating background contains emission of just one single
+object is invalid in general: the unresolved peak of emission may well be a blend of several unrelated components, produced by
+different physical entities. The term \emph{filament} refers to significantly elongated structures of various shapes. The term
+\emph{background} refers to the approximately isotropic astrophysical backgrounds, such as molecular clouds, emission nebulae, or
+H\textsc{ii} regions. The term \emph{noise} refers to the instrumental noise with possible contributions from any other signals that
+are not astrophysical in nature, i.e., unrelated to the emission of the areas in space being observed.
+
+Like other extraction algorithms, \textsl{getsf} does not know anything about the physical nature of the objects that produce the
+detected sources of emission. It extracts \emph{sources}, separating them from background, filaments, and noise. It is a subject of
+the post-extraction investigation to identify and sub-select from the catalogs those sources of infrared emission that are produced
+by the physical objects of a specific nature.
+     
+\begin{quote} %--------------------------------------------------------------------------------------------------------------------
+\textbf{NOTE}. The \textsl{getsf} method has no free parameters to vary. It has been carefully tested and fine-tuned to produce the
+best results with the default values of the configuration parameters and the common user should not change them. There is only one
+parameter (per image) that a user must specify before any extraction: the maximum size (FWHM) of the sources or filaments of
+interest \citep[see Sect.~3.1.3 in][]{Men'shchikov2021getsf}. This can easily be done by opening an image in \textsl{ds9} (or 
+another image viewer) and placing a region fully encircling the \emph{entire} emission peak of the largest structure; radius of the 
+region (in arcsec) would be the maximum size.
+\end{quote} %----------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\section{The \textsl{getsf} software suite}
+\label{software}
+
+The tool has been developed as a \textsl{bash} script \textsl{getsf} that employs several utilities (in FORTRAN) to perform all
+numerical work. The Linux or macOS operating systems have been used to install and run the code.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Prerequisites}
+\label{prerequisites}
+
+The \textsl{getsf} software can be installed on any modern laptop, desktop, or server. For large images, it requires many gigabytes
+of memory and space, hence the more the better. It is necessary to verify that a FORTRAN compiler, either
+\textsl{ifort}\footnote{\url{https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/fortran-compiler.html}}
+or \textsl{gfortran}\footnote{\url{https://github.com/fxcoudert/gfortran-for-macOS/releases}}, is available in the operating system:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+> ifort --version
+> gfortran --version
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+If neither is found, one of them must be installed. For reading and writing FITS images, \textsl{getsf} uses the \textsl{cfitsio}
+library \citep{Pence1999}, hence \verb!libcfitsio.a! must exist in your operating system. For resampling and reprojecting images,
+\textsl{getsf} calls \textsl{swarp} \citep{Bertin_etal2002}, hence it is necessary to verify its availability:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+> swarp --version
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+If \textsl{swarp} is not found, it needs to be installed (\url{http://www.astromatic.net/software/swarp/}). For determining the
+world coordinates of sources, \textsl{getsf} employs \textsl{xy2sky} from \textsl{wcstools} \citep{Mink2002}:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+> xy2sky -version
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+If \textsl{xy2sky} is not found, it needs to be installed (\url{http://tdc-www.harvard.edu/wcstools/}) to ensure that the source
+catalogs have world coordinates. Without this (optional) utility, the source catalogs would have coordinates in pixels only.
+Finally, to make the \textsl{getsf} screen output colored, it is recommended to have the \textsl{highlight} utility:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+> highlight --version
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+This utility is optional (\url{http://www.andre-simon.de/}), it just improves visibility of the screen output.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Installation of \textsl{getsf}}
+\label{install}
+
+The software is compressed in a \textsl{zip} archive \verb!getsf.vYYMMDD.zip!, whose name contains the latest \textsl{getsf}
+version (e.g., \verb!getsf.v241122.zip!). It is recommended that the downloaded archive is moved to a dedicated directory (for
+example, \verb!/Users/yourname/+GETSF!), where it must be unpacked:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+> unzip getsf.v241122.zip
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+The unpacked code is created in \verb!/Users/yourname/+GETSF/v241122!. It is necessary to add the environment variable
+\verb!GETSF_HOME! to the $\sim$\verb!/.bashrc! file:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+export GETSF_HOME=/Users/yourname/+GETSF
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+It is also necessary to create the binary directory, where the executable code will be found, and add the environment variable
+\verb!GETSF_BIN! to the $\sim$\verb!/.bashrc! file:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+> mkdir -p /Users/yourname/bin/+GETSF
+export GETSF_BIN=/Users/yourname/bin/+GETSF
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+The installation script \textsl{installg} will put the compiled binaries and scripts in \verb!GETSF_BIN!. Additionally, this
+current version will also be installed in a dedicated directory \verb!/Users/yourname/bin/+GETSF/v241122!, which allows running
+both the default and specific versions of the code, when necessary. The \verb!PATH! environment variable in the
+$\sim$\verb!/.bashrc! file must be modified to include the binary directory, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+export PATH=$GETSF_BIN:$PATH
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+The \textsl{cfitsio} library \verb!libcfitsio.a! must be copied from its default location in your operating system to the
+\textsl{getsf} home directory, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+> cp /path/to/cfitsio/library/in/your/system/libcfitsio.a "$GETSF_HOME"
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+The \textsl{getsf} installation must be started from its directory
+\verb!$GETSF_HOME/v241122!:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+> ./installg
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+The installation script compiles all utilities and copies their binaries and other scripts in the two directories:\\
+%----------------------------------------------------------------------------------------------------------------------------------
+\vspace{-2mm}\noindent\\
+{\small\verb!> $GETSF_BIN!} $\,\,\leadsto$ binary directory of the default version\\
+{\small\verb!> $GETSF_BIN/v241122!\vspace{-2mm}} $\,\,\leadsto$ binary directory of the specific version\\\\
+%----------------------------------------------------------------------------------------------------------------------------------
+To make sure that the installed \textsl{getsf} is indeed available, its utilities may be run, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+> modfits
+> operate
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+The default version of \textsl{getsf} can be started by typing its name:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+> getsf
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+The specific version of \textsl{getsf} can be started by typing its name and the version number:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small] 
+> getsf 241122
+\end{verbnobox} 
+%----------------------------------------------------------------------------------------------------------------------------------
+Upon each \textsl{getsf} run, several log files are created and/or appended:\\
+%----------------------------------------------------------------------------------------------------------------------------------
+\vspace{-2mm}\noindent\\
+{\small\verb!> +log.AGREE!} $\,\,\leadsto$ user agreement and suggested citations\\
+{\small\verb!> +log.HISTORY!} $\,\,\leadsto$ history of recent changes in \textsl{getsf} and its utilities\\
+{\small\verb!> +log.VERSION!} $\,\,\leadsto$ brief information on the version of the code executed\\
+{\small\verb!> +log.USAGE!} $\,\,\leadsto$ brief \textsl{getsf} usage information\\
+{\small\verb!> +log.GETSF!} $\,\,\leadsto$ main log file with information on the extraction process\\
+{\small\verb!> +log.GETSF.iter!} $\,\,\leadsto$ iterations log for the single-scale image processing\\
+{\small\verb!> +log.FOOTS.iter!\vspace{-2mm}} $\,\,\leadsto$ iterations log for the source footprints in measurements\\\\
+%----------------------------------------------------------------------------------------------------------------------------------
+
+\begin{quote} %--------------------------------------------------------------------------------------------------------------------
+\textbf{NOTE}. The software may become corrected and improved in the future and only the most recent version of \textsl{getsf} is
+supported. If apparently abnormal results are found or the code aborts for any reason, the user is asked to install the latest
+version of the code from its website and restart the failed action to see if the problem persists. If it does, please refer to
+\url{http://irfu.cea.fr/Pisp/alexander.menshchikov/#support} and request assistance from the author.
+\end{quote} %----------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{The utilities and scripts}
+\label{utils}
+
+The following list of the \textsl{getsf} utilities and scripts explains their purpose and functions. They are quite useful for
+command-line image manipulations, even if there is no need in the source or filament extraction. The utilities are sorted in a
+decreasing sequence of their general usability outside \textsl{getsf}.
+\begin{tabbing} %------------------------------------------------------------------------------------------------------------------
+Utility \,\,\,\,\,\,\,\, \= Purpose \kill
+\textsl{modfits}   \> $\leadsto$ modify an image or its header in various ways: math transformations; profiling an image along a\\
+                   \> \;\;\:\: line; image segmentation; filament skeletonization; removal of connected clusters of pixels; addition\\
+                   \> \;\;\:\: or removal of border areas; correction of saturated or bad pixel areas; conversion of intensity units;\\
+                   \> \;\;\:\: changes of header keywords; \emph{etc}.\\
+\textsl{operate}   \> $\leadsto$ operate on two input images: addition, subtraction, multiplication, division; relative differencing;\\
+                   \> \;\;\:\: minimization or maximization; extension or expansion of masks; copying of an image header;\\
+                   \> \;\;\:\: computation of surface densities, temperatures, or intensities; \emph{etc}.\\
+\textsl{imgstat}   \> $\leadsto$ display and/or save image statistical quantities; produce mode-, mean-, or median-filtered images;\\
+                   \> \;\;\:\: compute images of standard deviations, skewness, kurtosis; \emph{etc}.\\
+\textsl{fftconv}   \> $\leadsto$ fast Fourier transform or convolve image with few predefined kernels or an external kernel image\\
+\textsl{fitfluxes} \> $\leadsto$ fit spectral shapes of source fluxes or image pixel intensities to derive masses or surface densities\\
+\textsl{readhead}  \> $\leadsto$ display an image header or save selected keywords\\
+\textsl{convolve}  \> $\leadsto$ convolve an image to a desired lower resolution\\
+\textsl{resample}  \> $\leadsto$ resample and re-project an image with optional rotation\\
+\textsl{fmeasure}  \> $\leadsto$ measure and catalog properties of detected filaments\\
+\textsl{fixskels}  \> $\leadsto$ recreate scale-dependent skeletons as the isolated ones to produce global skeletons\\
+\textsl{hires}     \> $\leadsto$ derive high-resolution surface densities and temperatures\\
+\textsl{prepobs}   \> $\leadsto$ convert observed images to the same pixel grid\\
+\textsl{installg}  \> $\leadsto$ install \textsl{getsf} in an operating system (macOS, Linux)\\
+\textsl{iospeed}   \> $\leadsto$ test I/O speed of a hard drive for a specific image\\
+\textsl{cleanbg}   \> $\leadsto$ interpolate background under footprints of sources\\
+\textsl{ellipses}  \> $\leadsto$ overlay an image with ellipses of extracted sources\\
+\textsl{sfinder}   \> $\leadsto$ detect sources in combined single-scale images\\
+\textsl{smeasure}  \> $\leadsto$ measure and catalog properties of detected sources\\
+\textsl{finalcat}  \> $\leadsto$ produce final catalogs of detected sources\\
+\textsl{expanda}   \> $\leadsto$ expand masked areas of an image to its edges\\
+\textsl{extractx}  \> $\leadsto$ extract all FITS extensions in separate images\\
+\textsl{splitcube} \> $\leadsto$ split a FITS data cube in separate images\\
+\textsl{makecube}  \> $\leadsto$ make a FITS data cube from separate images
+\end{tabbing} %--------------------------------------------------------------------------------------------------------------------
+\begin{quote} %--------------------------------------------------------------------------------------------------------------------
+\textbf{NOTE}. With \textsl{getsf} utilities, it is not necessary to supply the \verb!.fits! extension of the image name on the
+command line. When a utility is run without any parameter, its usage information is displayed.
+\end{quote} %----------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Notable improvements or new features}
+\label{improvements}
+
+\begin{itemize} 
+
+\item Revision \verb!260706! (improvement). This version of \emph{getsf} substantially improves interpolated backgrounds of 
+sources. Instead of a simple interpolation along 4 directions used previously, \emph{cleanbg} now interpolates along arbitrary 
+number of directions, defaulting to 16. This improves source backgrounds, eliminating linear artifacts that sometimes appeared 
+in complex surroundings with the simpler algorithm. This version also corrects \emph{tools} functions \emph{fftconvolve}, 
+\emph{rlft3}, and \emph{fourn} to eliminate very low-level stripes in convolved images.
+
+\item Revision \verb!250609! (new feature). This version of \textsl{getsf} enables filament measurements on all spatial scales.
+Previously, measurements were done only on the scale of the maximum width of the filaments of interest, defined in the
+\verb!+getsf.cfg! (Sect.~\ref{params}), because background of filaments was derived for that scale only, hence the background
+subtraction was not accurate for much narrower filaments. To derive additional backgrounds on smaller scales and obtain accurate
+measurements, it is necessary to make several short runs of \textsl{getsf} for a few processing steps, setting smaller values of
+the maximum width of the filaments. For more details, users are referred to Sect.~\ref{measureall}.
+
+\item Revision \verb!250603! (new feature). Starting with this version, \textsl{getsf} includes a new utility \textsl{fixskels}
+that recreates scale-dependent skeletons as the isolated ones -- not overlapping with skeletons on any of the larger scales. The
+global skeletons are now correctly obtained by a simple summation of the isolated scale-dependent skeletons over all scales. The
+new global skeletons provide most accurate visualization of detected filaments on all spatial scales. They can also be used for
+filament measurements independently (outside \textsl{getsf}), if a user finds it useful. In this version, structure of the
+subdirectories for the resulting skeletons and filaments was slightly rearranged, as well as some output files were renamed to
+better reflect their contents.
+
+\item Revision \verb!241206! (improvement). This version improves \textsl{fmeasure} in production of filament footprints and
+corrects a problem in calculation of the filament masses and corresponding linear densities (mass/length) over the one-sided 
+footprints. Masses and linear densities for some blended filaments may change, as a result. Images of the one-sided footprints are 
+no more created.
+
+\item Revision \verb!241122! (improvement). Starting with this version, \textsl{getsf} produces filament measurements for only
+\emph{three} spatial scales centered at the maximum width of the filaments of interest, set in the \textsl{getsf} configuration
+file \verb!+getsf.cfg! (Sect.~\ref{params}). This is aimed at avoiding confusion, because the meaning of the maximum width of
+filaments is somewhat different from that of the maximum size of sources, in the context of filament measurements. The background
+of filaments is determined for the filaments detected on spatial scales around the adopted maximum width, therefore subtraction of
+the background is valid only for those filaments. Measurements of the filaments detected on significantly different scales are
+likely to be inaccurate, because of the inappropriate background subtraction. To properly measure also the narrower (or wider)
+filaments detected on a smaller (or larger) spatial scale, \textsl{getsf} must be additionally run using the corresponding smaller
+(or larger) value of the maximum width parameter in \verb!+getsf.cfg! (Sect.~\ref{params}).
+
+\item Revision \verb!220627! (new feature). Starting with this version, \textsl{getsf} includes \textsl{makecube}, a new utility
+that allows creation of 3D data cubes from separate 2D images to facilitate analysis of extraction results, primarily when running
+\textsl{getsf} on slices extracted from line data cubes.
+
+\item Revision \verb!220610! (new feature). Starting with this version, \textsl{getsf} creates \textsl{ds9} region files for both
+sources (half-maximum and footprint ellipses) and filaments (global and scale-dependent skeletons) to facilitate their visualization
+and analyses. The region files \verb!*.reg! are found in relevant subdirectories (Sects.~\ref{srccats}, \ref{srcvisuals}, 
+\ref{filprofiles}, and \ref{filvisuals}).
+
+%\item Revision \verb!210915! (new feature). Starting with this version, \textsl{getsf} provides also the measurements of filaments
+%for the global skeletons the same way the measurements are done for the set of scale-dependent skeletons. The images and catalogs
+%\verb!*.ske.global.*! are placed in the usual subdirectories (Sect.~\ref{filprofiles}).
+
+\item Revision \verb!210907! (new feature). Starting with this version, \textsl{getsf} adds the \emph{global}, scale-independent
+skeletons to its output. Several users experienced difficulties analyzing the complex nature of observed filaments with the set of
+scale-dependent skeletons created by \textsl{getsf}. In response, the updated \textsl{getsf} produces also images of the global
+skeletons tracing the filamentary structures on all scales, independently of the filament width. To emphasize: the global skeletons
+are provided for \emph{qualitative visualization and illustration purposes} -- they are not as reliable as the scale-dependent
+skeletons, so they should not be used for measurements of the filaments. The global skeletons are approximately created from the
+scale-dependent skeletons within a range of scales of interest, up to the maximum width of the filaments specified in the
+\textsl{getsf} configuration file (Sect.~\ref{params}). The additional images of the global skeletons \verb!*ske.global.fits!, are
+located in the subdirectories \verb!+skeletons! and \verb!+filaments/+visuals! (Sects.~\ref{skeletons} and \ref{filvisuals}).
+
+\end{itemize}
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\section{Preparing images for extraction}
+\label{preparation}
+
+The first step is to create the extraction directories (anywhere in the file system, may be named freely). In practice, it makes
+sense to use current date in the extraction directory name (in the \verb!YYMMDD! format) and the name of the observed region, for 
+example:\\
+%----------------------------------------------------------------------------------------------------------------------------------
+\vspace{-2mm}\noindent\\
+{\small\verb!mkdir -p images!} $\,\,\leadsto$ preparation directory (name may be arbitrary)\\
+{\small\verb!mkdir -p 241122/runs!\vspace{-2mm}} $\,\,\leadsto$ extraction directory (names may be arbitrary)\\\\
+%----------------------------------------------------------------------------------------------------------------------------------
+This document uses the names from the above example. It is assumed that the observed data set is found in the directory
+\verb!images!, which is made the current directory in a terminal window. If the data set consists of more than a single image, the
+images usually have different pixel sizes and coverage areas; for use with \textsl{getsf}, all images need to be reprojected to the
+same grid of pixels.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Handling multiple extensions and data cubes}
+\label{hipecube}
+
+Observed images may come in the FITS files with multiple extensions (e.g., the \emph{Herschel} HIPE output) or in the 3D data
+cubes. To use the images with \textsl{getsf}, it is necessary to extract them from the files as plain 2D FITS images. This can
+easily be done with the \textsl{getsf} utilities \textsl{extractx} and \textsl{splitcube}:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> extractx hipe.file.fits
+> splitcube data.cube.fits 3
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+An optional parameter \verb!1|2|3! of \textsl{splitcube} defines the data axis, along which the cube must be split into the normal
+2D images, with the default value of \verb!3!. The resulting output images are named as
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+hipe.file.01.fits, hipe.file.02.fits, hipe.file.03.fits, ...
+data.cube.0001.fits, data.cube.0002.fits, data.cube.0003.fits, ...
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+In the HIPE files, observed images are usually found in the second FITS extension. The observed position-velocity data cubes
+usually contain too many slices, from the practical point of view. To use them with \textsl{getsf} (that handles up to 99 images),
+the slices can be averaged over carefully chosen intervals of velocities to reduce the number of images well below 100. For their
+first test extractions, the \textsl{getsf} users are advised to have two or three images.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Modifying FITS headers}
+\label{headers}
+
+It is not unusual that the headers of FITS images are either incorrect or incomplete. The headers can be displayed and modified
+using the \textsl{readhead} and \textsl{modfits} utilities, respectively. The standard minimal subset of the FITS header keywords,
+supported by \textsl{getsf} and its utilities, is shown by the following example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> readhead universe_250
+
+ READHEAD • Display FITS Headers • Nov 05 2020 17:25
+ Alexander Men’shchikov, DAp IRFU CEA Saclay, France.
+ Using CFITSIO library version 3.260 by William D Pence.
+
+   Reading header of 'universe_250.fits'...
+
+ SIMPLE  =                    T / file does conform to FITS standard
+ BITPIX  =                  -32 / number of bits per data pixel
+ NAXIS   =                    2 / number of data axes
+ NAXIS1  =                 2600 / length of data axis 1
+ NAXIS2  =                 3500 / length of data axis 2
+ COMMENT   FITS (Flexible Image Transport System) format is defined in 'Astronomy
+ COMMENT   and Astrophysics', volume 376, page 359; bibcode: 2001A&A...376..359H
+ CREATOR = 'MODFITS '           / Alexander Menshchikov, DAp IRFU CEA Saclay
+ DATE    = '2020-08-05T17:30:38' / creation date and time
+ BZERO   =  0.0000000000000E+00 / zero point in scaling equation
+ BSCALE  =  1.0000000000000E+00 / linear factor in scaling equation
+ DATAMAX =  8.4043195312500E+04 / maximum data value
+ DATAMIN = -8.9359838867188E+02 / minimum data value
+ BUNIT   = 'MJy/sr  '           / physical units of the array values
+ CTYPE1  = 'RA---TAN'           / name of the coordinate axis
+ CTYPE2  = 'DEC--TAN'           / name of the coordinate axis
+ CRPIX1  =  1.3005000000000E+03 / coordinate system reference pixel
+ CRPIX2  =  1.7505000000000E+03 / coordinate system reference pixel
+ CROTA1  =  5.1246834126890E-04 / coordinate system rotation angle
+ CROTA2  =  5.1246834126890E-04 / coordinate system rotation angle
+ CD1_1   = -8.3333333330000E-04 / linear projection matrix
+ CD1_2   =  0.0000000000000E+00 / linear projection matrix
+ CD2_1   =  0.0000000000000E+00 / linear projection matrix
+ CD2_2   =  8.3333333330000E-04 / linear projection matrix
+ CRVAL1  =  3.5999968770000E+02 / coordinate value at reference pixel
+ CRVAL2  =  3.6225910130000E-04 / coordinate value at reference pixel
+ CDELT1  = -8.3333333333333E-04 / coordinate increment along axis
+ CDELT2  =  8.3333333333333E-04 / coordinate increment along axis
+ OBJECT  = 'Observed region ID' / object identifier
+ RA      =  3.5999968770000E+02 / right ascension
+ DEC     =  3.6225910130000E-04 / declination
+ EQUINOX =  2.0000000000000E+03 / equinox
+ WAVE    =  2.5000000000000E+02 / wavelength (microns)
+ END
+ No more extensions.
+
+ Pixel sizes: -3.000E+00 3.000E+00 arcsec
+ 
+ Done.
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The easiest way of adapting the FITS headers of the new images to the \textsl{getsf} headers is to multiply them by 1:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> modfits multiply 1 universe_250 -o universe_250.m
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+A different name (\verb!universe_250.m!) was specified for the output file, in order to keep the original image and header
+un\-altered. The keywords \verb!CDELT1!, \verb!CDELT2!, and \verb!BUNIT! are among those that need to be changed most likely. The
+supported keywords can be added or modified, one at a time, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> modfits key CDELT1 -2 universe_250.m -o universe_250.m
+> modfits key CDELT2 2 universe_250.m -o universe_250.m
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Attention must be paid to the presence of \verb!CDELT1!, \verb!CDELT2!, \verb!CD1_1!, \verb!CD1_2!, \verb!CD2_1!, \verb!CD2_2!, and
+\verb!BUNIT!. If the linear projection matrix is absent, then it can be added using \textsl{modfits}, assuming a zero rotation
+angle: \verb!CD1_1=CDELT1!, \verb!CD1_2=0!, \verb!CD2_1=0!, \verb!CD2_2=CDELT2!. When the rotation matrix is present, but the
+\verb!CDELT1! and \verb!CDELT2! keywords are not found or their values are wrong, they must be specified using \textsl{modfits}.
+Only two physical units are supported by \textsl{getsf}: \verb!MJy/sr! and \verb!H2/cm^2!. If the image units are neither of the
+two, \textsl{modfits} can be used for their conversion or to add the intensity or surface density units, for example:\\
+%----------------------------------------------------------------------------------------------------------------------------------
+\vspace{-2mm}\noindent\\
+{\small\verb!> modfits Jy/pixel!$\sim$\verb!MJy/sr universe_250.m -o universe_250.m!}\\
+{\small\verb!> modfits Jy/beam!$\sim$\verb!MJy/sr 18.2 universe_250.m -o universe_250.m!}\\
+{\small\verb!> modfits mJy/beam!$\sim$\verb!MJy/sr 18.2 universe_250.m -o universe_250.m!}\\
+{\small\verb!> modfits key BUNIT MJy/sr universe_250.m -o universe_250.m!}\\
+{\small\verb!> modfits key BUNIT H2/cm^2 universe_250.m -o universe_250.m!}
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{quote} %--------------------------------------------------------------------------------------------------------------------
+\textbf{NOTE}. When the observed data set contains just a single image, the reader can skip the next three sections and fast
+forward to Sect.~\ref{omasks}.
+\end{quote} %----------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Reprojecting images using a reference image}
+\label{refimage}
+
+This is the simplest approach to the preparation of the observed images for \textsl{getsf}. All images can be resampled
+(reprojected) by \textsl{resample} to the same grid of pixels, using the header information from one of the images, considered as a
+reference image. This method can be applied, if the parameters of one of the images (pixel size, numbers of pixels, coordinates,
+etc.) are deemed suitable also for all other images. Assuming that the data set contains three images, \verb!universe_250!,
+\verb!universe_350!, and \verb!universe_500!, and that one of them (\verb!universe_250!) can be used as a reference image, the
+commands look like this:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> resample universe_350 universe_250
+> resample universe_500 universe_250
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The resulting images, named \verb!universe_350.resamp! and \verb!universe_500.resamp!, are resampled to the pixel grid of
+\verb!universe_250!, with consistent FITS headers. Before using \verb!universe_250! as the reference image, it may be necessary to
+optimize (reduce) its size by cutting off image borders that do not contain useful information, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> modfits border -100 universe_250 -o universe_250.m
+> modfits border -100,-200,-50,-20 universe_250 -o universe_250.m
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+In the first of the two examples, the widths of the borders to cut (in pixels) are the same (\verb!100!) on all sides, whereas the
+second example shows that they may be different on each side (left: \verb!100!, right: \verb!200!, bottom: \verb!50!, top:
+\verb!20!). For very large images, the \textsl{getsf} computation time (also the storage space) may be an issue, hence it is very
+important to minimize the image size, in order to reduce its processing time as much as possible.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Reprojecting images with \textsl{prepobs}}
+\label{prepobs}
+
+This approach to the preparation of the observed images for \textsl{getsf} is incorporated in \textsl{prepobs} that internally uses
+\textsl{resample} for the actual reprojection of the images. This method is more versatile, with a much larger number of optional
+parameters, than when using the reference image (Sect.~\ref{refimage}). It may be recommended to prepare images in their sequence
+from the short to long wavelengths. It may be necessary to rename the input files before running \textsl{prepobs}, inserting the
+wavelength in the file name (separated by '\verb!_!'), to make sure that the wavelength is understood by the script.
+
+Both plain FITS images and HIPE files with several extensions may be given on input to \textsl{prepobs} (cf. Sect.~\ref{hipecube}).
+The common usage is illustrated below, assuming that the data set consists of six \emph{Herschel} images:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> prepobs pacs  20p -scanamorphos Universe universe_070 2 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs pacs  20  -scanamorphos Universe universe_100 2 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs pacs  20p -scanamorphos Universe universe_160 2 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs spire 60p -naive        Universe universe_250 2 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs spire 60p -naive        Universe universe_350 2 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs spire 60p -naive        Universe universe_500 2 1000 1000 12:35:58.0 +27:57:38.8 0
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+where \verb!pacs! and \verb!spire! refer to the \emph{Herschel} instruments, \verb!20!, \verb!20p! and \verb!60p! are the scanning
+speeds of the imaging (20 and 60$\arcsec$s$^{-1}$, \verb!p! indicates the parallel mode), \verb!scanamorphos! and \verb!naive! are
+the map-making methods, used to produce the images ('\verb!-!' indicates the plain FITS image), \verb!Universe! is the name of the
+observed region, \verb!universe_xxx! are the names of the image files (with the wavelength \verb!xxx! attached), \verb!2! is the
+desired pixel size (arcsec), \verb!1000! \verb!1000! are the desired image sizes (pixels), \verb!12:35:58.0! \verb!+27:57:38.8! are
+the world coordinates of the field center, and the last \verb!0! is the rotation angle (east of north) of the final prepared images.
+
+The following commands prepare the \textsl{Spitzer} images:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> prepobs irac   1 -other Universe universe_irac1   0.5 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs irac   2 -other Universe universe_irac2   0.5 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs irac   3 -other Universe universe_irac3   0.5 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs irac   4 -other Universe universe_irac4   0.5 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs mips  24 -other Universe universe_mips24  0.5 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs mips  70 -other Universe universe_mips70  0.5 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs mips 160 -other Universe universe_mips160 0.5 1000 1000 12:35:58.0 +27:57:38.8 0
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+where \verb!irac! and \verb!mips! refer to the \emph{Spitzer} instruments, \verb!1!, \verb!2!, \verb!3!, \verb!4!, \verb!24!,
+\verb!70!, and \verb!160! identifying the bands, \verb!-other! indicates that the map-making method is unknown or unimportant, and
+\verb!0.5! is the desired pixel size (arcsec).
+
+The following command prepares the ALMA images in the 1 and 3\,mm bands:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> prepobs other 0.5 -other Universe universe_1mm 0.1 1000 1000 12:35:58.0 +27:57:38.8 0
+> prepobs other 0.5 -other Universe universe_3mm 0.1 1000 1000 12:35:58.0 +27:57:38.8 0
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+where \verb!other! refers to an instrument (unknown to \textsl{getsf}), \verb!0.5! is the angular resolution (arcsec),
+\verb!-other! refers to an map-making method (unknown to \textsl{getsf}), and \verb!0.1! is the desired pixel size (arcsec).
+
+Several runs of \textsl{prepareobs} with different center coordinates, dimensions, and rotation angles are sufficient to optimize
+the layout of the observed coverages and to reduce the final size of the prepared images; it is also possible to create a smaller
+sub-field from the original large image and to cut useless borders (an alternative to the \textsl{modfits} technique,
+Sect.~\ref{refimage}). For very large images, the \textsl{getsf} computation time (also the storage space) may be an issue, hence
+it is very important to minimize the image size, in order to reduce its processing time as much as possible.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Verifying alignment of all images}
+\label{alignment}
+     
+In the multi-wavelength extractions with \textsl{getsf}, it is very important to verify alignment of all images. In general, the
+prepared data set contains images, observed with different telescopes and/or instruments and created with different map-making
+methods. Such differences may easily lead to misalignments of some images. Any substantial shift of the intensity peaks in some
+images with respect to the other could lead to the appearance of many spurious sources. Therefore, all prepared images must be
+carefully compared with each other, to make sure that relatively bright unresolved peaks in various places across the images stay
+at the same pixels. To reveal possible misalignments, it is sufficient to open each pair of the prepared images in \textsl{ds9},
+one over the other, and quickly alternate between the two frames, going from the highest-resolution to the lowest-resolution pairs.
+If some images are misaligned, such blinking would reveal obvious jumps between the two frames. Misalignments can be corrected by
+shifting the problematic images, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> modfits border -1,1,-1,1 universe_350 -o universe_350.shift
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+In the above example, the image is shifted by 1 pixel in the diagonal direction to the lower-right. After the attempt to shift one
+image, the visual inspection must be repeated, until all images become well aligned.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Creating observational masks}
+\label{omasks}
+
+Most astronomical observations have irregularly shaped coverages and limited usable areas that are smaller than the image. To
+include in the image processing only the usable areas of good quality, it is necessary to create the observational masks -- special
+images with the pixel values of only 1 and 0. Using the masks, \textsl{getsf} processes only the good areas of the original images,
+with the mask value of 1. To facilitate the image preparation with \textsl{prepobs} (Sect.~\ref{prepobs}), the script always
+creates the simplest default masks (with all pixels of 1). The masks can also be made by running \textsl{modfits}, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> modfits multiply 0 universe_250 -o universe_250.omask
+> modfits add 1 universe_250.omask -o universe_250.omask
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Such simple masks may only be used, if \emph{all pixels} of the images are good (usable). However, for most observations the masks
+must be prepared manually, for each image independently.
+
+To create the masks manually, it is necessary to use an image manipulation program, such as \textsl{imagej}
+\citep{Abramoff_etal2004} or \textsl{gimp} (\url{http://www.gimp.org/}), that allows users to create a polygon over an image,
+convert the polygon into a mask, and save it in the FITS format. For example, assuming that \textsl{imagej} is used, here are the
+steps: (1) Open one of the prepared images: Menu $\rhd$ File $\rhd$ Open $\rhd$ \verb!universe_250.fits!. (2) Mirror the image
+vertically (\textsl{imagej} opens it upside down): Menu $\rhd$ Image $\rhd$ Transform $\rhd$ Flip vertically. (3) Adjust brightness
+and contrast: Menu $\rhd$ Image $\rhd$ Adjust $\rhd$ Brightness/contrast. (4) Press the button 'Polygon selections'. (5) Select a
+polygon, surrounding the usable area of the image. (6) Convert the polygon in a mask: Menu $\rhd$ Edit $\rhd$ Selection $\rhd$
+Create mask. (7) Save the mask: Menu $\rhd$ File $\rhd$ Save as $\rhd$ FITS $\rhd$ \verb!mask_250.fits!.
+
+The resulting mask image, created by \textsl{imagej} has a poor FITS header and inappropriate values (255, instead of 1), therefore
+it must be corrected for use with \textsl{getsf}. Assuming that \verb!mask.fits! was saved in the \verb!images! directory with the
+prepared \verb!universe_250.fits!, the following two commands correct the mask:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> operate universe_250 h mask_250 -o universe_250.omask
+> modfits divide 255 universe_250.omask -o universe_250.omask
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+As the result, the following pair of files (with identical headers) must exist in the \verb!images! directory:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+universe_250.fits
+universe_250.omask.fits
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The same steps must be repeated for all prepared images. Consistency of each pair must be verified by opening the prepared image in
+together with its observational mask in \textsl{ds9} and blinking them to make sure that the mask indeed covers only the good area
+of the images, for which the user plans to run a \textsl{getsf} extraction. It is also necessary to check that the images do not
+have wide empty areas around the border, with zero values in the observational masks. If such empty borders exist, it is strongly
+recommended to reduce the image size by cutting the borders, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> modfits border -50,-30,-40,-60 universe_250 -o universe_250.m
+> modfits border -50,-30,-40,-60 universe_250.omask -o universe_250.omask.m
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+It is important to emphasize that the observational masks must have topologically simple shapes, without any isolated 'holes' (zero
+areas) inside the masked field. All zero pixels of the mask image must be connected to the image edges.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\section{Deriving high-resolution surface densities}
+\label{hires}
+
+\begin{quote} %--------------------------------------------------------------------------------------------------------------------
+\textbf{NOTE}. If the prepared data set contains only one or two images or it does not allow derivation of surface densities (by
+pixel fitting) for other reasons, the reader can skip this section and fast forward to Sect.~\ref{editconfig}.
+\end{quote} %----------------------------------------------------------------------------------------------------------------------
+A high-resolution surface density image can be derived, using \textsl{hires}, from the multi-wavelength far-infrared and
+submillimeter continuum images, such as those obtained in the \emph{Herschel} observations. The density image may be as sharp as
+the shortest-wavelength image of a sufficient quality, with the angular resolution reaching $5.6{\arcsec}$, when using the
+\emph{Herschel} $70$\,$\mu$m image. If the image is too noisy or unusable for other reasons, the highest resolution would be
+defined by the $100$ or $160$\,$\mu$m image ($6.8{-}11.3{\arcsec}$). In the multi-wavelength extractions with \textsl{getsf}, it
+may be recommended to use the (optional) high-resolution surface density for better detections and deblending of dense structures.
+It would be advantageous to have it complement the original data set, as an additional image, ``observed'' in a fictitious
+waveband. For more details of the algorithm, refer to \cite{Men'shchikov2021getsf}.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{The \textsl{hires} configuration file}
+\label{hiconfig}
+
+To prepare for the derivation of surface density images, it is necessary to create the default configuration file by executing
+\textsl{hires} in a dedicated subdirectory, preferably within the \verb!images! directory:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> mkdir -p hires
+> cd hires
+> hires +hires.cfg
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+This command creates the configuration file named \verb!+hires.cfg!. When opening files with '\verb!+!' in their names in the text
+editors interpreting the '\verb!+!' character as a special symbol, it is necessary to append the '\verb!./!' string to the file
+name, to tell the editor that the character is a part of the file name, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> nedit ./+hires.cfg
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The contents of the default configuration file:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+#
+# HIRES: CONFIGURATION PARAMETERS
+#
+# PM  WAVE  BEAM  OFFSET  IMAGE      MASKIMAGE
+# +/- (um)   (")  MJy/sr  file       file
+#
+   -   070   8.4   0.00   image_070  image_070.omask
+   -   100   9.4   0.00   image_100  image_100.omask
+   +   160  13.5   0.00   image_160  image_160.omask
+   +   250  18.2   0.00   image_250  image_250.omask
+   +   350  24.9   0.00   image_350  image_350.omask
+   +   500  36.3   0.00   image_500  image_500.omask
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The files with images and observational masks are those created in the \verb!images! directory (Sect.~\ref{preparation}), specified
+with either relative or absolute path. If some of the wavebands are not present in the set of prepared images (e.g., the
+100\,${\mu}$m image), the corresponding lines must be deleted.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{The configuration parameters}
+\label{edithiconf}
+
+The meaning of the first line of parameters in \verb!+hires.cfg! is explained below.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+   -   070   8.4   0.00   image_070  image_070.omask
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The 1st parameter (`\verb!-!') indicates that the 70\,${\mu}$m image will not be used for the fitting of the spectral shape of each
+pixel. Otherwise, the short-wavelength image would lead to the overestimated temperatures, hence underestimated surface densities.
+In general, images at the wavelengths shorter than 160\,${\mu}$m should not be used for the fitting. The 2nd parameter (\verb!070!)
+is the wavelength of the corresponding image, with a leading zero. The 3rd parameter (\verb!8.4!) is the angular resolution, i.e.,
+the observational beam size (FWHM, in arcsecs). The 4th parameter (\verb!0.00!) is the offset (in MJy/sr) for the image, correcting
+the image absolute calibration. In general, the default zero must be replaced with an estimated non-zero value, which is likely to
+be a separate non-trivial problem. However, the value may be critically important for the acceptably good quality of the resulting
+surface density image. The 5th parameter (\verb!image_070!) is the prepared 70\,${\mu}$m image (\verb!images/universe_070!) and the
+6th parameter its corresponding observational mask (Sect.~\ref{preparation}). When prepared, the configuration file may look like:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+#
+# HIRES: CONFIGURATION PARAMETERS
+#
+# PM  WAVE  BEAM  OFFSET  IMAGE               MASKIMAGE
+# +/- (um)   (")  MJy/sr  file                file
+#
+   -   070   8.4   400   images/universe_070  images/universe_070.omask
+   +   160  13.5   850   images/universe_160  images/universe_160.omask
+   +   250  18.2     0   images/universe_250  images/universe_250.omask
+   +   350  24.9    50   images/universe_350  images/universe_350.omask
+   +   500  36.3   160   images/universe_500  images/universe_500.omask
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Convolving images to lower resolutions}
+\label{convolving}
+
+The following command instructs \verb!hires! to convolve all input images to all lower angular resolutions found in
+\verb!+hires.cfg! and to create the configuration files \verb!+hires.r250.cfg!, \verb!+hires.r350.cfg!, and \verb!+hires.r500.cfg!,
+necessary for the next step of fitting the spectral shapes of images pixels:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> hires +hires.cfg prepare
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+As a result, the following set of convolved images is created in the \verb!hires! directory:\\
+%----------------------------------------------------------------------------------------------------------------------------------
+\vspace{-2mm}\noindent\\
+{\small\verb!universe_070.r070!} $\,\,\leadsto$ 070 $\mu$m image at the resolution of the 070 $\mu$m image\\
+{\small\verb!universe_070.r160!} $\,\,\leadsto$ 070 $\mu$m image at the resolution of the 160 $\mu$m image\\
+{\small\verb!universe_070.r250!} $\,\,\leadsto$ 070 $\mu$m image at the resolution of the 250 $\mu$m image\\
+{\small\verb!universe_070.r350!} $\,\,\leadsto$ 070 $\mu$m image at the resolution of the 350 $\mu$m image\\
+{\small\verb!universe_070.r500!} $\,\,\leadsto$ 070 $\mu$m image at the resolution of the 500 $\mu$m image\\
+{\small\verb!universe_160.r160!} $\,\,\leadsto$ 160 $\mu$m image at the resolution of the 160 $\mu$m image\\
+{\small\verb!universe_160.r250!} $\,\,\leadsto$ 160 $\mu$m image at the resolution of the 250 $\mu$m image\\
+{\small\verb!universe_160.r350!} $\,\,\leadsto$ 160 $\mu$m image at the resolution of the 350 $\mu$m image\\
+{\small\verb!universe_160.r500!} $\,\,\leadsto$ 160 $\mu$m image at the resolution of the 500 $\mu$m image\\
+{\small\verb!universe_250.r250!} $\,\,\leadsto$ 250 $\mu$m image at the resolution of the 250 $\mu$m image\\
+{\small\verb!universe_250.r350!} $\,\,\leadsto$ 250 $\mu$m image at the resolution of the 350 $\mu$m image\\
+{\small\verb!universe_250.r500!} $\,\,\leadsto$ 250 $\mu$m image at the resolution of the 500 $\mu$m image\\
+{\small\verb!universe_350.r350!} $\,\,\leadsto$ 350 $\mu$m image at the resolution of the 350 $\mu$m image\\
+{\small\verb!universe_350.r500!} $\,\,\leadsto$ 350 $\mu$m image at the resolution of the 500 $\mu$m image\\
+{\small\verb!universe_500.r500!} $\,\,\leadsto$ 500 $\mu$m image at the resolution of the 500 $\mu$m image
+%----------------------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Fitting spectral shapes of pixels with \textsl{fitfluxes}}
+\label{pixfitting}
+
+The fitting method used by \textsl{fitfluxes} is described in \cite{Men'shchikov2016}; its usage information is shown, when the
+utility is run without parameters. The following command lists all \textsl{fitfluxes} runs and parameters, necessary to produce all
+variants of the surface density and temperature images with different resolutions:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> hires +hires.cfg fitfluxes
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+As a result, the user screen displays the following information on the parameters to supply to \textsl{fitfluxes} and on the
+correct sequence of the commands:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ Here are the commands fitting the spectral shapes of pixels in observed images
+ to compute the high-resolution surface density and temperature images using the
+ HIRES algorithm, described by Men’shchikov (2021) A&A, 649, A89:
+ 
+ FITTING PIXEL SPECTRAL SHAPES IN IMAGES AT 500 µm RESOLUTION:
+
+ fitfluxes 0 0 0 -1:070,-2:160,-3:250,4:350,5:500 1:0.2,1:0.2,1:0.1,1:0.1,1:0.1 \
+           thinbody 0:1,0:1,2:0 1 10 0.01 +hires.r500.cfg -verb0
+ fitfluxes 0 0 0 -1:070,-2:160,3:250,4:350,5:500 1:0.2,1:0.2,1:0.1,1:0.1,1:0.1 \
+           thinbody 0:1,0:1,2:0 1 10 0.01 +hires.r500.cfg -verb0
+ fitfluxes 0 0 0 -1:070,2:160,3:250,4:350,5:500 1:0.2,1:0.2,1:0.1,1:0.1,1:0.1 \
+           thinbody 0:1,0:1,2:0 1 10 0.01 +hires.r500.cfg -verb0
+
+ FITTING PIXEL SPECTRAL SHAPES IN IMAGES AT 350 µm RESOLUTION:
+
+ fitfluxes 0 0 0 -1:070,-2:160,3:250,4:350 1:0.2,1:0.2,1:0.1,1:0.1 \
+           thinbody 0:1,0:1,2:0 1 10 0.01 +hires.r350.cfg -verb0
+ fitfluxes 0 0 0 -1:070,2:160,3:250,4:350 1:0.2,1:0.2,1:0.1,1:0.1 \
+           thinbody 0:1,0:1,2:0 1 10 0.01 +hires.r350.cfg -verb0
+
+ FITTING PIXEL SPECTRAL SHAPES IN IMAGES AT 250 µm RESOLUTION:
+
+ fitfluxes 0 0 0 -1:070,2:160,3:250 1:0.2,1:0.2,1:0.1 \
+           thinbody 0:1,0:1,2:0 1 10 0.01 +hires.r250.cfg -verb0
+
+ FITTING PIXEL SPECTRAL SHAPES IN IMAGES AT 500 µm RESOLUTION (OFFSETS CONSISTENCY CHECKS):
+
+ fitfluxes 0 0 0 -1:160,2:250,3:350,-4:500 1:0.2,1:0.1,1:0.1,1:0.1 \
+           thinbody 0:1,0:1,2:0 1 10 0.01 +hires.r500.cfg -verb0
+ fitfluxes 0 0 0 1:160,2:250,-3:350,-4:500 1:0.2,1:0.1,1:0.1,1:0.1 \
+           thinbody 0:1,0:1,2:0 1 10 0.01 +hires.r500.cfg -verb0
+
+ Start the commands (in the sequence shown above) on different processors, in parallel.
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The \textsl{fitfluxes} runs are not executed by \textsl{hires}, because it is much more efficient for the user to run the jobs in
+parallel in different terminal sessions (on different processors), to greatly accelerate the processing. The parallel jobs must be
+started \emph{in the sequence shown, one after the other}, because the numbering of the output files depends on that. 
+As a result, the following sets of the surface densities and temperatures are created in
+the \verb!hires! directory:\\
+%----------------------------------------------------------------------------------------------------------------------------------
+\vspace{-2mm}\noindent\\
+{\small\verb!thin.+hires.rWWW.cfg.0N.chisqnu.fits!} $\,\,\leadsto$ $\chi^2$ values for the resulting fit\\
+{\small\verb!thin.+hires.rWWW.cfg.0N.log!} $\,\,\leadsto$ log file for the run\\
+{\small\verb!thin.+hires.rWWW.cfg.0N.surfden.fits!} $\,\,\leadsto$ surface density at the resolution of the \verb!WWW! $\mu$m image\\
+{\small\verb!thin.+hires.rWWW.cfg.0N.surferr.fits!} $\,\,\leadsto$ relative errors in surface densities\\
+{\small\verb!thin.+hires.rWWW.cfg.0N.temperr.fits!} $\,\,\leadsto$ relative errors in temperatures\\
+{\small\verb!thin.+hires.rWWW.cfg.0N.tempers.fits!\vspace{-2mm}} $\,\,\leadsto$ temperature at the resolution of the \verb!WWW! $\mu$m image\\\\
+%----------------------------------------------------------------------------------------------------------------------------------
+In the above names, \verb!WWW! is the wavelength and \verb!0N! is the sequential number (\verb!00!, \verb!01!, \verb!02!,
+\verb!03!, \verb!04!) of the \textsl{fitfluxes} run. When the jobs are cancelled before they have finished, all log files with the
+names \verb!*.cfg.??.log! must be deleted and the sequence of the \textsl{fitfluxes} jobs must be started again.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Computing high-resolution surface densities}
+\label{derivation}
+
+The derived set of surface densities with three angular resolutions is used to differentially increase their resolution to any
+value among the resolutions present in \verb!+hires.cfg!:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> hires +hires.cfg complete
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The command creates the high-resolution surface densities and temperatures (in \verb!+hires/+results!), employing the algorithm
+published by \cite{Men'shchikov2021getsf}, a substantial improvement over the previous algorithm \citep{Palmeirim_etal2013}:\\
+%----------------------------------------------------------------------------------------------------------------------------------
+\vspace{-2mm}\noindent\\
+{\small\verb!hi.c.surface.density.r8p4.fits !} $\,\,\leadsto$ high-resolution high-contrast density at 8.4$\arcsec$ resolution\\
+{\small\verb!hi.c.surface.density.r9p4.fits !} $\,\,\leadsto$ high-resolution high-contrast density at 9.4$\arcsec$ resolution\\
+{\small\verb!hi.c.surface.density.r13p5.fits!} $\,\,\leadsto$ high-resolution high-contrast density at 13.5$\arcsec$ resolution\\
+{\small\verb!hi.c.surface.density.r18p2.fits!} $\,\,\leadsto$ high-resolution high-contrast density at 18.2$\arcsec$ resolution\\
+{\small\verb!hi.c.surface.density.r24p9.fits!} $\,\,\leadsto$ high-resolution high-contrast density at 24.9$\arcsec$ resolution\\
+{\small\verb!hi.c.surface.density.r36p3.fits!} $\,\,\leadsto$ high-resolution high-contrast density at 36.3$\arcsec$ resolution\\
+{\small\verb!hi.surface.density.r8p4.fits !} $\,\,\leadsto$ high-resolution density at 8.4$\arcsec$ resolution\\
+{\small\verb!hi.surface.density.r9p4.fits !} $\,\,\leadsto$ high-resolution density at 9.4$\arcsec$ resolution\\
+{\small\verb!hi.surface.density.r13p5.fits!} $\,\,\leadsto$ high-resolution density at 13.5$\arcsec$ resolution\\
+{\small\verb!hi.surface.density.r18p2.fits!} $\,\,\leadsto$ high-resolution density at 18.2$\arcsec$ resolution\\
+{\small\verb!hi.surface.density.r24p9.fits!} $\,\,\leadsto$ high-resolution density at 24.9$\arcsec$ resolution\\
+{\small\verb!hi.surface.density.r36p3.fits!\vspace{-2mm}} $\,\,\leadsto$ high-resolution density at 36.3$\arcsec$ resolution\\\\
+%----------------------------------------------------------------------------------------------------------------------------------
+The high-contrast variants of the high-resolution images (\verb!hi.c.surface.density.*.fits!) with an artificially enhanced
+contrast may be useful for the analysis of the fine unresolved structures, present in the images, but they may not be suitable for
+the \textsl{getsf} extractions. It is recommended to use only the regular versions of the images (\verb!hi.surface.density.*.fits!)
+in the source and filament extractions with \textsl{getsf}. 
+
+\begin{quote} %--------------------------------------------------------------------------------------------------------------------
+\textbf{NOTE}. When choosing the best angular resolution of the images, the user should verify their quality very carefully. This
+is especially critical for the images with the highest resolutions of 8.4$\arcsec$ and 9.4$\arcsec$, whose quality may be
+unacceptably low due to excessively high noise or artifacts.
+\end{quote} %----------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Observational mask for surface densities}
+\label{densobsmask}
+
+The \verb!+hires/+results! contains an observational mask, automatically created for only the highest-resolution surface density
+image, i.e., for \verb!hi.surface.density.r8p4!. If another image is planned for an extraction (e.g.,
+\verb!hi.surface.density.r13p5! or \verb!hi.surface.density.r18p2!), then the mask must either be copied or renamed, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> cp +results/hi.surface.density.r8p4.omask.fits +results/hi.surface.density.r13p5.omask.fits
+> mv +results/hi.surface.density.r8p4.omask.fits +results/hi.surface.density.r18p2.omask.fits
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The surface density mask is created as the intersection of the masks of the individual images (Sect.~\ref{omasks}) specified in the
+configuration file \verb!+hires.cfg! (Sect.~\ref{hiconfig}), therefore it does not require any adjustments.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\section{Configuring source and filament extraction}
+\label{editconfig}
+
+In order to complete the preparation for the \textsl{getsf} extraction, it is necessary to create the default configuration file
+\verb!+getsf.cfg! by executing \textsl{getsf} in a directory that does not contain that file:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> cd ../241122/runs
+> getsf
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{The \textsl{getsf} configuration file}
+\label{config}
+
+The content of the default configuration file \verb!+getsf.cfg! facilitates preparations for the 6 \emph{Herschel} wavebands.
+However, the information can be easily modified for use with any other set of images. When opening files with '\verb!+!' in their
+names in the text editors interpreting the '\verb!+!' character as a special symbol, it is necessary to append the '\verb!./!'
+string to the file name, to tell the editor that the character is a part of the file name, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> nedit ./+getsf.cfg
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The contents of the default configuration file:
+\begin{verbnobox}[\mbox{}\small]
+#_______________________________________________________________________________________________
+#                                                                                               
+# GETSF • Multi-Scale Multi-Wavelength Source & Filament Extraction • Version 241122 • Alexander
+#_______________________________________________________________________________________________
+#                    |                                      !
+# VALUES             | PARAMETERS                           ! COMMENT  NB: default beams are for
+#____________________|______________________________________!___________________________________
+#                    |                                      !
+ fieldname 100       | prefix distance .................... ! prefix for naming files (never use
+ 6                   | nwmax ...............{ nwmax < 100 } ! maximum number of wavelengths spec
+ 6 1 2 3 4 5 6       | nwaves nw[i] ....................... ! number of waveblengths and their i
+ 070  8.4 s070 f070 n col | ............................... ! wave, beam, [-]srcmaxsize, [-]film
+ /path/to/image ../070 | .................................. ! paths to image and monochromatic d
+ image_070           | .................................... ! prepared image name
+ 100  9.4 s100 f100 n col | ............................... ! wave, beam, [-]srcmaxsize, [-]film
+ /path/to/image ../100 | .................................. ! paths to image and monochromatic d
+ image_100           | .................................... ! prepared image name
+ 160 13.5 s160 f160 n col | ............................... ! wave, beam, [-]srcmaxsize, [-]film
+ /path/to/image ../160 | .................................. ! paths to image and monochromatic d
+ image_160           | .................................... ! prepared image name
+ 250 18.2 s250 f250 n col | ............................... ! wave, beam, [-]srcmaxsize, [-]film
+ /path/to/image ../250 | .................................. ! paths to image and monochromatic d
+ image_250           | .................................... ! prepared image name
+ 350 24.9 s350 f350 n col | ............................... ! wave, beam, [-]srcmaxsize, [-]film
+ /path/to/image ../350 | .................................. ! paths to image and monochromatic d
+ image_350           | .................................... ! prepared image name
+ 500 36.3 s500 f500 n col | ............................... ! wave, beam, [-]srcmaxsize, [-]film
+ /path/to/image ../500 | .................................. ! paths to image and monochromatic d
+ image_500           | .................................... ! prepared image name
+ y y                 | sources filaments .................. ! extract sources and/or filaments {
+ y 1 1 50            | separate its1 itf1 niter ........... ! separate components and background
+ y 1 1               | flatten itsd1 itfd1 ................ ! flatten background-subtracted comp
+ y                   | complete ........................... ! complete separation and flattening
+ y                   | combine ............................ ! combine decomposed structures over
+ y 2                 | detect skelsig ..................... ! detect structures; skeleton signif
+ y 1 1 50 n          | measure goodmin itn itx sproima .... ! measure structures; minimum goodne
+ y                   | visualize .......................... ! visualize sources
+ 5                   | nsigmacombos (!expert) ............. ! number of sigmas for combining sou
+ 2                   | nsigmacombof (!expert) ............. ! number of sigmas for combining fil
+ 1                   | nwavesdetect ....................... ! required minimum number of wavelen
+ 2 ?                 | savespace delete ................... ! space saving level {0|1|2}: clean 
+ 0                   | verbosity .......................... ! verbosity level {0|1|2} for the sc
+#_______________________________________________________________________________________________
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{The configuration parameters}
+\label{params}
+
+The meaning of each line of parameters in \verb!+getsf.cfg! is explained below.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ fieldname 100       | prefix distance .................... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The extraction must be given a name that will serve as the prefix for naming the output files. It makes sense to replace the
+placeholder \verb!fieldname! with the name of the observed region, for example, \verb!universe!. The number \verb!100! is the
+distance (in parsecs) to the region, used to compute the masses and linear densities of filaments. If the distance is unknown or
+unimportant, the default value may be kept.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 6                   | nwmax ...............{ nwmax < 100 } !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+This number (\verb!nwmax!) is the total number of images (wavebands) specified in this configuration file. This value is suitable
+for the default set of 6 \emph{Herschel} images (the upper limit is 99).
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 6 1 2 3 4 5 6       | nwaves nw[i] ....................... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The 1st number (\verb!nwaves!) is the maximum number of images (wavebands) to be used in the current run of \textsl{getsf}. The
+other six numbers refer to the corresponding images used in the current run. This default line of parameters means that the
+extraction will be done sequentially, processing the next image only after the previous one has been completed
+(Sect.~\ref{sequence}). This is the easiest way of running \textsl{getsf}, but it makes sense for only relatively small images. For
+large images, it is recommended to always process the images in parallel independent \textsl{getsf} runs (Sect.~\ref{parallel}) to
+strongly reduce the total computation time, approximately by the factor \verb!nwmax!. Hence, for the six parallel jobs, this line
+of parameters takes the following values:\\
+%----------------------------------------------------------------------------------------------------------------------------------
+\vspace{-2mm}\noindent\\
+{\small\verb! 1 1                 | nwaves nw[i] ....................... ! !} $\,\,\leadsto$ for the 1st parallel run\\
+{\small\verb! 1 2                 | nwaves nw[i] ....................... ! !} $\,\,\leadsto$ for the 2nd parallel run\\
+{\small\verb! 1 3                 | nwaves nw[i] ....................... ! !} $\,\,\leadsto$ for the 3rd parallel run\\
+{\small\verb! 1 4                 | nwaves nw[i] ....................... ! !} $\,\,\leadsto$ for the 4th parallel run\\
+{\small\verb! 1 5                 | nwaves nw[i] ....................... ! !} $\,\,\leadsto$ for the 5th parallel run\\
+{\small\verb! 1 6                 | nwaves nw[i] ....................... ! !\vspace{-2mm}} $\,\,\leadsto$ for the 6th parallel run\\\\
+%----------------------------------------------------------------------------------------------------------------------------------
+More information on the source and filament extraction with \textsl{getsf} is found in Sect.~\ref{extract}.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 070  8.4 s070 f070 n col | ............................... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The 1st number (\verb!070!) is the wavelength (in microns) of the corresponding image with a leading zero. The number of digits
+must be the same for all wavelengths, hence the leading zero. The 2nd number (\verb!8.4!) is the angular resolution, i.e., the
+observational beam size (FWHM, in arcsecs). All default beams correspond to the \emph{Herschel} fast parallel (PACS/SPIRE) scanning
+mode (60$\arcsec$s$^{-1}$). The 3rd parameter (\verb!s070!) is the placeholder for the maximum size (FWHM, arcsec) of the sources
+to extract in this image. The 4th parameter (\verb!f070!) is the placeholder for the maximum width (FWHM, arcsec) of the filaments
+to extract in this image. If a user is interested in only unresolved sources and filaments, both \verb!s070! and \verb!f070! must
+be set to the angular resolution. If there are no filaments or there is no interest in filaments, then \verb!f070! should be set to
+the angular resolution \emph{and} processing of filaments must be disabled by setting \verb!filaments! to `\verb!n!' (see below).
+For more information on the maximum size (width) of sources (filaments), refer to Sect.~3.1.3 in \cite{Men'shchikov2021getsf}. The
+maximum size may also be entered as negative values to stipulate that the image must not be used for the detection of sources
+(\verb!-s070!) or filaments (\verb!-f070!). Then the image will only be used for the measurements of the sources or filaments,
+detected in the other images. The 5th parameter (`\verb!n!') disables the \emph{Herschel} aperture corrections, therefore it must
+be enabled (changed to `\verb!y!') for the \emph{Herschel} images. The last \emph{optional} parameter (\verb!col!) is the
+placeholder for the desired color of sources and skeletons in the \textsl{ds9} region files \verb!*.reg!, created by \textsl{getsf}
+to aid users in visualizations and analyses. The \textsl{getsf} colors are abbreviated as `\verb!gre!', `\verb!blu!', `\verb!ora!',
+`\verb!pur!', `\verb!cya!', `\verb!mag!', `\verb!lim!', `\verb!pin!', `\verb!tea!', `\verb!lav!', `\verb!bro!', `\verb!bei!',
+`\verb!mar!', `\verb!min!', `\verb!oli!', `\verb!apr!', `\verb!gra!', `\verb!red!', `\verb!yel!', `\verb!whi!', and `\verb!bla!'.
+If the optional parameter is not specified, then the default colors are used.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ /path/to/image ../070 | .................................. !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The 1st parameter (\verb!/path/to/image!) is the absolute or relative path to the prepared image, i.e., to the \verb!images!
+directory (Sect.~\ref{preparation}). The 2nd parameter (\verb!../070!) is the relative path to the monochromatic directory, created
+by \textsl{getsf}, where all files related to the processing of the image are created. The two paths must be separated by space,
+the monochromatic directory must be separated by space from the vertical line (\verb!|!) that follows it, and \emph{the trailing
+slash} (\verb!/!) \emph{in the paths must never be used}.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ image_070           | .................................... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The name of the observed image, without the \verb!.fits! extension, that was prepared in the \verb!images! directory, i.e.,
+\verb!universe_070!. The observational mask is not specified, because it has the same name as the image, with \verb!.omask!
+attached (Sect.~\ref{omasks}).
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 100  9.4 s100 f100 n col | ............................... !
+ /path/to/image ../100 | .................................. !
+ image_100           | .................................... !
+ 160 13.5 s160 f160 n col | ............................... !
+ /path/to/image ../160 | .................................. !
+ image_160           | .................................... !
+ 250 18.2 s250 f250 n col | ............................... !
+ /path/to/image ../250 | .................................. !
+ image_250           | .................................... !
+ 350 24.9 s350 f350 n col | ............................... !
+ /path/to/image ../350 | .................................. !
+ image_350           | .................................... !
+ 500 36.3 s500 f500 n col | ............................... !
+ /path/to/image ../500 | .................................. !
+ image_500           | .................................... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+All other wavebands are edited the same way as the first one. If \verb!nwmax! is smaller than 6, the unused entries for the extra
+wavebands of the default configuration file must be deleted.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y y                 | sources filaments .................. !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The 1st parameter (\verb!sources!) enables the extraction of sources and the 2nd parameter (\verb!filaments!) enables the
+extraction of filaments. Changing either of them to \verb!n! disables the processing of the respective structural component in
+\textsl{getsf}. If the user is interested only in the source extraction, the 2nd parameter may be changed to `\verb!n!'. However,
+if the user is interested only in the filament extraction, it is not recommended to disable the source extraction, because the
+extracted filaments would remain contaminated by the sources. Therefore, if the user is interested in the filament extraction, both
+parameters should remain `\verb!y!'.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y 1 1 50            | separate its1 itf1 niter ........... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The 1st parameter (\verb!separate!) enables the separation step of the structural components. This parameter may be changed to
+`\verb!n!', when \textsl{getsf} must be restarted to process only the other steps. When the separation step is enabled, but the
+image processing must be restarted for any reason, the 2nd parameter (\verb!its1!) defines the number of the iteration to restart
+with for the component of sources and the 3rd parameter (\verb!itf1!) defines the same for the component of filaments. When
+\verb!its1! or \verb!itf1! is set to 0, then the corresponding iterations are bypassed. The last parameter (\verb!niter!) defines
+the maximum number of iterations (\verb!50!) in the separation of the components. If the user is interested only in the filament
+extraction, it is possible to reduce the \textsl{getsf} execution time by limiting the source processing only to this separation
+step.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y 1 1               | flatten itsd1 itfd1 ................ !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The 1st parameter (\verb!flatten!) enables the flattening step of the structural components; this parameter may be changed to
+`\verb!n!', when \textsl{getsf} must be restarted to process only the other steps. When the flattening step is enabled, but the
+image processing must be restarted for any reason, the 2nd parameter (\verb!itsd1!) defines the number of the iteration to restart
+with for the component of sources and the 3rd parameter (\verb!itfd1!) defines the same for the component of filaments. When
+\verb!its1! or \verb!itf1! is set to 0, then the corresponding iterations are bypassed. The maximum number of iterations in the
+flattening of the components is defined by \verb!niter! from the separation step.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y                   | complete ........................... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+This parameter (\verb!complete!) enables the completion step after the separation and flattening of the structural components; this
+parameter may be changed to `\verb!n!', when \textsl{getsf} must be restarted to process only the other steps.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y                   | combine ............................ !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+This parameter (\verb!combine!) enables the combination of the detection images of sources and filaments over wavebands; this
+parameter may be changed to `\verb!n!', when \textsl{getsf} must be restarted to process only the other steps.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y 2                 | detect skelsig ..................... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The 1st parameter (\verb!detect!) enables the detection of sources and filaments; this parameter may be changed to `\verb!n!', when
+\textsl{getsf} must be restarted to process only the other steps. The 2nd parameter (\verb!skelsig!) is the desired significance of
+the skeletons (crests of filaments); the default value may be changed, although this is not recommended.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y 1 1 50 n          | measure goodmin itn itx sproima .... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The 1st parameter (\verb!measure!) enables the measurements of sources and filaments; this parameter may be changed to `\verb!n!',
+when \textsl{getsf} must be restarted to process only the other steps. The 2nd parameter (\verb!goodmin!) defines the minimum
+goodness of sources that are cataloged. When the measurements are enabled, but they must be restarted for any reason, the 3rd
+parameter (\verb!itn!) defines the number of the iteration to restart with for the component of sources. The 4th parameter
+(\verb!itx!) defines the maximum number of the measurement iterations (\verb!50!). The last parameter (\verb!sproima!), defaulting
+to `\verb!n!', may be changed to `\verb!y!' to enable creation of small individual images and intensity profiles of each
+background-subtracted and deblended cataloged source, as well as images of the sources in the original images.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y                   | visualize .......................... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+This parameter (\verb!visualize!) enables the visualization of extracted sources and filaments; this parameter may be changed to
+`\verb!n!', when \textsl{getsf} must be restarted to process only the other steps. 
+%The 2nd parameter (\verb!regcolor!) is the
+%desired color of sources and skeletons in the \textsl{ds9} region files \verb!*.reg! created by \textsl{getsf} to aid users in
+%visualizations and analyses. The \textsl{getsf} colors, abbreviated as \verb!red!, \verb!gre!, \verb!yel!, \verb!blu!, \verb!ora!, 
+%\verb!pur!, \verb!cya!, \verb!mag!, \verb!lim!, \verb!pin!, \verb!tea!, \verb!lav!, \verb!bro!, \verb!bei!, \verb!mar!, 
+%\verb!min!, 
+%\verb!oli!, \verb!apr!, \verb!gra!, \verb!whi!, and \verb!bla!, somewhat differ from the standard colors to make them distinct.
+%%\verb!red!, \verb!gre!, \verb!blu!, \verb!cya!, \verb!mag!, \verb!yel!, 
+%%\verb!ora!, \verb!pin!, \verb!pur!, \verb!tea!, \verb!tan!, \verb!bro!, \verb!whi!, \verb!gra!, \verb!bla!.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 5                   | nsigmacombos (!expert) ............. !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+This parameter (\verb!nsigmacombos!) defines the default number of standard deviations in thresholding the component of sources,
+when combining them over wavelengths. The default value (\verb!5!) is optimal and it should never be changed by non-experts.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 2                   | nsigmacombof (!expert) ............. !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+This parameter (\verb!nsigmacombof!) defines the default number of standard deviations in thresholding the component of filaments,
+when combining them over wavelengths. The default value (\verb!2!) is optimal and it should never be changed by non-experts.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 1                   | nwavesdetect ....................... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+This parameter (\verb!nwavesdetect!) defines the required minimum number of images (wavebands), in which a source is detected and
+significant, to be included in the final catalog of sources. This value may be increased to 2, in order to reduce the number of
+potentially spurious sources in the catalogs. However, higher values of this parameter may also lead to the elimination of the real
+sources.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 2 ?                 | savespace delete ................... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The 1st parameter (\verb!savespace!) controls removal of the files created by \textsl{getsf} (when it has finished), defining the
+hard drive cleaning level: \verb!0! (none), \verb!1! (medium), or \verb!2! (maximum). In the 2nd parameter (\verb!delete!), the
+user can specify, whether \textsl{getsf} must wait for a confirmation before deleting the files (`\verb!?!') or assume that the
+user would confirm (`\verb!y!') or disapprove (`\verb!n!') the actual deletion of files, without asking any question.
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 0                   | verbosity .......................... !
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+This parameter (\verb!verbosity!) defines three levels for the output produced by \textsl{getsf} on the user screen: `\verb!0!'
+(minimum), `\verb!1!' (medium), or `\verb!2!' (maximum).
+
+\begin{quote} %--------------------------------------------------------------------------------------------------------------------
+\textbf{NOTE}. The maximum size (width) of sources (filaments) of interest (see above) can be conveniently estimated by opening
+an image in \textsl{ds9} and creating a circular region, fully surrounding the \emph{entire} emission peak of the largest source
+(filament) of interest; the \emph{radius} of the circular region (in arcsec) is the value that must replace the respective
+placeholder.
+\end{quote} %----------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\section{Extracting sources and filaments}
+\label{extract}
+
+This section presents examples of the \textsl{getsf} extraction runs, illustrating how \textsl{getsf} runs in sequential and
+parallel modes. It is assumed that the prepared data set consists of the five \emph{Herschel} images, observed in the PACS/SPIRE
+fast parallel mode, and an additional high-resolution surface density image. It is also assumed that the user has supplied all
+required information about prepared images and the maximum sizes of interest in the upper section of \verb!+getsf.cfg!, for example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+#_______________________________________________________________________________________________
+#                                                                                               
+# GETSF • Multi-Scale Multi-Wavelength Source & Filament Extraction • Version 241122 • Alexander
+#_______________________________________________________________________________________________
+#                    |                                      !
+# VALUES             | PARAMETERS                           ! COMMENT  NB: default beams are for
+#____________________|______________________________________!___________________________________
+#                    |                                      !
+ universe 1000       | prefix distance .................... ! prefix for naming files (never use
+ 6                   | nwmax ...............{ nwmax < 100 } ! maximum number of wavelengths spec
+ 6 1 2 3 4 5 6       | nwaves nw[i] ....................... ! number of waveblengths and their i
+ 070  8.4 17 25 n col | ................................... ! wave, beam, [-]srcmaxsize, [-]film
+ ../../images ../070 | .................................... ! paths to image and monochromatic d
+ universe_070        | .................................... ! prepared image name
+ 160 13.5 27 40 n col | ................................... ! wave, beam, [-]srcmaxsize, [-]film
+ ../../images ../160 | .................................... ! paths to image and monochromatic d
+ universe_160        | .................................... ! prepared image name
+ 165 13.5 27 40 n col | ................................... ! wave, beam, [-]srcmaxsize, [-]film
+ ../../images/hires/+results ../165 | ..................... ! paths to image and monochromatic d
+ hi.surface.density.r13p5 | ............................... ! prepared image name
+ 250 18.2 36 55 n col | ................................... ! wave, beam, [-]srcmaxsize, [-]film
+ ../../images ../250 | .................................... ! paths to image and monochromatic d
+ universe_250        | .................................... ! prepared image name
+ 350 24.9 50 75 n col | ................................... ! wave, beam, [-]srcmaxsize, [-]film
+ ../../images ../350 | .................................... ! paths to image and monochromatic d
+ universe_350        | .................................... ! prepared image name
+ 500 36.3 72 109 n col | .................................. ! wave, beam, [-]srcmaxsize, [-]film
+ ../../images ../500 | .................................... ! paths to image and monochromatic d
+ universe_500        | .................................... ! prepared image name
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Running \textsl{getsf} sequentially for all images}
+\label{sequence}
+
+The bottom section of the configuration file tells \textsl{getsf} how to proceed with the extraction:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y y                 | sources filaments .................. ! extract sources and/or filaments {
+ y 1 1 50            | separate its1 itf1 niter ........... ! separate components and background
+ y 1 1               | flatten itsd1 itfd1 ................ ! flatten background-subtracted comp
+ y                   | complete ........................... ! complete separation and flattening
+ y                   | combine ............................ ! combine decomposed structures over
+ y 2                 | detect skelsig ..................... ! detect structures; skeleton signif
+ y 1 1 50 n          | measure goodmin itn itx sproima .... ! measure structures; minimum goodne
+ y                   | visualize .......................... ! visualize sources
+ 5                   | nsigmacombos (!expert) ............. ! number of sigmas for combining sou
+ 2                   | nsigmacombof (!expert) ............. ! number of sigmas for combining fil
+ 1                   | nwavesdetect ....................... ! required minimum number of wavelen
+ 2 ?                 | savespace delete ................... ! space saving level {0|1|2}: clean 
+ 0                   | verbosity .......................... ! verbosity level {0|1|2} for the sc
+#_______________________________________________________________________________________________
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The first line tells \textsl{getsf} that both sources and filaments must be extracted. 
+\begin{quote} %--------------------------------------------------------------------------------------------------------------------
+\textbf{NOTE}. The correct approach to \textsl{getsf} extractions is first to inspect the observed images for presence of
+filaments. If no filament-like structures are visible or there is no interest in the filaments, then processing of filaments must
+be disabled by setting \verb!filaments! to `\verb!n!'. Processing of sources must \emph{always} be enabled: the source-like peaks
+must be separated from filaments or background fluctuations. If the user is interested exclusively in the filament extraction, it
+is possible to reduce the \textsl{getsf} execution time by limiting the source processing only to the source separation step. When
+\textsl{getsf} has to be restarted from an intermediate step, sources may be disabled, depending on the circumstances.
+\end{quote} %----------------------------------------------------------------------------------------------------------------------
+If there is interest only in extracting sources, the \textsl{getsf} execution time can be reduced by roughly a factor of two, by
+setting \verb!filaments! to `\verb!n!':
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y n                 | sources filaments .................. ! extract sources and/or filaments {
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The next block of parameters controls execution of the corresponding processing steps of \textsl{getsf}:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y 1 1 50            | separate its1 itf1 niter ........... ! separate components and background
+ y 1 1               | flatten itsd1 itfd1 ................ ! flatten background-subtracted comp
+ y                   | complete ........................... ! complete separation and flattening
+ y                   | combine ............................ ! combine decomposed structures over
+ y 2                 | detect skelsig ..................... ! detect structures; skeleton signif
+ y 1 1 50 n          | measure goodmin itn itx sproima .... ! measure structures; minimum goodne
+ y                   | visualize .......................... ! visualize sources
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+By default, they instruct \textsl{getsf} to process all images in the sequence of their appearance in the upper section of the
+configuration file. This is the simplest approach to running \textsl{getsf}: the user makes the extraction directory (\verb!runs!)
+the current one and starts the code within a new \textsl{screen} session:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> cd 241122/runs
+> screen -h 1000 -LS get
+> getsf
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Having started the code, the user may forget about it for some time, until it finishes (the time may be very long for many large
+images). This simplest approach to running \textsl{getsf} is quite inefficient for the multi-wavelength extractions, because most
+of the time the code spends in the first two steps (\verb!separate! and \verb!flatten!), processing the images completely
+independently of each other. A natural and easy way to accelerate the extraction is to parallelize the image processing in
+independent jobs, one \textsl{getsf} run per wavelength.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Running \textsl{getsf} in parallel for each image}
+\label{parallel}
+
+The parallel processing mode of images makes sense only for the steps of the separation of structural components (\verb!separate!),
+flattening of background-subtracted images (\verb!flatten!), and completion of the two steps (\verb!complete!). This means that the
+parameters \verb!combine!, \verb!detect!, \verb!measure!, and \verb!visualize! must be changed from `\verb!y!' to `\verb!n!', for
+example:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y y                 | sources filaments .................. ! extract sources and/or filaments {
+ y 1 1 50            | separate its1 itf1 niter ........... ! separate components and background
+ y 1 1               | flatten itsd1 itfd1 ................ ! flatten background-subtracted comp
+ y                   | complete ........................... ! complete separation and flattening
+ n                   | combine ............................ ! combine decomposed structures over
+ n 2                 | detect skelsig ..................... ! detect structures; skeleton signif
+ n 1 1 50 n          | measure goodmin itn itx sproima .... ! measure structures; minimum goodne
+ n                   | visualize .......................... ! visualize sources
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Before running \textsl{getsf}, it is necessary to modify the line that defines the wavelengths to proceed. Edit the configuration
+file by specifying the index of the 1st image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 1 1                 | nwaves nw[i] ....................... ! number of waveblengths and their i
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Open a new \textsl{screen} session and start \textsl{getsf} for the 1st image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> screen -h 1000 -LS get1
+> getsf
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Edit the configuration file by specifying the index of the 2nd image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 1 2                 | nwaves nw[i] ....................... ! number of waveblengths and their i
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Open a new \textsl{screen} session and start \textsl{getsf} for the 2nd image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> screen -h 1000 -LS get2
+> getsf
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Edit the configuration file by specifying the index of the 3rd image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 1 3                 | nwaves nw[i] ....................... ! number of waveblengths and their i
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Open a new \textsl{screen} session and start \textsl{getsf} for the 3rd image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> screen -h 1000 -LS get3
+> getsf
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Edit the configuration file by specifying the index of the 4th image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 1 4                 | nwaves nw[i] ....................... ! number of waveblengths and their i
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Open a new \textsl{screen} session and start \textsl{getsf} for the 4th image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> screen -h 1000 -LS get4
+> getsf
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Edit the configuration file by specifying the index of the 5th image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 1 5                 | nwaves nw[i] ....................... ! number of waveblengths and their i
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Open a new \textsl{screen} session and start \textsl{getsf} for the 5th image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> screen -h 1000 -LS get5
+> getsf
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Edit the configuration file by specifying the index of the 6th image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 1 6                 | nwaves nw[i] ....................... ! number of waveblengths and their i
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Open a new \textsl{screen} session and start \textsl{getsf} for the 6th image:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> screen -h 1000 -LS get6
+> getsf
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+Having started the parallel jobs, the user may forget about them for some time, until they all finish (the time may be very long
+for very large images). Then it is necessary to invert the controls in the configuration file
+(`\verb!n!'\,$\leftrightarrow$\,`\verb!y!') to tell \textsl{getsf} to complete all remaining steps:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ y y                 | sources filaments .................. ! extract sources and/or filaments {
+ n 1 1 50            | separate its1 itf1 niter ........... ! separate components and background
+ n 1 1               | flatten itsd1 itfd1 ................ ! flatten background-subtracted comp
+ n                   | complete ........................... ! complete separation and flattening
+ y                   | combine ............................ ! combine decomposed structures over
+ y 2                 | detect skelsig ..................... ! detect structures; skeleton signif
+ y 1 1 50 n          | measure goodmin itn itx sproima .... ! measure structures; minimum goodne
+ y                   | visualize .......................... ! visualize sources
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The final \textsl{getsf} run completes the extraction (in a much shorter time than that required by the parallel steps):
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+> screen -h 1000 -LS get
+> getsf
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+ 
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Measuring filaments on all spatial scales}
+\label{measureall}
+
+Standard extractions with \textsl{getsf} provide measurements for only the filaments detected on the scales around the maximum
+width of filaments of interest (set by the user in \verb!+getsf.cfg!), despite the fact that the method obtains skeletons for
+filaments detected on every scale, down to the smallest one (around the angular resolution). To produce the filament measurements
+on a smaller scale, it is necessary to determine and subtract the filament background appropriate for that scale. This can be
+accomplished by an additional \textsl{getsf} run, in which the maximum width of \emph{filaments} in \verb!+getsf.cfg! is set to the
+value of a smaller scale, for which skeletons were derived in the standard run (scale \verb!KKKK!, see Sect.~\ref{skeletons}). Only
+the maximum size of filaments is to be changed, the one for sources must remain the same as in the standard extraction; using the
+example from Sect.~\ref{extract}, only the \verb!YY! value must be changed:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ 165 13.5 27 YY n col | ................................... ! wave, beam, [-]srcmaxsize, [-]film
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+It is strongly advised to change control parameters in \verb!+getsf.cfg! to tell \textsl{getsf} that only a few precessing steps
+are necessary:
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{verbnobox}[\mbox{}\small]
+ n y                 | sources filaments .................. ! extract sources and/or filaments {
+ y 1 1 50            | separate its1 itf1 niter ........... ! separate components and background
+ n 1 1               | flatten itsd1 itfd1 ................ ! flatten background-subtracted comp
+ n                   | complete ........................... ! complete separation and flattening
+ n                   | combine ............................ ! combine decomposed structures over
+ n 2                 | detect skelsig ..................... ! detect structures; skeleton signif
+ y 1 1 50 n          | measure goodmin itn itx sproima .... ! measure structures; minimum goodne
+ y                   | visualize .......................... ! visualize sources
+\end{verbnobox}
+%----------------------------------------------------------------------------------------------------------------------------------
+The additional execution times are very short in comparison to the standard \textsl{getsf} run, because just a single
+time-consuming processing step (filament separation) is completed. Such additional runs can be repeated for all scales found in the
+skeletons subdirectory (Sect.~\ref{skeletons}).
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\section{Understanding extraction output files}
+\label{output}
+
+Names of some output files contain numbers: \verb!WWW! is the waveband ($\mu$m), \verb!NN! the waveband number, \verb!JJ! the scale
+number, \verb!OO! the angular resolution ($\arcsec$), \verb!TT! the iteration number, \verb!SSSSSS! the decomposition scale
+($\arcsec$), \verb!FFFF! the maximum scale ($\arcsec$) of the partially reconstructed filament, \verb!GG! the skeleton
+significance, \verb!XX! or \verb!XXX! the maximum size ($\arcsec$) of sources, \verb!YY! or \verb!YYY! the maximum size ($\arcsec$)
+of filaments, \verb!KKKK! the skeleton scale ($\arcsec$), \verb!NNNNN! the cataloged source number, and \verb!NNNN! the filament
+number. The images with \verb!obs! and \verb!det! in their names are related to the original images and detection images,
+respectively.
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Directory structure created by \textsl{getsf} runs}
+\label{dirstructure}
+
+When \textsl{getsf} is run in the extraction directory (\verb!241122/runs!) with the configuration example described in
+Sect.~\ref{extract}, the following structure of sub-directories is created:\\
+%----------------------------------------------------------------------------------------------------------------------------------
+\vspace{-2mm}\noindent\\
+{\small\verb!241122/070!} $\,\,\leadsto$ monochromatic processing (70 $\mu$m image)\\
+{\small\verb!241122/160!} $\,\,\leadsto$ monochromatic processing (160 $\mu$m image)\\
+{\small\verb!241122/165!} $\,\,\leadsto$ monochromatic processing (surface density image with the 160 $\mu$m image resolution)\\
+{\small\verb!241122/250!} $\,\,\leadsto$ monochromatic processing (250 $\mu$m image)\\
+{\small\verb!241122/350!} $\,\,\leadsto$ monochromatic processing (350 $\mu$m image)\\
+{\small\verb!241122/500!} $\,\,\leadsto$ monochromatic processing (500 $\mu$m image)\\
+{\small\verb!241122/components!} $\,\,\leadsto$ separated structural components (all wavebands)\\
+{\small\verb!241122/components/+obsimage_partial!} $\,\,\leadsto$ partially reconstructed images of original images\\
+{\small\verb!241122/components/+filaments_partial!} $\,\,\leadsto$ partially reconstructed images of filaments\\
+{\small\verb!241122/runs/results!} $\,\,\leadsto$ detection and measurement results\\
+{\small\verb!241122/runs/results/+components!} $\,\,\leadsto$ improved structural components (all wavebands)\\
+{\small\verb!241122/runs/results/+sources/+catalogs!} $\,\,\leadsto$ catalogs of extracted sources\\
+{\small\verb!241122/runs/results/+sources/+images!} $\,\,\leadsto$ individual images of extracted sources\\
+{\small\verb!241122/runs/results/+sources/+iterations!} $\,\,\leadsto$ measurement iterations of sources (technical)\\
+{\small\verb!241122/runs/results/+sources/+profiles!} $\,\,\leadsto$ individual profiles of extracted sources\\
+{\small\verb!241122/runs/results/+sources/+visuals!} $\,\,\leadsto$ visualization of extracted sources\\
+{\small\verb!241122/runs/results/+skeletons!} $\,\,\leadsto$ derived skeletons of filaments\\
+{\small\verb!241122/runs/results/+filaments/+images/070!} $\,\,\leadsto$ measurements of filaments (images)\\
+{\small\verb!241122/runs/results/+filaments/+images/160!} $\,\,\leadsto$ measurements of filaments (images)\\
+{\small\verb!241122/runs/results/+filaments/+images/165!} $\,\,\leadsto$ measurements of filaments (images)\\
+{\small\verb!241122/runs/results/+filaments/+images/250!} $\,\,\leadsto$ measurements of filaments (images)\\
+{\small\verb!241122/runs/results/+filaments/+images/350!} $\,\,\leadsto$ measurements of filaments (images)\\
+{\small\verb!241122/runs/results/+filaments/+images/500!} $\,\,\leadsto$ measurements of filaments (images)\\
+{\small\verb!241122/runs/results/+filaments/+profiles/070!} $\,\,\leadsto$ measurements of filaments (catalogs)\\
+{\small\verb!241122/runs/results/+filaments/+profiles/160!} $\,\,\leadsto$ measurements of filaments (catalogs)\\
+{\small\verb!241122/runs/results/+filaments/+profiles/165!} $\,\,\leadsto$ measurements of filaments (catalogs)\\
+{\small\verb!241122/runs/results/+filaments/+profiles/250!} $\,\,\leadsto$ measurements of filaments (catalogs)\\
+{\small\verb!241122/runs/results/+filaments/+profiles/350!} $\,\,\leadsto$ measurements of filaments (catalogs)\\
+{\small\verb!241122/runs/results/+filaments/+profiles/500!} $\,\,\leadsto$ measurements of filaments (catalogs)\\
+{\small\verb!241122/runs/results/+filaments/+visuals!} $\,\,\leadsto$ visualization of extracted filaments
+%----------------------------------------------------------------------------------------------------------------------------------
+\begin{quote} %--------------------------------------------------------------------------------------------------------------------
+\textbf{NOTE}. When an extraction has finished and the user has no plans to restart the same extraction in the future, it is
+possible to save considerable disk space by removing unnecessary files. In the case that the extraction is indeed deemed final, the
+user needs just the \texttt{components} and \verb!results! directories in the future. Therefore, it may be recommended that the
+user removes all other directories: \verb!070!, \verb!160!, \verb!165!, \verb!250!, \verb!350!, \verb!500!, \verb!+iterations!, and
+all \emph{files} from the extraction directory \verb!runs!, \emph{with an exception} of the \textsl{getsf} configuration and log
+files (\verb!+getsf.cfg!, \verb!+log.*!) that must be preserved as a documentation. Another possibility is to compress the
+directories using an archiver that produces highly compressed solid archives, e.g., \textsl{rar}
+(\url{https://www.rarlab.com/download.htm}).
+\end{quote} %----------------------------------------------------------------------------------------------------------------------
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Directory for \textsl{getsf} extraction runs}
+\label{extractdir}
+
+The directory \verb!runs! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.WWW.obs.sources.n.fits!} $\,\,\leadsto$ regularized component of sources\\
+{\small\verb!<fieldname>.WWW.obs.sources.n.cb.fits!} $\,\,\leadsto$ interpolated background of regularized component of sources\\
+{\small\verb!<fieldname>.WWW.obs.filaments.n.fits!} $\,\,\leadsto$ regularized component of filaments\\
+{\small\verb!<fieldname>.WWW.det.sflatfactor.fits!} $\,\,\leadsto$ flattening image for the component of sources\\
+{\small\verb!<fieldname>.WWW.det.fflatfactor.fits!} $\,\,\leadsto$ flattening image for the component of filaments\\
+{\small\verb!<fieldname>.WWW.det.fits!} $\,\,\leadsto$ detection image for the component of sources or filaments\\
+{\small\verb!<fieldname>.WWW.obs.fits!} $\,\,\leadsto$ original observed image\\
+{\small\verb!<fieldname>.WWW.omask.fits!} $\,\,\leadsto$ observational mask\\
+{\small\verb!<fieldname>.WWW.bs.omask.fits!} $\,\,\leadsto$ observational mask for background subtraction\\
+{\small\verb!<fieldname>.f.det.JJ.cSSSSSSas.an.fits!} $\,\,\leadsto$ detection images for filaments combined over waves\\
+{\small\verb!<fieldname>.s.det.JJ.cSSSSSSas.an.fits!} $\,\,\leadsto$ detection images for sources combined over waves\\
+{\small\verb!<fieldname>.s.det.JJ.cSSSSSSas.as.fits!} $\,\,\leadsto$ detection images for sources combined over waves\\
+{\small\verb!<fieldname>.f.coadded.omask.fits!} $\,\,\leadsto$ observational mask accumulated over wavebands for filaments\\
+{\small\verb!<fieldname>.s.coadded.omask.fits!} $\,\,\leadsto$ observational mask accumulated over wavebands for sources\\
+{\small\verb!<fieldname>.combining.WWW.omask.fits!} $\,\,\leadsto$ special mask (optional) to exclude bad pixels in combining\\
+{\small\verb!sm.<fieldname>.WWW.obs.subsfp.fits!} $\,\,\leadsto$ footprints of sub-structured sources (if any)\\
+{\small\verb!sm.<fieldname>.s.det.footprints.fits!} $\,\,\leadsto$ footprints of all detected sources\\
+{\small\verb!sm.<fieldname>.s.det.unrotated.fits!} $\,\,\leadsto$ positions of all detected sources\\
+{\small\verb!sm.<fieldname>.s.det.wcs!} $\,\,\leadsto$ conversion table from pixels to world coordinates of sources\\
+{\small\verb!sm.<fieldname>.s.det.cat!} $\,\,\leadsto$ detection catalog of sources\\
+{\small\verb!sm.<fieldname>.WWW.obs.smf.cat!} $\,\,\leadsto$ catalog of the detected sources updated in measurement iterations\\
+{\small\verb!sm.seg.<fieldname>.s.det.JJ.cSSSSSSas.fits!} $\,\,\leadsto$ segmentation of sources at scale \verb!SSSSSS!\\
+{\small\verb!sm.seg.<fieldname>.s.det.JJ.cSSSSSSas.fp.fits!} $\,\,\leadsto$ footprints of detected sources at scale \verb!SSSSSS!\\
+{\small\verb!sm.seg.<fieldname>.s.det.JJ.cSSSSSSas.cat!} $\,\,\leadsto$ detection catalog of sources at scale \verb!SSSSSS!\\
+{\small\verb!bigfoot.WWW.fits!} $\,\,\leadsto$ annuli around the source footprints (used for flux errors estimation)\\
+{\small\verb!flatfoot.WWW.fits!} $\,\,\leadsto$ converged footprints of all acceptable sources\\
+{\small\verb!<fieldname>.mask.s!$\sim$\verb!max.wWWW.sum.hi.fits!} $\,\,\leadsto$ masks of the structures accumulated over spatial scales\\
+{\small\verb!<fieldname>.mask.s!$\sim$\verb!max.wWWW!$\sim$\verb!WWW.sum.hi.fits!} $\,\,\leadsto$ masks accumulated over scales and wavebands\\
+{\small\verb!<fieldname>.s.det.combine!} $\,\,\leadsto$ technical info on the detection images for sources being combined\\
+{\small\verb!<fieldname>.f.det.combine!} $\,\,\leadsto$ technical info on the detection images for filaments being combined\\
+{\small\verb!<fieldname>.s.det.combined!} $\,\,\leadsto$ technical info on the combined detection images for sources\\
+{\small\verb!<fieldname>.f.det.combined!} $\,\,\leadsto$ technical info on the combined detection images for filaments\\
+{\small\verb!<fieldname>.WWW.srcmaxsize!} $\,\,\leadsto$ technical info on the maximum size of sources\\
+{\small\verb!<fieldname>.WWW.det.lastbright!} $\,\,\leadsto$ technical info on the last bright spatial scale\\
+{\small\verb!+wave.WWW.done!} $\,\,\leadsto$ technical info on convergence of the source measurement iterations\\
+{\small\verb!+wave.WWW.foot!} $\,\,\leadsto$ technical info on footprint expansion or shrinkage in measurement iterations
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Directory for monochromatic processing}
+\label{monochrom}
+
+The directories \verb!runs/../WWW! contain the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.WWW.obs.sources.fits!} $\,\,\leadsto$ separated component of sources\\
+{\small\verb!<fieldname>.WWW.obs.filaments.fits!} $\,\,\leadsto$ separated component of filaments\\
+{\small\verb!<fieldname>.WWW.obs.sources.n.fits!} $\,\,\leadsto$ regularized component of sources\\
+{\small\verb!<fieldname>.WWW.obs.filaments.n.fits!} $\,\,\leadsto$ regularized component of filaments\\
+{\small\verb!<fieldname>.WWW.det.sources.fits!} $\,\,\leadsto$ detection image of the separated component of sources\\
+{\small\verb!<fieldname>.WWW.det.filaments.fits!} $\,\,\leadsto$ detection image of the separated component of filaments\\
+{\small\verb!<fieldname>.WWW.obs.fbackground.fits!} $\,\,\leadsto$ background of the separated component of filaments\\
+{\small\verb!<fieldname>.WWW.obs.sbackground.fits!} $\,\,\leadsto$ background of the separated component of sources\\
+{\small\verb!<fieldname>.WWW.det.fits!} $\,\,\leadsto$ updated background image of the separated component\\
+{\small\verb!<fieldname>.WWW.omask.fits!} $\,\,\leadsto$ observational mask image\\
+{\small\verb!<fieldname>.WWW.det.decompose!} $\,\,\leadsto$ technical info on the decomposed single scale images\\
+{\small\verb!<fieldname>.WWW.det.lastbright!} $\,\,\leadsto$ technical info on last bright spatial scale\\
+{\small\verb!<fieldname>.WWW.det.separateso!} $\,\,\leadsto$ technical info on the decomposed images of sources\\
+{\small\verb!<fieldname>.WWW.det.separatefi!} $\,\,\leadsto$ technical info on the decomposed images of filaments\\
+{\small\verb!+log.GETSF.iter.NN!} $\,\,\leadsto$ technical info on the threshold iterations for decomposed images
+
+\subsubsection{Directory for separation of sources or filaments}
+\label{separate}
+
+The directories \verb!runs/../WWW/+components/+{sources|filaments}! contain the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.WWW.det.bg.TT.fits!} $\,\,\leadsto$ background of the component in iterations\\
+{\small\verb!<fieldname>.WWW.det.co.TT.fits!} $\,\,\leadsto$ separated component in iterations\\
+{\small\verb!<fieldname>.WWW.det.bg.TT.m.fits!} $\,\,\leadsto$ background after subtraction of a constant\\
+{\small\verb!<fieldname>.WWW.det.bg.TT.r.fits!} $\,\,\leadsto$ relative correction to the background in iterations\\
+{\small\verb!<fieldname>.WWW.det.bg.fits!} $\,\,\leadsto$ background of the component at the latest iteration\\
+{\small\verb!<fieldname>.WWW.det.co.fits!} $\,\,\leadsto$ separated component at the latest iteration\\
+{\small\verb!<fieldname>.WWW.det.fits!} $\,\,\leadsto$ initial image for the component separation\\
+{\small\verb!<fieldname>.WWW.det.fm.01.fits!} $\,\,\leadsto$ cleaning masks accumulated over scales at the first iteration\\
+{\small\verb!<fieldname>.WWW.det.b.fits!} $\,\,\leadsto$ approximately reconstructed background of the component\\
+{\small\verb!<fieldname>.WWW.obs.bg.sXXas.fits!} $\,\,\leadsto$ final separated background of the component\\
+{\small\verb!<fieldname>.WWW.obs.bg.sXXas.n.fits!} $\,\,\leadsto$ final regularized background of the component\\
+{\small\verb!<fieldname>.WWW.obs.bgs.sXXas.fits!} $\,\,\leadsto$ final separated component\\
+{\small\verb!<fieldname>.WWW.obs.bgs.sXXas.std.fits!} $\,\,\leadsto$ standard deviations in the component\\
+{\small\verb!<fieldname>.WWW.obs.bgs.sXXas.flat.fits!} $\,\,\leadsto$ flattened separated component\\
+{\small\verb!<fieldname>.WWW.obs.bgs.sXXas.flat.std.fits!} $\,\,\leadsto$ standard deviations in the flat component\\
+{\small\verb!<fieldname>.WWW.obs.bgs.sXXas.n.fits!} $\,\,\leadsto$ regularized component\\
+{\small\verb!<fieldname>.WWW.obs.bgs.sXXas.n.flat.fits!} $\,\,\leadsto$ regularized flattened component\\
+{\small\verb!<fieldname>.WWW.obs.bgs.sXXas.n.flat.std.fits!} $\,\,\leadsto$ standard deviations in the regularized component\\
+{\small\verb!<fieldname>.WWW.obs.fits!} $\,\,\leadsto$ original observed image\\
+{\small\verb!<fieldname>.WWW.det.sigma!} $\,\,\leadsto$ technical info on the standard deviation over all scales\\
+{\small\verb!<fieldname>.WWW.det.decompose!} $\,\,\leadsto$ technical info on the decomposed images\\
+{\small\verb!<fieldname>.WWW.det.lastbright!} $\,\,\leadsto$ technical info on the last bright spatial scale\\
+{\small\verb!<fieldname>.WWW.det.separatebg!} $\,\,\leadsto$ technical info on the decomposed component\\
+{\small\verb!<fieldname>.WWW.filmaxsize!} $\,\,\leadsto$ technical info on the maximum size of filaments
+
+\subsubsection{Directory for flattening of sources or filaments}
+\label{flatten}
+
+The directories \verb!runs/../WWW/+components/+{srcfactor|filfactor}! contain the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.WWW.det.bg.TT.fits!} $\,\,\leadsto$ background of the standard deviations in iterations\\
+{\small\verb!<fieldname>.WWW.det.co.TT.fits!} $\,\,\leadsto$ separated component in iterations\\
+{\small\verb!<fieldname>.WWW.det.bg.TT.m.fits!} $\,\,\leadsto$ background after subtraction of a constant\\
+{\small\verb!<fieldname>.WWW.det.bg.TT.r.fits!} $\,\,\leadsto$ relative correction to the background in iterations\\
+{\small\verb!<fieldname>.WWW.det.bg.fits!} $\,\,\leadsto$ background of standard deviations at the latest iteration\\
+{\small\verb!<fieldname>.WWW.det.co.fits!} $\,\,\leadsto$ separated components at the latest iteration\\
+{\small\verb!<fieldname>.WWW.det.fits!} $\,\,\leadsto$ initial image for the component separation\\
+{\small\verb!<fieldname>.WWW.det.fm.01.fits!} $\,\,\leadsto$ cleaning masks accumulated over scales at the first iteration\\
+{\small\verb!<fieldname>.WWW.det.b.fits!} $\,\,\leadsto$ approximately reconstructed background of the standard deviations\\
+{\small\verb!<fieldname>.WWW.obs.bgs.sXXas.std.bg.sOOas.fits!} $\,\,\leadsto$ separated background (flattening image)\\
+{\small\verb!<fieldname>.WWW.obs.fits!} $\,\,\leadsto$ initial image of standard deviations\\
+{\small\verb!<fieldname>.WWW.det.sigma!} $\,\,\leadsto$ technical info on the standard deviation over all scales\\
+{\small\verb!<fieldname>.WWW.det.decompose!} $\,\,\leadsto$ technical info on the decomposed images\\
+{\small\verb!<fieldname>.WWW.det.lastbright!} $\,\,\leadsto$ technical info on the last bright spatial scale\\
+{\small\verb!<fieldname>.WWW.det.separateff!} $\,\,\leadsto$ technical info on the decomposed component\\
+{\small\verb!<fieldname>.WWW.filmaxsize!} $\,\,\leadsto$ technical info on the maximum size of filaments
+
+\subsubsection{Directory for completion of sources or filaments}
+\label{complete}
+
+These directories (\verb!runs/../WWW/+components/+{scomplete|fcomplete}!) contain the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.WWW.det.fits!} $\,\,\leadsto$ flattened detection image for the structural component\\
+{\small\verb!<fieldname>.WWW.det.sigma!} $\,\,\leadsto$ technical info on the standard deviation over all scales
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Directory for separated structural components}
+\label{components}
+
+This directory \verb!runs/../components! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.WWW.det.sources.fits!} $\,\,\leadsto$ separated component of sources (flattened)\\
+{\small\verb!<fieldname>.WWW.det.filaments.sXXas.fits!} $\,\,\leadsto$ separated component of filaments (flattened)\\
+{\small\verb!<fieldname>.WWW.det.sflatfactor.fits!} $\,\,\leadsto$ flattening factor image for the component of sources\\
+{\small\verb!<fieldname>.WWW.det.fflatfactor.sXXas.fits!} $\,\,\leadsto$ flattening factor image for the component of filaments\\
+{\small\verb!<fieldname>.WWW.obs.sources.fits!} $\,\,\leadsto$ separated component of sources (observed)\\
+{\small\verb!<fieldname>.WWW.obs.sources.n.fits!} $\,\,\leadsto$ regularized component of sources (observed)\\
+{\small\verb!<fieldname>.WWW.obs.filaments.sXXas.fits!} $\,\,\leadsto$ separated component of filaments (observed)\\
+{\small\verb!<fieldname>.WWW.obs.filaments.n.sXXas.fits!} $\,\,\leadsto$ regularized component of filaments (observed)\\
+{\small\verb!<fieldname>.WWW.obs.sbackground+sources.fits!} $\,\,\leadsto$ background of sources plus sources\\
+{\small\verb!<fieldname>.WWW.obs.fbackground.sXXas+filaments.sXXas.fits!} $\,\,\leadsto$ background of filaments plus filaments
+
+\subsubsection{Directory for partially reconstructed images}
+\label{partial}
+
+The directories \verb!runs/../WWW/+components/+{obsimage|filaments}_partial! contain the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.WWW.det.FFFFas.fits!} $\,\,\leadsto$ observed image or the filaments reconstructed up to scale \verb!FFFF!
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\subsection{Directory for output images and catalogs}
+\label{results}
+
+The directory \verb!runs/results! contains several subdirectories.
+
+\subsubsection{Directory for final improved structural components}
+\label{pluscompon}
+
+The directory \verb!runs/results/+components! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.WWW.obs.fits!} $\,\,\leadsto$ original observed image\\
+{\small\verb!<fieldname>.s.WWW.obs.sources.fits!} $\,\,\leadsto$ sources obtained by subtraction of their interpolated background\\
+{\small\verb!<fieldname>.s.WWW.obs.sbackground.fits!} $\,\,\leadsto$ background of sources interpolated under their footprints\\
+{\small\verb!<fieldname>.WWW.obs.fbackground.fits!} $\,\,\leadsto$ regularized background of separated component of filaments\\
+{\small\verb!<fieldname>.WWW.obs.filaments.fits!} $\,\,\leadsto$ observed filaments recomputed as \verb!sbackground-fbackground!\\
+{\small\verb!<fieldname>.WWW.det.filaments.fits!} $\,\,\leadsto$ flattened image of observed recomputed filaments
+
+\subsubsection{Directory for catalogs of extracted sources}
+\label{srccats}
+
+The directory \verb!runs/results/+sources/+catalogs! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.s.WWW.sources.cat!} $\,\,\leadsto$ final catalog of extracted sources (numbering from detection)\\
+{\small\verb!<fieldname>.s.WWW.sources.ok.cat!} $\,\,\leadsto$ final catalog of extracted sources (resorted and renumbered)\\
+{\small\verb!<fieldname>.s.WWW.sources.ok.cat.WWW.good!} $\,\,\leadsto$ final catalog of only selected good sources\\
+{\small\verb!<fieldname>.s.WWW.sources.ok.cat.WWW.ell.fk5.reg!} $\,\,\leadsto$ \textsl{ds9} region file of half-maximum ellipses\\
+{\small\verb!<fieldname>.s.WWW.sources.ok.cat.WWW.ell.phy.reg!} $\,\,\leadsto$ \textsl{ds9} region file of half-maximum ellipses\\
+{\small\verb!<fieldname>.s.WWW.sources.ok.cat.WWW.foo.fk5.reg!} $\,\,\leadsto$ \textsl{ds9} region file of footprint ellipses\\
+{\small\verb!<fieldname>.s.WWW.sources.ok.cat.WWW.foo.phy.reg!} $\,\,\leadsto$ \textsl{ds9} region file of footprint ellipses\\
+{\small\verb!<fieldname>.s.WWW.sources.ok.add.cat!} $\,\,\leadsto$ additional catalog for sources (resorted and renumbered)\\
+{\small\verb!<fieldname>.s.WWW.obs.chisq.dat!} $\,\,\leadsto$ parameters of elliptical Gaussians fits to extracted sources\\
+{\small\verb!sm.<fieldname>.s.det.cat!} $\,\,\leadsto$ catalog of detected sources
+
+\subsubsection{Directory for images of individual sources}
+\label{srccats}
+
+The directory \verb!runs/results/+sources/+images! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!sm.WWW.bgs.fs.dbl.src.okNNNNN.noMMMMM.fits!} $\,\,\leadsto$ images of background-subtracted and deblended sources\\
+{\small\verb!sm.WWW.obs.src.okNNNNN.noMMMMM.fits!} $\,\,\leadsto$ observed images of extracted sources
+
+\subsubsection{Directory for measurement iterations of sources}
+\label{srciters}
+
+The directory \verb!runs/results/+sources/+iterations! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.s.sources.TT.cat!} $\,\,\leadsto$ final catalog of extracted sources in measurement iterations\\
+{\small\verb!<fieldname>.s.sources.ok.TT.cat!} $\,\,\leadsto$ final catalog of extracted sources (renumbered) in iterations\\
+{\small\verb!<fieldname>.WWW.det.NN.cSSSSSSas.fpeak.deblending.dat!} $\,\,\leadsto$ info on single-scale source peak deblending\\
+{\small\verb!sm.s.WWW.foot.expansion.TT.dat!} $\,\,\leadsto$ footprint expansion and shrinkage in measurement iterations\\
+{\small\verb!sm.s.WWW.fpeak.deblending.TT.dat!} $\,\,\leadsto$ deblending source peak intensity in measurement iterations\\
+{\small\verb!sm.<fieldname>.WWW.obs.foots.TT.fits!} $\,\,\leadsto$ footprints of sources in measurement iterations\\
+{\small\verb!sm.s.<fieldname>.WWW.obs.smf.TT.cat!} $\,\,\leadsto$ catalog of detected sources updated in measurement iterations\\
+{\small\verb!sm.<fieldname>.WWW.obs.smf.cat!} $\,\,\leadsto$ catalog of detected sources at the last measurement iteration\\
+{\small\verb!sm.<fieldname>.WWW.obs.smf.previous.cat!} $\,\,\leadsto$ catalog of detected sources at previous to last iteration
+
+\subsubsection{Directory for intensity profiles of sources}
+\label{srccats}
+
+The directory \verb!runs/results/+sources/+profiles! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!sm.intens.pro.okNNNNN.noMMMMM.dat!} $\,\,\leadsto$ background-subtracted and deblended intensity profiles of sources
+
+\subsubsection{Directory for visualization of extracted sources}
+\label{srcvisuals}
+
+The directory \verb!runs/results/+sources/+visuals! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.s.WWW.fitshapes.bground.fits!} $\,\,\leadsto$ background of sources by subtraction of Gaussian shapes\\
+{\small\verb!<fieldname>.s.WWW.fitshapes.res.mean.fits!} $\,\,\leadsto$ mean difference of sources from Gaussian shapes\\
+{\small\verb!<fieldname>.s.WWW.fitshapes.res.true.fits!} $\,\,\leadsto$ actual difference of sources from Gaussian shapes\\
+{\small\verb!<fieldname>.s.WWW.fitshapes.sources.fits!} $\,\,\leadsto$ elliptical Gaussian shapes fitted to extracted sources\\
+{\small\verb!<fieldname>.s.WWW.obs.cb.fits!} $\,\,\leadsto$ background of sources obtained by interpolation under footprints\\
+{\small\verb!<fieldname>.s.WWW.obs.bs.fits!} $\,\,\leadsto$ sources obtained by subtraction of interpolated background\\
+{\small\verb!<fieldname>.s.WWW.obs.cb.smo.fits!} $\,\,\leadsto$ interpolated background smoothed to the lowest resolution\\
+{\small\verb!<fieldname>.s.WWW.obs.sources.n.cb.fits!} $\,\,\leadsto$ interpolated background in regularized component of sources\\
+{\small\verb!<fieldname>.s.WWW.obs.fits!} $\,\,\leadsto$ original observed image\\
+{\small\verb!<fieldname>.s.sources.ell.WWW.obs.fits!} $\,\,\leadsto$ half-maximum ellipses overlaid on observed image\\
+{\small\verb!<fieldname>.s.sources.ell.WWW.obs.src.fits!} $\,\,\leadsto$ half-maximum ellipses on component of sources\\
+{\small\verb!<fieldname>.s.sources.ell.WWW.obs.src.n.fits!} $\,\,\leadsto$ half-maximum ellipses on regularized sources\\
+{\small\verb!<fieldname>.s.sources.ell.WWW.obs.fil.fits!} $\,\,\leadsto$ half-maximum ellipses on component of filaments\\
+{\small\verb!<fieldname>.s.sources.ell.WWW.obs.fil+ske.global.fits!} $\,\,\leadsto$ half-max ellipses on global skeletons\\
+{\small\verb!<fieldname>.s.sources.foo.WWW.obs.fits!} $\,\,\leadsto$ footprint ellipses overlaid on observed image\\
+{\small\verb!<fieldname>.s.sources.foo.WWW.obs.src.fits!} $\,\,\leadsto$ footprint ellipses on component of sources\\
+{\small\verb!<fieldname>.s.sources.foo.WWW.obs.src.n.fits!} $\,\,\leadsto$ footprint ellipses on regularized sources\\
+{\small\verb!<fieldname>.s.sources.foo.WWW.obs.fil.fits!} $\,\,\leadsto$ footprint ellipses on component of filaments\\
+{\small\verb!<fieldname>.s.sources.foo.all.fits!} $\,\,\leadsto$ footprint ellipses accumulated over all wavebands\\
+{\small\verb!<fieldname>.s.WWW.det.foots.fits!} $\,\,\leadsto$ initial footprints of detected sources\\
+{\small\verb!<fieldname>.s.WWW.obs.foots.fits!} $\,\,\leadsto$ final footprints of measured sources
+
+\subsubsection{Directory for derived skeletons of filaments}
+\label{skeletons}
+
+The directory \verb!runs/results/+skeletons! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.f.det.ske.KKKKas.fits!} $\,\,\leadsto$ accumulated single-scale skeletons on scales around \verb!KKKK!\\
+{\small\verb!<fieldname>.f.det.ske.KKKKas.sGG.fits!} $\,\,\leadsto$ skeletons with significance \verb!GG! obtained on scale \verb!KKKK!
+
+\subsubsection{Directory for derived global skeletons of filaments}
+\label{globals}
+
+The directory \verb!runs/results/+skeletons/+globals! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.f.det.skeletons.KKKKas.sGG.fits!} $\,\,\leadsto$ isolated skeletons with significance \verb!GG! on scale \verb!KKKK!\\
+{\small\verb!<fieldname>.f.det.skeletons.KKKKas.sGG.cat!} $\,\,\leadsto$ coordinates of the points of isolated skeletons\\
+{\small\verb!<fieldname>.f.det.skeletons.KKKKas.sGG.reg!} $\,\,\leadsto$ \textsl{ds9} region file of isolated skeletons\\
+{\small\verb!<fieldname>.f.det.skeletons.global.sGG.fits!} $\,\,\leadsto$ global skeletons on all spatial scales\\
+{\small\verb!<fieldname>.f.det.skeletons.global.sGG.cat!} $\,\,\leadsto$ coordinates of the global skeletons\\
+{\small\verb!<fieldname>.f.det.skeletons.global.sGG.reg!} $\,\,\leadsto$ \textsl{ds9} region file of global skeletons
+
+\subsubsection{Directory for images used in skeleton derivation}
+\label{sdetect}
+
+The directory \verb!runs/results/+sdetect! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.f.det.fil.KKKKas.fits!} $\,\,\leadsto$ single-scale filament images accumulated on scales around \verb!KKKK!
+
+\subsubsection{Directory for images from filament measurements}
+\label{filimages}
+
+The directory \verb!runs/results/+filaments/maxYYYas/+images/WWW! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!angles.fits!} $\,\,\leadsto$ position angles at each skeleton point\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!foots.fits!} $\,\,\leadsto$ two-sided footprints of filaments\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!lindens.fits!} $\,\,\leadsto$ linear densities along crests of filaments\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!normals.fits!} $\,\,\leadsto$ normals to skeletons at each point\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!widths.fits!} $\,\,\leadsto$ average widths of filaments
+
+\subsubsection{Directory for measurement catalogs of filaments}
+\label{filprofiles}
+
+The directory \verb!runs/results/+filaments/maxYYYas/+profiles/WWW! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!coo.hires.cat!} $\,\,\leadsto$ coordinates of skeleton points\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!coo.hires.reg!} $\,\,\leadsto$ \textsl{ds9} region file of skeletons\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!lindens.cat!} $\,\,\leadsto$ average linear densities and masses\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!lindens.fi.NNNN.cat!} $\,\,\leadsto$ linear densities along fil \verb!NNNN!\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!profiles.fi.NNNN.mea.cat!} $\,\,\leadsto$ mean profiles for \verb!NNNN!\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!profiles.fi.NNNN.med.cat!} $\,\,\leadsto$ median profiles for \verb!NNNN!\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!profiles.fi.NNNN.sel.cat!} $\,\,\leadsto$ selected profiles for \verb!NNNN!\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!selwidth.cat!} $\,\,\leadsto$ filament widths along selected normals\\
+{\small\verb!<fieldname>.f.WWW.obs.ske.KKKKas.sGG!$\sim$\verb!widths.cat!} $\,\,\leadsto$ widths averaged along filaments
+
+\subsubsection{Directory for visualization of skeletons on filaments}
+\label{filvisuals}
+
+The directory \verb!runs/results/+filaments/maxYYYas/+visuals! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.f.WWW.obs.filaments+ske.KKKKas.sGG.fits!} $\,\,\leadsto$ skeletons at \verb!KKKK! with \verb!GG! on filaments\\
+{\small\verb!<fieldname>.f.WWW.obs.filaments+ske.KKKKas.sGG.reg!} $\,\,\leadsto$ \textsl{ds9} region file of skeletons\\
+{\small\verb!<fieldname>.f.WWW.obs.filaments+ske.global.JJJJ!$\sim$\verb!KKKKas.fits!} $\,\,\leadsto$ global skeletons on filaments\\
+{\small\verb!<fieldname>.f.WWW.obs.filaments+ske.global.JJJJ!$\sim$\verb!KKKKas.reg!} $\,\,\leadsto$ \textsl{ds9} region file of global skeletons
+
+\subsubsection{Directory for visualization of filaments}
+\label{filvisuals}
+
+The directory \verb!runs/results/+filaments/maxXXas/+visuals/+nosmall! contains the following files:\\
+
+\vspace{-2mm}\noindent
+{\small\verb!<fieldname>.f.WWW.obs.filaments.scale.KKKKas.fits!} $\,\,\leadsto$ filaments with scales below \verb!KKKK! removed
+
+\section{User agreement}
+\label{agreement}
+
+In what follows, \emph{this software} refers to the scripts \textsl{getsf}, \textsl{comfun}, \textsl{compile}, \textsl{convolve},
+\textsl{hires}, \textsl{installg}, \textsl{iospeed}, \textsl{prepobs}, \textsl{resample}, and the associated utilities
+\textsl{cleanbg}, \textsl{ellipse}, \textsl{expanda}, \textsl{extractx}, \textsl{fftconv}, \textsl{finalcat}, \textsl{fitfluxes},
+\textsl{fixskels}, \textsl{fmeasure}, \textsl{imgstat}, \textsl{makecube}, \textsl{modfits}, \textsl{operate}, \textsl{readhead},
+\textsl{sfinder}, \textsl{smeasure}, \textsl{splitcube}, and the library \textsl{tools}; and \emph{the author} refers to Alexander 
+Men'shchikov of the D{\'e}partement d’Astrophysique, IRFU, CEA Saclay, France.
+
+\vspace{0.5mm} 
+It is assumed that anyone using this software (\emph{the user}) has read, understood, and agreed to the following conditions of use:
+
+\vspace{0.5mm}
+1. This software is freely available for download and use. A user is free to share this software with co-workers and students, but
+when it is requested by a colleague not working directly with the user, the latter is asked to redirect that person to the
+\textsl{getsf} web site: \url{http://irfu.cea.fr/Pisp/alexander.menshchikov/} or to the author:
+\href{mailto:alexander.menshchikov@cea.fr}{\texttt{alexander.menshchikov@cea.fr}}
+
+\vspace{0.5mm}
+2. This software shall be used exclusively for research, education, non-profit, and non-military purposes. Specific written
+permission from the author must be obtained before any commercial use of this software may be undertaken.
+
+\vspace{0.5mm}
+3. The banners of this software, these conditions of use, and information about the author shall remain with this software and
+any descendent developed from and still based substantially upon this software.
+
+\vspace{0.5mm}
+4. The name of the institution with which the author is affiliated shall not be used to publicize any data and/or results
+generated by this software. All findings and their interpretation are the opinions of the user and do not necessarily reflect those
+of the author nor the institutions with which the author is affiliated.
+
+\vspace{0.5mm} 
+5. The author makes no representations about the suitability of this software for any purpose. Subject to the above conditions, 
+this software is provided \emph{as is} without any expressed or implied warranty.
+
+\section{Citations}
+\label{citations}
+
+The algorithms used in this software are described in:
+\cite{Men'shchikov2021getsf,Men'shchikov2017,Men'shchikov2016,Men'shchikov2013,
+Palmeirim_etal2013,Men'shchikov_etal2012,Men'shchikov_etal2010}. Detailed benchmarking of \textsl{getsf} and comparisons with its
+predecessor \textsl{getsources} \citep{Men'shchikov_etal2012} is published by \cite{Men'shchikov2021bench}. Any publication
+reporting results obtained using this software or any of its derivatives should include a citation of \cite{Men'shchikov2021getsf}
+or a phrase like this: ``Use of \textsl{getsf}, developed by A. Men'shchikov at the DAp, IRFU, CEA Saclay, France, is hereby
+acknowledged'' (if only individual scripts or utilities were used, then \textsl{getsf} may be substituted with their names).
+
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+\bibliographystyle{aa}
+\bibliography{aamnem99,getsf.guide}
+
+\end{document}
