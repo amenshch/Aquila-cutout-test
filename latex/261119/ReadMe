@@ -1,0 +1,108 @@
+J/A+A/???/???      Temperatures and surface densities of externally heated clouds  (Men'shchikov, 2026)
+================================================================================
+Correcting underestimated surface densities of molecular clouds derived from
+Herschel images by single-temperature fitting
+    Men'shchikov A.
+   <Astron. Astrophys. ???, ??? (2026)>
+   =2026A&A...???..???M
+================================================================================
+ADC_Keywords: Interstellar medium ; Molecular clouds ; Infrared sources
+Keywords: radiative transfer - dust, extinction - ISM: clouds - stars: formation
+
+Abstract:
+    The tables give the correction factor that restores the true surface
+    density of an externally heated structure from the surface density
+    returned by a single-temperature modified blackbody fit to Herschel
+    images at 160-500um, its dependence on the strength of the interstellar
+    radiation field, and the constants of the relation between the dust
+    temperature and the effective attenuating column that underlies them.
+
+Description:
+    All quantities are computed for the dust model of the paper, the
+    interstellar radiation field of Black (1994) scaled by G_0 (in Habing
+    units), an isotropic external field, and no internal heating. The
+    surface densities are those of molecular hydrogen, in cm-2.
+
+    Table 1 gives the adopted relation for G_0=10 (Fig. 4 of the paper), for
+    images fitted to 160, 250, 350, and 500um with relative calibration
+    errors of 20% at 160um and 10% at longer wavelengths (the weights of
+    hires). Below Sigma_F=4x10^21cm-2 it includes the calibration on a
+    radiative transfer model of a diffuse cloud. The column fhold is f held
+    at its maximum, max(f(Sigma') for Sigma'<=Sigma_F), which the correction
+    applies.
+
+    Table 2 gives the field factor g(Sigma_F,G_0) for the nine fields of the
+    grid (Fig. 5 of the paper). For another field, log(g) is interpolated
+    linearly in log(G_0) between the columns; above the last row, g is held
+    at its values there. The correction factor for the field G_0 is
+    g(Sigma_F,G_0) x fhold(Sigma_F) (Eq. 9 of the paper): f is held at its
+    maximum first and then multiplied by g, which is not held.
+
+    Table 3 gives the constants of the relation
+        T(Sigma_A) = Tmin + (Tmax-Tmin) (1+Sigma_A/Sigma_*)^(-gamma)
+    (Eq. 5 of the paper) between the dust temperature T and the effective
+    attenuating column Sigma_A (Eq. 4 of the paper). The first row (Flag=0)
+    is the adopted relation for G_0=10, fitted to 2086 models of embedded
+    Bonnor-Ebert spheres and 7 cylindrical filaments; the others (Flag=1)
+    were fitted separately to the grids of models in each field (Table C.2).
+
+    The tables were computed with hicorrect2.py and make_cds_tables.py, which
+    are available with the getsf distribution.
+
+File Summary:
+--------------------------------------------------------------------------------
+ FileName      Lrecl  Records   Explanations
+--------------------------------------------------------------------------------
+ReadMe            80        .   This file
+table1.dat        31     400   Correction factor f for G_0=10
+table2.dat        59     24   Field factor g(Sigma_F,G_0) for nine fields
+table3.dat        39     10   Constants of the temperature relation (Eq. 5)
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: table1.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units  Label   Explanations
+--------------------------------------------------------------------------------
+   1-  6  F6.3  [cm-2] logSigF Log of the fitted surface density Sigma_F
+   8- 13  F6.3  [cm-2] logSig  Log of the true surface density Sigma
+  15- 19  F5.3  ---    f       Correction factor f=Sigma/Sigma_F
+  21- 25  F5.3  ---    fhold   Factor f held at its maximum (Eq. 9)
+  27- 31  F5.2  K      TF      Temperature returned by the fit
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: table2.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units  Label   Explanations
+--------------------------------------------------------------------------------
+   1-  5  F5.2  [cm-2] logSigF Log of the fitted surface density Sigma_F
+   7- 11  F5.3  ---    g0.98   Field factor g for G_0=0.98
+  13- 17  F5.3  ---    g2.12   Field factor g for G_0=2.12
+  19- 23  F5.3  ---    g4.61   Field factor g for G_0=4.61
+  25- 29  F5.3  ---    g10.0   Field factor g for G_0=10.0 (unity)
+  31- 35  F5.3  ---    g21.7   Field factor g for G_0=21.7
+  37- 41  F5.3  ---    g47.1   Field factor g for G_0=47.1
+  43- 47  F5.3  ---    g102.4  Field factor g for G_0=102.4
+  49- 53  F5.3  ---    g222.2  Field factor g for G_0=222.2
+  55- 59  F5.3  ---    g482.5  Field factor g for G_0=482.5
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: table3.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units     Label   Explanations
+--------------------------------------------------------------------------------
+   1-  6  F6.2  ---       G0      Strength of the radiation field (Habing units)
+   8- 13  F6.3  K         Tmin    Temperature of fully shielded dust
+  15- 20  F6.3  K         Tmax    Temperature of unattenuated dust
+  22- 26  F5.3  10+21cm-2 Sig*    Attenuating column of the fall, Sigma_*
+  28- 32  F5.3  ---       gamma   Index of the fall
+  34- 37  F4.2  %         Scat    Scatter of the model temperatures about
+                                   the relation
+      39  I1    ---       Flag    [0/1] 0: adopted relation for G_0=10;
+                                   1: fit to the grid of that field
+--------------------------------------------------------------------------------
+
+Acknowledgements:
+    Alexander Men'shchikov, alexander.menshchikov(at)cea.fr
+
+================================================================================
+(End)
