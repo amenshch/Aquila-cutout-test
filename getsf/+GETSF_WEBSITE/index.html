@@ -1,0 +1,2119 @@
+<!DOCTYPE HTML>
+<!--
+	Dimension by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html lang="en">
+	<head>
+    <link rel="icon" href="images/bgme.ico" type="image/x-icon" /> 
+    <link rel="shortcut icon" href="images/bgme.ico" type="image/x-icon" />
+		<title>
+      Extract sources and filaments with getsf
+    </title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>    <!-- , user-scalable=no -->
+		<link rel="stylesheet" href="assets/css/main.css"/>
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css"/></noscript>
+    <style>
+      img { filter: brightness(100%); border: 1px solid gray; 
+            max-width: 100%; max-height: 100%; display: block; margin-left: auto; margin-right: auto;
+           -webkit-box-shadow: 5px 5px 5px 0px #000; /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+           -moz-box-shadow:    5px 5px 5px 0px #000; /* Firefox 3.5 - 3.6 */
+            box-shadow:        5px 5px 5px 0px #000; /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */ }
+      sub { position: relative; top: 0.3em; }
+        p { -ms-hyphens: auto; -webkit-hyphens: auto; hyphens: auto; margin-bottom: 1em; }
+       ol { -ms-hyphens: auto; -webkit-hyphens: auto; hyphens: auto; }  /* margin-bottom: 0em; */
+    </style>
+    <style>
+      a:link    { color: #FCC6C6; background-color: transparent; text-decoration: none; }
+      a:visited { color: #FCC6C6; background-color: transparent; text-decoration: none; }
+      a:hover   { color: #FFB6FF; background-color: transparent; text-decoration: none; }  /* underline */
+      a:active  { color: #C6DFFC; background-color: transparent; text-decoration: none; }  /* underline */
+    </style>
+    <script> // type="text/javascript"
+      var countv = 0; var countp = 0; var countc = 0; var countb = 0;
+      function getReLoad() {
+        countv = localStorage.getItem('getsfView') ; document.getElementById("countViews").innerHTML = countv;
+        countp = localStorage.getItem('getsfPaper'); document.getElementById("countPaper").innerHTML = countp;
+        countc = localStorage.getItem('getsfCode') ; document.getElementById("countCode").innerHTML  = countc;
+        countb = localStorage.getItem('getsfBench'); document.getElementById("countBench").innerHTML = countb;
+      };
+      function countView() {
+        countv++; localStorage.setItem('getsfView', countv) ; document.getElementById("countViews").innerHTML = countv;
+      };
+      function countPaper() {
+        countp++; localStorage.setItem('getsfPaper', countp); document.getElementById("countPaper").innerHTML = countp;
+      };
+      function countCode() {
+        countc++; localStorage.setItem('getsfCode', countc) ; document.getElementById("countCode").innerHTML  = countc;
+      };
+      function countBench() {
+        countb++; localStorage.setItem('getsfBench', countb); document.getElementById("countBench").innerHTML = countb;
+      };
+    </script>
+	</head>
+
+	<body class="is-preload" onLoad="getReLoad(); countView()">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+<!--|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+
+				<!-- Header -->
+					<header id="header">
+						<div class="logo">
+							<span class="icon fa-eye"></span>
+						</div>
+						<div class="content">
+							<div class="inner">
+								<h1><span style="color:#ffd70f;">GETSF</span></h1>
+        				<h4>A Multiscale Multiwavelength Method and Numerical Code<br/>
+                   for Extraction of Sources and Filaments in Astronomical Images<br/>
+                   using Separation of their Structural Components</h4>
+							</div>
+						</div>
+						<nav>
+							<ul>
+								<li><a style="color:#ffd70f; font-weight: bold" href="#intro"  >Intro</a></li>
+								<li><a style="color:#ffd70f; font-weight: bold" href="#method" >Method</a></li>
+								<li><a style="color:#ffd70f; font-weight: bold" href="#code"   >Code</a></li>
+								<li><a style="color:#ffd70f; font-weight: bold" href="#bench"  >Bench</a></li>
+								<li><a style="color:#ffd70f; font-weight: bold" href="#support">Support</a></li>
+<!--								<li><a style="color:#ffd70f; font-weight: bold" href="#elements">Elements</a></li>  -->
+							</ul>
+						</nav>
+					</header>
+
+				<!-- Main -->
+					<div id="main">
+
+<!--|||||||||||||||||||||  I N T R O  |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+
+							<article id="intro">
+
+								<h2 class="major" style="color:#ffd70f;">
+                  Introduction</h2>
+<p>
+  High-quality astronomical images delivered by modern ground-based and space observatories demand adequate, reliable software for
+  their analysis and accurate extraction of sources, filaments, and other structures, containing massive amounts of detailed
+  information about the complex physical processes in space. The multi-wavelength observations with highly variable angular
+  resolutions across wavebands require extraction tools that preserve and use the invaluable high-resolution information. Complex
+  fluctuating backgrounds and filamentary structures appear differently on various scales, calling for multi-scale approaches for
+  complete and reliable detection of sources and filaments. Availability of uncalibrated extraction tools with widely varying
+  qualities highlights the need to use standard benchmarks for choosing the most reliable and accurate method for the astrophysical
+  research.
+</p><p>
+  These pages present <span style="color:#ffe50f;"><em>getsf</em></span>, a new method for extracting sources and filaments in 
+  astronomical images using separation of their structural components, designed to handle multi-wavelength sets of images and very 
+  complex filamentary backgrounds. The method spatially decomposes the original images and separates the structural components of 
+  sources and filaments from each other and from their backgrounds, flattening their resulting images. It spatially decomposes the 
+  flattened components, combines them over wavelengths, and detects the positions of sources and skeletons of filaments. Finally, 
+  <span style="color:#ffe50f;"><em>getsf</em></span> measures the detected sources and filaments and creates the output catalogs 
+  and images. This almost universal and fully automated method has a single user-definable parameter, the maximum size of the 
+  structures to extract, that users have to determine from the input images on the basis of their research interests. 
+</p><p>
+  These pages describe a realistic multi-wavelength set of benchmark images for testing and comparing source and filament extraction
+  methods to enable the selection of the most reliable and accurate method. The images include a complex fluctuating background
+  cloud, a long dense filament, and many starless and protostellar cores. The benchmark enables conclusive comparisons according to
+  the extraction completeness, reliability, and goodness, as well as the detection and measurement accuracies and the overall quality. 
+  Multi-wavelength source and filament extractions with <span style="color:#ffe50f;"><em>getsf</em></span> using three variants of 
+  the new benchmark with increasing complexity levels show that the new method is superior to older methods.
+</p><p>
+  An improved algorithm for the derivation of high-resolution surface density images from the multi-wavelength far-infrared and
+  submillimeter continuum imaging is shown to create the densities as sharp as the shortest-wavelength image of a sufficient quality,
+  with the angular resolution reaching <span style="color:#ffdddd;">5.6</span>" when using the <em>Herschel</em> 
+  <span style="color:#ffdddd;">70</span> &mu;m image. If the image is excessively noisy, contaminated by the PAH emission, or unusable 
+  for other reasons, the highest resolution is defined by the <span style="color:#ffdddd;">100</span> or 
+  <span style="color:#ffdddd;">160</span> &mu;m images 
+  (<span style="color:#ffdddd;">6.8</span>&ndash;<span style="color:#ffdddd;">11.3</span>"). Such high resolution is useful for 
+  detailed studies of the enormous structural diversity in space, hence, for deeper understanding of the physical processes within 
+  the sub-structured filaments and their relation to the formation of stars.
+</p>
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" onClick="countPaper()" 
+                    href="aa39913-20-Men'shchikov2021.pdf"><span style="color:#ffe50f;">
+                    GETSF</span> Paper</a>
+                  </li>
+								</ul>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 7mm;">
+                  Star-Forming Cloud DR21 (Cyg X)</h3>
+<p>
+  Illustration of the new algorithm for the derivation of high-resolution surface densities from multi-wavelength observations. 
+  The density was derived from 5 images (at <span style="color:#ffdddd;">70</span>&ndash;<span style="color:#ffdddd;">500</span> &mu;m) 
+  obtained with the <em>Herschel</em> Space Observatory (<a href="https://doi.org/10.1051/0004-6361/201014690">Motte et al. 2010</a>;
+  <a href="https://doi.org/10.1051/0004-6361/201219429">Hennemann et al. 2012</a>; Bontemps et al., in prep.).
+</p>
+								<h4>High-res surface density (<span style="color:#ffdddd;">36.3</span>, <span style="color:#ffdddd;">24.9</span>,
+                  <span style="color:#ffdddd;">18.2</span>, <span style="color:#ffdddd;">11.7</span>, 
+                  <span style="color:#ffdddd;">5.9</span>")
+                </h4>
+
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/highres/cygx-hi.surface.density.animated.gif" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 8mm;">
+                   Supernova Remnant RXJ1713.7-3946</h3>
+<p>
+  RXJ1713.7-3946 was observed with <em>XMM-Newton</em> (EPIC camera) in the X-ray waveband 
+  (<span style="color:#ffdddd;">0.6</span>&ndash;<span style="color:#ffdddd;">6</span> keV) centered at
+  <span style="color:#ffdddd;">0.0024</span> &mu;m. The image below is a mosaic of multiple 
+  <a href="http://nxsa.esac.esa.int/nxsa-web/">observations</a>, first presented in 
+  <a href="https://doi.org/10.1051/0004-6361/201629618">Acero et al. (2017)</a>. With an average angular resolution of 
+  <span style="color:#ffdddd;">7</span>", it reveals the south-east segment of the supernova remnant shell, possibly 
+  created by the explosion of the historical supernova SN393, whose center of explosion is located beyond the upper-right image 
+  corner. For this source and filament extraction with <span style="color:#ffe50f;"><em>getsf</em></span>, a maximum size of
+  <span style="color:#ffdddd;">15</span>" of the sources and <span style="color:#ffdddd;">25</span>" of the filaments of interest 
+  was adopted.
+</p>
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="illustrations/applications/rxj1713/rxj1713.00.sources.ok.cat" ><span style="color:#ffe50f;">
+                    GETSF</span> Extraction Catalog</a>
+                  </li>
+								</ul>
+
+								<h4><em>XMM-Newton</em> (EPIC) image at <span style="color:#ffdddd;">0.0024</span> microns</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/rxj1713/rxj1713.00.obs.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/rxj1713/rxj1713.00.obs.sbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/rxj1713/rxj1713.00.obs.fbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/rxj1713/rxj1713.00.obs.sources.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/rxj1713/rxj1713.00.obs.filaments.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted sources (footprints)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/rxj1713/rxj1713.00.sources.foo.00.det.src.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales <span style="color:#ffdddd;">7</span>&ndash;<span 
+                  style="color:#ffdddd;">25</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/rxj1713/rxj1713.00.det.filaments+ske.global.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales ~<span style="color:#ffdddd;">28</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/rxj1713/rxj1713.00.det.filaments+ske.0028as.s02.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 8mm;">
+                   Star-Forming Galaxy NGC6744</h3>
+<p>
+  NGC6744 was observed with <em>GALEX</em> in a far-ultraviolet (FUV) waveband 
+  (<span style="color:#ffdddd;">1350</span>&ndash;<span style="color:#ffdddd;">1750</span> Å) centered at 
+  <span style="color:#ffdddd;">0.15</span> &mu;m (<a href="https://doi.org/10.1088/0067-0049/192/1/6">Lee et al. 2011</a>). The 
+  <a href="https://archive.stsci.edu/missions-and-data/galex/">image</a> below with an angular resolution of 
+  <span style="color:#ffdddd;">4</span>" shows the spiral galaxy, considered similar to our own Galaxy. Despite noisiness of 
+  the FUV image, it displays the spiral arms with many hundreds of unresolved emission sources &ndash; the regions of ongoing 
+  star formation, heated by the embedded young massive stars. For this source and filament extraction with 
+  <span style="color:#ffe50f;"><em>getsf</em></span>, a maximum size of <span style="color:#ffdddd;">20</span>" of the sources 
+  and filaments of interest was adopted.
+</p>
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="illustrations/applications/ngc6744/ngc6744.1550.sources.ok.cat"><span style="color:#ffe50f;">
+                    GETSF</span> Extraction Catalog</a>
+                  </li>
+								</ul>
+
+								<h4><em>GALEX</em> (FUV) image at <span style="color:#ffdddd;">0.15</span> microns</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6744/ngc6744.1550.obs.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6744/ngc6744.1550.obs.sbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6744/ngc6744.1550.obs.fbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6744/ngc6744.1550.obs.sources.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6744/ngc6744.1550.obs.filaments.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted sources (footprints)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6744/ngc6744.1550.sources.foo.1550.det.src.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales <span style="color:#ffdddd;">4</span>&ndash;<span 
+                  style="color:#ffdddd;">20</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6744/ngc6744.1550.det.filaments+ske.global.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales ~<span style="color:#ffdddd;">20</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6744/ngc6744.1550.det.filaments+ske.0023as.s02.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 8mm;">
+                   Supernova Remnant NGC6960</h3>
+<p>
+  NGC6960 was observed with <em>Hubble</em> in five UVIS wavebands 
+  (<span style="color:#ffdddd;">0.5</span>&ndash;<span style="color:#ffdddd;">0.8</span> nm) centered at 
+  <span style="color:#ffdddd;">0.6</span> &mu;m, within the frame of the <em>Hubble</em> Heritage project (PI: Z. Levay; 
+  <a href="http://archive.stsci.edu/prepds/heritage/veil/">Mack et al. 2015</a>). The small 
+  <a href="https://archive.stsci.edu/prepds/heritage/veil/">image</a> below with an angular resolution of 
+  <span style="color:#ffdddd;">0.2</span>" represents a small fragment of the Veil Nebula, which is a segment of the Cygnus Loop, the
+  large expanding shell of a supernova remnant (Fesen et al. 2018). For this source and filament extraction with 
+  <span style="color:#ffe50f;"><em>getsf</em></span>, a maximum size of <span style="color:#ffdddd;">0.5</span>" of the 
+  sources and <span style="color:#ffdddd;">2</span>" of the filaments of interest was adopted.
+</p>
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="illustrations/applications/ngc6960/veil_nebula.600.sources.ok.cat"><span style="color:#ffe50f;">
+                    GETSF</span> Extraction Catalog</a>
+                  </li>
+								</ul>
+
+								<h4><em>Hubble</em> (WFC3) image at <span style="color:#ffdddd;">0.6</span> microns</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6960/veil_nebula.600.obs.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6960/veil_nebula.600.obs.sbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6960/veil_nebula.600.obs.fbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6960/veil_nebula.600.obs.sources.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6960/veil_nebula.600.obs.filaments.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted sources (footprints)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6960/veil_nebula.600.sources.foo.600.det.src.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments (skeletons on scales <span style="color:#ffdddd;">0.2</span>&ndash;<span 
+                  style="color:#ffdddd;">2</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6960/veil_nebula.600.det.filaments+ske.global.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments (skeletons on scales ~<span style="color:#ffdddd;">2</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6960/veil_nebula.600.det.filaments+ske.0002as.s02.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 8mm;">
+                   Star-Forming Cloud L1688</h3>
+<p>
+  L1688 was observed with <em>Spitzer</em> in the IRAC <span style="color:#ffdddd;">8</span> &mu;m waveband 
+  (<a href="https://doi.org/10.1086/321639">Evans et al 2009</a>). The
+  <a href="https://sha.ipac.caltech.edu/applications/Spitzer/SHA/">image</a> below with an angular resolution of 
+  <span style="color:#ffdddd;">6</span>" shows a complex intensity distribution in this well-known star-forming region, with the
+  background varying by almost two orders of magnitude and many sources situated in both faint and bright background areas. For this
+  source and filament extraction with <span style="color:#ffe50f;"><em>getsf</em></span>, a maximum size of
+  <span style="color:#ffdddd;">30</span>" of the sources and filaments of interest was adopted.
+</p>
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="illustrations/applications/l1688/oph-L1688.008.sources.ok.cat"><span style="color:#ffe50f;">
+                    GETSF</span> Extraction Catalog</a>
+                  </li>
+								</ul>
+
+								<h4><em>Spitzer</em> (IRAC) image at <span style="color:#ffdddd;">8</span> microns</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1688/oph-L1688.008.obs.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1688/oph-L1688.008.obs.sbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1688/oph-L1688.008.obs.fbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1688/oph-L1688.008.obs.sources.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1688/oph-L1688.008.obs.filaments.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted sources (footprints)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1688/oph-L1688.008.sources.foo.008.det.src.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales <span style="color:#ffdddd;">6</span>&ndash;<span 
+                  style="color:#ffdddd;">30</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1688/oph-L1688.008.det.filaments+ske.global.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales ~<span style="color:#ffdddd;">30</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1688/oph-L1688.008.det.filaments+ske.0034as.s02.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 8mm;">
+                   Embedded Starless Core L1689B</h3>
+<p>
+  L1689B, one of the nearest well-resolved starless cores (a distance of 140 pc) embedded in a resolved filament, was observed with
+  <em>Herschel</em> in five PACS and SPIRE wavebands (<a href="https://doi.org/10.1051/0004-6361/201936442">Ladjelate et al. 2020</a>).
+  The <span style="color:#ffdddd;">160</span>&ndash;<span style="color:#ffdddd;">500</span> &mu;m 
+  <a href="http://gouldbelt-herschel.cea.fr/archives">images</a>
+  were used to compute a high-resolution (<span style="color:#ffdddd;">13.5</span>") surface density image to illustrate the 
+  new extraction method on a single image. Besides the reduction of the number of images, the use of surface densities allows 
+  <span style="color:#ffe50f;"><em>getsf</em></span> to catalog physical parameters of the core and filament. 
+  For this source and filament extraction with <span style="color:#ffe50f;"><em>getsf</em></span>, a maximum size of
+  <span style="color:#ffdddd;">90</span>" of the sources and <span style="color:#ffdddd;">180</span>" of the filaments of interest 
+  was adopted.
+</p>
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="illustrations/applications/l1689b/l1689b.163.sources.ok.cat"><span style="color:#ffe50f;">
+                    GETSF</span> Extraction Catalog</a>
+                  </li>
+								</ul>
+
+								<h4>High-res (<span style="color:#ffdddd;">13.5</span>") surface density</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1689b/l1689b.163.obs.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1689b/l1689b.163.obs.sbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1689b/l1689b.163.obs.fbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1689b/l1689b.163.obs.sources.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1689b/l1689b.163.obs.filaments.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted sources (footprints)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1689b/l1689b.163.sources.foo.163.det.src.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales <span style="color:#ffdddd;">14</span>&ndash;<span 
+                  style="color:#ffdddd;">200</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1689b/l1689b.163.det.filaments+ske.global.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales ~<span style="color:#ffdddd;">200</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/l1689b/l1689b.163.det.filaments+ske.0216as.s02.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 8mm;">
+                   Star-Forming Cloud NGC6334</h3>
+<p>
+  NGC6334 was observed with <em>APEX</em> at <span style="color:#ffdddd;">350</span> &mu;m, equipped with the ArT&#233;MiS camera 
+  (<a href="https://doi.org/10.1051/0004-6361/201628378">Andr&#233; et al. 2016</a>). The 
+  <a href="http://cdsarc.unistra.fr/viz-bin/cat/J/A+A/592/A54">image</a> below
+  with an angular resolution of <span style="color:#ffdddd;">8</span>" represents an improvement by a factor of 3 with respect to 
+  the <em>Herschel</em> images at <span style="color:#ffdddd;">350</span> &mu;m. Subtraction of the correlated sky noise resulted in 
+  the image that has no signals on spatial scales above <span style="color:#ffdddd;">120</span>" 
+  (<a href="https://doi.org/10.1051/0004-6361/201628378">Andr&#233; et al. 2016</a>). Therefore, 
+  the large-scale background and the zero level of the image are not known and the structures in the image are smaller than the largest 
+  scale. Fortunately, such observational problems are totally unimportant for <span style="color:#ffe50f;"><em>getsf</em></span>. 
+  For this source and filament extraction with <span style="color:#ffe50f;"><em>getsf</em></span>, a maximum size of
+  <span style="color:#ffdddd;">30</span>" of the sources and filaments of interest was adopted.
+</p>
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="illustrations/applications/ngc6334/ngc6334.350.sources.ok.cat"><span style="color:#ffe50f;">
+                    GETSF</span> Extraction Catalog</a>
+                  </li>
+								</ul>
+
+								<h4><em>APEX</em> (ARTEMIS) image at <span style="color:#ffdddd;">350</span> microns</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6334/ngc6334.350.obs.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6334/ngc6334.350.obs.sbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6334/ngc6334.350.obs.fbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6334/ngc6334.350.obs.sources.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6334/ngc6334.350.obs.filaments.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted sources (footprints)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6334/ngc6334.350.sources.foo.350.det.src.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales <span style="color:#ffdddd;">8</span>&ndash;<span 
+                  style="color:#ffdddd;">30</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6334/ngc6334.350.det.filaments+ske.global.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales ~<span style="color:#ffdddd;">30</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/ngc6334/ngc6334.350.det.filaments+ske.0032as.s02.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 8mm;">
+                   Star-Forming Cloud Orion A</h3>
+<p>
+  Orion A was observed with <em>JCMT</em> at <span style="color:#ffdddd;">450</span> and <span style="color:#ffdddd;">850</span> &mu;m 
+  with the SCUBA-2 camera (<a href="https://doi.org/10.3847/1538-4357/833/1/44">Lane et al. 2016</a>) with angular resolutions of 
+  <span style="color:#ffdddd;">9.8</span>" and <span style="color:#ffdddd;">14.6</span>", respectively. The 
+  <span style="color:#ffdddd;">850</span> &mu;m 
+  <a href="https://www.canfar.net/storage/list/AstroDataCitationDOI/CISTI.CANFAR/16.0008/data">image</a> below displays the northern 
+  part of the integral-shaped filament (ISF). Like with other ground-based submillimeter observations that must subtract sky background, 
+  large-scale emission in the images has been filtered out (<a href="https://doi.org/10.3847/1538-4365/aada7f">Kirk et al. 2018</a>). 
+  For this two-wavelength <span style="color:#ffe50f;"><em>getsf</em></span> extraction in both <span style="color:#ffdddd;">450</span> 
+  and <span style="color:#ffdddd;">850</span> &mu;m images, a maximum size of {<span style="color:#ffdddd;">20, 30</span>}" of the sources 
+  and {<span style="color:#ffdddd;">30, 45</span>}" of the filaments of interest was adopted.  
+</p>
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="illustrations/applications/oriona/oriona.sw.sources.ok.cat"><span style="color:#ffe50f;">
+                    GETSF</span> Extraction Catalog</a>
+                  </li>
+								</ul>
+
+								<h4><em>JCMT</em> (SCUBA-2) image at <span style="color:#ffdddd;">850</span> microns</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/oriona/orionA.850.obs.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of sources (<span style="color:#ffdddd;">850</span> microns)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/oriona/orionA.850.obs.sbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of filaments (<span style="color:#ffdddd;">850</span> microns)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/oriona/orionA.850.obs.fbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of sources (<span style="color:#ffdddd;">850</span> microns)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/oriona/orionA.850.obs.sources.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments (<span style="color:#ffdddd;">850</span> microns)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/oriona/orionA.850.obs.filaments.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted sources (footprints)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/oriona/orionA.sw.sources.foo.850.det.src.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales <span style="color:#ffdddd;">14.5</span>&ndash;<span 
+                  style="color:#ffdddd;">45</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/oriona/orionA.850.det.filaments+ske.global.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales ~<span style="color:#ffdddd;">45</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/oriona/orionA.850.det.filaments+ske.0039as.s02.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 8mm;">
+                   Star-Forming Cloud W43-MM1</h3>
+<p>
+  W43-MM1 was observed with the 12-m array of the <em>ALMA</em> interferometer (baselines 13&ndash;1045 m) in the 233 GHz band centered 
+  at <span style="color:#ffdddd;">1300</span> &mu;m (<a href="https://doi.org/10.1038/s41550-018-0452-x">Motte et al. 2018</a>;
+  <a href="https://doi.org/10.1051/0004-6361/201937046">Nony et al. 2020</a>). The small image below with an angular resolution of 
+  <span style="color:#ffdddd;">0.44</span>" contains spatial scales of up to <span style="color:#ffdddd;">12</span>", beyond which 
+  the interferometer was insensitive to the emission. For this source and filament extraction with 
+  <span style="color:#ffe50f;"><em>getsf</em></span>, a maximum size of <span style="color:#ffdddd;">0.8</span>" of the sources 
+  and <span style="color:#ffdddd;">1.3</span>" of the filaments of interest was adopted.
+</p>
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="illustrations/applications/w43mm1/w43-mm1.1000.sources.foo.1000.det.src.png"><span style="color:#ffe50f;">
+                    GETSF</span> Extraction Catalog</a>
+                  </li>
+								</ul>
+
+								<h4><em>ALMA</em> (12-m array) image at <span style="color:#ffdddd;">1.3</span> mm</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/w43mm1/w43-mm1.1000.obs.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/w43mm1/w43-mm1.1000.obs.sbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/w43mm1/w43-mm1.1000.obs.fbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/w43mm1/w43-mm1.1000.obs.sources.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/w43mm1/w43-mm1.1000.obs.filaments.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted sources (footprints)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/w43mm1/w43-mm1.1000.sources.foo.1000.det.src.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales <span style="color:#ffdddd;">0.8</span>&ndash;<span 
+                  style="color:#ffdddd;">1.3</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/w43mm1/w43-mm1.1000.det.filaments+ske.global.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales ~<span style="color:#ffdddd;">2</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/w43mm1/w43-mm1.1000.det.filaments+ske.0002as.s02.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 8mm;">
+                   Sasha</h3>
+<p> 
+  This man photographed himself in July 2019 with a smartphone <em>Samsung Galaxy S9 Edge</em> from a distance of ~60 cm. 
+  The JPEG image was then converted to the FITS format using <a href="https://www.imagemagick.org"><em>ImageMagick</em></a>
+  and the resulting 661&nbsp;&times;&nbsp;661-pixels image was arbitrarily assigned a <span style="color:#ffdddd;">2</span>" pixel size 
+  and an angular resolution of <span style="color:#ffdddd;">6</span>". The pixel values were assumed to have the units of MJy/sr. 
+  For this source and filament extraction with <span style="color:#ffe50f;"><em>getsf</em></span>, a maximum size of 
+  <span style="color:#ffdddd;">6</span>" of the sources and <span style="color:#ffdddd;">15</span>" of the filaments of 
+  interest was adopted.
+</p>
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="illustrations/applications/sasha/sasha.100.sources.ok.cat"><span style="color:#ffe50f;">
+                    GETSF</span> Extraction Catalog</a>
+                  </li>
+								</ul>
+
+								<h4>Original Image</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/sasha/sasha.100.obs.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/sasha/sasha.100.obs.sbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/sasha/sasha.100.obs.fbackground.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/sasha/sasha.100.obs.sources.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/sasha/sasha.100.obs.filaments.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted sources (footprints)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/sasha/sasha.100.sources.foo.100.det.src.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales <span style="color:#ffdddd;">6</span>&ndash;<span 
+                  style="color:#ffdddd;">15</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/sasha/sasha.100.det.filaments+ske.global.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Extracted filaments (skeletons on scales ~<span style="color:#ffdddd;">15</span>")</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/applications/sasha/sasha.100.det.filaments+ske.0017as.s02.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+                <p style="margin-top: 10mm;">
+                  <a href="#support" style="color:#55aaff; font-weight: bold;">&lt;&nbsp;Support</a>
+                  <a href="#method"  style="color:#55aaff; font-weight: bold; float: right;">Method&nbsp;&gt;</a>
+                </p>
+								<span class="image main"><img src="images/escher08a.jpg" style="border-radius: 10px;" 
+                  title="Bond of Union (M.C.Escher)" loading="lazy" alt=""/>
+                </span>
+							</article>
+
+<!--|||||||||||||||||||||  M E T H O D  |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+
+							<article id="method">
+
+								<h2 class="major" style="color:#ffd70f;">
+                  Extraction Method</h2>
+<p>
+  Flexible multi-wavelength design enables <span style="color:#ffe50f;"><em>getsf</em></span> to handle from one up to 99 images, 
+  not necessarily all of them observed in different wavebands. Any subset of the input images, deemed beneficial for the detection 
+  purposes, can be used to identify the sources and filaments, whereas measurements of the detected sources and filaments are 
+  provided for all input images. In a non-standard application, the method can also be employed for the position-velocity cubes, 
+  if the latter are split into separate images along the velocity axis. The method is almost universally applicable &ndash; it 
+  has been tested on a very wide range of various astronomical observations, numerical simulations, and even digital photographs. 
+</p><p>
+  The method is designed and expected to work for all "normal" images, that are not very sparse: most pixels must contain detectable 
+  signals (measurable data). Examples of the images, for which <span style="color:#ffe50f;"><em>getsf</em></span> might not produce 
+  reliable results, are some <em>extremely</em> faint X-ray or UV low-count images that have isolated spiking pixels, surrounded by 
+  large areas of pixels that were not assigned any detectable signal. On the other extreme, the images suitable for 
+  <span style="color:#ffe50f;"><em>getsf</em></span> must not be <em>extremely</em> smooth: they must have some variations on spatial 
+  scales of the order of angular resolution. For both types of non-standard images, <span style="color:#ffe50f;"><em>getsf</em></span> 
+  would still work and complete extractions, but its results might not be reliable. This is because the method relies on the standard 
+  deviations of the background or noise fluctuations outside structures at each of its processing steps and the values in such unusual 
+  images may not correctly represent the statistics of the observed data.
+</p><p>
+  Main processing steps of <span style="color:#ffe50f;"><em>getsf</em></span>:
+</p>              
+<ol>
+	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+    Preparation of a complete set of images on the same grid of pixels and optional derivation of high-resolution surface densities 
+    and dust temperatures.
+  </span></li>
+	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+    Separation of the structural components of sources and filaments from each other and from their backgrounds using spatially 
+    decomposed images.
+  </span></li>
+	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+    Flattening of the residual noise and background fluctuations in the images of the separated components of sources and filaments.
+  </span></li>
+	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+    Combination of the flattened components of sources and filaments over several (or all) wavebands in their spatially decomposed 
+    images.
+  </span></li>
+	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+    Detection of sources (positions) and filaments (skeletons) in the combined images of the components in their spatially decomposed 
+    images.
+  </span></li>
+	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+    Measurements of the properties of detected sources and filaments, creation of the multi-wavelength output catalogs and images.
+  </span></li>
+</ol>
+<p style="margin-top: -3mm">
+  In the <span style="color:#ffe50f;"><em>getsf</em></span> flowchart, the colored blocks highlight the steps of 
+  <span style="color:#F0D5FD;">preparation</span>, <span style="color:#C6DFFC;">background subtraction</span>, 
+  <span style="color:#E8FCC6;">image flattening</span>, and <span style="color:#FCC6C6;">extraction</span> of sources and filaments:
+</p>
+								<span class="image main" style="margin-top: 5.5mm; margin-bottom: 4.5mm">
+                  <img src="illustrations/flowchart/getsf.flowchart.grayback.trim.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+<p>
+  The method has a single user-definable parameter (per image): the maximum size of the structures of interest to extract.
+  This parameter is determined by users from the images on the basis of their research interests. 
+</p><p>
+  Before starting any extraction, it is necessary to formulate the aim of the study &ndash; what structures of interest must be 
+  extracted. The method knows and is able to separate three types of structures: sources, filaments, and backgrounds. To separate 
+  the structural components with <span style="color:#ffe50f;"><em>getsf</em></span>, the maximum size 
+  <span style="color:#ffdddd;"><em>X</em></span> of the sources and <span style="color:#ffdddd;"><em>Y</em></span> of the filaments 
+  of interest need to be manually (visually) estimated from the prepared images, independently for each waveband. This can be 
+  accomplished by opening an image in <span style="color:#ffdddd;"><em>ds9</em></span>, finding the largest structure 
+  of interest, and placing a circular region, fully covering its width.
+</p><p>
+  The maximum sizes <span style="color:#ffdddd;"><em>X</em></span> and <span style="color:#ffdddd;"><em>Y</em></span> are defined as the 
+  footprint radii (arcsec) of the largest source and the widest filament, respectively, to be extracted. A footprint size has the meaning 
+  of a full width at zero (background) level: the largest two-sided extent from a source peak or filament crest, where that structure is 
+  still visible in the image against its background. For a Gaussian intensity distribution, the footprint radius is slightly larger than 
+  the half-maximum width <span style="color:#ffdddd;"><em>H</em></span>. For a power-law intensity profile, the footprint radius may become
+  much larger than <span style="color:#ffdddd;"><em>H</em></span>. If the widest filaments of interest are blended (overlapping each other 
+  with their footprints), the <span style="color:#ffdddd;"><em>Y</em></span> values must be increased accordingly, to approximate the full 
+  extent of the blend. In contrast, it is not necessary to adjust <span style="color:#ffdddd;"><em>X</em></span> for blended sources, 
+  because their final backgrounds are determined from their footprints at the measurement step.
+</p><p>
+  It is not necessary (also not possible) to evaluate the maximum size parameter <span style="color:#ffdddd;"><em>X</em></span> and
+  <span style="color:#ffdddd;"><em>Y</em></span> very precisely, a 50% accuracy is quite sufficient. Its purpose is to set a reasonable 
+  limit to the spatial scales, when separating the structural components, and to the size of the structures to be measured and cataloged. 
+  Indeed, <span style="color:#ffe50f;"><em>getsf</em></span> works with spatially-decomposed images and it needs to know the maximum 
+  scale. It makes no sense to perform the decomposition up to a very large scale, if the extraction is aimed at much smaller sources or 
+  narrower filaments. The method has no limitations with respect to the sizes (widths) of the structures to extract. However, it is 
+  important to avoid detecting, measuring, and cataloging the peaks that are unnecessarily too wide, because they would likely overlap 
+  with other sources of interest, which potentially would make their measurements less accurate.
+
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px; 
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" onClick="countPaper()" 
+                    href="aa39913-20-Men'shchikov2021.pdf"><span style="color:#ffe50f;">
+                    GETSF</span> Paper</a>
+                  </li>
+
+                  <li><a style="font-weight: bold; margin-top: 3mm; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="getsf.guide.pdf"><span style="color:#ffe50f;">
+                    GETSF</span> Guide</a>
+                  </li>
+								</ul>
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 8mm;">
+                  Preparation of images</h3>
+
+								<h4>High-resolution surface density</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/highres/bench.hi.surface.density.r13p5.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 8mm;">
+                  Separation of components</h3>
+
+								<h4>Spatial decomposition (<span style="color:#ffdddd;">4</span>&ndash;<span style="color:#ffdddd;">1400</span>", 
+                  selected scales)</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/separation/bench-src.decomposition.animated.gif" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/separation/bench.165.obs.bgs.s150as.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/separation/bench.165.obs.bg.s150as.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Component of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/separation/bench.165.obs.bgs.s350as.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background of filaments</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/separation/bench.165.obs.bg.s350as.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 7mm;">
+                  Taurus, Aquila, and IC 5146</h3>
+<p>
+  The surface densities of the filaments in three well-studied star-forming regions in Taurus, Aquila, and IC&nbsp;5146 were derived 
+  from their images (at <span style="color:#ffdddd;">160</span>&ndash;<span style="color:#ffdddd;">500</span> &mu;m) obtained with the 
+  <em>Herschel</em> Space Observatory (HGBS key project, <a href="https://doi.org/10.1051/0004-6361/201014666">Ph. Andr&#233;</a>). 
+  They demonstrate that the observed filaments are highly sub-structured and their shapes, traced by their skeletons, are very 
+  different on various spatial scales. Therefore, when studying filaments, it is necessary to detect their skeletons on those scales 
+  that correspond to the widths of the structures being studied. 
+</p>
+								<h4 style="margin-top: 6mm;"><span style="color:#ffe50f;">Taurus</span> filaments on scales 
+                  <span style="color:#ffdddd;">18</span>&ndash;<span style="color:#ffdddd;">576</span>"</h4>
+
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/filaments/taurus.filaments.scales.animated.gif" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4><span style="color:#ffe50f;">Aquila</span> filaments on scales 
+                  <span style="color:#ffdddd;">18</span>&ndash;<span style="color:#ffdddd;">576</span>"</h4>
+
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/filaments/aquila.filaments.scales.animated.gif" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4><span style="color:#ffe50f;">IC 5146</span> filaments on scales
+                  <span style="color:#ffdddd;">18</span>&ndash;<span style="color:#ffdddd;">576</span>"</h4>
+
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="illustrations/filaments/ic5146.filaments.scales.animated.gif" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+                <p style="margin-top: 10mm;">
+                  <a href="#intro" style="color:#55aaff; font-weight: bold;">&lt;&nbsp;Intro</a>
+                  <a href="#code"  style="color:#55aaff; font-weight: bold; float: right;">Code&nbsp;&gt;</a>
+                </p>
+								<span class="image main"><img src="images/escher13.jpg" style="border-radius: 10px;" 
+                  title="Print Gallery (M.C.Escher)" loading="lazy" alt=""/>
+                </span>
+							</article>
+
+<!--|||||||||||||||||||||  C O D E  |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+
+							<article id="code">
+
+								<h2 class="major" style="color:#ffd70f;">
+                  Numerical Code</h2>
+<p>
+  The method has been developed as a Bash script <span style="color:#ffe50f;"><em>getsf</em></span> that executes a suite of 
+  utilities doing most of the numerical computations. Linux or macOS with 
+  <a href="https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/fortran-compiler.html"><em>ifort</em></a>
+  or <a href="https://github.com/fxcoudert/gfortran-for-macOS/releases"><em>gfortran</em></a> can be used to install the code. 
+  To read and write FITS images, it uses <a href="https://heasarc.gsfc.nasa.gov/fitsio/"><em>cfitsio</em></a>
+  (<a href="https://ui.adsabs.harvard.edu/abs/1999ASPC..172..487P">Pence 1999</a>); for resampling and reprojecting images, 
+  it executes <a href="https://www.astromatic.net/software/swarp"><em>swarp</em></a>
+  (<a href="http://adsabs.harvard.edu/abs/2002ASPC..281..228B">Bertin et al. 2002</a>); for determining source 
+  coordinates (&alpha;, &delta;), it employs <span style="color:#ffdddd;"><em>xy2sky</em></span> from 
+  <a href="http://tdc-www.harvard.edu/wcstools/"><em>wcstools</em></a>
+  (<a href="http://adsabs.harvard.edu/abs/2002ASPC..281..169M">Mink 2002</a>); colored screen output is produced by 
+  <span style="color:#ffdddd;"><em>highlight</em></span> (<a href="http://www.andre-simon.de/">Andr&#233; Simon</a>).
+</p><p>
+  The <span style="color:#ffd8b1;font-weight:bold;">latest</span> version can be downloaded below. When downloading 
+  <span style="color:#ffe50f;"><em>getsf</em></span> for the first time, users are requested to register to obtain
+  notifications on updated versions.
+</p>
+                <ul class="actions">
+                  <script>  // type="text/javascript"
+                    user="alexander.menshchikov"; domain="cea.fr"
+                    document.write('<li><a href="mailto:' + user + '@' + domain +
+                   '?subject=GETSF User Registration&body=First name: %0D%0A%0D%0A Last name: %0D%0A%0D%0A Institute: %0D%0A%0D%0A eMail: "'
+                 + ' style="font-weight: bold; margin-top: 3mm; border: 1px solid gray; border-radius: 10px;'
+                 + '-webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"'
+                 + 'class="button icon solid">Registration</a></li>');
+                  </script>
+                  
+                  <li><a style="font-weight: bold; margin-top: 3mm; border: 1px solid gray; border-radius: 10px; 
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" onClick="countCode()" 
+                    href="getsf.v260706.zip"><span style="color:#ffe50f;">
+                    GETSF</span> 260706</a>
+                  </li>
+
+                  <li><a style="font-weight: bold; margin-top: 3mm; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download"
+                    href="getsf.guide.pdf"><span style="color:#ffe50f;">
+                    GETSF</span> Guide</a>
+                  </li>
+                </ul>
+<p>
+  The <span style="color:#ffd8b1;font-weight:bold;">initial</span> reference version of the code and results of a 
+  <span style="color:#ffd8b1;font-weight:bold;">validation</span>  extraction can also be downloaded below. They are made available for 
+  those who feel the need to have the same version of the code that was used in the published paper and for those who want to validate their
+  <span style="color:#ffe50f;"><em>getsf</em></span> installation and configuration file by comparing their results with a reference 
+  extraction of sources and filaments in a very small simulated image.
+</p>
+                <ul class="actions">
+                  <li><a style="font-weight: bold; margin-top: 3mm; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" onClick="countCode()" 
+                    href="getsf.v210414.zip"> Initial <span style="color:#ffe50f;">
+                    GETSF</span> 210414</a>
+                  </li>
+
+                  <li><a style="font-weight: bold; margin-top: 3mm; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="getsf.validation.zip">
+                    Validation Extraction</a>
+                  </li>
+                </ul>
+<p>
+  Note that <span style="color:#ffe50f;"><em>getsf</em></span> may become corrected and/or improved in the future and that only the 
+  most recent version is supported.
+</p>
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 8mm; margin-bottom: 6mm;">
+                  Notable Improvements or New Features</h3>
+
+<p>
+  <span style="color:#ffe50f;">&#8226;</span> &nbsp;Revision <span style="color:#ffd8b1;font-weight:bold;">260706</span> (improvement). 
+  This version of <span style="color:#ffe50f;"><em>getsf</em></span> substantially improves interpolated backgrounds of sources. Instead 
+  of a simple interpolation along 4 directions used previously, <span style="color:#ffe50f;"><em>cleanbg</em></span> now interpolates along 
+  arbitrary number of directions, defaulting to 16. This improves source backgrounds, eliminating linear artifacts that sometimes appeared 
+  in complex surroundings with the simpler algorithm. This version also corrects <span style="color:#ffe50f;"><em>tools</em></span> 
+  functions <span style="color:#ffe50f;"><em>fftconvolve</em></span>, <span style="color:#ffe50f;"><em>rlft3</em></span>, and 
+  <span style="color:#ffe50f;"><em>fourn</em></span> to eliminate very low-level stripes in convolved images.
+</p>
+<p>
+  <span style="color:#ffe50f;">&#8226;</span> &nbsp;Revision <span style="color:#ffd8b1;font-weight:bold;">250609</span> (new feature). 
+  This version of <span style="color:#ffe50f;"><em>getsf</em></span> enables filament measurements on all spatial scales.
+  Previously, measurements were done only on the scale of the maximum width of the filaments of interest, defined in the configuration 
+  file, because background of filaments is normally derived for that scale only, hence the background subtraction is not accurate for 
+  much narrower filaments. To derive additional backgrounds on smaller scales and obtain consistent measurements, it is necessary to 
+  make several short runs of <span style="color:#ffe50f;"><em>getsf</em></span> for a few processing steps, setting smaller values of
+  the maximum width of the filaments in the configuration file (see <a href="getsf.guide.pdf">User's Guide</a> for details).
+</p>
+<p>
+  <span style="color:#ffe50f;">&#8226;</span> &nbsp;Revision <span style="color:#ffd8b1;font-weight:bold;">250603</span> (new feature). 
+  Starting with this version, <span style="color:#ffe50f;"><em>getsf</em></span> includes a new utility 
+  <span style="color:#ffe50f;"><em>fixskels</em></span> that recreates scale-dependent skeletons as the isolated ones 
+</span>&ndash;<span> not overlapping with skeletons on any of the larger scales. The global skeletons are now correctly obtained by a 
+  simple summation of the isolated scale-dependent skeletons over all scales. The new global skeletons provide an accurate visualization 
+  of detected filaments on all spatial scales. They can also be used for filament measurements independently (outside 
+  <span style="color:#ffe50f;"><em>getsf</em></span>), if a user finds it useful. In this version, structure of the subdirectories for 
+  the resulting skeletons and filaments was slightly rearranged, as well as some output files were renamed to better reflect their contents.
+</p>
+<p>
+  <span style="color:#ffe50f;">&#8226;</span> &nbsp;Revision <span style="color:#ffd8b1;font-weight:bold;">241206</span> (improvement). 
+  This version improves <span style="color:#ffe50f;"><em>fmeasure</em></span> in production of filament footprints and corrects a problem 
+  in calculation of the filament masses and corresponding linear densities (mass/length) over the one-sided footprints. Masses and linear 
+  densities for some blended filaments may change, as a result. Images of the one-sided footprints are no more created.
+</p>
+<p>
+  <span style="color:#ffe50f;">&#8226;</span> &nbsp;Revision <span style="color:#ffd8b1;font-weight:bold;">241122</span> (improvement). 
+  Starting with this version, <span style="color:#ffe50f;"><em>getsf</em></span> produces filament measurements for only 
+  <span style="color:#ffd8b1;"><em>three</em></span>
+  spatial scales centered at the maximum width of the filaments of interest, set in the <span style="color:#ffe50f;"><em>getsf</em></span> 
+  configuration file. This is aimed at avoiding confusion, because the meaning of the maximum width of filaments is somewhat different 
+  from that of the maximum size of sources, in the context of filament measurements. The background of filaments is determined for the 
+  filaments detected on spatial scales around the adopted maximum width, therefore subtraction of the background is valid only 
+  for those filaments. Measurements of the filaments detected on significantly different scales are likely to be inaccurate, because of 
+  the inappropriate background subtraction. To properly measure also the narrower (or wider) filaments detected on a smaller (or larger) 
+  spatial scale, <span style="color:#ffe50f;"><em>getsf</em></span> must be additionally run using the corresponding smaller (or larger) 
+  value of the maximum width parameter in the configuration file.
+</p>
+<p>
+  <span style="color:#ffe50f;">&#8226;</span> &nbsp;Revision <span style="color:#ffd8b1;font-weight:bold;">220627</span> (new feature). 
+  Starting with this version, <span style="color:#ffe50f;"><em>getsf</em></span> includes <span style="color:#ffe50f;"><em>makecube</em></span>, 
+  a new utility that allows creation of 3D data cubes from separate 2D images to facilitate analysis of extraction results, primarily when 
+  running <span style="color:#ffe50f;"><em>getsf</em></span> on slices extracted from line data cubes.
+</p>
+<p>
+  <span style="color:#ffe50f;">&#8226;</span> &nbsp;Revision <span style="color:#ffd8b1;font-weight:bold;">220610</span> (new feature). 
+  Starting with this version, <span style="color:#ffe50f;"><em>getsf</em></span> creates <span style="color:#ffdddd;"><em>ds9</em></span> 
+  region files for both sources (half-maximum and footprint ellipses) and filaments (global and scale-dependent skeletons) to facilitate 
+  their visualization and analyses. For best visibility of the shapes, <span style="color:#ffe50f;"><em>getsf</em></span> defines a set of 
+  20 distinct colors:
+  <span style="color:#3ce04b;">gre</span> <!-- <span style="color:#3cb44b;font-weight:bold;">greo</span> -->
+  <span style="color:#7383ff;">blu</span> <!-- <span style="color:#4363d8;font-weight:bold;">bluo</span> -->
+  <span style="color:#ff9241;">ora</span> <!-- <span style="color:#f58231;font-weight:bold;">orao</span> -->
+  <span style="color:#a14eff;">pur</span> <!-- <span style="color:#911eb4;font-weight:bold;">puro</span> -->
+  <span style="color:#66ffff;">cya</span> <!-- <span style="color:#46f0f0;font-weight:bold;">cyao</span> -->
+  <span style="color:#ff52ff;">mag</span> <!-- <span style="color:#f032e6;font-weight:bold;">mago</span> -->
+  <span style="color:#bcf60c;">lim</span> <!--  -->
+  <span style="color:#ffb5b5;">pin</span> <!-- <span style="color:#fabebe;font-weight:bold;">pino</span> -->
+  <span style="color:#00a0a0;">tea</span> <!-- <span style="color:#008080;font-weight:bold;">teao</span> -->
+  <span style="color:#e6beff;">lav</span> <!--  -->
+  <span style="color:#ba7334;">bro</span> <!-- <span style="color:#9a6324;font-weight:bold;">broo</span> -->
+  <span style="color:#f2f2ca;">bei</span> <!-- <span style="color:#fffac8;font-weight:bold;">beio</span> -->
+  <span style="color:#aa0000;">mar</span> <!-- <span style="color:#800000;font-weight:bold;">maro</span> -->
+  <span style="color:#aaffc3;">min</span> <!--  -->
+  <span style="color:#a5b500;">oli</span> <!-- <span style="color:#808000;font-weight:bold;">olio</span> -->
+  <span style="color:#ffd8b1;">apr</span> <!--  -->
+<!-- <span style="color:#0000a5;">nav</span> <span style="color:#000075;font-weight:bold;">navo</span> -->
+  <span style="color:#909090;">gra</span> <!-- <span style="color:#808080;font-weight:bold;">grao</span> -->
+  <span style="color:#f0194b;">red</span> <!-- <span style="color:#e6194b;font-weight:bold;">redo</span> -->
+  <span style="color:#fff019;">yel</span> <!-- <span style="color:#ffe119;font-weight:bold;">yelo</span> -->
+  <span style="color:#ffffff;">whi</span>, in addition to hundreds of other colors recognized by the region files. 
+</p>
+<!--<p>
+  <span style="color:#ffe50f;">&#8226;</span> &nbsp;Revision <span style="color:#ffd8b1;font-weight:bold;">210915</span> (new feature). 
+  Starting with this version, <span style="color:#ffe50f;"><em>getsf</em></span> provides also the measurements of filaments for the 
+  <span style="color:#ffdddd;"><em>global</em></span> skeletons the same way the measurements are done for the set of scale-dependent 
+  skeletons. 
+</p>-->
+<p>
+  <span style="color:#ffe50f;">&#8226;</span> &nbsp;Revision <span style="color:#ffd8b1;font-weight:bold;">210907</span> (new feature). 
+  Starting with this version, <span style="color:#ffe50f;"><em>getsf</em></span> adds the <span style="color:#ffdddd;"><em>global</em></span>, 
+  scale-independent skeletons to its output. Several users experienced difficulties analyzing the complex nature of observed filaments with 
+  the set of scale-dependent skeletons created by <span style="color:#ffe50f;"><em>getsf</em></span>. In response, the updated 
+  <span style="color:#ffe50f;"><em>getsf</em></span> produces also images of the global skeletons tracing the filamentary structures on 
+  all scales, independently of the filament widths. To emphasize: the global skeletons are provided for <span><em>qualitative visualization 
+  and illustration purposes</em></span> </span>&ndash;<span> they are not as reliable as the scale-dependent skeletons, so they should not 
+  be used for measurements of the filaments. The global skeletons are approximately created from the scale-dependent skeletons within a range 
+  of scales of interest, up to the maximum filament width in the <span style="color:#ffe50f;"><em>getsf</em></span> configuration file.
+</p>
+								<section>
+									<h3 class="major" style="color:#ffd70f; margin-top: 8mm; margin-bottom: 8mm;">
+                    GETSF Utilities and Scripts</h3>
+<p>
+  The following list of the <span style="color:#ffe50f;"><em>getsf</em></span> utilities and scripts explains their purpose and 
+  functions. They are quite useful for command-line image manipulations, even if there is no need in a source or filament extraction. 
+  Their usage information is displayed when a utility is run without any parameter; they are sorted in a decreasing sequence of their 
+  general usability outside <span style="color:#ffe50f;"><em>getsf</em></span>.
+</p>
+									<div class="table-wrapper">
+										<table>
+											<tbody>
+												<tr>
+													<td><span style="color:#ffe50f;">modfits</span></td>
+													<td>modify an image or its header in various ways: math transformations; profiling an image along a line; 
+                              image segmentation; filament skeletonization; removal of connected clusters of pixels; addition or removal 
+                              of border areas; correction of saturated or bad pixel areas; conversion of intensity units; changes of the 
+                              header keywords; <em>etc</em>.</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">operate</span></td>
+													<td>operate on two input images: addition, subtraction, multiplication, division; relative differencing; 
+                              minimization or maximization; extension or expansion of masks; copying of an image header; computation of 
+                              surface densities, temperatures, or intensities; <em>etc</em>.</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">imgstat</span></td>
+													<td>display and/or save image statistical quantities; produce mode-, mean-, or median-filtered images; compute 
+                              images of standard deviations, skewness, kurtosis; <em>etc</em>.</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">fftconv</span></td>
+													<td>fast Fourier transform or convolve image with few predefined kernels or an external kernel image</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">fitfluxes</span></td>
+													<td>fit spectral shapes of source fluxes or image pixel intensities to derive masses or surface densities</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">fixskels</span></td>
+													<td>recreate scale-dependent skeletons as the isolated ones to produce global skeletons</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">convolve</span></td>
+													<td>convolve an image to a desired lower resolution</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">resample</span></td>
+													<td>resample and re-project an image with optional rotation</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">hires</span></td>
+													<td>derive high-resolution densities and temperatures</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">prepobs</span></td>
+													<td>convert all observed images to the same grid of pixels</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">installg</span></td>
+													<td>install <span style="color:#ffe50f;"><em>getsf</em></span> on a computer system (macOS, Linux)</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">iospeed</span></td>
+													<td>test I/O speed of a hard drive for a specific image</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">readhead</span></td>
+													<td>display an image header or save selected keywords</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">cleanbg</span></td>
+													<td>interpolate background under footprints of sources</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">ellipses</span></td>
+													<td>overlay an image with ellipses of extracted sources</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">sfinder</span></td>
+													<td>detect sources in combined clean single-scale images</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">smeasure</span></td>
+													<td>measure and catalog properties of detected sources</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">fmeasure</span></td>
+													<td>measure and catalog properties of detected filaments</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">finalcat</span></td>
+													<td>produce the final multi-wavelength catalogs of sources</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">expanda</span></td>
+													<td>expand masked areas of an image to its edges</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">extractx</span></td>
+													<td>extract all FITS extensions into separate images</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">splitcube</span></td>
+													<td>split a FITS data cube into separate images</td>
+												</tr>
+												<tr>
+													<td><span style="color:#ffe50f;">makecube</span></td>
+													<td>make a FITS data cube from separate images</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+                  <p style="margin-top: 3mm;">
+                    <a href="#method" style="color:#55aaff; font-weight: bold;">&lt;&nbsp;Method</a>
+                    <a href="#bench"  style="color:#55aaff; font-weight: bold; float: right;">Bench&nbsp;&gt;</a>
+                  </p>
+								<span class="image main"><img src="images/escher07.jpg" style="border-radius: 10px;" 
+                  title="Reptiles (M.C.Escher)" loading="lazy" alt=""/>
+                </span>
+                </section>
+              </article>
+
+<!--|||||||||||||||||||||  B E N C H  |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+
+							<article id="bench">
+
+								<h2 class="major" style="color:#ffd70f;">
+                  Benchmarks</h2>
+<p>
+  The source and filament extraction methods are growing in numbers: in the area of star formation, a new method was published every
+  year or two within the seven-year period after the launch of <em>Herschel</em>.
+</p><p>
+  The various extraction tools often have completely different approaches and quality of their results can be expected to be very
+  different. The new developments are driven by new ideas and realization that existing tools, developed for older or simpler images, 
+  do not work well, when applied to more complex images, obtained with the improved technologies of new telescopes. Source and 
+  filament extraction methods are the critically important tools that must be calibrated and validated using a standard set of 
+  benchmark images with fully known properties of all components, before their astrophysical applications.
+</p><p>
+  It seems very unlikely that methods, based on very different approaches, would give consistent results in terms of detection
+  completeness, number of false positive detections, and measurement accuracy. In practice, various methods do perform very
+  differently, as can be shown quantitatively on simulated benchmarks with known properties of all components. This highlights the
+  need of systematic comparisons of different methods in order to understand their qualities, inaccuracies, and biases. There is a
+  real danger that application of different, uncalibrated methods for the same type of star formation studies would give
+  inconsistent, contradictory results and wrong conclusions, creating serious, lasting problems for the science. 
+</p><p>
+  It would be desirable to use the same extraction tool to exclude any biases or dissimilarities, caused by different methods. If a
+  new extraction method is to be used, it must be tested on standard benchmarks to ensure that its detection and measurement
+  qualities are consistent or better. This approach is usually practiced within research consortia, but this does not solve the
+  global problem that the results, obtained from the same data by different consortia or research groups using different tools may
+  still be affected by the uncalibrated (or suboptimal) tools used.
+</p><p> 
+  The new multi-wavelength benchmark, presented below, contains simulated <em>Herschel</em> images of a dense background cloud with 
+  strong nonuniform fluctuations, a wide dense filament with a power-law intensity profile, and hundreds of radiative transfer models 
+  of starless and protostellar cores with wide ranges of sizes, masses, and profiles. The simulated benchmark, in which parameters 
+  of all components are precisely known, allows quantitative analyses of extraction results and conclusive comparisons of different 
+  methods and their extraction completeness, reliability, and goodness, along with the detection and measurement accuracies. 
+</p><p> 
+  The benchmark can serve as a standard benchmark problem for source and filament extraction methods, allowing researchers perform 
+  their own tests of available methods to choose the most reliable and accurate one for their studies. The benchmark images, 
+  together with the truth catalogs and the extraction results, are made available to anyone who wants to get their own comparisons 
+  and conclusions. Future methods can also be calibrated using the benchmark and compared with the quality of the older methods.
+</p>
+								<ul class="actions">
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" onClick="countPaper()" 
+                    href="aa39913-20-Men'shchikov2021.pdf"><span style="color:#ffe50f;">
+                    GETSF</span> Paper</a>
+                  </li>
+
+                  <li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" onClick="countPaper()" 
+                    href="aa41533-21-Men'shchikov2021.pdf"><span style="color:#ffe50f;">
+                    BENCH</span> Paper</a>
+                  </li>
+								</ul>
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 6mm;">
+                  Benchmark A</h3>
+<p>
+  Benchmark <span style="font-weight:bold;">A</span> was created by <a href="https://doi.org/10.1051/0004-6361/201218797">Men'shchikov 
+  et al. (2012)</a> to develop <span style="color:#ffe50f;"><em>getsources</em></span> and used in 
+  <a href="https://doi.org/10.1051/0004-6361/201730925">Men'shchikov (2017)</a> to illustrate
+  <span style="color:#ffe50f;"><em>getimages</em></span>, a method for background subtraction and image flattening. This old benchmark 
+  contains three simulated components: background, 459 sources, and instrumental noise, and is referred to as 
+  <span style="font-weight:bold;">A</span><sub>3</sub>. Although the background in <span style="font-weight:bold;">A</span><sub>3</sub> 
+  is not as complex and realistic as in Benchmark <span style="font-weight:bold;">B</span>, its sources are allowed to overlap. This 
+  makes it suitable for testing, how well a source extraction method is able to handle blended sources. Its simpler variant is 
+  <span style="font-weight:bold;">A</span><sub>2</sub> (no background).
+</p><p>
+  The compressed archives below contains the simulated images at <span style="color:#ffdddd;">75</span>, 
+  <span style="color:#ffdddd;">110</span>, <span style="color:#ffdddd;">170</span>, <span style="color:#ffdddd;">250</span>, 
+  <span style="color:#ffdddd;">350</span>, and <span style="color:#ffdddd;">500</span> &mu;m (resolutions of 
+  <span style="color:#ffdddd;">5</span>, <span style="color:#ffdddd;">7</span>, <span style="color:#ffdddd;">11</span>, 
+  <span style="color:#ffdddd;">17</span>, <span style="color:#ffdddd;">24</span>, and <span style="color:#ffdddd;">35</span>"), 
+  the surface density images (resolution of <span style="color:#ffdddd;">11</span>"), and the truth catalogs with parameters 
+  of all model sources. The archives were produced with <a href="https://www.rarlab.com/download.htm"><em>rar</em></a>, because this
+  compression utility creates the smallest archives of 90 and 70 MB, respectively.
+</p>
+								<ul class="actions">
+									<li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                     download class="button icon solid fa-download" onClick="countBench()" 
+                     href="benchmarks/bencha/benchA2.rar" >
+                     Bench <span style="color:#ffe50f;">A<sub>2</sub></span></a>
+                   </li>
+									<li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                     download class="button icon solid fa-download" onClick="countBench()" 
+                     href="benchmarks/bencha/benchA3.rar">
+                     Bench <span style="color:#ffe50f;">A<sub>3</sub></span></a>
+                   </li>
+								</ul>
+
+								<h4>Background</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="benchmarks/bencha/hi.surface.density.r17p0.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+								<h4>Sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="benchmarks/bencha/skysc250.d250.skysc250.mul0.add15.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+								<h4>Background+Sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="benchmarks/bencha/hi.surface.density.r17p0.+.skysc250.d250.skysc250.mul0.add15.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 10mm; margin-bottom: 6mm;">
+                  Benchmark B</h3>
+<p>
+  The new Benchmark <span style="font-weight:bold;">B</span>, created by <a href="aa39913-20-Men'shchikov2021.pdf">Men'shchikov (2021)</a> 
+  to develop <span style="color:#ffe50f;"><em>getsf</em></span>, features a dense and highly variable background cloud, a dense spiral 
+  filament with its markedly anisotropic properties, 919 sources with a wide range of fluxes, sizes, and intensity profiles, and uniform 
+  noise. In contrast to Benchmark <span style="font-weight:bold;">A</span>, the sources do not overlap. Benchmark 
+  <span style="font-weight:bold;">B</span> with 4 components (background, filament, sources, and noise) is referred to as 
+  <span style="font-weight:bold;">B</span><sub>4</sub>. Simpler variants include <span style="font-weight:bold;">B</span><sub>3</sub> 
+  (no filament) and <span style="font-weight:bold;">B</span><sub>2</sub> (no filament, no background).
+</p><p>
+  The simplest Benchmark <span style="font-weight:bold;">B</span><sub>2</sub> must not present any problems to those extraction methods 
+  that do not set any upper limit on sizes of extractable sources and do not assume Gaussian shapes of their intensity profiles. Only 
+  the faintest sources are expected to be lost within the noise fluctuations in <span style="font-weight:bold;">B</span><sub>2</sub> 
+  and measurements of sources are expected to be accurate, although for the faintest sources inaccuracies must somewhat increase due 
+  to the noise fluctuations.
+</p><p>
+  The more complex Benchmark <span style="font-weight:bold;">B</span><sub>3</sub> could present serious problems to those extraction 
+  methods that are not explicitly designed to handle complex backgrounds. The background fluctuations are strongly nonuniform and they 
+  progressively increase in the denser background area, resembling the observed clouds. In comparison with 
+  <span style="font-weight:bold;">B</span><sub>2</sub>, this means that more of the sources are expected to remain undetected in 
+  <span style="font-weight:bold;">B</span><sub>3</sub> and possibly more spurious sources to become cataloged.
+</p><p>
+  The most complex Benchmark <span style="font-weight:bold;">B</span><sub>4</sub> with the dense filamentary background better resembles 
+  the extreme complexity of the interstellar clouds revealed by observations, further complicating the source extraction problem. It can be 
+  expected that a larger number of sources would vanish in the background in <span style="font-weight:bold;">B</span><sub>4</sub> and that 
+  measurements of the sources would become less accurate than in the simpler <span style="font-weight:bold;">B</span><sub>3</sub> and <span 
+  style="font-weight:bold;">B</span><sub>2</sub>.
+</p><p>
+  The compressed archives below contain the simulated images at <span style="color:#ffdddd;">70</span>, 
+  <span style="color:#ffdddd;">100</span>, <span style="color:#ffdddd;">160</span>, <span style="color:#ffdddd;">250</span>, 
+  <span style="color:#ffdddd;">350</span>, and <span style="color:#ffdddd;">500</span> &mu;m (resolutions of 
+  <span style="color:#ffdddd;">8.4</span>, <span style="color:#ffdddd;">9.4</span>, <span style="color:#ffdddd;">13.5</span>,
+  <span style="color:#ffdddd;">18.2</span>, <span style="color:#ffdddd;">24.9</span>, and <span style="color:#ffdddd;">36.3</span>"), 
+  the surface density images (resolution of <span style="color:#ffdddd;">13.5</span>"), and the truth catalogs with parameters of 
+  all model sources. The archives were produced with <a href="https://www.rarlab.com/download.htm"><em>rar</em></a>, because this
+  compression utility creates the smallest archives of 180, 130, and 120 MB, respectively.
+</p>
+								<ul class="actions">
+									<li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                     download class="button icon solid fa-download" onClick="countBench()" 
+                     href="benchmarks/benchb/benchB2.rar">
+                     Bench <span style="color:#ffe50f;">B<sub>2</sub></span></a>
+                   </li>
+									<li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                     download class="button icon solid fa-download" onClick="countBench()" 
+                     href="benchmarks/benchb/benchB3.rar">
+                     Bench <span style="color:#ffe50f;">B<sub>3</sub></span></a>
+                   </li>
+									<li><a style="margin-top: 3mm; font-weight: bold; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                     download class="button icon solid fa-download" onClick="countBench()" 
+                     href="benchmarks/benchb/benchB4.rar">
+                     Bench <span style="color:#ffe50f;">B<sub>4</sub></span></a>
+                   </li>
+								</ul>
+
+								<h4>Background</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="benchmarks/benchb/bdm1500x1p5.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Filament</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="benchmarks/benchb/sd150x1p5.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background+Filament</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="benchmarks/benchb/bdm1500x1p5+sd150x1p5.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="benchmarks/benchb/simsky.sden.sources.c18p2.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+								<h4>Background+Filament+Sources</h4>
+								<span class="image main" style="margin-top: 0px; margin-bottom: 7mm;">
+                  <img src="benchmarks/benchb/simsky.sden.filback+sources.r13p5x0.png" 
+                  style="border-radius: 10px;" loading="lazy" alt=""/>
+                </span>
+
+                <p style="margin-top: 10mm;">
+                  <a href="#code"    style="color:#55aaff; font-weight: bold;">&lt;&nbsp;Code</a>
+                  <a href="#support" style="color:#55aaff; font-weight: bold; float: right;">Support&nbsp;&gt;</a>
+                </p>
+								<span class="image main"><img src="images/escher10.jpg" style="border-radius: 10px;" 
+                  title="Eye (M.C.Escher)" loading="lazy" alt=""/>
+                </span>
+							</article>
+
+<!--|||||||||||||||||||||  S U P P O R T  |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+
+							<article id="support">
+
+								<h2 class="major" style="color:#ffd70f;">Support</h2>
+<p>
+The author supports <span style="color:#ffe50f;"><em>getsf</em></span> users and helps them get started, with the usual response 
+times ranging from minutes to hours. Please note that the code may become updated in the future and that only the 
+<span style="color:#ffd8b1;font-weight:bold;">latest</span> version of <span style="color:#ffe50f;"><em>getsf</em></span> is supported. 
+It is strongly recommended that users read the <a href="getsf.guide.pdf">User's Guide</a> containing essential information that would 
+help them install and use the tool correctly.
+</p><p>
+If apparently abnormal results are found or the code aborts for unknown reasons, the user is asked to install the latest version 
+of the code and restart the problematic run from the nearest (previous) processing step to verify that the problem persists. If 
+the user needs assistance in finding reasons of the problems, the author expects receiving a clear description of the problem, a 
+copy or screenshot of the contents of the terminal window, and the log files of the runs. In rare cases, it may also be necessary 
+to re-run the problematic extraction with an updated version.
+</p>
+                <ul class="actions">
+                  <li><a style="font-weight: bold; margin-top: 3mm; border: 1px solid gray; border-radius: 10px;
+                    -webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"
+                    download class="button icon solid fa-download" 
+                    href="getsf.guide.pdf"><span style="color:#ffe50f;">
+                    GETSF</span> Guide</a>
+                  </li>
+
+                  <script>  // type="text/javascript"
+                  user="alexander.menshchikov"; domain="cea.fr"
+                  
+                  document.write('<li><a href="mailto:' + user + '@' + domain +
+                '?subject=GETSF Help Request&body=" style="font-weight: bold; margin-top: 3mm; border: 1px solid gray; border-radius: 10px;'
+              + '-webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"'
+              +     'class="button icon solid">Request Help</a></li>');
+                 
+                  document.write('<li><a href="mailto:' + user + '@' + domain +
+                '?subject=GETSF Feedback&body=" style="font-weight: bold; margin-top: 3mm; border: 1px solid gray; border-radius: 10px;'
+              + '-webkit-box-shadow: 5px 5px 5px 0px #000; -moz-box-shadow: 5px 5px 5px 0px #000; box-shadow: 5px 5px 5px 0px #000;"'
+              + 'class="button icon solid">Send Feedback</a></li>');
+                  </script>
+                </ul>
+
+								<h3 class="major" style="color:#ffd70f; margin-top: 12mm; margin-bottom: 5mm;">
+                   GETSF In Publications</h3>
+
+									<ol>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202039353">
+                      Nony T., Robitaille J.-F., Motte F., <em>et al.</em> (<span style="color:#ffe50f;">2021</span>) A&A, 645, A94
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202039913">
+                      Men'shchikov A. (<span style="color:#ffe50f;">2021</span>) A&A, 649, A89
+                      </a> &nbsp;&nbsp;&nbsp;(<span style="color:#ffe50f;"><em>getsf</em></span> <span style="color:#e6beff;">method</span>)
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                       <a href="https://doi.org/10.1051/0004-6361/202038259">
+										   Schuller F., Andr&#233; Ph., Shimajiri Y., <em>et al.</em> (<span style="color:#ffe50f;">2021</span>) A&A, 651, A36
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202040053">
+   									  Louvet F., Hennebelle P., Men'shchikov A., <em>et al.</em> (<span style="color:#ffe50f;">2021</span>) A&A, 653, A157
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202141533">
+                      Men'shchikov A. (<span style="color:#ffe50f;">2021</span>) A&A, 654, A78
+                      </a> &nbsp;&nbsp;&nbsp;(<span style="color:#ffe50f;"><em>getsf</em></span>  <span style="color:#e6beff;">benchmarking</span>)
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202141677">
+										  Motte F., Bontemps S., Csengeri T., <em>et al.</em> (<span style="color:#ffe50f;">2022</span>) A&A, 662, A8
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202140363">
+										  Kumar M. S. N., Arzoumanian D., Men'shchikov A., <em>et al.</em> (<span style="color:#ffe50f;">2022</span>)
+                        A&A, 658, A114
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202142951">
+										  Pouteau Y., Motte F., Nony T., <em>et al.</em> (<span style="color:#ffe50f;">2022</span>) A&A, 664, A26
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202141699">
+										  Arzoumanian D., Russeil D.,  Zavagno A., <em>et al.</em> (<span style="color:#ffe50f;">2022</span>) A&A, 660, A56
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1088/1674-4527/ac5bc7">
+										  Zhang C., Zhang G.-Y., Li J.-Z., <em>et al.</em> (<span style="color:#ffe50f;">2022</span>) RAA, 22, 5, 055012
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/ac65e9">
+										  Bhadari N. K., Dewangan L. K., Ojha D. K., <em>et al.</em> (<span style="color:#ffe50f;">2022</span>) ApJ, 930, 169
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202243275">
+										  Thomasson B., Joncour I., Moraux E., <em>et al.</em> (<span style="color:#ffe50f;">2022</span>) A&A, 665, A119
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/ac7872">
+										  Maity A. K., Dewangan L. K., Sano H., <em>et al.</em> (<span style="color:#ffe50f;">2022</span>) ApJ, 934, 2
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/ac99e0">
+										  Hwang J., Kim J., Pattle K., <em>et al.</em> (<span style="color:#ffe50f;">2022</span>) ApJ, 941, 51
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1093/mnras/stad012">
+										  Xu F.-W., Wang K., Liu T., <em>et al.</em> (<span style="color:#ffe50f;">2023</span>) MNRAS, 520, 3259
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/acbccc">
+										  Dewangan L. K., Bhadari N. K., Men'shchikov A., <em>et al.</em> (<span style="color:#ffe50f;">2023</span>) ApJ, 946, 22
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1007/s12036-022-09907-7">
+										  Dewangan L. K., Bhadari N. K., Maity A. K., <em>et al.</em> (<span style="color:#ffe50f;">2023</span>) JOAA, 44, 23
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1093/mnras/stad1469">
+										  Padoan P., Pelkonen V-M., Juvela M., <em>et al.</em> (<span style="color:#ffe50f;">2023</span>) MNRAS, 522, 3548
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202244776">
+										  Pouteau Y., Motte F., Nony T., <em>et al.</em> (<span style="color:#ffe50f;">2023</span>) A&A, 674, A76
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202244762">
+										  Nony T., Galvan-Madrid R., Motte F., <em>et al.</em> (<span style="color:#ffe50f;">2023</span>) A&A, 674, A75
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202345846">
+										  Li, X.-M., Zhang G.-Y., Men'shchikov A., <em>et al.</em> (<span style="color:#ffe50f;">2023</span>) A&A, 674, A225
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202346152">
+										  Men'shchikov A., (<span style="color:#ffe50f;">2023</span>) A&A, 675, A185
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1093/mnras/stad1644">
+										  Maity A. K., Dewangan L. K., Bhadari N. K., <em>et al.</em> (<span style="color:#ffe50f;">2023</span>) MNRAS, 523, 5388
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1093/mnras/stad2644">
+										  Mookerjea B., Sandell G., Guesten, R., <em>et al.</em> (<span style="color:#ffe50f;">2023</span>) MNRAS, 525, 5468
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1093/mnras/stad3385">
+										  Seshadri A., Vig S., Ghosh S. K., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) MNRAS, 527, 4244
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1093/mnras/stad3384">
+										  Dewangan L. K., Bhadari N. K., Maity A. K., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) MNRAS, 527, 5895
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1093/mnras/stae1518">
+										  Weis M., Walch S., Seifried D., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) MNRAS, 532, 1262
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4365/acfee5">
+										  Xu F., Wang K., Liu T., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) ApJS, 270, 9
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202347595">
+										  Armante M., Gusdorf A., Louvet F., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) A&A, 686, A122
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/ad3c41">
+										  Cheng Y., Lu X., Sanhueza P., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) ApJ, 967, 56
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/ad7098">
+										  Maity A. K., Inoue T., Fukui Y., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) ApJ, 974, 229
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/ad8919">
+										  Yang D., Liu H.-L., Liu T., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) ApJ, 976, 241
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202348984">
+										  Dell'Ova P., Motte F., Gusdorf A., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) A&A, 687, A217
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202449279">
+										  Nony T., Galvan-Madrid R., Brouillet N., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) A&A, 687, A84
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202347856">
+										  Bonfand M., Csengeri T., Bontemps S., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) A&A, 687, A163
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202449853">
+										  Zhang G., Andr&#233; Ph., Men'shchikov A. (<span style="color:#ffe50f;">2024</span>) A&A, 689, A3
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202345986">
+										  Louvet F., Sanhueza P., Stutz A., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) A&A, 690, A33
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1007/s12036-024-10004-0">
+										  Dewan D., Soam A., Zhang G.-Y., <em>et al.</em> (<span style="color:#ffe50f;">2024</span>) JApA, 45, 19
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/ada388">
+										  Jadhav O. R., Dewangan L. K., Verma A., <em>et al.</em> (<span style="color:#ffe50f;">2025</span>) ApJ, 980, 133
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202451931">
+										  Motte F., Pouteau Y., Nony T., <em>et al.</em> (<span style="color:#ffe50f;">2025</span>) A&A, 694, A24
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202453601">
+										  Xu F., Lu X., Wang K., <em>et al.</em> (<span style="color:#ffe50f;">2025</span>) A&A, 697, A164
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/adcee4">
+										  Jadhav O. R., Dewangan L. K., Ismail A. Haj, <em>et al.</em> (<span style="color:#ffe50f;">2025</span>) ApJ, 986, 48
+                      </a>
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1088/1674-4527/ade383">
+										  Jia B.-S., Zhang G.-Y., Men'shchikov A., <em>et al.</em> (<span style="color:#ffe50f;">2025</span>) RAA, 25, 085018
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4365/adf847">
+										  Yang D., Liu H.-L., Liu T., <em>et al.</em> (<span style="color:#ffe50f;">2025</span>) AJSS, 280, 33
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202554634">
+										  Zhen L. M., Liu H.-L., Lu X., <em>et al.</em> (<span style="color:#ffe50f;">2025</span>) A&A, 700, A47
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/ae0619">
+										  Yoo T., Ginsburg A., Braine J., <em>et al.</em> (<span style="color:#ffe50f;">2025</span>) ApJ, 994, 233
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1093/mnras/stag814">
+										  Pervaiz N., Zhang G.-Y., Men'shchikov A., <em>et al.</em> (<span style="color:#ffe50f;">2026</span>) MNRAS, 549, 814
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202557432">
+										  Mookerjea B., Sen S., Veena V.S., <em>et al.</em> (<span style="color:#ffe50f;">2026</span>) A&A, 706, A287
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202557922">
+										  Li Y., Qui K. (<span style="color:#ffe50f;">2026</span>) A&A, 707, A194
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/ae5224">
+										  Hoque A., Baug T., Guzman E., <em>et al.</em> (<span style="color:#ffe50f;">2026</span>) ApJ, 1001, 161
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/1538-4357/ae5b7f">
+										  Meng C., Liu H.-L., Lu X., <em>et al.</em> (<span style="color:#ffe50f;">2026</span>) ApJ, 1002, 205
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1038/s41550-026-02873-y">
+										  Liu J., Sanhueza P., Saha P., <em>et al.</em> (<span style="color:#ffe50f;">2026</span>) Nature Astronomy, 10, 1189
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202659066">
+										  Men'shchikov A., Zhang G.-Y. (<span style="color:#ffe50f;">2026</span>) A&A, 714, A365
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.1051/0004-6361/202660012">
+										  Zhang G.-Y., Men'shchikov A., Li J.-Z. (<span style="color:#ffe50f;">2026</span>) A&A, 710, A199
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https://doi.org/10.3847/2041-8213/ae82ef">
+										  Zhang G.-Y., Men'shchikov A., Li J.-Z. (<span style="color:#ffe50f;">2026</span>) ApJL, 1005, L58
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https:///doi.org/10.1051/0004-6361/202660192">
+										  Motte F., Le Nestour N., Veyry R., <em>et al.</em> (<span style="color:#ffe50f;">2026</span>) A&A, 713, A105
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https:///doi.org/10.1051/0004-6361/202558322">
+										  Xu F., Zhang Q., Sanhueza P., <em>et al.</em> (<span style="color:#ffe50f;">2026</span>) A&A, 713, A145
+                    </li>
+                  	<li style="color:#ffe50f;"><span style="color:#ffffff;">
+                      <a href="https:///doi.org/10.1093/mnras/stag1514">
+										  Luo Y., Zhou J., Liu T., <em>et al.</em> (<span style="color:#ffe50f;">2026</span>) MNRAS, 551, 1514
+                    </li>
+									</ol>
+
+                <p style="margin-top: -1mm;">
+                  <a href="#bench" style="color:#55aaff; font-weight: bold;">&lt;&nbsp;Bench</a>
+                  <a href="#intro" style="color:#55aaff; font-weight: bold; float: right;">Intro&nbsp;&gt;</a>
+                </p>
+								<span class="image main"><img src="images/escher12.jpg" style="border-radius: 10px;" 
+                  title="Drawing Hands (M.C.Escher)" loading="lazy" alt=""/>
+                </span>
+							</article>
+
+<!--|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+
+							<article id="elements">
+
+								<h2 class="major" style="color:#ffd70f;">Elements</h2>
+
+								<section>
+									<h3 class="major">Text</h3>
+									<p>This is <b>bold</b> and this is <strong>strong</strong>. This is <i>italic</i> and this is <em>emphasized</em>.
+									This is <sup>superscript</sup> text and this is <sub>subscript</sub> text.
+									This is <u>underlined</u> and this is code: <code>for (;;) { ... }</code>. Finally, <a href="#">this is a link</a>.</p>
+									<hr />
+									<h2>Heading Level 2</h2>
+									<h3>Heading Level 3</h3>
+									<h4>Heading Level 4</h4>
+									<h5>Heading Level 5</h5>
+									<h6>Heading Level 6</h6>
+									<hr />
+									<h4>Blockquote</h4>
+									<blockquote>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget tempus euismod. 
+                              Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat 
+                              ac adipiscing accumsan faucibus. Vestibulum ante ipsum primis in faucibus lorem ipsum dolor sit amet 
+                              nullam adipiscing eu felis.
+                  </blockquote>
+									<h4>Preformatted</h4>
+<pre><code>i = 0;
+
+while (!deck.isInOrder()) {
+    print 'Iteration ' + i;
+    deck.shuffle();
+    i++;
+}
+                    
+print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
+							  </section>
+
+								<section>
+									<h3 class="major">Lists</h3>
+
+									<h4>Unordered</h4>
+									<ul>
+										<li>Dolor pulvinar etiam.</li>
+										<li>Sagittis adipiscing.</li>
+										<li>Felis enim feugiat.</li>
+									</ul>
+
+									<h4>Alternate</h4>
+									<ul class="alt">
+										<li>Dolor pulvinar etiam.</li>
+										<li>Sagittis adipiscing.</li>
+										<li>Felis enim feugiat.</li>
+									</ul>
+
+									<h4>Ordered</h4>
+									<ol>
+										<li>Dolor pulvinar etiam.</li>
+										<li>Etiam vel felis viverra.</li>
+										<li>Felis enim feugiat.</li>
+										<li>Dolor pulvinar etiam.</li>
+										<li>Etiam vel felis lorem.</li>
+										<li>Felis enim et feugiat.</li>
+									</ol>
+									<h4>Icons</h4>
+									<ul class="icons">
+										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+										<li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
+									</ul>
+
+									<h4>Actions</h4>
+									<ul class="actions">
+										<li><a href="#" class="button primary">Default</a></li>
+										<li><a href="#" class="button">Default</a></li>
+									</ul>
+									<ul class="actions stacked">
+										<li><a href="#" class="button primary">Default</a></li>
+										<li><a href="#" class="button">Default</a></li>
+									</ul>
+								</section>
+
+								<section>
+									<h3 class="major">Table</h3>
+									<h4>Default</h4>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr>
+													<th>Name</th>
+													<th>Description</th>
+													<th>Price</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Item One</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Two</td>
+													<td>Vis ac commodo adipiscing arcu aliquet.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Three</td>
+													<td> Morbi faucibus arcu accumsan lorem.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Four</td>
+													<td>Vitae integer tempus condimentum.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Five</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+											</tbody>
+											<tfoot>
+												<tr>
+													<td colspan="2"></td>
+													<td>100.00</td>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+
+									<h4>Alternate</h4>
+									<div class="table-wrapper">
+										<table class="alt">
+											<thead>
+												<tr>
+													<th>Name</th>
+													<th>Description</th>
+													<th>Price</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Item One</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Two</td>
+													<td>Vis ac commodo adipiscing arcu aliquet.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Three</td>
+													<td> Morbi faucibus arcu accumsan lorem.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Four</td>
+													<td>Vitae integer tempus condimentum.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Five</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+											</tbody>
+											<tfoot>
+												<tr>
+													<td colspan="2"></td>
+													<td>100.00</td>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+								</section>
+
+								<section>
+									<h3 class="major">Buttons</h3>
+									<ul class="actions">
+										<li><a href="#" class="button primary">Primary</a></li>
+										<li><a href="#" class="button">Default</a></li>
+									</ul>
+									<ul class="actions">
+										<li><a href="#" class="button">Default</a></li>
+										<li><a href="#" class="button small">Small</a></li>
+									</ul>
+									<ul class="actions">
+										<li><a href="#" class="button primary icon solid fa-download">Icon</a></li>
+										<li><a href="#" class="button icon solid fa-download">Icon</a></li>
+									</ul>
+									<ul class="actions">
+										<li><span class="button primary disabled">Disabled</span></li>
+										<li><span class="button disabled">Disabled</span></li>
+									</ul>
+								</section>
+
+								<section>
+									<h3 class="major">Form</h3>
+									<form method="post" action="submit.php">
+										<div class="fields">
+											<div class="field half">
+												<label for="demo-name">Name</label>
+												<input type="text" name="demo-name" id="demo-name" value="" placeholder="Jane Doe" />
+											</div>
+											<div class="field half">
+												<label for="demo-email">Email</label>
+												<input type="email" name="demo-email" id="demo-email" value="" placeholder="jane@untitled.tld" />
+											</div>
+											<div class="field">
+												<label for="demo-category">Category</label>
+												<select name="demo-category" id="demo-category">
+													<option value="">-</option>
+													<option value="1">Manufacturing</option>
+													<option value="1">Shipping</option>
+													<option value="1">Administration</option>
+													<option value="1">Human Resources</option>
+												</select>
+											</div>
+											<div class="field half">
+												<input type="radio" id="demo-priority-low" name="demo-priority" checked>
+												<label for="demo-priority-low">Low</label>
+											</div>
+											<div class="field half">
+												<input type="radio" id="demo-priority-high" name="demo-priority">
+												<label for="demo-priority-high">High</label>
+											</div>
+											<div class="field half">
+												<input type="checkbox" id="demo-copy" name="demo-copy">
+												<label for="demo-copy">Email me a copy</label>
+											</div>
+											<div class="field half">
+												<input type="checkbox" id="demo-human" name="demo-human" checked>
+												<label for="demo-human">Not a robot</label>
+											</div>
+											<div class="field">
+												<label for="demo-message">Message</label>
+												<textarea name="demo-message" id="demo-message" placeholder="Enter your message" rows="6"></textarea>
+											</div>
+										</div>
+										<ul class="actions">
+											<li><input type="submit" value="Send Message" class="primary" /></li>
+											<li><input type="reset" value="Reset" /></li>
+										</ul>
+									</form>
+								</section>
+							</article>
+
+<!--|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-->
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+					<p class="copyright">
+            <b style="opacity: 0.7;">&copy;</b><b style="opacity: 0.8;">2020</b><b style="opacity: 1.0";> Alexander Men'shchikov </b><br/>
+            <b style="opacity: 0.8;">Universite Paris&ndash;Saclay&middot;Universite Paris Cite&middot;CEA&middot;CNRS&middot;AIM</b><br/>
+            <b style="opacity: 0.6;">F-91191 Gif-sur-Yvette, France</b>
+            <b style="opacity: 0.6;">| Design: <a href="https://html5up.net">HTML5&nbsp;UP</a></b>
+
+<!-- this fragment with counters does not seem to work as expected...
+            <b style="opacity: 0.6;">| V:<a id="countViews"></a> P:<a id="countPaper"></a> 
+                                       C:<a id="countCode"></a> B:<a id="countBench"></a></b> 
+-->
+            </p>
+					</footer>
+			</div>
+
+		<!-- BG -->
+			<div id="bg"></div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
